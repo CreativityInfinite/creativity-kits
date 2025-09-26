@@ -1,13 +1,13 @@
 import type { ToolMeta } from '~/types/tool'
+
 const meta: ToolMeta = {
   id: 'utm-builder',
-  name: 'UTM 构建器',
-  description: '生成追踪参数',
+  name: 'UTM链接构建器',
+  description: '专业的UTM参数构建工具，支持营销活动跟踪链接生成、二维码生成和历史记录管理',
   category: 'social-marketing',
-  tags: ['marketing'],
+  tags: ['UTM', '营销跟踪', '链接生成', '二维码', '数据分析'],
+  icon: 'tabler:link',
   i18nKey: 'tools.utm-builder',
-  color: 'linear-gradient(135deg,#ec4899,#84cc16)',
-  icon: 'tabler:share-3',
-  entry: 'tools/social-marketing/utm-builder/Component.vue'
+  entry: 'tools/social-marketing/utm-builder/Component.vue',
 }
 export default meta

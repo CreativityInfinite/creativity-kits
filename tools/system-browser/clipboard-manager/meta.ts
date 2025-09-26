@@ -1,13 +1,12 @@
 import type { ToolMeta } from '~/types/tool'
+
 const meta: ToolMeta = {
   id: 'clipboard-manager',
-  name: '剪贴板管理',
-  description: '本地历史记录',
+  name: 'clipboard-manager',
+  description: '智能剪贴板历史记录管理工具，支持内容分类和搜索',
   category: 'system-browser',
-  tags: ['clipboard'],
+  tags: ['剪贴板', '历史记录', '复制粘贴', '管理工具', '效率'],
   i18nKey: 'tools.clipboard-manager',
-  color: 'linear-gradient(135deg,#ec4899,#22d3ee)',
-  icon: 'tabler:browser',
-  entry: 'tools/system-browser/clipboard-manager/Component.vue'
+  entry: 'tools/system-browser/clipboard-manager/Component.vue',
 }
 export default meta

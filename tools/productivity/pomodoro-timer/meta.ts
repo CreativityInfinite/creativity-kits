@@ -1,13 +1,12 @@
 import type { ToolMeta } from '~/types/tool'
+
 const meta: ToolMeta = {
   id: 'pomodoro-timer',
-  name: '番茄钟',
-  description: '专注计时',
+  name: 'pomodoro-timer',
+  description: '专注工作的番茄工作法计时器，支持工作/休息周期管理和统计',
   category: 'productivity',
-  tags: ['timer'],
+  tags: ['时间管理', '专注', '效率', '番茄工作法', '计时器'],
   i18nKey: 'tools.pomodoro-timer',
-  color: 'linear-gradient(135deg,#f59e0b,#22d3ee)',
-  icon: 'tabler:clock',
-  entry: 'tools/productivity/pomodoro-timer/Component.vue'
+  entry: 'tools/productivity/pomodoro-timer/Component.vue',
 }
 export default meta

@@ -1,13 +1,12 @@
 import type { ToolMeta } from '~/types/tool'
+
 const meta: ToolMeta = {
   id: 'typing-practice',
-  name: '打字练习',
-  description: '自定义段落',
+  name: 'typing-practice',
+  description: '多语言打字练习工具，支持英文、中文、代码和数字练习，实时统计速度和准确率',
   category: 'education-language',
-  tags: ['typing', 'practice'],
+  tags: ['打字', '练习', '速度', '准确率', 'WPM', '键盘'],
   i18nKey: 'tools.typing-practice',
-  color: 'linear-gradient(135deg,#22d3ee,#f59e0b)',
-  icon: 'tabler:language',
-  entry: 'tools/education-language/typing-practice/Component.vue'
+  entry: 'tools/education-language/typing-practice/Component.vue',
 }
 export default meta

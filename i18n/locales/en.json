@@ -32,22 +32,503 @@
     "map-geo": "Map & Geo",
     "system-browser": "System & Browser"
   },
-
   "tools": {
-    "base64-encode": { "name": "Base64 Encode", "desc": "Encode text to Base64" },
-    "regex-tester": { "name": "Regex Tester", "desc": "Match and highlight groups" },
-    "timestamp-converter": { "name": "Timestamp Converter", "desc": "Unix/ISO convert" },
-    "color-format-converter": { "name": "Color Format Converter", "desc": "HEX/RGB convert" },
-    "image-resizer": { "name": "Image Resizer", "desc": "Canvas based" },
-    "jwt-decoder": { "name": "JWT Decoder", "desc": "Local decode, offline" },
-    "json-pretty": { "name": "JSON Pretty", "desc": "Format/indent" },
-    "password-generator": { "name": "Password Generator", "desc": "Configurable rules" },
-    "unit-converter": { "name": "Unit Converter", "desc": "Length/Temp etc." },
-    "pomodoro-timer": { "name": "Pomodoro Timer", "desc": "Focus timer" },
-    "utm-builder": { "name": "UTM Builder", "desc": "Tracking query params" },
-    "typing-practice": { "name": "Typing Practice", "desc": "Custom passages" },
-    "distance-calculator": { "name": "Distance Calculator", "desc": "Haversine distance" },
-    "clipboard-manager": { "name": "Clipboard Manager", "desc": "Local history" }
+    "base64-encode": {
+      "name": "Base64 Encode",
+      "desc": "Encode text to Base64"
+    },
+    "regex-tester": {
+      "name": "Regex Tester",
+      "desc": "Match and highlight groups"
+    },
+    "timestamp-converter": {
+      "name": "Timestamp Converter",
+      "desc": "Unix/ISO convert"
+    },
+    "color-format-converter": {
+      "name": "Color Format Converter",
+      "desc": "HEX/RGB convert"
+    },
+    "image-resizer": {
+      "name": "Image Resizer",
+      "desc": "Canvas based"
+    },
+    "jwt-decoder": {
+      "name": "JWT Decoder",
+      "desc": "Local decode, offline"
+    },
+    "json-pretty": {
+      "name": "JSON Pretty",
+      "desc": "Format/indent"
+    },
+    "password-generator": {
+      "name": "Password Generator",
+      "desc": "Configurable rules"
+    },
+    "unit-converter": {
+      "name": "Unit Converter",
+      "desc": "Length/Temp etc."
+    },
+    "pomodoro-timer": {
+      "name": "Pomodoro Timer",
+      "desc": "Focus timer"
+    },
+    "utm-builder": {
+      "name": "UTM Builder",
+      "desc": "Tracking query params"
+    },
+    "typing-practice": {
+      "name": "Typing Practice",
+      "desc": "Custom passages"
+    },
+    "distance-calculator": {
+      "name": "Distance Calculator",
+      "desc": "Haversine distance"
+    },
+    "clipboard-manager": {
+      "name": "Clipboard Manager",
+      "desc": "Local history"
+    },
+    "ascii-art-generator": {
+      "name": "ASCII Art Generator",
+      "desc": "ASCII art generator tool"
+    },
+    "color-blindness-simulator": {
+      "name": "Color Blindness Simulator",
+      "desc": "Color blindness simulation tool"
+    },
+    "color-picker": {
+      "name": "Color Picker",
+      "desc": "Professional color selection and conversion tool, supports multiple color formats, palette generation, accessibility checks and color analysis"
+    },
+    "contrast-checker": {
+      "name": "Contrast Checker",
+      "desc": "Contrast checker tool"
+    },
+    "favicon-generator": {
+      "name": "Favicon Generator",
+      "desc": "Favicon generator tool"
+    },
+    "gradient-generator": {
+      "name": "Gradient Generator",
+      "desc": "Gradient generator tool"
+    },
+    "palette-generator": {
+      "name": "Palette Generator",
+      "desc": "Palette generator tool"
+    },
+    "svg-optimizer": {
+      "name": "SVG Optimizer",
+      "desc": "SVG optimizer tool"
+    },
+    "svg-to-png": {
+      "name": "SVG to PNG",
+      "desc": "SVG to PNG tool"
+    },
+    "csv-merge-split": {
+      "name": "CSV Merge Split",
+      "desc": "CSV merge and split tool"
+    },
+    "excel-to-csv": {
+      "name": "Excel to CSV",
+      "desc": "Excel to CSV converter tool"
+    },
+    "file-hash-calculator": {
+      "name": "File Hash Calculator",
+      "desc": "Calculate MD5, SHA-1, SHA-256 and other hash values for files, supports batch processing and integrity verification"
+    },
+    "json-diff-viewer": {
+      "name": "JSON Diff Viewer",
+      "desc": "Deep comparison of differences between two JSON objects, supports nested structures and detailed report export"
+    },
+    "json-schema-validator": {
+      "name": "JSON Schema Validator",
+      "desc": "JSON Schema validator tool"
+    },
+    "pdf-merger": {
+      "name": "PDF Merger",
+      "desc": "PDF merger tool"
+    },
+    "pdf-splitter": {
+      "name": "PDF Splitter",
+      "desc": "PDF splitter tool"
+    },
+    "text-encoding-converter": {
+      "name": "Text Encoding Converter",
+      "desc": "Text encoding converter tool"
+    },
+    "tsv-converter": {
+      "name": "TSV Converter",
+      "desc": "TSV converter tool"
+    },
+    "zip-unzip": {
+      "name": "ZIP Compress/Extract",
+      "desc": "ZIP compression and extraction tool"
+    },
+    "dns-lookup": {
+      "name": "DNS Lookup",
+      "desc": "DNS lookup tool"
+    },
+    "http-requester": {
+      "name": "HTTP Requester",
+      "desc": "Powerful HTTP client, supports various request methods, custom headers, multiple data formats, and cURL import/export functionality"
+    },
+    "ip-geo-lookup": {
+      "name": "IP Geo Lookup",
+      "desc": "IP geolocation lookup tool"
+    },
+    "jwt-signer": {
+      "name": "JWT Signer",
+      "desc": "JWT signer tool"
+    },
+    "macaddress-vendor-lookup": {
+      "name": "MAC Address Vendor Lookup",
+      "desc": "MAC address vendor lookup tool"
+    },
+    "mime-type-finder": {
+      "name": "MIME Type Finder",
+      "desc": "MIME type finder tool"
+    },
+    "oauth-pkce-helper": {
+      "name": "OAuth PKCE Helper",
+      "desc": "OAuth PKCE helper tool"
+    },
+    "qr-code-generator": {
+      "name": "QR Code Generator",
+      "desc": "Multi-functional QR code generation tool, supports text, URLs, WiFi, business cards and other content types, customizable styles and batch generation"
+    },
+    "url-parser": {
+      "name": "URL Parser",
+      "desc": "URL parsing and building tool, supports component decomposition, query parameter management, security analysis and variant generation"
+    },
+    "user-agent-parser": {
+      "name": "User Agent Parser",
+      "desc": "User Agent parser tool"
+    },
+    "websocket-client": {
+      "name": "WebSocket Client",
+      "desc": "Full-featured WebSocket test client, supports real-time communication and message logging"
+    },
+    "flashcard-generator": {
+      "name": "Flashcard Generator",
+      "desc": "Smart flashcard learning tool, supports batch creation, category management, multiple learning modes and spaced repetition algorithms"
+    },
+    "phonetic-transcriber": {
+      "name": "Phonetic Transcriber",
+      "desc": "Convert text to International Phonetic Alphabet (IPA) or Pinyin, supports English and Chinese, provides pronunciation guidance and batch processing"
+    },
+    "pinyin-converter": {
+      "name": "Pinyin Converter",
+      "desc": "Pinyin converter tool"
+    },
+    "quiz-maker": {
+      "name": "Quiz Maker",
+      "desc": "Quiz maker tool"
+    },
+    "text-readability-analyzer": {
+      "name": "Text Readability Analyzer",
+      "desc": "Text readability analyzer tool"
+    },
+    "audio-format-converter": {
+      "name": "Audio Format Converter",
+      "desc": "Audio format converter tool"
+    },
+    "audio-trimmer": {
+      "name": "Audio Trimmer",
+      "desc": "Audio trimmer tool"
+    },
+    "exif-viewer": {
+      "name": "EXIF Viewer",
+      "desc": "EXIF information viewer tool"
+    },
+    "image-compressor": {
+      "name": "Image Compressor",
+      "desc": "Image compressor tool"
+    },
+    "image-watermark": {
+      "name": "Image Watermark",
+      "desc": "Image watermark tool"
+    },
+    "meme-generator": {
+      "name": "Meme Generator",
+      "desc": "Meme generator tool"
+    },
+    "sprite-sheet-generator": {
+      "name": "Sprite Sheet Generator",
+      "desc": "Sprite sheet generator tool"
+    },
+    "video-gif-converter": {
+      "name": "Video to GIF",
+      "desc": "Video to GIF converter tool"
+    },
+    "webcam-capture-tool": {
+      "name": "Webcam Capture Tool",
+      "desc": "Webcam capture tool"
+    },
+    "coordinates-converter": {
+      "name": "Coordinates Converter",
+      "desc": "Professional geographic coordinate format conversion tool, supports decimal degrees, degrees minutes seconds, degrees minutes and other format conversions"
+    },
+    "elevation-profiler": {
+      "name": "Elevation Profiler",
+      "desc": "Elevation profiler tool"
+    },
+    "geojson-viewer-editor": {
+      "name": "GeoJSON Viewer Editor",
+      "desc": "GeoJSON viewer and editor tool"
+    },
+    "map-snapshot-generator": {
+      "name": "Map Snapshot Generator",
+      "desc": "Map snapshot generator tool"
+    },
+    "big-number-calculator": {
+      "name": "Big Number Calculator",
+      "desc": "Big number calculator tool"
+    },
+    "combinatorics-calculator": {
+      "name": "Combinatorics Calculator",
+      "desc": "Combinatorics calculator tool"
+    },
+    "currency-converter": {
+      "name": "Currency Converter",
+      "desc": "Currency converter tool"
+    },
+    "equation-solver": {
+      "name": "Equation Solver",
+      "desc": "Equation solver tool"
+    },
+    "fraction-decimal-converter": {
+      "name": "Fraction Decimal Converter",
+      "desc": "Bidirectional conversion between fractions and decimals, supports repeating decimals and batch processing"
+    },
+    "matrix-calculator": {
+      "name": "Matrix Calculator",
+      "desc": "Mathematical tool that supports matrix addition, subtraction, multiplication and determinant calculation"
+    },
+    "mortgage-loan-calculator": {
+      "name": "Mortgage Loan Calculator",
+      "desc": "Mortgage loan calculator tool"
+    },
+    "prime-tester-and-generator": {
+      "name": "Prime Tester and Generator",
+      "desc": "Prime number tester and generator tool"
+    },
+    "statistics-tool": {
+      "name": "Statistics Calculator",
+      "desc": "Comprehensive statistical analysis tool, calculates mean, variance, standard deviation, quantiles, confidence intervals and other statistics"
+    },
+    "calendar-heatmap-generator": {
+      "name": "Calendar Heatmap Generator",
+      "desc": "Calendar heatmap generator tool"
+    },
+    "email-template-builder": {
+      "name": "Email Template Builder",
+      "desc": "Email template builder tool"
+    },
+    "habit-tracker": {
+      "name": "Habit Tracker",
+      "desc": "Habit tracker tool"
+    },
+    "kanban-mini": {
+      "name": "Mini Kanban",
+      "desc": "Mini kanban tool"
+    },
+    "markdown-editor": {
+      "name": "Markdown Editor",
+      "desc": "Markdown editor tool"
+    },
+    "meeting-notes-formatter": {
+      "name": "Meeting Notes Formatter",
+      "desc": "Meeting notes formatter tool"
+    },
+    "mindmap-editor": {
+      "name": "Mindmap Editor",
+      "desc": "Mindmap editor tool"
+    },
+    "resume-builder": {
+      "name": "Resume Builder",
+      "desc": "Resume builder tool"
+    },
+    "table-editor": {
+      "name": "Table Editor",
+      "desc": "Table editor tool"
+    },
+    "credit-card-validator": {
+      "name": "Credit Card Validator",
+      "desc": "Credit card validator tool"
+    },
+    "diff-text": {
+      "name": "Text Diff",
+      "desc": "Powerful text difference comparison tool, supports multiple comparison modes (line/word/character/sentence) and display methods (side-by-side/unified/inline), provides detailed difference statistics and patch export functionality"
+    },
+    "glob-tester": {
+      "name": "Glob Pattern Tester",
+      "desc": "Powerful Glob pattern testing tool, supports file path matching tests, pattern interpretation, regex conversion and common pattern library, suitable for build tools and file filtering scenarios"
+    },
+    "iban-validator": {
+      "name": "IBAN Validator",
+      "desc": "IBAN validator tool"
+    },
+    "lorem-ipsum-generator": {
+      "name": "Lorem Ipsum Generator",
+      "desc": "Lorem Ipsum generator tool"
+    },
+    "slug-generator": {
+      "name": "Slug Generator",
+      "desc": "Slug generator tool"
+    },
+    "uuid-generator": {
+      "name": "UUID Generator",
+      "desc": "Generate various types of unique identifiers, supports UUID v1/v4, Nano ID and custom formats, includes validation and batch generation functionality"
+    },
+    "aes-encrypt-decrypt": {
+      "name": "AES Encrypt/Decrypt",
+      "desc": "AES-256-GCM encryption and decryption tool based on Web Crypto API, provides strong encryption and data integrity verification"
+    },
+    "hash-generator": {
+      "name": "Hash Generator",
+      "desc": "Hash generator tool"
+    },
+    "image-metadata-sanitizer": {
+      "name": "Image Metadata Sanitizer",
+      "desc": "Image metadata sanitizer tool"
+    },
+    "password-strength-checker": {
+      "name": "Password Strength Checker",
+      "desc": "Comprehensive password security analysis, provides strength scoring, crack time estimation and improvement suggestions"
+    },
+    "rsa-keypair-generator": {
+      "name": "RSA Keypair Generator",
+      "desc": "RSA keypair generator tool"
+    },
+    "secure-note": {
+      "name": "Secure Note",
+      "desc": "Secure note tool"
+    },
+    "twofa-totp-generator": {
+      "name": "2FA TOTP Generator",
+      "desc": "2FA TOTP generator tool"
+    },
+    "hashtag-generator": {
+      "name": "Hashtag Generator",
+      "desc": "Hashtag generator tool"
+    },
+    "keyword-density-analyzer": {
+      "name": "Keyword Density Analyzer",
+      "desc": "Keyword density analyzer tool"
+    },
+    "open-graph-image-generator": {
+      "name": "Open Graph Image Generator",
+      "desc": "Open Graph image generator tool"
+    },
+    "sitemap-generator": {
+      "name": "Sitemap Generator",
+      "desc": "Sitemap generator tool"
+    },
+    "social-post-scheduler": {
+      "name": "Social Post Scheduler",
+      "desc": "Social media post scheduler tool"
+    },
+    "cookie-editor": {
+      "name": "Cookie Editor",
+      "desc": "Cookie editor tool"
+    },
+    "file-drop-inspector": {
+      "name": "File Drop Inspector",
+      "desc": "File drop inspector tool"
+    },
+    "localstorage-inspector": {
+      "name": "LocalStorage Inspector",
+      "desc": "LocalStorage inspector tool"
+    },
+    "notifications-tester": {
+      "name": "Notifications Tester",
+      "desc": "Notifications tester tool"
+    },
+    "performance-profiler": {
+      "name": "Performance Profiler",
+      "desc": "Performance profiler tool"
+    },
+    "service-worker-tester": {
+      "name": "Service Worker Tester",
+      "desc": "Service Worker tester tool"
+    },
+    "base64-decode": {
+      "name": "Base64 Decode",
+      "desc": "Powerful Base64 decoding tool, supports standard and URL-safe formats, provides multiple output formats, data analysis, file preview and format validation functionality"
+    },
+    "csv-to-json": {
+      "name": "CSV ⇄ JSON Converter",
+      "desc": "Powerful CSV and JSON conversion tool, supports custom delimiters, automatic type detection, table preview and detailed data analysis, perfectly handles various formats of structured data"
+    },
+    "html-to-markdown": {
+      "name": "HTML to Markdown",
+      "desc": "Powerful HTML to Markdown conversion tool, supports conversion of headings, lists, tables, code blocks and other elements, provides real-time preview and conversion analysis"
+    },
+    "json-minify": {
+      "name": "JSON Minify",
+      "desc": "Efficient JSON compression and optimization tool, supports multi-level compression, null value cleanup, size comparison analysis, designed to reduce file size and improve transmission efficiency"
+    },
+    "json-to-yaml": {
+      "name": "JSON to YAML",
+      "desc": "JSON to YAML converter tool"
+    },
+    "markdown-to-html": {
+      "name": "Markdown to HTML",
+      "desc": "Convert Markdown format text to HTML code, supports real-time preview and multiple conversion options"
+    },
+    "text-case-converter": {
+      "name": "Text Case Converter",
+      "desc": "Comprehensive text case conversion tool, supports 10 conversion formats including camelCase, snake_case, kebab-case and other programming naming conventions, provides text analysis and batch processing functionality"
+    },
+    "url-decode": {
+      "name": "URL Decode",
+      "desc": "Smart URL decoding tool, supports multiple decoding types and multi-level decoding, provides URL analysis, parameter parsing and decoding step tracking functionality"
+    },
+    "url-encode": {
+      "name": "URL Encode",
+      "desc": "Comprehensive URL encoding tool, supports multiple encoding types (component, URI, form, custom), provides URL parsing, validation and parameter analysis functionality"
+    },
+    "yaml-to-json": {
+      "name": "YAML ⇄ JSON Converter",
+      "desc": "Powerful YAML and JSON conversion tool, supports automatic format detection, syntax validation, formatting options and detailed data analysis, maintains complete data structure"
+    },
+    "age-calculator": {
+      "name": "Age Calculator",
+      "desc": "Age calculator tool"
+    },
+    "countdown-timer": {
+      "name": "Countdown Timer",
+      "desc": "Countdown timer tool"
+    },
+    "cron-expression-validator": {
+      "name": "Cron Expression Validator",
+      "desc": "Validate and parse Cron expressions, preview execution times and frequency statistics"
+    },
+    "cron-next-run": {
+      "name": "Cron Next Run",
+      "desc": "Cron next run time tool"
+    },
+    "date-diff-calculator": {
+      "name": "Date Diff Calculator",
+      "desc": "Date difference calculator tool"
+    },
+    "ics-calendar-generator": {
+      "name": "ICS Calendar Generator",
+      "desc": "ICS calendar generator tool"
+    },
+    "natural-date-parser": {
+      "name": "Natural Date Parser",
+      "desc": "Natural language date parser tool"
+    },
+    "timezone-converter": {
+      "name": "Timezone Converter",
+      "desc": "Timezone converter tool"
+    },
+    "working-days-calculator": {
+      "name": "Working Days Calculator",
+      "desc": "Working days calculator tool"
+    }
   },
   "themes": {
     "coolBlue": "Nebula Blue",

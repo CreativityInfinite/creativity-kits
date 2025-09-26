@@ -32,22 +32,503 @@
     "map-geo": "地图与地理",
     "system-browser": "系统与浏览器"
   },
-
   "tools": {
-    "base64-encode": { "name": "Base64 编码", "desc": "将文本编码为 Base64" },
-    "regex-tester": { "name": "正则测试", "desc": "匹配并高亮分组" },
-    "timestamp-converter": { "name": "时间戳转换", "desc": "Unix/ISO 互转" },
-    "color-format-converter": { "name": "颜色格式转换", "desc": "HEX/RGB 互转" },
-    "image-resizer": { "name": "图片缩放", "desc": "前端 Canvas 缩放" },
-    "jwt-decoder": { "name": "JWT 解码", "desc": "本地解析，不联网" },
-    "json-pretty": { "name": "JSON 美化", "desc": "格式化/缩进" },
-    "password-generator": { "name": "密码生成器", "desc": "可配置规则" },
-    "unit-converter": { "name": "单位换算", "desc": "长度/温度等" },
-    "pomodoro-timer": { "name": "番茄钟", "desc": "专注计时" },
-    "utm-builder": { "name": "UTM 构建器", "desc": "生成追踪参数" },
-    "typing-practice": { "name": "打字练习", "desc": "自定义段落" },
-    "distance-calculator": { "name": "距离计算", "desc": "Haversine 球面距离" },
-    "clipboard-manager": { "name": "剪贴板管理", "desc": "本地历史记录" }
+    "base64-encode": {
+      "name": "Base64 编码",
+      "desc": "强大的Base64处理工具，支持文本、文件和URL的编码解码，提供预览、验证和多种格式选项"
+    },
+    "regex-tester": {
+      "name": "正则表达式测试器",
+      "desc": "强大的正则表达式测试工具，支持匹配、替换、分割、提取等多种测试模式，提供分组高亮、语法解释和常用模式库"
+    },
+    "timestamp-converter": {
+      "name": "时间戳转换器",
+      "desc": "强大的时间戳转换工具，支持Unix时间戳与人类可读时间的双向转换，包含时区转换和批量处理功能"
+    },
+    "color-format-converter": {
+      "name": "颜色格式转换",
+      "desc": "HEX/RGB 互转"
+    },
+    "image-resizer": {
+      "name": "图片缩放",
+      "desc": "前端 Canvas 缩放"
+    },
+    "jwt-decoder": {
+      "name": "JWT 解码",
+      "desc": "本地解析，不联网"
+    },
+    "json-pretty": {
+      "name": "JSON 美化工具",
+      "desc": "专业的JSON格式化和压缩工具，支持语法高亮、数据分析、扁平化处理和空值清理，提供完整的JSON处理解决方案"
+    },
+    "password-generator": {
+      "name": "密码生成器",
+      "desc": "安全的密码生成工具，支持多种字符类型、强度分析、预设模板和安全建议，帮助创建强密码"
+    },
+    "unit-converter": {
+      "name": "单位转换器",
+      "desc": "全面的单位转换工具，支持长度、重量、温度、面积、体积、速度等多种单位类型的精确转换"
+    },
+    "pomodoro-timer": {
+      "name": "pomodoro-timer",
+      "desc": "专注工作的番茄工作法计时器，支持工作/休息周期管理和统计"
+    },
+    "utm-builder": {
+      "name": "UTM链接构建器",
+      "desc": "专业的UTM参数构建工具，支持营销活动跟踪链接生成、二维码生成和历史记录管理"
+    },
+    "typing-practice": {
+      "name": "typing-practice",
+      "desc": "多语言打字练习工具，支持英文、中文、代码和数字练习，实时统计速度和准确率"
+    },
+    "distance-calculator": {
+      "name": "距离计算器",
+      "desc": "基于Haversine公式计算地球表面两点间的精确距离，支持多种单位和方位信息"
+    },
+    "clipboard-manager": {
+      "name": "clipboard-manager",
+      "desc": "智能剪贴板历史记录管理工具，支持内容分类和搜索"
+    },
+    "ascii-art-generator": {
+      "name": "ASCII 艺术生成器",
+      "desc": "ASCII 艺术生成器工具"
+    },
+    "color-blindness-simulator": {
+      "name": "色盲模拟器",
+      "desc": "色盲模拟器工具"
+    },
+    "color-picker": {
+      "name": "颜色选择器",
+      "desc": "专业的颜色选择和转换工具，支持多种颜色格式、调色板生成、可访问性检查和颜色分析功能"
+    },
+    "contrast-checker": {
+      "name": "对比度检查器",
+      "desc": "对比度检查器工具"
+    },
+    "favicon-generator": {
+      "name": "Favicon 生成器",
+      "desc": "Favicon 生成器工具"
+    },
+    "gradient-generator": {
+      "name": "渐变生成器",
+      "desc": "渐变生成器工具"
+    },
+    "palette-generator": {
+      "name": "调色板生成器",
+      "desc": "调色板生成器工具"
+    },
+    "svg-optimizer": {
+      "name": "SVG 优化器",
+      "desc": "SVG 优化器工具"
+    },
+    "svg-to-png": {
+      "name": "SVG 转 PNG",
+      "desc": "SVG 转 PNG工具"
+    },
+    "csv-merge-split": {
+      "name": "CSV 合并分割",
+      "desc": "CSV 合并分割工具"
+    },
+    "excel-to-csv": {
+      "name": "Excel 转 CSV",
+      "desc": "Excel 转 CSV工具"
+    },
+    "file-hash-calculator": {
+      "name": "文件哈希计算器",
+      "desc": "计算文件的MD5、SHA-1、SHA-256等哈希值，支持批量处理和完整性验证"
+    },
+    "json-diff-viewer": {
+      "name": "JSON 差异对比",
+      "desc": "深度对比两个JSON对象的差异，支持嵌套结构和详细报告导出"
+    },
+    "json-schema-validator": {
+      "name": "JSON Schema 验证器",
+      "desc": "JSON Schema 验证器工具"
+    },
+    "pdf-merger": {
+      "name": "PDF 合并器",
+      "desc": "PDF 合并器工具"
+    },
+    "pdf-splitter": {
+      "name": "PDF 分割器",
+      "desc": "PDF 分割器工具"
+    },
+    "text-encoding-converter": {
+      "name": "文本编码转换器",
+      "desc": "文本编码转换器工具"
+    },
+    "tsv-converter": {
+      "name": "TSV 转换器",
+      "desc": "TSV 转换器工具"
+    },
+    "zip-unzip": {
+      "name": "ZIP 压缩解压",
+      "desc": "ZIP 压缩解压工具"
+    },
+    "dns-lookup": {
+      "name": "DNS 查询工具",
+      "desc": "DNS 查询工具工具"
+    },
+    "http-requester": {
+      "name": "HTTP 请求工具",
+      "desc": "功能强大的 HTTP 客户端，支持各种请求方法、自定义头部、多种数据格式，以及 cURL 导入导出功能"
+    },
+    "ip-geo-lookup": {
+      "name": "IP 地理位置查询",
+      "desc": "IP 地理位置查询工具"
+    },
+    "jwt-signer": {
+      "name": "JWT 签名器",
+      "desc": "JWT 签名器工具"
+    },
+    "macaddress-vendor-lookup": {
+      "name": "MAC 地址厂商查询",
+      "desc": "MAC 地址厂商查询工具"
+    },
+    "mime-type-finder": {
+      "name": "MIME 类型查询",
+      "desc": "MIME 类型查询工具"
+    },
+    "oauth-pkce-helper": {
+      "name": "OAuth PKCE 助手",
+      "desc": "OAuth PKCE 助手工具"
+    },
+    "qr-code-generator": {
+      "name": "二维码生成器",
+      "desc": "多功能二维码生成工具，支持文本、网址、WiFi、名片等多种内容类型，可自定义样式和批量生成"
+    },
+    "url-parser": {
+      "name": "URL解析器",
+      "desc": "URL解析和构建工具，支持组件分解、查询参数管理、安全分析和变体生成"
+    },
+    "user-agent-parser": {
+      "name": "User Agent 解析器",
+      "desc": "User Agent 解析器工具"
+    },
+    "websocket-client": {
+      "name": "WebSocket 客户端",
+      "desc": "功能完整的WebSocket测试客户端，支持实时通信和消息日志"
+    },
+    "flashcard-generator": {
+      "name": "闪卡生成器",
+      "desc": "智能闪卡学习工具，支持批量创建、分类管理、多种学习模式和间隔重复算法"
+    },
+    "phonetic-transcriber": {
+      "name": "音标转换器",
+      "desc": "将文本转换为国际音标(IPA)或拼音，支持英语和中文，提供发音指导和批量处理功能"
+    },
+    "pinyin-converter": {
+      "name": "拼音转换器",
+      "desc": "拼音转换器工具"
+    },
+    "quiz-maker": {
+      "name": "测验制作器",
+      "desc": "测验制作器工具"
+    },
+    "text-readability-analyzer": {
+      "name": "文本可读性分析器",
+      "desc": "文本可读性分析器工具"
+    },
+    "audio-format-converter": {
+      "name": "音频格式转换器",
+      "desc": "音频格式转换器工具"
+    },
+    "audio-trimmer": {
+      "name": "音频裁剪器",
+      "desc": "音频裁剪器工具"
+    },
+    "exif-viewer": {
+      "name": "EXIF 信息查看器",
+      "desc": "EXIF 信息查看器工具"
+    },
+    "image-compressor": {
+      "name": "图片压缩器",
+      "desc": "图片压缩器工具"
+    },
+    "image-watermark": {
+      "name": "图片水印工具",
+      "desc": "图片水印工具工具"
+    },
+    "meme-generator": {
+      "name": "表情包生成器",
+      "desc": "表情包生成器工具"
+    },
+    "sprite-sheet-generator": {
+      "name": "精灵图生成器",
+      "desc": "精灵图生成器工具"
+    },
+    "video-gif-converter": {
+      "name": "视频转 GIF",
+      "desc": "视频转 GIF工具"
+    },
+    "webcam-capture-tool": {
+      "name": "摄像头拍照工具",
+      "desc": "摄像头拍照工具工具"
+    },
+    "coordinates-converter": {
+      "name": "坐标格式转换",
+      "desc": "专业的地理坐标格式转换工具，支持十进制度数、度分秒、度分等多种格式互转"
+    },
+    "elevation-profiler": {
+      "name": "海拔剖面图",
+      "desc": "海拔剖面图工具"
+    },
+    "geojson-viewer-editor": {
+      "name": "GeoJSON 查看编辑器",
+      "desc": "GeoJSON 查看编辑器工具"
+    },
+    "map-snapshot-generator": {
+      "name": "地图快照生成器",
+      "desc": "地图快照生成器工具"
+    },
+    "big-number-calculator": {
+      "name": "大数计算器",
+      "desc": "大数计算器工具"
+    },
+    "combinatorics-calculator": {
+      "name": "排列组合计算器",
+      "desc": "排列组合计算器工具"
+    },
+    "currency-converter": {
+      "name": "货币转换器",
+      "desc": "货币转换器工具"
+    },
+    "equation-solver": {
+      "name": "方程求解器",
+      "desc": "方程求解器工具"
+    },
+    "fraction-decimal-converter": {
+      "name": "分数小数转换器",
+      "desc": "分数与小数之间的双向转换，支持循环小数和批量处理"
+    },
+    "matrix-calculator": {
+      "name": "matrix-calculator",
+      "desc": "支持矩阵加减乘运算和行列式计算的数学工具"
+    },
+    "mortgage-loan-calculator": {
+      "name": "房贷计算器",
+      "desc": "房贷计算器工具"
+    },
+    "prime-tester-and-generator": {
+      "name": "质数测试生成器",
+      "desc": "质数测试生成器工具"
+    },
+    "statistics-tool": {
+      "name": "统计计算器",
+      "desc": "全面的统计分析工具，计算均值、方差、标准差、分位数、置信区间等统计量"
+    },
+    "calendar-heatmap-generator": {
+      "name": "日历热力图生成器",
+      "desc": "日历热力图生成器工具"
+    },
+    "email-template-builder": {
+      "name": "邮件模板构建器",
+      "desc": "邮件模板构建器工具"
+    },
+    "habit-tracker": {
+      "name": "习惯追踪器",
+      "desc": "习惯追踪器工具"
+    },
+    "kanban-mini": {
+      "name": "迷你看板",
+      "desc": "迷你看板工具"
+    },
+    "markdown-editor": {
+      "name": "Markdown 编辑器",
+      "desc": "Markdown 编辑器工具"
+    },
+    "meeting-notes-formatter": {
+      "name": "会议记录格式化器",
+      "desc": "会议记录格式化器工具"
+    },
+    "mindmap-editor": {
+      "name": "思维导图编辑器",
+      "desc": "思维导图编辑器工具"
+    },
+    "resume-builder": {
+      "name": "简历生成器",
+      "desc": "简历生成器工具"
+    },
+    "table-editor": {
+      "name": "表格编辑器",
+      "desc": "表格编辑器工具"
+    },
+    "credit-card-validator": {
+      "name": "信用卡号验证器",
+      "desc": "信用卡号验证器工具"
+    },
+    "diff-text": {
+      "name": "文本差异对比",
+      "desc": "强大的文本差异对比工具，支持多种对比模式（行/单词/字符/句子）和显示方式（并排/统一/内联），提供详细的差异统计和补丁导出功能"
+    },
+    "glob-tester": {
+      "name": "Glob 模式测试器",
+      "desc": "强大的 Glob 模式测试工具，支持文件路径匹配测试、模式解释、正则转换和常用模式库，适用于构建工具和文件过滤场景"
+    },
+    "iban-validator": {
+      "name": "IBAN 验证器",
+      "desc": "IBAN 验证器工具"
+    },
+    "lorem-ipsum-generator": {
+      "name": "Lorem Ipsum 生成器",
+      "desc": "Lorem Ipsum 生成器工具"
+    },
+    "slug-generator": {
+      "name": "Slug 生成器",
+      "desc": "Slug 生成器工具"
+    },
+    "uuid-generator": {
+      "name": "UUID 生成器",
+      "desc": "生成各种类型的唯一标识符，支持 UUID v1/v4、Nano ID 和自定义格式，包含验证和批量生成功能"
+    },
+    "aes-encrypt-decrypt": {
+      "name": "AES 加密/解密",
+      "desc": "基于Web Crypto API的AES-256-GCM加密解密工具，提供强加密和数据完整性验证"
+    },
+    "hash-generator": {
+      "name": "哈希生成器",
+      "desc": "哈希生成器工具"
+    },
+    "image-metadata-sanitizer": {
+      "name": "图片元数据清理器",
+      "desc": "图片元数据清理器工具"
+    },
+    "password-strength-checker": {
+      "name": "密码强度检查器",
+      "desc": "全面分析密码安全性，提供强度评分、破解时间估算和改进建议"
+    },
+    "rsa-keypair-generator": {
+      "name": "RSA 密钥对生成器",
+      "desc": "RSA 密钥对生成器工具"
+    },
+    "secure-note": {
+      "name": "安全笔记",
+      "desc": "安全笔记工具"
+    },
+    "twofa-totp-generator": {
+      "name": "2FA TOTP 生成器",
+      "desc": "2FA TOTP 生成器工具"
+    },
+    "hashtag-generator": {
+      "name": "标签生成器",
+      "desc": "标签生成器工具"
+    },
+    "keyword-density-analyzer": {
+      "name": "关键词密度分析器",
+      "desc": "关键词密度分析器工具"
+    },
+    "open-graph-image-generator": {
+      "name": "Open Graph 图片生成器",
+      "desc": "Open Graph 图片生成器工具"
+    },
+    "sitemap-generator": {
+      "name": "网站地图生成器",
+      "desc": "网站地图生成器工具"
+    },
+    "social-post-scheduler": {
+      "name": "社交媒体发布计划器",
+      "desc": "社交媒体发布计划器工具"
+    },
+    "cookie-editor": {
+      "name": "Cookie 编辑器",
+      "desc": "Cookie 编辑器工具"
+    },
+    "file-drop-inspector": {
+      "name": "文件拖拽检查器",
+      "desc": "文件拖拽检查器工具"
+    },
+    "localstorage-inspector": {
+      "name": "LocalStorage 检查器",
+      "desc": "LocalStorage 检查器工具"
+    },
+    "notifications-tester": {
+      "name": "通知测试器",
+      "desc": "通知测试器工具"
+    },
+    "performance-profiler": {
+      "name": "性能分析器",
+      "desc": "性能分析器工具"
+    },
+    "service-worker-tester": {
+      "name": "Service Worker 测试器",
+      "desc": "Service Worker 测试器工具"
+    },
+    "base64-decode": {
+      "name": "Base64 解码",
+      "desc": "强大的 Base64 解码工具，支持标准和 URL 安全格式，提供多种输出格式、数据分析、文件预览和格式验证功能"
+    },
+    "csv-to-json": {
+      "name": "CSV ⇄ JSON 转换工具",
+      "desc": "强大的CSV与JSON互转工具，支持自定义分隔符、自动类型检测、表格预览和详细的数据分析，完美处理各种格式的结构化数据"
+    },
+    "html-to-markdown": {
+      "name": "HTML 转 Markdown",
+      "desc": "强大的HTML到Markdown转换工具，支持标题、列表、表格、代码块等元素转换，提供实时预览和转换分析功能"
+    },
+    "json-minify": {
+      "name": "JSON 压缩工具",
+      "desc": "高效的JSON压缩和优化工具，支持多级压缩、空值清理、大小对比分析，专为减少文件体积和提升传输效率而设计"
+    },
+    "json-to-yaml": {
+      "name": "JSON 转 YAML",
+      "desc": "JSON 转 YAML工具"
+    },
+    "markdown-to-html": {
+      "name": "Markdown 转 HTML",
+      "desc": "将 Markdown 格式文本转换为 HTML 代码，支持实时预览和多种转换选项"
+    },
+    "text-case-converter": {
+      "name": "文本大小写转换",
+      "desc": "全面的文本大小写转换工具，支持10种转换格式包括驼峰、蛇形、烤肉串等编程命名规范，提供文本分析和批量处理功能"
+    },
+    "url-decode": {
+      "name": "URL 解码",
+      "desc": "智能 URL 解码工具，支持多种解码类型和多重解码，提供 URL 分析、参数解析和解码步骤追踪功能"
+    },
+    "url-encode": {
+      "name": "URL 编码",
+      "desc": "全面的 URL 编码工具，支持多种编码类型（组件、URI、表单、自定义），提供 URL 解析、验证和参数分析功能"
+    },
+    "yaml-to-json": {
+      "name": "YAML ⇄ JSON 转换工具",
+      "desc": "强大的YAML与JSON互转工具，支持自动格式检测、语法验证、格式化选项和详细的数据分析，保持完整的数据结构"
+    },
+    "age-calculator": {
+      "name": "年龄计算器",
+      "desc": "年龄计算器工具"
+    },
+    "countdown-timer": {
+      "name": "倒计时器",
+      "desc": "倒计时器工具"
+    },
+    "cron-expression-validator": {
+      "name": "Cron 表达式验证器",
+      "desc": "验证和解析Cron表达式，预览执行时间和频率统计"
+    },
+    "cron-next-run": {
+      "name": "Cron 下次执行时间",
+      "desc": "Cron 下次执行时间工具"
+    },
+    "date-diff-calculator": {
+      "name": "日期差值计算器",
+      "desc": "日期差值计算器工具"
+    },
+    "ics-calendar-generator": {
+      "name": "ICS 日历生成器",
+      "desc": "ICS 日历生成器工具"
+    },
+    "natural-date-parser": {
+      "name": "自然语言日期解析",
+      "desc": "自然语言日期解析工具"
+    },
+    "timezone-converter": {
+      "name": "时区转换器",
+      "desc": "时区转换器工具"
+    },
+    "working-days-calculator": {
+      "name": "工作日计算器",
+      "desc": "工作日计算器工具"
+    }
   },
   "themes": {
     "coolBlue": "星云蓝",

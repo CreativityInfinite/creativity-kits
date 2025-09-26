@@ -8,6 +8,8 @@ export type ToolMeta = {
   color?: string
   icon?: string // Iconify icon name, e.g. "tabler:binary"
   entry: string // component path (for reference)
+  isNew?: boolean
+  isPopular?: boolean
 }
 
 export type ToolMetaRuntime = ToolMeta & {
