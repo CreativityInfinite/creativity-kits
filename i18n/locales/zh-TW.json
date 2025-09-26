@@ -1,0 +1,56 @@
+{
+  "common": {
+    "backToTop": "回到頂部",
+    "back": "返回",
+    "open": "打開"
+  },
+  "home": {
+    "subtitle": "一套優雅現代的創意工具套件：文本/數據/媒體/地圖/正則/時間等常用小工具，助你高效創作。"
+  },
+  "tabs": {
+    "all": "全部",
+    "hot": "熱門",
+    "new": "最新"
+  },
+  "action": {
+    "encode": "編碼",
+    "clear": "清空"
+  },
+  "categories": {
+    "text-format": "文字與格式化",
+    "regex-parse": "正則與解析",
+    "time-date": "時間與日期",
+    "color-graphics": "顏色與圖形",
+    "image-media": "圖片/多媒體",
+    "dev-network": "開發與網路",
+    "data-file": "資料與檔案",
+    "security-privacy": "安全與隱私",
+    "math-unit": "數學與單位",
+    "productivity": "生產力與辦公",
+    "social-marketing": "社群與行銷",
+    "education-language": "教育與語言",
+    "system-browser": "系統與瀏覽器"
+  },
+
+  "tools": {
+    "base64-encode": { "name": "Base64 編碼", "desc": "將文字編碼為 Base64" },
+    "regex-tester": { "name": "正則測試", "desc": "匹配並高亮分組" },
+    "timestamp-converter": { "name": "時間戳轉換", "desc": "Unix/ISO 互轉" },
+    "color-format-converter": { "name": "顏色格式轉換", "desc": "HEX/RGB 互轉" },
+    "image-resizer": { "name": "圖片縮放", "desc": "前端 Canvas 縮放" },
+    "jwt-decoder": { "name": "JWT 解碼", "desc": "本地解析，不聯網" },
+    "json-pretty": { "name": "JSON 美化", "desc": "格式化/縮排" },
+    "password-generator": { "name": "密碼產生器", "desc": "可配置規則" },
+    "unit-converter": { "name": "單位換算", "desc": "長度/溫度等" },
+    "pomodoro-timer": { "name": "番茄鐘", "desc": "專注計時" },
+    "utm-builder": { "name": "UTM 建構器", "desc": "產生追蹤參數" },
+    "typing-practice": { "name": "打字練習", "desc": "自訂段落" },
+    "distance-calculator": { "name": "距離計算", "desc": "Haversine 球面距離" },
+    "clipboard-manager": { "name": "剪貼簿管理", "desc": "本地歷史紀錄" }
+  },
+  "themes": {
+    "coolBlue": "星雲藍",
+    "cyberPurple": "量子紫",
+    "prismLaser": "稜鏡雷射"
+  }
+}

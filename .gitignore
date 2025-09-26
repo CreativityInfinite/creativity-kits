@@ -1,0 +1,12 @@
+node_modules
+.nitro
+.output
+.cache
+dist
+.playwright
+.vite
+.env
+.env.*
+.DS_Store
+package-lock.json
+.nuxt

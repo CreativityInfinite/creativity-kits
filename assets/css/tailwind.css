@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --card-radius: 1rem;
+  /* 默认主题色 */
+  --theme-primary: 124 58 237;
+  --theme-secondary: 124 58 237;
+}
+
+/* 主题色变量定义 */
+html[data-theme='cool-blue'] {
+  --theme-primary: 14 165 233;
+  --theme-secondary: 14 165 233;
+}
+
+html[data-theme='cyber-purple'] {
+  --theme-primary: 168 85 247;
+  --theme-secondary: 168 85 247;
+}
+
+html[data-theme='prism-laser'] {
+  --theme-primary: 34 197 94;
+  --theme-secondary: 34 197 94;
+}
+
+/* 全局基样式：确保页面任何区域在暗色下都有正确背景与前景色 */
+@layer base {
+  :root {
+    /* 让浏览器在暗色模式下使用深色滚动条/表单默认样式 */
+    color-scheme: light dark;
+    /* 响应式基础字体大小 */
+    font-size: 15px;
+  }
+
+  /* 平板及以上设备 */
+  @media (min-width: 768px) {
+    :root {
+      font-size: 16px;
+    }
+  }
+
+  /* 桌面设备 */
+  @media (min-width: 1024px) {
+    :root {
+      font-size: 17px;
+    }
+  }
+  /* 关键修复：直接作用于 html 与 html.dark，避免“ .dark html ”选择器失效 */
+  html {
+    @apply bg-white text-gray-900;
+    min-height: 100%;
+    /* 防止回弹/下拉时露出默认白底 */
+    overscroll-behavior: none;
+    /* 改善字体渲染 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  html.dark {
+    @apply bg-bg text-white;
+  }
+  /* 让 html 的底色贯穿页面，避免内部容器截断造成露白 */
+  body,
+  #__nuxt {
+    @apply bg-transparent;
+    min-height: 100%;
+    overscroll-behavior: none;
+  }
+  body {
+    /* 额外保险，禁用纵向回弹露白 */
+    overscroll-behavior-y: none;
+  }
+}

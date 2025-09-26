@@ -1,0 +1,57 @@
+{
+  "common": {
+    "backToTop": "回到顶部",
+    "back": "返回",
+    "open": "打开"
+  },
+  "home": {
+    "subtitle": "一套优雅现代的创意工具套件：文本/数据/媒体/地图/正则/时间等常用小工具，助你高效创作。"
+  },
+  "tabs": {
+    "all": "全部",
+    "hot": "热门",
+    "new": "最新"
+  },
+  "action": {
+    "encode": "编码",
+    "clear": "清空"
+  },
+  "categories": {
+    "text-format": "文本与格式化",
+    "regex-parse": "正则与解析",
+    "time-date": "时间与日期",
+    "color-graphics": "颜色与图形",
+    "image-media": "图片/多媒体",
+    "dev-network": "开发与网络",
+    "data-file": "数据与文件",
+    "security-privacy": "安全与隐私",
+    "math-unit": "数学与单位",
+    "productivity": "生产力与办公",
+    "social-marketing": "社媒与营销",
+    "education-language": "教育与语言",
+    "map-geo": "地图与地理",
+    "system-browser": "系统与浏览器"
+  },
+
+  "tools": {
+    "base64-encode": { "name": "Base64 编码", "desc": "将文本编码为 Base64" },
+    "regex-tester": { "name": "正则测试", "desc": "匹配并高亮分组" },
+    "timestamp-converter": { "name": "时间戳转换", "desc": "Unix/ISO 互转" },
+    "color-format-converter": { "name": "颜色格式转换", "desc": "HEX/RGB 互转" },
+    "image-resizer": { "name": "图片缩放", "desc": "前端 Canvas 缩放" },
+    "jwt-decoder": { "name": "JWT 解码", "desc": "本地解析，不联网" },
+    "json-pretty": { "name": "JSON 美化", "desc": "格式化/缩进" },
+    "password-generator": { "name": "密码生成器", "desc": "可配置规则" },
+    "unit-converter": { "name": "单位换算", "desc": "长度/温度等" },
+    "pomodoro-timer": { "name": "番茄钟", "desc": "专注计时" },
+    "utm-builder": { "name": "UTM 构建器", "desc": "生成追踪参数" },
+    "typing-practice": { "name": "打字练习", "desc": "自定义段落" },
+    "distance-calculator": { "name": "距离计算", "desc": "Haversine 球面距离" },
+    "clipboard-manager": { "name": "剪贴板管理", "desc": "本地历史记录" }
+  },
+  "themes": {
+    "coolBlue": "星云蓝",
+    "cyberPurple": "量子紫",
+    "prismLaser": "棱镜激光"
+  }
+}

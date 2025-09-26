@@ -1,0 +1,14 @@
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "#imports": ["./.nuxt/imports.d.ts"]
+    },
+    "lib": ["ES2021", "DOM"],
+    "skipLibCheck": true
+  },
+  "include": ["**/*", ".nuxt/types/**/*.d.ts", ".nuxt/imports.d.ts"],
+  "exclude": ["node_modules"]
+}

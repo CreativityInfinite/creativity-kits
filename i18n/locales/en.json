@@ -1,0 +1,57 @@
+{
+  "common": {
+    "backToTop": "Back to top",
+    "back": "Back",
+    "open": "Open"
+  },
+  "home": {
+    "subtitle": "A beautiful suite of creative tools: text/data/media/map/regex/time utilities to boost your productivity."
+  },
+  "tabs": {
+    "all": "All",
+    "hot": "Popular",
+    "new": "New"
+  },
+  "action": {
+    "encode": "Encode",
+    "clear": "Clear"
+  },
+  "categories": {
+    "text-format": "Text & Formatting",
+    "regex-parse": "Regex & Parsing",
+    "time-date": "Time & Date",
+    "color-graphics": "Color & Graphics",
+    "image-media": "Image/Media",
+    "dev-network": "Dev & Network",
+    "data-file": "Data & Files",
+    "security-privacy": "Security & Privacy",
+    "math-unit": "Math & Units",
+    "productivity": "Productivity",
+    "social-marketing": "Social & Marketing",
+    "education-language": "Education & Language",
+    "map-geo": "Map & Geo",
+    "system-browser": "System & Browser"
+  },
+
+  "tools": {
+    "base64-encode": { "name": "Base64 Encode", "desc": "Encode text to Base64" },
+    "regex-tester": { "name": "Regex Tester", "desc": "Match and highlight groups" },
+    "timestamp-converter": { "name": "Timestamp Converter", "desc": "Unix/ISO convert" },
+    "color-format-converter": { "name": "Color Format Converter", "desc": "HEX/RGB convert" },
+    "image-resizer": { "name": "Image Resizer", "desc": "Canvas based" },
+    "jwt-decoder": { "name": "JWT Decoder", "desc": "Local decode, offline" },
+    "json-pretty": { "name": "JSON Pretty", "desc": "Format/indent" },
+    "password-generator": { "name": "Password Generator", "desc": "Configurable rules" },
+    "unit-converter": { "name": "Unit Converter", "desc": "Length/Temp etc." },
+    "pomodoro-timer": { "name": "Pomodoro Timer", "desc": "Focus timer" },
+    "utm-builder": { "name": "UTM Builder", "desc": "Tracking query params" },
+    "typing-practice": { "name": "Typing Practice", "desc": "Custom passages" },
+    "distance-calculator": { "name": "Distance Calculator", "desc": "Haversine distance" },
+    "clipboard-manager": { "name": "Clipboard Manager", "desc": "Local history" }
+  },
+  "themes": {
+    "coolBlue": "Nebula Blue",
+    "cyberPurple": "Quantum Purple",
+    "prismLaser": "Prism Laser"
+  }
+}
