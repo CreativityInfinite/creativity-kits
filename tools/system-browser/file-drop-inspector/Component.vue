@@ -1,58 +1,38 @@
 <template>
-  <div class="space-y-6">
-    <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        文件拖拽检查器
-      </h1>
-      <p class="text-gray-600 dark:text-gray-400">
-        文件拖拽检查器工具，功能待实现
-      </p>
+  <div class="space-y-4">
+    <h3 class="font-medium text-lg">文件拖拽检查器</h3>
+
+    <div class="border-2 border-dashed rounded-lg p-8 text-center dark:border-gray-600" @dragover.prevent @drop.prevent="onDrop">
+      <div class="text-4xl mb-2">📦</div>
+      <div class="text-gray-600 dark:text-gray-300">拖拽文件到此处，或点击选择</div>
+      <div class="mt-3">
+        <input type="file" multiple @change="onChoose" />
+      </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输入
-          </label>
-          <textarea
-            v-model="input"
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="process"
-            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-          >
-            处理
-          </button>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输出
-          </label>
-          <textarea
-            v-model="output"
-            readonly
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="copyToClipboard"
-            :disabled="!output"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors"
-          >
-            复制结果
-          </button>
+    <div v-if="items.length" class="space-y-3">
+      <div v-for="(it, i) in items" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+        <div class="font-medium">{{ it.name }}</div>
+        <div class="text-xs text-gray-500 mb-2">size: {{ it.size }} | type: {{ it.type || '(unknown)' }} | lastModified: {{ formatDate(it.lastModified) }}</div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div>
+            <div class="text-sm font-medium mb-1">前 64 字节（十六进制）</div>
+            <pre class="text-xs bg-white dark:bg-gray-900 rounded p-2 overflow-auto">{{ it.headHex }}</pre>
+          </div>
+          <div>
+            <div class="text-sm font-medium mb-1">图片预览/尺寸</div>
+            <div v-if="it.previewUrl">
+              <img :src="it.previewUrl" class="max-h-64 rounded border dark:border-gray-700" alt="preview" />
+              <div class="text-xs text-gray-500 mt-1">尺寸: {{ it.width }}x{{ it.height }}</div>
+            </div>
+            <div v-else class="text-xs text-gray-500">非图片或无法预览</div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+      <div class="text-red-800 dark:text-red-200 text-sm break-all">{{ error }}</div>
     </div>
   </div>
 </template>
@@ -60,23 +40,63 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const input = ref('')
-const output = ref('')
-
-function process() {
-  // TODO: 实现具体的处理逻辑
-  output.value = `处理结果: ${input.value}`
+type Item = {
+  name: string
+  size: number
+  type: string
+  lastModified: number
+  headHex: string
+  previewUrl: string | null
+  width: number | null
+  height: number | null
 }
 
-async function copyToClipboard() {
-  if (!output.value) return
-  
-  try {
-    await navigator.clipboard.writeText(output.value)
-    // TODO: 添加成功提示
-  } catch (err) {
-    console.error('复制失败:', err)
-    // TODO: 添加错误提示
+const items = ref<Item[]>([])
+const error = ref('')
+
+function formatDate(ts: number) {
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+}
+
+async function readHeadHex(f: File) {
+  const buf = await f.slice(0, 64).arrayBuffer()
+  const bytes = new Uint8Array(buf)
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join(' ')
+}
+
+function tryImagePreview(f: File): Promise<{ url: string | null; width: number | null; height: number | null }> {
+  return new Promise((resolve) => {
+    if (!f.type.startsWith('image/')) return resolve({ url: null, width: null, height: null })
+    const url = URL.createObjectURL(f)
+    const img = new Image()
+    img.onload = () => resolve({ url, width: img.naturalWidth, height: img.naturalHeight })
+    img.onerror = () => resolve({ url: null, width: null, height: null })
+    img.src = url
+  })
+}
+
+async function handleFiles(fl: FileList | null) {
+  if (!fl) return
+  error.value = ''
+  const list: Item[] = []
+  for (const f of Array.from(fl)) {
+    try {
+      const headHex = await readHeadHex(f)
+      const prev = await tryImagePreview(f)
+      list.push({ name: f.name, size: f.size, type: f.type, lastModified: f.lastModified, headHex, previewUrl: prev.url, width: prev.width, height: prev.height })
+    } catch (e: any) {
+      error.value = e?.message || '解析失败'
+    }
   }
+  items.value = list
+}
+
+function onDrop(e: DragEvent) {
+  handleFiles(e.dataTransfer?.files || null)
+}
+function onChoose(e: Event) {
+  handleFiles((e.target as HTMLInputElement).files)
 }
 </script>

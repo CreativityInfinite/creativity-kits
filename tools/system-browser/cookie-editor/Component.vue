@@ -1,56 +1,76 @@
 <template>
-  <div class="space-y-6">
-    <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        Cookie 编辑器
-      </h1>
-      <p class="text-gray-600 dark:text-gray-400">
-        Cookie 编辑器工具，功能待实现
-      </p>
+  <div class="space-y-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <h3 class="font-medium text-lg">Cookie 编辑器</h3>
+
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-sm font-medium mb-1">名称</label>
+              <input v-model="name" placeholder="key" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">值</label>
+              <input v-model="value" placeholder="value" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">Max-Age(秒)</label>
+              <input v-model.number="maxAge" type="number" min="0" placeholder="如 3600" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            </div>
+            <div class="flex items-center h-[42px] px-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+              <input id="secure" v-model="secure" type="checkbox" class="rounded mr-2" />
+              <label for="secure" class="text-sm">Secure</label>
+            </div>
+            <div class="flex items-center h-[42px] px-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+              <input id="samesite" v-model="sameSiteLax" type="checkbox" class="rounded mr-2" />
+              <label for="samesite" class="text-sm">SameSite=Lax</label>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button @click="setCookie" :disabled="!name.trim()" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">设置</button>
+            <button @click="removeCookie" :disabled="!name.trim()" class="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-md">删除</button>
+            <button @click="refresh" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">刷新</button>
+          </div>
+          <p class="text-xs text-gray-500">注意：受当前站点/路径限制，仅能操作 document.cookie 可见的条目。</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="font-medium text-lg">结果</h3>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="font-medium">Cookies</h4>
+            <div class="flex gap-2">
+              <button @click="copyResult" :disabled="!result" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-sm">复制</button>
+              <button @click="downloadResult" :disabled="!result" class="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">下载</button>
+            </div>
+          </div>
+          <textarea :value="result" readonly rows="12" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
+        </div>
+
+        <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+          <div class="text-red-800 dark:text-red-200 text-sm break-all">{{ error }}</div>
+        </div>
+      </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输入
-          </label>
-          <textarea
-            v-model="input"
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="process"
-            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-          >
-            处理
-          </button>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输出
-          </label>
-          <textarea
-            v-model="output"
-            readonly
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="copyToClipboard"
-            :disabled="!output"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors"
-          >
-            复制结果
-          </button>
+    <div v-if="history.length" class="space-y-2">
+      <h3 class="font-medium">历史</h3>
+      <div class="space-y-2 max-h-48 overflow-y-auto">
+        <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
+          <div class="flex justify-between">
+            <div class="font-medium truncate">{{ h.action }}</div>
+            <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
+          </div>
+          <div class="text-xs truncate">{{ h.detail }}</div>
+          <div class="flex gap-2 mt-2">
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+          </div>
         </div>
       </div>
     </div>
@@ -58,25 +78,111 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+type HistoryItem = { action: string; detail: string; result: string; timestamp: number }
 
-const input = ref('')
-const output = ref('')
+const name = ref('')
+const value = ref('')
+const maxAge = ref<number | null>(null)
+const secure = ref(true)
+const sameSiteLax = ref(true)
 
-function process() {
-  // TODO: 实现具体的处理逻辑
-  output.value = `处理结果: ${input.value}`
+const result = ref('')
+const error = ref('')
+const history = ref<HistoryItem[]>([])
+
+function clearError() {
+  error.value = ''
+}
+function record(action: string, detail: string) {
+  history.value.unshift({ action, detail, result: result.value, timestamp: Date.now() })
+  if (history.value.length > 10) history.value = history.value.slice(0, 10)
+  localStorage.setItem('cookie-history', JSON.stringify(history.value))
+}
+function removeFromHistory(i: number) {
+  history.value.splice(i, 1)
+  localStorage.setItem('cookie-history', JSON.stringify(history.value))
+}
+function formatDate(ts: number) {
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
 }
 
-async function copyToClipboard() {
-  if (!output.value) return
-  
+function parseCookies() {
+  const map: Record<string, string> = {}
+  const raw = document.cookie || ''
+  raw
+    .split(';')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .forEach((kv) => {
+      const idx = kv.indexOf('=')
+      if (idx >= 0) {
+        const k = decodeURIComponent(kv.slice(0, idx).trim())
+        const v = decodeURIComponent(kv.slice(idx + 1))
+        map[k] = v
+      }
+    })
+  return map
+}
+function refresh() {
+  clearError()
   try {
-    await navigator.clipboard.writeText(output.value)
-    // TODO: 添加成功提示
-  } catch (err) {
-    console.error('复制失败:', err)
-    // TODO: 添加错误提示
+    const data = parseCookies()
+    result.value = JSON.stringify(data, null, 2)
+    record('refresh', '刷新 cookies')
+  } catch (e: any) {
+    error.value = e?.message || '读取失败'
   }
 }
+function setCookie() {
+  clearError()
+  try {
+    let parts = [`${encodeURIComponent(name.value)}=${encodeURIComponent(value.value)}`, `path=/`]
+    if (maxAge.value != null && Number.isFinite(maxAge.value) && maxAge.value > 0) parts.push(`Max-Age=${Math.floor(maxAge.value)}`)
+    if (secure.value) parts.push('Secure')
+    parts.push(`SameSite=${sameSiteLax.value ? 'Lax' : 'None'}`)
+    document.cookie = parts.join('; ')
+    refresh()
+    record('set', `${name.value}=${value.value}; Max-Age=${maxAge.value || ''}`)
+  } catch (e: any) {
+    error.value = e?.message || '设置失败'
+  }
+}
+function removeCookie() {
+  clearError()
+  try {
+    document.cookie = `${encodeURIComponent(name.value)}=; Max-Age=0; path=/`
+    refresh()
+    record('remove', name.value)
+  } catch (e: any) {
+    error.value = e?.message || '删除失败'
+  }
+}
+
+function copyText(t: string) {
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+}
+function copyResult() {
+  if (result.value) copyText(result.value)
+}
+function downloadResult() {
+  if (!result.value) return
+  const blob = new Blob([result.value], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'cookies.json'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+onMounted(() => {
+  const saved = localStorage.getItem('cookie-history')
+  if (saved) {
+    try {
+      history.value = JSON.parse(saved)
+    } catch {}
+  }
+  refresh()
+})
 </script>

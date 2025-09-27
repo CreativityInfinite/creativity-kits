@@ -49,43 +49,11 @@
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
 import type { ToolMetaRuntime } from '~/types/tool'
+import { getDisplayBgUnified, getDisplayIconUnified } from '~/composables/useToolIcon'
+
 // 接收 props 以便在脚本中安全访问
 const { tool, active, disabled } = defineProps<{ tool: ToolMetaRuntime; active?: boolean; disabled?: boolean }>()
-// 分类 → 默认图标
-const categoryIconMap: Record<string, string> = {
-  'text-format': 'mdi:code-braces',
-  'regex-parse': 'tabler:regex',
-  'time-date': 'mdi:calendar-clock',
-  'color-graphics': 'mdi:palette',
-  'image-media': 'mdi:image',
-  'dev-network': 'tabler:cloud-network',
-  'data-file': 'mdi:file-search',
-  'security-privacy': 'tabler:shield-lock',
-  'math-unit': 'mdi:calculator-variant',
-  productivity: 'mdi:view-column',
-  'social-marketing': 'mdi:camera',
-  'education-language': 'mdi:translate',
-  'map-geo': 'mdi:map-marker-path',
-  'system-browser': 'mdi:application-cog'
-}
-// 分类 → 默认色带（渐变）
-const categoryColorMap: Record<string, string> = {
-  'text-format': 'linear-gradient(135deg,#10b981,#06b6d4)',
-  'regex-parse': 'linear-gradient(135deg,#f97316,#f59e0b)',
-  'time-date': 'linear-gradient(135deg,#3b82f6,#06b6d4)',
-  'color-graphics': 'linear-gradient(135deg,#a855f7,#22d3ee)',
-  'image-media': 'linear-gradient(135deg,#ef4444,#f97316)',
-  'dev-network': 'linear-gradient(135deg,#0ea5e9,#22c55e)',
-  'data-file': 'linear-gradient(135deg,#8b5cf6,#ec4899)',
-  'security-privacy': 'linear-gradient(135deg,#f43f5e,#ef4444)',
-  'math-unit': 'linear-gradient(135deg,#22c55e,#84cc16)',
-  productivity: 'linear-gradient(135deg,#14b8a6,#06b6d4)',
-  'social-marketing': 'linear-gradient(135deg,#f59e0b,#ef4444)',
-  'education-language': 'linear-gradient(135deg,#06b6d4,#3b82f6)',
-  'map-geo': 'linear-gradient(135deg,#22d3ee,#06b6d4)',
-  'system-browser': 'linear-gradient(135deg,#64748b,#0ea5e9)'
-}
-const defaultGradient = 'linear-gradient(135deg,#7c3aed,#22d3ee)'
-const displayIcon = computed(() => tool.icon || categoryIconMap[tool.category] || 'tabler:apps')
-const displayBg = computed(() => tool.color || categoryColorMap[tool.category] || defaultGradient)
+
+const displayIcon = computed(() => getDisplayIconUnified(tool.icon as any, tool.category as any))
+const displayBg = computed(() => getDisplayBgUnified(tool.color as any, tool.category as any))
 </script>

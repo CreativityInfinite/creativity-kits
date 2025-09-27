@@ -1,56 +1,75 @@
 <template>
-  <div class="space-y-6">
-    <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        方程求解器
-      </h1>
-      <p class="text-gray-600 dark:text-gray-400">
-        方程求解器工具，功能待实现
-      </p>
+  <div class="space-y-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <h3 class="font-medium text-lg">方程求解器</h3>
+
+        <div class="space-y-3">
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-sm font-medium mb-1">类型</label>
+              <select v-model="type" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="linear">一次：ax + b = 0</option>
+                <option value="quadratic">二次：ax² + bx + c = 0</option>
+                <option value="linear2">二元一次：A x + B y = C; D x + E y = F</option>
+              </select>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-sm font-medium mb-1">参数</label>
+              <input v-model="params" placeholder="线性: a,b; 二次: a,b,c; 二元: A,B,C,D,E,F" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button @click="process" :disabled="!params.trim()" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">求解</button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="font-medium text-lg">结果</h3>
+
+        <div v-if="result" class="space-y-4">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+            <div class="flex justify-between items-center mb-2">
+              <h4 class="font-medium">解</h4>
+              <div class="flex gap-2">
+                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+              </div>
+            </div>
+            <textarea :value="result" readonly rows="10" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
+            <div class="text-xs text-gray-500 mt-2" v-if="processingTime">处理时间: {{ processingTime }}ms</div>
+          </div>
+
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+        </div>
+
+        <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
+          <div class="text-4xl mb-3">📐</div>
+          <div class="text-lg">输入系数，计算方程解</div>
+        </div>
+
+        <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+          <div class="text-red-800 dark:text-red-200 text-sm">{{ error }}</div>
+        </div>
+      </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输入
-          </label>
-          <textarea
-            v-model="input"
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="process"
-            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-          >
-            处理
-          </button>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输出
-          </label>
-          <textarea
-            v-model="output"
-            readonly
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="copyToClipboard"
-            :disabled="!output"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors"
-          >
-            复制结果
-          </button>
+    <div v-if="history.length" class="space-y-2">
+      <h3 class="font-medium">历史</h3>
+      <div class="space-y-2 max-h-48 overflow-y-auto">
+        <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
+          <div class="flex justify-between">
+            <div class="font-medium">类型 {{ h.type }}</div>
+            <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
+          </div>
+          <div class="text-xs truncate">参数: {{ h.params }}</div>
+          <div class="flex gap-2 mt-2">
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+          </div>
         </div>
       </div>
     </div>
@@ -58,25 +77,119 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+type HistoryItem = { type: string; params: string; result: string; timestamp: number }
 
-const input = ref('')
-const output = ref('')
+const type = ref<'linear' | 'quadratic' | 'linear2'>('linear')
+const params = ref('')
+
+const result = ref('')
+const error = ref('')
+const processingTime = ref<number | null>(null)
+const history = ref<HistoryItem[]>([])
+
+function clearAll() {
+  result.value = ''
+  error.value = ''
+  processingTime.value = null
+}
+function copyText(t: string) {
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+}
+function copyResult() {
+  if (result.value) copyText(result.value)
+}
+function downloadResult() {
+  if (!result.value) return
+  const blob = new Blob([result.value], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'equations.json'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+function saveToHistory() {
+  if (!result.value) return
+  history.value.unshift({ type: type.value, params: params.value, result: result.value, timestamp: Date.now() })
+  if (history.value.length > 10) history.value = history.value.slice(0, 10)
+  localStorage.setItem('equation-history', JSON.stringify(history.value))
+}
+function loadFromHistory(h: HistoryItem) {
+  type.value = h.type as any
+  params.value = h.params
+  result.value = h.result
+  error.value = ''
+  processingTime.value = null
+}
+function removeFromHistory(i: number) {
+  history.value.splice(i, 1)
+  localStorage.setItem('equation-history', JSON.stringify(history.value))
+}
+function formatDate(ts: number) {
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+}
+
+function solveLinear(a: number, b: number) {
+  if (a === 0) return b === 0 ? { infinite: true } : { none: true }
+  return { x: -b / a }
+}
+function solveQuadratic(a: number, b: number, c: number) {
+  if (a === 0) return { linear: solveLinear(b, c) }
+  const d = b * b - 4 * a * c
+  if (d > 0) {
+    const s = Math.sqrt(d)
+    return { x1: (-b + s) / (2 * a), x2: (-b - s) / (2 * a), discriminant: d }
+  }
+  if (d === 0) {
+    return { x: -b / (2 * a), discriminant: d }
+  }
+  const rp = -b / (2 * a),
+    ip = Math.sqrt(-d) / (2 * a)
+  return { complex: true, x1: `${rp}+${ip}i`, x2: `${rp}-${ip}i`, discriminant: d }
+}
+function solveLinear2(A: number, B: number, C: number, D: number, E: number, F: number) {
+  const det = A * E - B * D
+  if (det === 0) return { noneOrInfinite: true }
+  const x = (C * E - B * F) / det
+  const y = (A * F - C * D) / det
+  return { x, y, det }
+}
 
 function process() {
-  // TODO: 实现具体的处理逻辑
-  output.value = `处理结果: ${input.value}`
-}
-
-async function copyToClipboard() {
-  if (!output.value) return
-  
+  error.value = ''
+  result.value = ''
+  processingTime.value = null
+  const t0 = performance.now()
   try {
-    await navigator.clipboard.writeText(output.value)
-    // TODO: 添加成功提示
-  } catch (err) {
-    console.error('复制失败:', err)
-    // TODO: 添加错误提示
+    const nums = params.value
+      .split(',')
+      .map((s) => parseFloat(s.trim()))
+      .filter((n) => Number.isFinite(n))
+    let out: any
+    if (type.value === 'linear') {
+      if (nums.length < 2) throw new Error('一次方程需参数 a,b')
+      out = solveLinear(nums[0], nums[1])
+    } else if (type.value === 'quadratic') {
+      if (nums.length < 3) throw new Error('二次方程需参数 a,b,c')
+      out = solveQuadratic(nums[0], nums[1], nums[2])
+    } else {
+      if (nums.length < 6) throw new Error('二元一次需参数 A,B,C,D,E,F')
+      out = solveLinear2(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5])
+    }
+    result.value = JSON.stringify({ type: type.value, params: nums, solution: out }, null, 2)
+    processingTime.value = Math.round(performance.now() - t0)
+  } catch (e: any) {
+    error.value = e?.message || '求解失败'
   }
 }
+
+onMounted(() => {
+  const saved = localStorage.getItem('equation-history')
+  if (saved) {
+    try {
+      history.value = JSON.parse(saved)
+    } catch {}
+  }
+})
 </script>

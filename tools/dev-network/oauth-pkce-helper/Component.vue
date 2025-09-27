@@ -1,82 +1,203 @@
 <template>
-  <div class="space-y-6">
-    <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        OAuth PKCE 助手
-      </h1>
-      <p class="text-gray-600 dark:text-gray-400">
-        OAuth PKCE 助手工具，功能待实现
-      </p>
+  <div class="space-y-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <h3 class="font-medium text-lg">OAuth PKCE 助手</h3>
+
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-sm font-medium mb-1">code_verifier 长度</label>
+              <input v-model.number="length" type="number" min="43" max="128" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">字符集</label>
+              <select v-model="charset" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="unreserved">RFC 3986 Unreserved</option>
+                <option value="alnum">字母数字</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">授权参数（可选）</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input v-model="clientId" placeholder="client_id" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <input v-model="redirectUri" placeholder="redirect_uri" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <input v-model="scope" placeholder="scope" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <input v-model="authorizeEndpoint" placeholder="https://auth.example.com/authorize" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button @click="process" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">生成</button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="font-medium text-lg">结果</h3>
+
+        <div v-if="result" class="space-y-4">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+            <div class="flex justify-between items-center mb-3">
+              <h4 class="font-medium">PKCE</h4>
+              <div class="flex gap-2">
+                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+              </div>
+            </div>
+            <textarea :value="result" readonly rows="12" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
+          </div>
+
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+        </div>
+
+        <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
+          <div class="text-4xl mb-3">🔐</div>
+          <div class="text-lg">生成 code_verifier 与 code_challenge (S256)</div>
+        </div>
+
+        <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+          <div class="text-red-800 dark:text-red-200 text-sm">{{ error }}</div>
+        </div>
+      </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输入
-          </label>
-          <textarea
-            v-model="input"
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
-          />
+    <div v-if="history.length" class="space-y-2">
+      <h3 class="font-medium">历史</h3>
+      <div class="space-y-2 max-h-48 overflow-y-auto">
+        <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
+          <div class="flex justify-between">
+            <div class="font-medium truncate">verifier {{ h.verifier.slice(0, 10) }}...</div>
+            <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <div class="flex justify-center">
-          <button
-            @click="process"
-            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-          >
-            处理
-          </button>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输出
-          </label>
-          <textarea
-            v-model="output"
-            readonly
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="copyToClipboard"
-            :disabled="!output"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors"
-          >
-            复制结果
-          </button>
-        </div>
+    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">使用说明</h3>
+      <div class="text-sm text-yellow-800 dark:text-yellow-200 space-y-1">
+        <div>• 将 code_challenge 与 code_challenge_method=S256 作为授权请求参数；token 交换时带上 code_verifier</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
-const input = ref('')
-const output = ref('')
+type HistoryItem = { verifier: string; challenge: string; authUrl?: string; result: string; timestamp: number }
 
-function process() {
-  // TODO: 实现具体的处理逻辑
-  output.value = `处理结果: ${input.value}`
+const length = ref(64)
+const charset = ref<'unreserved' | 'alnum'>('unreserved')
+
+const clientId = ref('')
+const redirectUri = ref('')
+const scope = ref('')
+const authorizeEndpoint = ref('')
+
+const result = ref('')
+const error = ref('')
+const history = ref<HistoryItem[]>([])
+const processingTime = ref<number | null>(null)
+
+function clearAll() {
+  result.value = ''
+  error.value = ''
+  processingTime.value = null
+}
+function copyResult() {
+  if (result.value) navigator.clipboard.writeText(result.value).then(() => alert('已复制'))
+}
+function downloadResult() {
+  if (!result.value) return
+  const blob = new Blob([result.value], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'pkce.json'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+function saveToHistory() {
+  if (!result.value) return
+  const parsed = JSON.parse(result.value)
+  history.value.unshift({ verifier: parsed.code_verifier, challenge: parsed.code_challenge, authUrl: parsed.authorize_url, result: result.value, timestamp: Date.now() })
+  if (history.value.length > 10) history.value = history.value.slice(0, 10)
+  localStorage.setItem('pkce-history', JSON.stringify(history.value))
+}
+function loadFromHistory(h: HistoryItem) {
+  result.value = h.result
+  error.value = ''
+}
+function removeFromHistory(i: number) {
+  history.value.splice(i, 1)
+  localStorage.setItem('pkce-history', JSON.stringify(history.value))
+}
+function formatDate(ts: number) {
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
 }
 
-async function copyToClipboard() {
-  if (!output.value) return
-  
+function randomString(n: number, kind: 'unreserved' | 'alnum') {
+  const unreserved = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~'
+  const alnum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const chars = kind === 'unreserved' ? unreserved : alnum
+  const out: string[] = []
+  const arr = new Uint8Array(n)
+  crypto.getRandomValues(arr)
+  for (let i = 0; i < n; i++) {
+    out.push(chars[arr[i] % chars.length])
+  }
+  return out.join('')
+}
+function b64url(ab: ArrayBuffer) {
+  let s = btoa(String.fromCharCode(...new Uint8Array(ab)))
+  return s.replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '')
+}
+async function sha256(str: string) {
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str))
+}
+
+async function process() {
+  error.value = ''
+  result.value = ''
+  processingTime.value = null
+  const start = performance.now()
   try {
-    await navigator.clipboard.writeText(output.value)
-    // TODO: 添加成功提示
-  } catch (err) {
-    console.error('复制失败:', err)
-    // TODO: 添加错误提示
+    const len = Math.min(128, Math.max(43, length.value || 64))
+    const verifier = randomString(len, charset.value)
+    const challenge = b64url(await sha256(verifier))
+    let authorize_url = ''
+    if (authorizeEndpoint.value && clientId.value) {
+      const u = new URL(authorizeEndpoint.value)
+      u.searchParams.set('response_type', 'code')
+      u.searchParams.set('client_id', clientId.value)
+      if (redirectUri.value) u.searchParams.set('redirect_uri', redirectUri.value)
+      if (scope.value) u.searchParams.set('scope', scope.value)
+      u.searchParams.set('code_challenge', challenge)
+      u.searchParams.set('code_challenge_method', 'S256')
+      authorize_url = u.toString()
+    }
+    result.value = JSON.stringify({ code_verifier: verifier, code_challenge: challenge, code_challenge_method: 'S256', authorize_url }, null, 2)
+    processingTime.value = Math.round(performance.now() - start)
+  } catch (e: any) {
+    error.value = e?.message || '生成失败'
   }
 }
+
+onMounted(() => {
+  const saved = localStorage.getItem('pkce-history')
+  if (saved) {
+    try {
+      history.value = JSON.parse(saved)
+    } catch {}
+  }
+})
 </script>

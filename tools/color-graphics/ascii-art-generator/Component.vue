@@ -1,57 +1,38 @@
 <template>
-  <div class="space-y-6">
-    <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        ASCII 艺术生成器
-      </h1>
-      <p class="text-gray-600 dark:text-gray-400">
-        ASCII 艺术生成器工具，功能待实现
-      </p>
+  <div class="space-y-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">ASCII 艺术生成器</h1>
+      <p class="text-gray-600 dark:text-gray-400">将图片转为字符画。建议使用较小的宽度以获得清晰效果。</p>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输入
-          </label>
-          <textarea
-            v-model="input"
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
-          />
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="md:col-span-1">
+        <label class="block text-sm font-medium mb-2">选择图片</label>
+        <input type="file" accept="image/*" @change="onFile" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">输出宽度（字符）</label>
+        <input v-model.number="width" type="number" min="10" max="300" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">字符集（从浅到深）</label>
+        <input v-model="charset" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+    </div>
 
-        <div class="flex justify-center">
-          <button
-            @click="process"
-            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-          >
-            处理
-          </button>
-        </div>
+    <div class="flex justify-center gap-3">
+      <button @click="generate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">生成字符画</button>
+      <button v-if="ascii" @click="copy" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">复制</button>
+    </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输出
-          </label>
-          <textarea
-            v-model="output"
-            readonly
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="copyToClipboard"
-            :disabled="!output"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors"
-          >
-            复制结果
-          </button>
-        </div>
+    <div v-if="previewUrl || ascii" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">预览图</div>
+        <img :src="previewUrl" alt="preview" class="max-w-full rounded-md border dark:border-gray-700" />
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border overflow-auto">
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">ASCII 输出</div>
+        <pre class="text-xs leading-[0.9rem] whitespace-pre">{{ ascii }}</pre>
       </div>
     </div>
   </div>
@@ -60,23 +41,77 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const input = ref('')
-const output = ref('')
+const file = ref<File | null>(null)
+const previewUrl = ref('')
+const width = ref(80)
+const charset = ref(' .:-=+*#%@')
+const ascii = ref('')
 
-function process() {
-  // TODO: 实现具体的处理逻辑
-  output.value = `处理结果: ${input.value}`
+function onFile(e: Event) {
+  const t = e.target as HTMLInputElement
+  const f = t.files?.[0] || null
+  file.value = f
+  ascii.value = ''
+  if (f) {
+    previewUrl.value = URL.createObjectURL(f)
+  }
 }
 
-async function copyToClipboard() {
-  if (!output.value) return
-  
+async function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => resolve(img)
+    img.onerror = () => reject(new Error('图片加载失败'))
+    img.src = src
+  })
+}
+
+async function generate() {
+  ascii.value = ''
+  if (!previewUrl.value) {
+    alert('请先选择图片')
+    return
+  }
+  const img = await loadImage(previewUrl.value)
+  const w = Math.max(10, Math.min(300, Math.floor(width.value || 80)))
+  const ratio = img.naturalHeight / img.naturalWidth
+  // 字符的宽高比例通常接近 0.5（终端字体更“窄”）
+  const h = Math.max(5, Math.floor(w * ratio * 0.5))
+
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(img, 0, 0, w, h)
+  const data = ctx.getImageData(0, 0, w, h).data
+
+  const chars = charset.value || ' .:-=+*#%@'
+  const scale = chars.length - 1
+  let out = ''
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4
+      const r = data[i],
+        g = data[i + 1],
+        b = data[i + 2]
+      // 亮度估算 (Rec. 709)
+      const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+      const idx = Math.round((1 - lum / 255) * scale)
+      out += chars[idx] || chars[scale]
+    }
+    out += '\n'
+  }
+  ascii.value = out
+}
+
+async function copy() {
+  if (!ascii.value) return
   try {
-    await navigator.clipboard.writeText(output.value)
-    // TODO: 添加成功提示
-  } catch (err) {
-    console.error('复制失败:', err)
-    // TODO: 添加错误提示
+    await navigator.clipboard.writeText(ascii.value)
+    alert('已复制')
+  } catch {
+    alert('复制失败，请手动复制')
   }
 }
 </script>

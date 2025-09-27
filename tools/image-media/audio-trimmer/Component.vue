@@ -1,58 +1,38 @@
 <template>
-  <div class="space-y-6">
-    <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        音频裁剪器
-      </h1>
-      <p class="text-gray-600 dark:text-gray-400">
-        音频裁剪器工具，功能待实现
-      </p>
+  <div class="space-y-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">音频裁剪器</h1>
+      <p class="text-gray-600 dark:text-gray-400">在浏览器中选择起止时间，导出裁剪片段为 WAV。</p>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输入
-          </label>
-          <textarea
-            v-model="input"
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="process"
-            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-          >
-            处理
-          </button>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输出
-          </label>
-          <textarea
-            v-model="output"
-            readonly
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="copyToClipboard"
-            :disabled="!output"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors"
-          >
-            复制结果
-          </button>
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium mb-2">选择音频</label>
+        <input type="file" accept="audio/*" @change="onFile" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">开始时间（秒）</label>
+        <input v-model.number="startSec" type="number" min="0" step="0.1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">结束时间（秒）</label>
+        <input v-model.number="endSec" type="number" min="0" step="0.1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+    </div>
+
+    <div class="flex justify-center gap-3">
+      <button @click="trim" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">裁剪并导出 WAV</button>
+      <button v-if="outUrl" @click="download" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">下载 WAV</button>
+    </div>
+
+    <div v-if="audioUrl" class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
+      <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">原始音频</div>
+      <audio :src="audioUrl" controls class="w-full"></audio>
+    </div>
+
+    <div v-if="outUrl" class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
+      <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">裁剪结果预览</div>
+      <audio :src="outUrl" controls class="w-full"></audio>
     </div>
   </div>
 </template>
@@ -60,23 +40,105 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const input = ref('')
-const output = ref('')
+const file = ref<File | null>(null)
+const audioUrl = ref('')
+const outUrl = ref('')
+const startSec = ref(0)
+const endSec = ref(0)
 
-function process() {
-  // TODO: 实现具体的处理逻辑
-  output.value = `处理结果: ${input.value}`
+function onFile(e: Event) {
+  const t = e.target as HTMLInputElement
+  file.value = t.files?.[0] || null
+  audioUrl.value = file.value ? URL.createObjectURL(file.value) : ''
+  outUrl.value = ''
 }
 
-async function copyToClipboard() {
-  if (!output.value) return
-  
-  try {
-    await navigator.clipboard.writeText(output.value)
-    // TODO: 添加成功提示
-  } catch (err) {
-    console.error('复制失败:', err)
-    // TODO: 添加错误提示
+async function trim() {
+  outUrl.value = ''
+  if (!file.value) {
+    alert('请先选择音频')
+    return
   }
+  const arrayBuf = await file.value.arrayBuffer()
+  const ctx = new AudioContext()
+  const decoded = await ctx.decodeAudioData(arrayBuf.slice(0))
+  const sr = decoded.sampleRate
+  const ch = decoded.numberOfChannels
+
+  const start = Math.max(0, Math.min(decoded.duration, startSec.value || 0))
+  const end = Math.max(start, Math.min(decoded.duration, endSec.value || decoded.duration))
+  const frames = Math.floor((end - start) * sr)
+
+  const outBuf = ctx.createBuffer(ch, frames, sr)
+  for (let c = 0; c < ch; c++) {
+    const src = decoded.getChannelData(c)
+    const dst = outBuf.getChannelData(c)
+    const startIdx = Math.floor(start * sr)
+    for (let i = 0; i < frames; i++) dst[i] = src[startIdx + i] || 0
+  }
+  outUrl.value = bufferToWavUrl(outBuf)
+}
+
+function bufferToWavUrl(buffer: AudioBuffer) {
+  const numCh = buffer.numberOfChannels
+  const sampleRate = buffer.sampleRate
+  const length = buffer.length * numCh * 2 + 44
+  const ab = new ArrayBuffer(length)
+  const view = new DataView(ab)
+
+  function writeStr(offset: number, str: string) {
+    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i))
+  }
+  let offset = 0
+  writeStr(offset, 'RIFF')
+  offset += 4
+  view.setUint32(offset, 36 + buffer.length * numCh * 2, true)
+  offset += 4
+  writeStr(offset, 'WAVE')
+  offset += 4
+  writeStr(offset, 'fmt ')
+  offset += 4
+  view.setUint32(offset, 16, true)
+  offset += 4 // PCM chunk size
+  view.setUint16(offset, 1, true)
+  offset += 2 // audio format = PCM
+  view.setUint16(offset, numCh, true)
+  offset += 2
+  view.setUint32(offset, sampleRate, true)
+  offset += 4
+  view.setUint32(offset, sampleRate * numCh * 2, true)
+  offset += 4 // byte rate
+  view.setUint16(offset, numCh * 2, true)
+  offset += 2 // block align
+  view.setUint16(offset, 16, true)
+  offset += 2 // bits per sample
+  writeStr(offset, 'data')
+  offset += 4
+  view.setUint32(offset, buffer.length * numCh * 2, true)
+  offset += 4
+
+  // Interleave
+  const channels: Float32Array[] = []
+  for (let c = 0; c < numCh; c++) channels.push(buffer.getChannelData(c))
+  let idx = 0
+  for (let i = 0; i < buffer.length; i++) {
+    for (let c = 0; c < numCh; c++) {
+      let sample = Math.max(-1, Math.min(1, channels[c][i]))
+      sample = sample < 0 ? sample * 32768 : sample * 32767
+      view.setInt16(offset + idx, sample | 0, true)
+      idx += 2
+    }
+  }
+
+  const blob = new Blob([view], { type: 'audio/wav' })
+  return URL.createObjectURL(blob)
+}
+
+function download() {
+  if (!outUrl.value) return
+  const a = document.createElement('a')
+  a.href = outUrl.value
+  a.download = 'trimmed.wav'
+  a.click()
 }
 </script>

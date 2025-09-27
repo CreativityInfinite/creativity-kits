@@ -1,58 +1,64 @@
 <template>
-  <div class="space-y-6">
-    <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        Open Graph 图片生成器
-      </h1>
-      <p class="text-gray-600 dark:text-gray-400">
-        Open Graph 图片生成器工具，功能待实现
-      </p>
+  <div class="space-y-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Open Graph 图片生成器</h1>
+      <p class="text-gray-600 dark:text-gray-400">基于标题/副标题/背景与 Logo 生成社交分享图（PNG）。</p>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输入
-          </label>
-          <textarea
-            v-model="input"
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="process"
-            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-          >
-            处理
-          </button>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            输出
-          </label>
-          <textarea
-            v-model="output"
-            readonly
-            class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
-          />
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            @click="copyToClipboard"
-            :disabled="!output"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors"
-          >
-            复制结果
-          </button>
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium mb-2">画布宽度</label>
+        <input v-model.number="w" type="number" min="600" max="2400" step="10" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">画布高度</label>
+        <input v-model.number="h" type="number" min="315" max="1260" step="5" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">背景颜色</label>
+        <input v-model="bg" type="color" class="w-full h-[42px] px-2 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium mb-2">标题</label>
+        <input v-model="title" type="text" placeholder="主标题" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">标题颜色</label>
+        <input v-model="titleColor" type="color" class="w-full h-[42px] px-2 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium mb-2">副标题</label>
+        <input v-model="subtitle" type="text" placeholder="副标题（可选）" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">副标题颜色</label>
+        <input v-model="subtitleColor" type="color" class="w-full h-[42px] px-2 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-2">Logo 图片（可选）</label>
+        <input type="file" accept="image/*" @change="onLogo" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">Logo 尺寸（px）</label>
+        <input v-model.number="logoSize" type="number" min="32" max="512" step="4" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">边距（px）</label>
+        <input v-model.number="padding" type="number" min="0" max="200" step="4" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+      </div>
+    </div>
+
+    <div class="flex justify-center gap-3">
+      <button @click="generate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">生成 PNG</button>
+      <button v-if="outUrl" @click="download" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">下载</button>
+    </div>
+
+    <div v-if="outUrl" class="bg-white dark:bg-gray-800 rounded-lg p-4 border text-center">
+      <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">预览</div>
+      <img :src="outUrl" class="inline-block max-w-full rounded-md border dark:border-gray-700" />
     </div>
   </div>
 </template>
@@ -60,23 +66,99 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const input = ref('')
-const output = ref('')
+const w = ref(1200)
+const h = ref(630)
+const bg = ref('#0ea5e9')
+const title = ref('Open Graph 标题')
+const subtitle = ref('副标题，可选')
+const titleColor = ref('#ffffff')
+const subtitleColor = ref('#e2e8f0')
+const logoFile = ref<File | null>(null)
+const logoSize = ref(96)
+const padding = ref(64)
+const outUrl = ref('')
+const logoUrl = ref('')
 
-function process() {
-  // TODO: 实现具体的处理逻辑
-  output.value = `处理结果: ${input.value}`
+function onLogo(e: Event) {
+  const t = e.target as HTMLInputElement
+  logoFile.value = t.files?.[0] || null
+  logoUrl.value = logoFile.value ? URL.createObjectURL(logoFile.value) : ''
+  outUrl.value = ''
 }
 
-async function copyToClipboard() {
-  if (!output.value) return
-  
-  try {
-    await navigator.clipboard.writeText(output.value)
-    // TODO: 添加成功提示
-  } catch (err) {
-    console.error('复制失败:', err)
-    // TODO: 添加错误提示
+async function loadImage(src: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => resolve(img)
+    img.onerror = () => reject(new Error('图片加载失败'))
+    img.src = src
+  })
+}
+
+function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, lineHeight: number) {
+  const words = text.split(/(\s+)/)
+  let line = ''
+  const lines: string[] = []
+  for (const w of words) {
+    const t = line + w
+    if (ctx.measureText(t).width > maxWidth && line) {
+      lines.push(line.trim())
+      line = w.trim()
+    } else {
+      line = t
+    }
   }
+  if (line.trim()) lines.push(line.trim())
+  return lines.map((s, i) => ({ text: s, offsetY: i * lineHeight }))
+}
+
+async function generate() {
+  outUrl.value = ''
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(300, w.value || 1200)
+  canvas.height = Math.max(200, h.value || 630)
+  const ctx = canvas.getContext('2d')!
+
+  // 背景填充
+  ctx.fillStyle = bg.value
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+  // 文本区域
+  const innerW = canvas.width - padding.value * 2
+  let y = padding.value
+
+  // Logo
+  if (logoUrl.value) {
+    const img = await loadImage(logoUrl.value)
+    const size = Math.min(logoSize.value, innerW)
+    ctx.drawImage(img, canvas.width - padding.value - size, padding.value, size, size)
+  }
+
+  // 标题
+  ctx.fillStyle = titleColor.value
+  ctx.font = '700 64px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto'
+  ctx.textBaseline = 'top'
+  const titleLines = wrapText(ctx, title.value || '', innerW, 72)
+  titleLines.forEach((ln) => ctx.fillText(ln.text, padding.value, y + ln.offsetY))
+  y += titleLines.length * 72 + 12
+
+  // 副标题
+  if (subtitle.value) {
+    ctx.fillStyle = subtitleColor.value
+    ctx.font = '400 36px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto'
+    const subLines = wrapText(ctx, subtitle.value, innerW, 44)
+    subLines.forEach((ln) => ctx.fillText(ln.text, padding.value, y + ln.offsetY))
+  }
+
+  outUrl.value = canvas.toDataURL('image/png')
+}
+
+function download() {
+  if (!outUrl.value) return
+  const a = document.createElement('a')
+  a.href = outUrl.value
+  a.download = 'og-image.png'
+  a.click()
 }
 </script>
