@@ -331,51 +331,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 interface Statistics {
-  count: number
-  sum: number
-  mean: number
-  geometricMean: number
-  harmonicMean: number
-  median: number
-  mode: number[]
-  min: number
-  max: number
-  range: number
-  q1: number
-  q3: number
-  iqr: number
-  sampleVariance: number
-  populationVariance: number
-  sampleStdDev: number
-  populationStdDev: number
-  coefficientOfVariation: number
-  skewness: number
-  kurtosis: number
-  standardError: number
-  sumOfSquares: number
-  meanAbsoluteDeviation: number
+  count: number;
+  sum: number;
+  mean: number;
+  geometricMean: number;
+  harmonicMean: number;
+  median: number;
+  mode: number[];
+  min: number;
+  max: number;
+  range: number;
+  q1: number;
+  q3: number;
+  iqr: number;
+  sampleVariance: number;
+  populationVariance: number;
+  sampleStdDev: number;
+  populationStdDev: number;
+  coefficientOfVariation: number;
+  skewness: number;
+  kurtosis: number;
+  standardError: number;
+  sumOfSquares: number;
+  meanAbsoluteDeviation: number;
 }
 
 interface HistogramBin {
-  range: string
-  count: number
-  min: number
-  max: number
+  range: string;
+  count: number;
+  min: number;
+  max: number;
 }
 
 interface ConfidenceInterval {
-  lower: number
-  upper: number
-  margin: number
+  lower: number;
+  upper: number;
+  margin: number;
 }
 
-const dataInput = ref('')
-const data = ref<number[]>([])
-const parseError = ref('')
-const confidenceLevel = ref(95)
+const dataInput = ref('');
+const data = ref<number[]>([]);
+const parseError = ref('');
+const confidenceLevel = ref(95);
 
 const statistics = computed((): Statistics => {
   if (data.value.length === 0) {
@@ -403,76 +403,76 @@ const statistics = computed((): Statistics => {
       standardError: 0,
       sumOfSquares: 0,
       meanAbsoluteDeviation: 0
-    }
+    };
   }
 
-  const sorted = [...data.value].sort((a, b) => a - b)
-  const n = sorted.length
+  const sorted = [...data.value].sort((a, b) => a - b);
+  const n = sorted.length;
 
   // 基本统计量
-  const sum = sorted.reduce((acc, val) => acc + val, 0)
-  const mean = sum / n
-  const min = sorted[0]
-  const max = sorted[n - 1]
-  const range = max - min
+  const sum = sorted.reduce((acc, val) => acc + val, 0);
+  const mean = sum / n;
+  const min = sorted[0];
+  const max = sorted[n - 1];
+  const range = max - min;
 
   // 中位数
-  const median = n % 2 === 0 ? (sorted[n / 2 - 1] + sorted[n / 2]) / 2 : sorted[Math.floor(n / 2)]
+  const median = n % 2 === 0 ? (sorted[n / 2 - 1] + sorted[n / 2]) / 2 : sorted[Math.floor(n / 2)];
 
   // 四分位数
-  const q1 = getPercentileValue(sorted, 25)
-  const q3 = getPercentileValue(sorted, 75)
-  const iqr = q3 - q1
+  const q1 = getPercentileValue(sorted, 25);
+  const q3 = getPercentileValue(sorted, 75);
+  const iqr = q3 - q1;
 
   // 众数
-  const frequency: { [key: number]: number } = {}
+  const frequency: { [key: number]: number } = {};
   sorted.forEach((val) => {
-    frequency[val] = (frequency[val] || 0) + 1
-  })
-  const maxFreq = Math.max(...Object.values(frequency))
+    frequency[val] = (frequency[val] || 0) + 1;
+  });
+  const maxFreq = Math.max(...Object.values(frequency));
   const mode = Object.keys(frequency)
     .filter((key) => frequency[Number(key)] === maxFreq)
-    .map(Number)
+    .map(Number);
 
   // 几何平均数 (仅适用于正数)
-  const positiveValues = sorted.filter((val) => val > 0)
+  const positiveValues = sorted.filter((val) => val > 0);
   const geometricMean =
     positiveValues.length > 0
       ? Math.pow(
           positiveValues.reduce((acc, val) => acc * val, 1),
           1 / positiveValues.length
         )
-      : 0
+      : 0;
 
   // 调和平均数 (仅适用于正数)
-  const harmonicMean = positiveValues.length > 0 ? positiveValues.length / positiveValues.reduce((acc, val) => acc + 1 / val, 0) : 0
+  const harmonicMean = positiveValues.length > 0 ? positiveValues.length / positiveValues.reduce((acc, val) => acc + 1 / val, 0) : 0;
 
   // 方差和标准差
-  const sumOfSquaredDiffs = sorted.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0)
-  const populationVariance = sumOfSquaredDiffs / n
-  const sampleVariance = n > 1 ? sumOfSquaredDiffs / (n - 1) : 0
-  const populationStdDev = Math.sqrt(populationVariance)
-  const sampleStdDev = Math.sqrt(sampleVariance)
+  const sumOfSquaredDiffs = sorted.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0);
+  const populationVariance = sumOfSquaredDiffs / n;
+  const sampleVariance = n > 1 ? sumOfSquaredDiffs / (n - 1) : 0;
+  const populationStdDev = Math.sqrt(populationVariance);
+  const sampleStdDev = Math.sqrt(sampleVariance);
 
   // 变异系数
-  const coefficientOfVariation = mean !== 0 ? sampleStdDev / Math.abs(mean) : 0
+  const coefficientOfVariation = mean !== 0 ? sampleStdDev / Math.abs(mean) : 0;
 
   // 偏度
-  const sumOfCubedDiffs = sorted.reduce((acc, val) => acc + Math.pow((val - mean) / sampleStdDev, 3), 0)
-  const skewness = n > 2 ? (n / ((n - 1) * (n - 2))) * sumOfCubedDiffs : 0
+  const sumOfCubedDiffs = sorted.reduce((acc, val) => acc + Math.pow((val - mean) / sampleStdDev, 3), 0);
+  const skewness = n > 2 ? (n / ((n - 1) * (n - 2))) * sumOfCubedDiffs : 0;
 
   // 峰度
-  const sumOfFourthPowerDiffs = sorted.reduce((acc, val) => acc + Math.pow((val - mean) / sampleStdDev, 4), 0)
-  const kurtosis = n > 3 ? ((n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3))) * sumOfFourthPowerDiffs - (3 * Math.pow(n - 1, 2)) / ((n - 2) * (n - 3)) : 0
+  const sumOfFourthPowerDiffs = sorted.reduce((acc, val) => acc + Math.pow((val - mean) / sampleStdDev, 4), 0);
+  const kurtosis = n > 3 ? ((n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3))) * sumOfFourthPowerDiffs - (3 * Math.pow(n - 1, 2)) / ((n - 2) * (n - 3)) : 0;
 
   // 标准误差
-  const standardError = sampleStdDev / Math.sqrt(n)
+  const standardError = sampleStdDev / Math.sqrt(n);
 
   // 平方和
-  const sumOfSquares = sorted.reduce((acc, val) => acc + val * val, 0)
+  const sumOfSquares = sorted.reduce((acc, val) => acc + val * val, 0);
 
   // 平均绝对偏差
-  const meanAbsoluteDeviation = sorted.reduce((acc, val) => acc + Math.abs(val - mean), 0) / n
+  const meanAbsoluteDeviation = sorted.reduce((acc, val) => acc + Math.abs(val - mean), 0) / n;
 
   return {
     count: n,
@@ -498,16 +498,16 @@ const statistics = computed((): Statistics => {
     standardError,
     sumOfSquares,
     meanAbsoluteDeviation
-  }
-})
+  };
+});
 
 const histogram = computed((): HistogramBin[] => {
-  if (data.value.length === 0) return []
+  if (data.value.length === 0) return [];
 
-  const sorted = [...data.value].sort((a, b) => a - b)
-  const min = sorted[0]
-  const max = sorted[sorted.length - 1]
-  const range = max - min
+  const sorted = [...data.value].sort((a, b) => a - b);
+  const min = sorted[0];
+  const max = sorted[sorted.length - 1];
+  const range = max - min;
 
   if (range === 0) {
     return [
@@ -517,64 +517,64 @@ const histogram = computed((): HistogramBin[] => {
         min,
         max
       }
-    ]
+    ];
   }
 
-  const binCount = Math.min(10, Math.ceil(Math.sqrt(sorted.length)))
-  const binWidth = range / binCount
-  const bins: HistogramBin[] = []
+  const binCount = Math.min(10, Math.ceil(Math.sqrt(sorted.length)));
+  const binWidth = range / binCount;
+  const bins: HistogramBin[] = [];
 
   for (let i = 0; i < binCount; i++) {
-    const binMin = min + i * binWidth
-    const binMax = i === binCount - 1 ? max : min + (i + 1) * binWidth
-    const count = sorted.filter((val) => val >= binMin && val < binMax).length
+    const binMin = min + i * binWidth;
+    const binMax = i === binCount - 1 ? max : min + (i + 1) * binWidth;
+    const count = sorted.filter((val) => val >= binMin && val < binMax).length;
 
     bins.push({
       range: `${binMin.toFixed(2)}-${binMax.toFixed(2)}`,
       count,
       min: binMin,
       max: binMax
-    })
+    });
   }
 
-  return bins
-})
+  return bins;
+});
 
 const confidenceInterval = computed((): ConfidenceInterval => {
   if (data.value.length === 0) {
-    return { lower: 0, upper: 0, margin: 0 }
+    return { lower: 0, upper: 0, margin: 0 };
   }
 
   // t分布临界值 (近似)
-  const alpha = (100 - confidenceLevel.value) / 100
-  const df = data.value.length - 1
-  let tValue: number
+  const alpha = (100 - confidenceLevel.value) / 100;
+  const df = data.value.length - 1;
+  let tValue: number;
 
-  if (confidenceLevel.value === 90) tValue = 1.645
-  else if (confidenceLevel.value === 95) tValue = 1.96
-  else if (confidenceLevel.value === 99) tValue = 2.576
-  else tValue = 1.96
+  if (confidenceLevel.value === 90) tValue = 1.645;
+  else if (confidenceLevel.value === 95) tValue = 1.96;
+  else if (confidenceLevel.value === 99) tValue = 2.576;
+  else tValue = 1.96;
 
   // 对于小样本使用t分布修正
   if (df < 30) {
-    if (confidenceLevel.value === 90) tValue = 1.833
-    else if (confidenceLevel.value === 95) tValue = 2.262
-    else if (confidenceLevel.value === 99) tValue = 3.25
+    if (confidenceLevel.value === 90) tValue = 1.833;
+    else if (confidenceLevel.value === 95) tValue = 2.262;
+    else if (confidenceLevel.value === 99) tValue = 3.25;
   }
 
-  const margin = tValue * statistics.value.standardError
-  const lower = statistics.value.mean - margin
-  const upper = statistics.value.mean + margin
+  const margin = tValue * statistics.value.standardError;
+  const lower = statistics.value.mean - margin;
+  const upper = statistics.value.mean + margin;
 
-  return { lower, upper, margin }
-})
+  return { lower, upper, margin };
+});
 
 function parseData() {
-  parseError.value = ''
+  parseError.value = '';
 
   if (!dataInput.value.trim()) {
-    data.value = []
-    return
+    data.value = [];
+    return;
   }
 
   try {
@@ -584,75 +584,75 @@ function parseData() {
       .map((str) => str.trim())
       .filter((str) => str !== '')
       .map((str) => {
-        const num = parseFloat(str)
+        const num = parseFloat(str);
         if (isNaN(num)) {
-          throw new Error(`无效数字: "${str}"`)
+          throw new Error(`无效数字: "${str}"`);
         }
-        return num
-      })
+        return num;
+      });
 
     if (numbers.length === 0) {
-      throw new Error('未找到有效数字')
+      throw new Error('未找到有效数字');
     }
 
-    data.value = numbers
+    data.value = numbers;
   } catch (error) {
-    parseError.value = (error as Error).message
-    data.value = []
+    parseError.value = (error as Error).message;
+    data.value = [];
   }
 }
 
 function getPercentileValue(sortedData: number[], percentile: number): number {
-  const index = (percentile / 100) * (sortedData.length - 1)
-  const lower = Math.floor(index)
-  const upper = Math.ceil(index)
+  const index = (percentile / 100) * (sortedData.length - 1);
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
 
   if (lower === upper) {
-    return sortedData[lower]
+    return sortedData[lower];
   }
 
-  const weight = index - lower
-  return sortedData[lower] * (1 - weight) + sortedData[upper] * weight
+  const weight = index - lower;
+  return sortedData[lower] * (1 - weight) + sortedData[upper] * weight;
 }
 
 function getPercentile(percentile: number): number {
-  if (data.value.length === 0) return 0
-  const sorted = [...data.value].sort((a, b) => a - b)
-  return getPercentileValue(sorted, percentile)
+  if (data.value.length === 0) return 0;
+  const sorted = [...data.value].sort((a, b) => a - b);
+  return getPercentileValue(sorted, percentile);
 }
 
 function loadSampleData() {
-  dataInput.value = '23, 45, 56, 78, 32, 67, 89, 12, 34, 56, 78, 90, 23, 45, 67, 89, 34, 56, 78, 23'
-  parseData()
+  dataInput.value = '23, 45, 56, 78, 32, 67, 89, 12, 34, 56, 78, 90, 23, 45, 67, 89, 34, 56, 78, 23';
+  parseData();
 }
 
 function clearData() {
-  dataInput.value = ''
-  data.value = []
-  parseError.value = ''
+  dataInput.value = '';
+  data.value = [];
+  parseError.value = '';
 }
 
 function generateRandomData() {
-  const count = 50
-  const mean = 100
-  const stdDev = 15
+  const count = 50;
+  const mean = 100;
+  const stdDev = 15;
 
-  const randomData: number[] = []
+  const randomData: number[] = [];
   for (let i = 0; i < count; i++) {
     // 使用Box-Muller变换生成正态分布随机数
-    const u1 = Math.random()
-    const u2 = Math.random()
-    const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2)
-    const value = mean + z * stdDev
-    randomData.push(Math.round(value * 100) / 100)
+    const u1 = Math.random();
+    const u2 = Math.random();
+    const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    const value = mean + z * stdDev;
+    randomData.push(Math.round(value * 100) / 100);
   }
 
-  dataInput.value = randomData.join(', ')
-  parseData()
+  dataInput.value = randomData.join(', ');
+  parseData();
 }
 
 function exportResults() {
-  const stats = statistics.value
+  const stats = statistics.value;
   const report = `统计分析报告
 生成时间: ${new Date().toLocaleString('zh-CN')}
 数据点数: ${stats.count}
@@ -696,31 +696,31 @@ function exportResults() {
 ${data.value.join(', ')}
 
 报告生成时间: ${new Date().toLocaleString('zh-CN')}
-`
+`;
 
-  const blob = new Blob([report], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `statistics-report-${new Date().toISOString().slice(0, 10)}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([report], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `statistics-report-${new Date().toISOString().slice(0, 10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 async function copyResults() {
-  const stats = statistics.value
+  const stats = statistics.value;
   const summary = `统计摘要 (n=${stats.count})
 均值: ${stats.mean.toFixed(4)} ± ${stats.standardError.toFixed(4)}
 中位数: ${stats.median.toFixed(4)}
 标准差: ${stats.sampleStdDev.toFixed(4)}
 范围: ${stats.min.toFixed(4)} - ${stats.max.toFixed(4)}
-${confidenceLevel.value}% 置信区间: [${confidenceInterval.value.lower.toFixed(4)}, ${confidenceInterval.value.upper.toFixed(4)}]`
+${confidenceLevel.value}% 置信区间: [${confidenceInterval.value.lower.toFixed(4)}, ${confidenceInterval.value.upper.toFixed(4)}]`;
 
   try {
-    await navigator.clipboard.writeText(summary)
+    await navigator.clipboard.writeText(summary);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 </script>

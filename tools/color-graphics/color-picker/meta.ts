@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'color-picker',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#f59e0b,#10b981)',
   icon: 'tabler:color-picker',
   i18nKey: 'tools.color-picker',
-  entry: 'tools/color-graphics/color-picker/Component.vue',
-}
-export default meta
+  entry: 'tools/color-graphics/color-picker/Component.vue'
+};
+export default meta;

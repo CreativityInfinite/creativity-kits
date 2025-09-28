@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'statistics-tool',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'math-unit',
   tags: ['统计', '数据分析', '均值', '方差', '标准差', '分位数', '置信区间'],
   i18nKey: 'tools.statistics-tool',
-  entry: 'tools/math-unit/statistics-tool/Component.vue',
-}
-export default meta
+  entry: 'tools/math-unit/statistics-tool/Component.vue'
+};
+export default meta;

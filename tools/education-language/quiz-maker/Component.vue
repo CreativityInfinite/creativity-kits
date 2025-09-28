@@ -50,79 +50,79 @@ answer=JavaScript,Python
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-const raw = ref('')
-const items = ref<Array<{ question: string; options: string[]; answer: string | string[]; type: 'single' | 'multi' }>>([])
+const raw = ref('');
+const items = ref<Array<{ question: string; options: string[]; answer: string | string[]; type: 'single' | 'multi' }>>([]);
 
-const jsonOut = computed(() => (items.value.length ? JSON.stringify({ items: items.value }, null, 2) : ''))
+const jsonOut = computed(() => (items.value.length ? JSON.stringify({ items: items.value }, null, 2) : ''));
 
 function parseQuiz() {
-  const text = (raw.value || '').trim()
-  items.value = []
-  if (!text) return
-  const blocks = text.split(/\n{2,}/)
+  const text = (raw.value || '').trim();
+  items.value = [];
+  if (!text) return;
+  const blocks = text.split(/\n{2,}/);
 
   for (const b of blocks) {
     const lines = b
       .split(/\r?\n/)
       .map((s) => s.trim())
-      .filter(Boolean)
-    if (!lines.length) continue
-    let q = ''
-    const options: string[] = []
-    let answer: string | string[] = ''
-    let type: 'single' | 'multi' = 'single'
+      .filter(Boolean);
+    if (!lines.length) continue;
+    let q = '';
+    const options: string[] = [];
+    let answer: string | string[] = '';
+    let type: 'single' | 'multi' = 'single';
 
     for (const l of lines) {
       if (/^q[:：]/i.test(l)) {
-        q = l.replace(/^q[:：]\s*/i, '')
-        continue
+        q = l.replace(/^q[:：]\s*/i, '');
+        continue;
       }
-      const mAns = l.match(/^answer\s*=\s*(.+)$/i)
+      const mAns = l.match(/^answer\s*=\s*(.+)$/i);
       if (mAns) {
-        const a = mAns[1].trim()
-        answer = /,/.test(a) ? a.split(/\s*,\s*/).filter(Boolean) : a
-        continue
+        const a = mAns[1].trim();
+        answer = /,/.test(a) ? a.split(/\s*,\s*/).filter(Boolean) : a;
+        continue;
       }
-      const mType = l.match(/^type\s*=\s*(\w+)/i)
+      const mType = l.match(/^type\s*=\s*(\w+)/i);
       if (mType) {
-        type = mType[1].toLowerCase() === 'multi' ? 'multi' : 'single'
-        continue
+        type = mType[1].toLowerCase() === 'multi' ? 'multi' : 'single';
+        continue;
       }
       if (/^[A-Z][\)\.\s]+/.test(l) || /^[-•]\s+/.test(l)) {
-        options.push(l.replace(/^[A-Z][\)\.\s]+|^[-•]\s+/, ''))
-        continue
+        options.push(l.replace(/^[A-Z][\)\.\s]+|^[-•]\s+/, ''));
+        continue;
       }
-      if (!q) q = l
+      if (!q) q = l;
     }
-    if (q) items.value.push({ question: q, options, answer, type })
+    if (q) items.value.push({ question: q, options, answer, type });
   }
 }
 
 function clearAll() {
-  raw.value = ''
-  items.value = []
+  raw.value = '';
+  items.value = [];
 }
 
 async function copy() {
-  if (!jsonOut.value) return
+  if (!jsonOut.value) return;
   try {
-    await navigator.clipboard.writeText(jsonOut.value)
-    alert('已复制')
+    await navigator.clipboard.writeText(jsonOut.value);
+    alert('已复制');
   } catch {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 
 function download() {
-  if (!jsonOut.value) return
-  const blob = new Blob([jsonOut.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'quiz.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!jsonOut.value) return;
+  const blob = new Blob([jsonOut.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'quiz.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

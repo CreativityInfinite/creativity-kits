@@ -39,23 +39,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const input = ref('')
-const output = ref('')
+const input = ref('');
+const output = ref('');
 
 async function process() {
-  const raw = input.value.trim()
+  const raw = input.value.trim();
   if (!raw) {
-    output.value = ''
-    return
+    output.value = '';
+    return;
   }
-  const mac = raw.replace(/[^0-9a-fA-F]/g, '').toUpperCase()
+  const mac = raw.replace(/[^0-9a-fA-F]/g, '').toUpperCase();
   if (mac.length !== 12) {
-    output.value = '格式错误：请提供 12 个十六进制字符的 MAC（可带 : 或 - 分隔）。'
-    return
+    output.value = '格式错误：请提供 12 个十六进制字符的 MAC（可带 : 或 - 分隔）。';
+    return;
   }
-  const oui = mac.slice(0, 6)
+  const oui = mac.slice(0, 6);
   const localMap: Record<string, string> = {
     // 常见示例（可按需扩充）
     '000C29': 'VMware, Inc.',
@@ -64,31 +64,31 @@ async function process() {
     F0D5BF: 'Hangzhou Hikvision Digital Technology Co.,Ltd.',
     '44D9E7': 'Xiaomi Communications Co Ltd',
     D85D4C: 'Hon Hai Precision Ind. Co.,Ltd. (Foxconn)'
-  }
+  };
   if (localMap[oui]) {
-    output.value = `本地命中：${localMap[oui]}`
-    return
+    output.value = `本地命中：${localMap[oui]}`;
+    return;
   }
-  output.value = '查询远程数据库中...'
+  output.value = '查询远程数据库中...';
   try {
     // macvendors.com 返回纯文本厂商名
-    const res = await fetch(`https://api.macvendors.com/${mac}`)
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const vendor = await res.text()
-    output.value = vendor || '未查询到厂商信息'
+    const res = await fetch(`https://api.macvendors.com/${mac}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const vendor = await res.text();
+    output.value = vendor || '未查询到厂商信息';
   } catch (e: any) {
-    output.value = `查询失败：${e?.message || e}\n提示：可扩充本地 OUI 字典，或改用其他公共服务。`
+    output.value = `查询失败：${e?.message || e}\n提示：可扩充本地 OUI 字典，或改用其他公共服务。`;
   }
 }
 
 async function copyToClipboard() {
-  if (!output.value) return
+  if (!output.value) return;
   try {
-    await navigator.clipboard.writeText(output.value)
-    alert('已复制到剪贴板')
+    await navigator.clipboard.writeText(output.value);
+    alert('已复制到剪贴板');
   } catch (err) {
-    console.error('复制失败:', err)
-    alert('复制失败，请重试')
+    console.error('复制失败:', err);
+    alert('复制失败，请重试');
   }
 }
 </script>

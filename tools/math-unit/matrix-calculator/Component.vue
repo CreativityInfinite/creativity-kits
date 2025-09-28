@@ -116,54 +116,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 interface Matrix {
-  rows: number
-  cols: number
-  data: number[]
+  rows: number;
+  cols: number;
+  data: number[];
 }
 
 const matrixA = ref<Matrix>({
   rows: 2,
   cols: 2,
   data: [1, 2, 3, 4]
-})
+});
 
 const matrixB = ref<Matrix>({
   rows: 2,
   cols: 2,
   data: [5, 6, 7, 8]
-})
+});
 
-const result = ref<any>(null)
+const result = ref<any>(null);
 
 const canAddSubtract = computed(() => {
-  return matrixA.value.rows === matrixB.value.rows && matrixA.value.cols === matrixB.value.cols
-})
+  return matrixA.value.rows === matrixB.value.rows && matrixA.value.cols === matrixB.value.cols;
+});
 
 const canMultiply = computed(() => {
-  return matrixA.value.cols === matrixB.value.rows
-})
+  return matrixA.value.cols === matrixB.value.rows;
+});
 
 const isSquareA = computed(() => {
-  return matrixA.value.rows === matrixA.value.cols
-})
+  return matrixA.value.rows === matrixA.value.cols;
+});
 
 const isSquareB = computed(() => {
-  return matrixB.value.rows === matrixB.value.cols
-})
+  return matrixB.value.rows === matrixB.value.cols;
+});
 
 function resizeMatrix(matrix: 'A' | 'B') {
-  const target = matrix === 'A' ? matrixA.value : matrixB.value
-  const newSize = target.rows * target.cols
+  const target = matrix === 'A' ? matrixA.value : matrixB.value;
+  const newSize = target.rows * target.cols;
 
   if (target.data.length < newSize) {
     // 扩展矩阵，用0填充
-    target.data = [...target.data, ...Array(newSize - target.data.length).fill(0)]
+    target.data = [...target.data, ...Array(newSize - target.data.length).fill(0)];
   } else if (target.data.length > newSize) {
     // 缩小矩阵
-    target.data = target.data.slice(0, newSize)
+    target.data = target.data.slice(0, newSize);
   }
 }
 
@@ -171,67 +171,67 @@ function calculate(operation: string) {
   try {
     switch (operation) {
       case 'add':
-        result.value = addMatrices(matrixA.value, matrixB.value)
-        break
+        result.value = addMatrices(matrixA.value, matrixB.value);
+        break;
       case 'subtract':
-        result.value = subtractMatrices(matrixA.value, matrixB.value)
-        break
+        result.value = subtractMatrices(matrixA.value, matrixB.value);
+        break;
       case 'multiply':
-        result.value = multiplyMatrices(matrixA.value, matrixB.value)
-        break
+        result.value = multiplyMatrices(matrixA.value, matrixB.value);
+        break;
       case 'determinant':
-        result.value = calculateDeterminant(matrixA.value)
-        break
+        result.value = calculateDeterminant(matrixA.value);
+        break;
     }
   } catch (error: any) {
-    result.value = { error: error.message }
+    result.value = { error: error.message };
   }
 }
 
 function addMatrices(a: Matrix, b: Matrix): any {
   if (a.rows !== b.rows || a.cols !== b.cols) {
-    throw new Error('矩阵维度不匹配')
+    throw new Error('矩阵维度不匹配');
   }
 
-  const data = a.data.map((val, index) => val + b.data[index])
+  const data = a.data.map((val, index) => val + b.data[index]);
 
   return {
     type: 'matrix',
     rows: a.rows,
     cols: a.cols,
     data
-  }
+  };
 }
 
 function subtractMatrices(a: Matrix, b: Matrix): any {
   if (a.rows !== b.rows || a.cols !== b.cols) {
-    throw new Error('矩阵维度不匹配')
+    throw new Error('矩阵维度不匹配');
   }
 
-  const data = a.data.map((val, index) => val - b.data[index])
+  const data = a.data.map((val, index) => val - b.data[index]);
 
   return {
     type: 'matrix',
     rows: a.rows,
     cols: a.cols,
     data
-  }
+  };
 }
 
 function multiplyMatrices(a: Matrix, b: Matrix): any {
   if (a.cols !== b.rows) {
-    throw new Error('矩阵维度不匹配：A的列数必须等于B的行数')
+    throw new Error('矩阵维度不匹配：A的列数必须等于B的行数');
   }
 
-  const result = []
+  const result = [];
 
   for (let i = 0; i < a.rows; i++) {
     for (let j = 0; j < b.cols; j++) {
-      let sum = 0
+      let sum = 0;
       for (let k = 0; k < a.cols; k++) {
-        sum += a.data[i * a.cols + k] * b.data[k * b.cols + j]
+        sum += a.data[i * a.cols + k] * b.data[k * b.cols + j];
       }
-      result.push(sum)
+      result.push(sum);
     }
   }
 
@@ -240,49 +240,49 @@ function multiplyMatrices(a: Matrix, b: Matrix): any {
     rows: a.rows,
     cols: b.cols,
     data: result
-  }
+  };
 }
 
 function calculateDeterminant(matrix: Matrix): any {
   if (matrix.rows !== matrix.cols) {
-    throw new Error('只能计算方阵的行列式')
+    throw new Error('只能计算方阵的行列式');
   }
 
-  const n = matrix.rows
+  const n = matrix.rows;
 
   if (n === 1) {
-    return { type: 'scalar', value: matrix.data[0] }
+    return { type: 'scalar', value: matrix.data[0] };
   }
 
   if (n === 2) {
-    const det = matrix.data[0] * matrix.data[3] - matrix.data[1] * matrix.data[2]
-    return { type: 'scalar', value: det }
+    const det = matrix.data[0] * matrix.data[3] - matrix.data[1] * matrix.data[2];
+    return { type: 'scalar', value: det };
   }
 
   if (n === 3) {
-    const [a, b, c, d, e, f, g, h, i] = matrix.data
-    const det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
-    return { type: 'scalar', value: det }
+    const [a, b, c, d, e, f, g, h, i] = matrix.data;
+    const det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+    return { type: 'scalar', value: det };
   }
 
-  throw new Error('暂不支持4×4以上矩阵的行列式计算')
+  throw new Error('暂不支持4×4以上矩阵的行列式计算');
 }
 
 function fillRandom(matrix: 'A' | 'B') {
-  const target = matrix === 'A' ? matrixA.value : matrixB.value
-  target.data = target.data.map(() => Math.floor(Math.random() * 20) - 10)
+  const target = matrix === 'A' ? matrixA.value : matrixB.value;
+  target.data = target.data.map(() => Math.floor(Math.random() * 20) - 10);
 }
 
 function clearMatrices() {
-  matrixA.value.data.fill(0)
-  matrixB.value.data.fill(0)
-  result.value = null
+  matrixA.value.data.fill(0);
+  matrixB.value.data.fill(0);
+  result.value = null;
 }
 
 function formatNumber(num: number): string {
   if (Number.isInteger(num)) {
-    return num.toString()
+    return num.toString();
   }
-  return num.toFixed(2)
+  return num.toFixed(2);
 }
 </script>

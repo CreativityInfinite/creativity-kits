@@ -37,76 +37,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const year = ref(new Date().getFullYear())
-const maxValue = ref(5)
-const raw = ref('')
-const svg = ref('')
+const year = ref(new Date().getFullYear());
+const maxValue = ref(5);
+const raw = ref('');
+const svg = ref('');
 
 function dateToWeekIndex(d: Date) {
-  const start = new Date(d.getFullYear(), 0, 1)
-  const diff = Math.floor((+d - +start) / 86400000)
-  return Math.floor((diff + start.getDay()) / 7)
+  const start = new Date(d.getFullYear(), 0, 1);
+  const diff = Math.floor((+d - +start) / 86400000);
+  return Math.floor((diff + start.getDay()) / 7);
 }
 
 function colorFor(v: number) {
-  const a = Math.max(0, Math.min(1, v / Math.max(1, maxValue.value)))
-  const g = Math.round(255 * (1 - a))
-  const b = Math.round(255 * (1 - a * 0.3))
-  return `rgb(34, ${g}, ${b})`
+  const a = Math.max(0, Math.min(1, v / Math.max(1, maxValue.value)));
+  const g = Math.round(255 * (1 - a));
+  const b = Math.round(255 * (1 - a * 0.3));
+  return `rgb(34, ${g}, ${b})`;
 }
 
 function generate() {
-  const data = new Map<string, number>()
+  const data = new Map<string, number>();
   for (const line of (raw.value || '').split(/\r?\n/)) {
-    const m = line.trim().match(/^(\d{4})-(\d{2})-(\d{2})\s*,\s*(-?\d+(\.\d+)?)$/)
-    if (m) data.set(m[1] + '-' + m[2] + '-' + m[3], Number(m[4]))
+    const m = line.trim().match(/^(\d{4})-(\d{2})-(\d{2})\s*,\s*(-?\d+(\.\d+)?)$/);
+    if (m) data.set(m[1] + '-' + m[2] + '-' + m[3], Number(m[4]));
   }
 
-  const start = new Date(year.value, 0, 1)
-  const end = new Date(year.value, 11, 31)
-  const dayRects: string[] = []
-  let maxWeek = 0
+  const start = new Date(year.value, 0, 1);
+  const end = new Date(year.value, 11, 31);
+  const dayRects: string[] = [];
+  let maxWeek = 0;
 
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const key = d.toISOString().split('T')[0]
-    const v = data.get(key) || 0
-    const week = dateToWeekIndex(d)
-    maxWeek = Math.max(maxWeek, week)
-    const day = d.getDay()
-    const x = week * 14
-    const y = day * 14
-    const fill = v === 0 ? '#ebedf0' : colorFor(v)
-    dayRects.push(`<rect x="${x}" y="${y}" width="12" height="12" rx="2" ry="2" fill="${fill}" data-date="${key}" />`)
+    const key = d.toISOString().split('T')[0];
+    const v = data.get(key) || 0;
+    const week = dateToWeekIndex(d);
+    maxWeek = Math.max(maxWeek, week);
+    const day = d.getDay();
+    const x = week * 14;
+    const y = day * 14;
+    const fill = v === 0 ? '#ebedf0' : colorFor(v);
+    dayRects.push(`<rect x="${x}" y="${y}" width="12" height="12" rx="2" ry="2" fill="${fill}" data-date="${key}" />`);
   }
 
-  const width = (maxWeek + 1) * 14 + 2
-  const height = 7 * 14 + 2
-  svg.value = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">${dayRects.join('')}</svg>`
+  const width = (maxWeek + 1) * 14 + 2;
+  const height = 7 * 14 + 2;
+  svg.value = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">${dayRects.join('')}</svg>`;
 }
 
 function fillRandom() {
-  const start = new Date(year.value, 0, 1)
-  const end = new Date(year.value, 11, 31)
-  const lines: string[] = []
+  const start = new Date(year.value, 0, 1);
+  const end = new Date(year.value, 11, 31);
+  const lines: string[] = [];
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     if (Math.random() < 0.4) {
-      const key = d.toISOString().split('T')[0]
-      lines.push(`${key}, ${Math.floor(Math.random() * (maxValue.value + 1))}`)
+      const key = d.toISOString().split('T')[0];
+      lines.push(`${key}, ${Math.floor(Math.random() * (maxValue.value + 1))}`);
     }
   }
-  raw.value = lines.join('\n')
+  raw.value = lines.join('\n');
 }
 
 function downloadSvg() {
-  if (!svg.value) return
-  const blob = new Blob([svg.value], { type: 'image/svg+xml' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `heatmap-${year.value}.svg`
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!svg.value) return;
+  const blob = new Blob([svg.value], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `heatmap-${year.value}.svg`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

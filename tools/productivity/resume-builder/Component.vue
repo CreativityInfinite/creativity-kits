@@ -39,80 +39,80 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const input = ref('')
-const output = ref('')
+const input = ref('');
+const output = ref('');
 
 function process() {
-  const src = input.value.trim()
+  const src = input.value.trim();
   if (!src) {
-    output.value = ''
-    return
+    output.value = '';
+    return;
   }
   try {
     const data = JSON.parse(src) as {
-      name?: string
-      title?: string
-      contact?: { email?: string; phone?: string; website?: string }
-      summary?: string
-      skills?: string[]
-      experience?: { company?: string; role?: string; period?: string; details?: string[] }[]
-      education?: { school?: string; degree?: string; period?: string; details?: string[] }[]
-    }
+      name?: string;
+      title?: string;
+      contact?: { email?: string; phone?: string; website?: string };
+      summary?: string;
+      skills?: string[];
+      experience?: { company?: string; role?: string; period?: string; details?: string[] }[];
+      education?: { school?: string; degree?: string; period?: string; details?: string[] }[];
+    };
 
-    const lines: string[] = []
-    if (data.name) lines.push(`# ${data.name}`)
-    if (data.title) lines.push(`_${data.title}_`)
-    lines.push('')
+    const lines: string[] = [];
+    if (data.name) lines.push(`# ${data.name}`);
+    if (data.title) lines.push(`_${data.title}_`);
+    lines.push('');
 
     if (data.contact && (data.contact.email || data.contact.phone || data.contact.website)) {
-      lines.push('**联系方式**')
-      if (data.contact.email) lines.push(`- 邮箱：${data.contact.email}`)
-      if (data.contact.phone) lines.push(`- 电话：${data.contact.phone}`)
-      if (data.contact.website) lines.push(`- 网站：${data.contact.website}`)
-      lines.push('')
+      lines.push('**联系方式**');
+      if (data.contact.email) lines.push(`- 邮箱：${data.contact.email}`);
+      if (data.contact.phone) lines.push(`- 电话：${data.contact.phone}`);
+      if (data.contact.website) lines.push(`- 网站：${data.contact.website}`);
+      lines.push('');
     }
 
     if (data.summary) {
-      lines.push('## 概要')
-      lines.push(data.summary)
-      lines.push('')
+      lines.push('## 概要');
+      lines.push(data.summary);
+      lines.push('');
     }
 
     if (Array.isArray(data.skills) && data.skills.length) {
-      lines.push('## 技能')
-      lines.push(data.skills.map((s) => `- ${s}`).join('\n'))
-      lines.push('')
+      lines.push('## 技能');
+      lines.push(data.skills.map((s) => `- ${s}`).join('\n'));
+      lines.push('');
     }
 
     if (Array.isArray(data.experience) && data.experience.length) {
-      lines.push('## 工作经历')
+      lines.push('## 工作经历');
       for (const exp of data.experience) {
-        const title = [exp.company, exp.role].filter(Boolean).join(' | ')
-        const period = exp.period ? `（${exp.period}）` : ''
-        lines.push(`- ${title}${period}`)
+        const title = [exp.company, exp.role].filter(Boolean).join(' | ');
+        const period = exp.period ? `（${exp.period}）` : '';
+        lines.push(`- ${title}${period}`);
         if (Array.isArray(exp.details) && exp.details.length) {
-          lines.push(exp.details.map((d) => `  - ${d}`).join('\n'))
+          lines.push(exp.details.map((d) => `  - ${d}`).join('\n'));
         }
       }
-      lines.push('')
+      lines.push('');
     }
 
     if (Array.isArray(data.education) && data.education.length) {
-      lines.push('## 教育经历')
+      lines.push('## 教育经历');
       for (const edu of data.education) {
-        const title = [edu.school, edu.degree].filter(Boolean).join(' | ')
-        const period = edu.period ? `（${edu.period}）` : ''
-        lines.push(`- ${title}${period}`)
+        const title = [edu.school, edu.degree].filter(Boolean).join(' | ');
+        const period = edu.period ? `（${edu.period}）` : '';
+        lines.push(`- ${title}${period}`);
         if (Array.isArray(edu.details) && edu.details.length) {
-          lines.push(edu.details.map((d) => `  - ${d}`).join('\n'))
+          lines.push(edu.details.map((d) => `  - ${d}`).join('\n'));
         }
       }
-      lines.push('')
+      lines.push('');
     }
 
-    output.value = lines.join('\n').trim()
+    output.value = lines.join('\n').trim();
   } catch (e: any) {
     output.value = `解析失败：请提供有效的 JSON。示例：
 {
@@ -127,18 +127,18 @@ function process() {
   "education": [
     { "school": "某大学", "degree": "学士", "period": "2016-2020", "details": ["主修计算机科学"] }
   ]
-}`
+}`;
   }
 }
 
 async function copyToClipboard() {
-  if (!output.value) return
+  if (!output.value) return;
   try {
-    await navigator.clipboard.writeText(output.value)
-    alert('已复制到剪贴板')
+    await navigator.clipboard.writeText(output.value);
+    alert('已复制到剪贴板');
   } catch (err) {
-    console.error('复制失败:', err)
-    alert('复制失败，请重试')
+    console.error('复制失败:', err);
+    alert('复制失败，请重试');
   }
 }
 </script>

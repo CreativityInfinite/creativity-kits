@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import type { Ref } from 'vue';
 
 /**
  * 统一的图标/背景计算工具，保持与首页 ToolCard 一致的视觉：
@@ -7,10 +7,10 @@ import type { Ref } from 'vue'
  */
 
 export function getDisplayBg(color?: string | null): string {
-  const c = (color ?? '').toString().trim()
-  if (!c) return 'linear-gradient(135deg, var(--color-primary, #38bdf8) 0%, rgba(255,255,255,0.2) 100%)'
-  if (c.includes('gradient(')) return c
-  return `linear-gradient(135deg, ${c} 0%, rgba(255,255,255,0.2) 100%)`
+  const c = (color ?? '').toString().trim();
+  if (!c) return 'linear-gradient(135deg, var(--color-primary, #38bdf8) 0%, rgba(255,255,255,0.2) 100%)';
+  if (c.includes('gradient(')) return c;
+  return `linear-gradient(135deg, ${c} 0%, rgba(255,255,255,0.2) 100%)`;
 }
 
 /**
@@ -33,13 +33,13 @@ const CATEGORY_COLOR_MAP: Record<string, string> = {
   'education-language': 'linear-gradient(135deg,#06b6d4,#3b82f6)',
   'map-geo': 'linear-gradient(135deg,#22d3ee,#06b6d4)',
   'system-browser': 'linear-gradient(135deg,#64748b,#0ea5e9)'
-}
+};
 
-const DEFAULT_GRADIENT = 'linear-gradient(135deg, var(--color-primary, #38bdf8) 0%, rgba(255,255,255,0.2) 100%)'
+const DEFAULT_GRADIENT = 'linear-gradient(135deg, var(--color-primary, #38bdf8) 0%, rgba(255,255,255,0.2) 100%)';
 
 export function getDisplayBgUnified(color?: string | null, category?: string | null): string {
-  const chosen = (color && color.toString().trim()) || (category ? CATEGORY_COLOR_MAP[category] : '') || ''
-  return getDisplayBg(chosen || DEFAULT_GRADIENT)
+  const chosen = (color && color.toString().trim()) || (category ? CATEGORY_COLOR_MAP[category] : '') || '';
+  return getDisplayBg(chosen || DEFAULT_GRADIENT);
 }
 
 /** 分类 → 默认图标（与 ToolCard 原有映射一致） */
@@ -58,11 +58,11 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   'education-language': 'mdi:translate',
   'map-geo': 'mdi:map-marker-path',
   'system-browser': 'mdi:application-cog'
-}
+};
 
 /** 统一的图标选择：优先传入 icon 字符串，否则按分类回退，再否则默认 'tabler:apps' */
 export function getDisplayIconUnified(icon?: unknown, category?: string | null): string {
-  if (typeof icon === 'string' && icon.trim().length) return icon
-  if (category && CATEGORY_ICON_MAP[category]) return CATEGORY_ICON_MAP[category]
-  return 'tabler:apps'
+  if (typeof icon === 'string' && icon.trim().length) return icon;
+  if (category && CATEGORY_ICON_MAP[category]) return CATEGORY_ICON_MAP[category];
+  return 'tabler:apps';
 }

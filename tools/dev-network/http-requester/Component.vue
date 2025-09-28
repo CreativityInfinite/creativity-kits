@@ -324,56 +324,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface Header {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }
 
 interface FormParam {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }
 
 interface Request {
-  method: string
-  url: string
-  headers: Header[]
-  body: string
-  bodyType: 'none' | 'json' | 'form' | 'text' | 'xml'
-  formData: FormParam[]
-  timeout: number
-  followRedirects: boolean
-  validateSSL: boolean
+  method: string;
+  url: string;
+  headers: Header[];
+  body: string;
+  bodyType: 'none' | 'json' | 'form' | 'text' | 'xml';
+  formData: FormParam[];
+  timeout: number;
+  followRedirects: boolean;
+  validateSSL: boolean;
 }
 
 interface Response {
-  status: number
-  statusText: string
-  headers: Record<string, string>
-  data: string
-  duration: number
-  size: number
-  contentType: string
+  status: number;
+  statusText: string;
+  headers: Record<string, string>;
+  data: string;
+  duration: number;
+  size: number;
+  contentType: string;
 }
 
 interface SavedRequest {
-  name: string
-  method: string
-  url: string
-  headers: Header[]
-  body: string
-  bodyType: string
-  formData: FormParam[]
+  name: string;
+  method: string;
+  url: string;
+  headers: Header[];
+  body: string;
+  bodyType: string;
+  formData: FormParam[];
 }
 
 interface RequestHistory {
-  method: string
-  url: string
-  status?: number
-  timestamp: string
-  request: Request
+  method: string;
+  url: string;
+  status?: number;
+  timestamp: string;
+  request: Request;
 }
 
 const request = ref<Request>({
@@ -386,89 +386,86 @@ const request = ref<Request>({
   timeout: 30,
   followRedirects: true,
   validateSSL: true
-})
+});
 
-const response = ref<Response | null>(null)
-const error = ref<string>('')
-const isLoading = ref(false)
-const responseFormat = ref<'raw' | 'json' | 'xml' | 'preview'>('raw')
-const savedRequests = ref<SavedRequest[]>([])
-const requestHistory = ref<RequestHistory[]>([])
+const response = ref<Response | null>(null);
+const error = ref<string>('');
+const isLoading = ref(false);
+const responseFormat = ref<'raw' | 'json' | 'xml' | 'preview'>('raw');
+const savedRequests = ref<SavedRequest[]>([]);
+const requestHistory = ref<RequestHistory[]>([]);
 
-const responseFormats = ['raw', 'json', 'xml', 'preview']
+const responseFormats = ['raw', 'json', 'xml', 'preview'];
 
 onMounted(() => {
-  loadSavedRequests()
-  loadRequestHistory()
-})
+  loadSavedRequests();
+  loadRequestHistory();
+});
 
 function addHeader() {
-  request.value.headers.push({ key: '', value: '' })
+  request.value.headers.push({ key: '', value: '' });
 }
 
 function removeHeader(index: number) {
-  request.value.headers.splice(index, 1)
+  request.value.headers.splice(index, 1);
 }
 
 function addCommonHeader(key: string, value: string) {
-  const existingIndex = request.value.headers.findIndex((h) => h.key.toLowerCase() === key.toLowerCase())
+  const existingIndex = request.value.headers.findIndex((h) => h.key.toLowerCase() === key.toLowerCase());
   if (existingIndex >= 0) {
-    request.value.headers[existingIndex].value = value
+    request.value.headers[existingIndex].value = value;
   } else {
-    request.value.headers.push({ key, value })
+    request.value.headers.push({ key, value });
   }
 }
 
 function addFormParam() {
-  request.value.formData.push({ key: '', value: '' })
+  request.value.formData.push({ key: '', value: '' });
 }
 
 function removeFormParam(index: number) {
-  request.value.formData.splice(index, 1)
+  request.value.formData.splice(index, 1);
 }
 
 function getBodyPlaceholder(): string {
   switch (request.value.bodyType) {
     case 'json':
-      return '{\n  "key": "value"\n}'
+      return '{\n  "key": "value"\n}';
     case 'xml':
-      return '<?xml version="1.0" encoding="UTF-8"?>\n<root>\n  <item>value</item>\n</root>'
+      return '<?xml version="1.0" encoding="UTF-8"?>\n<root>\n  <item>value</item>\n</root>';
     case 'text':
-      return '输入纯文本内容...'
+      return '输入纯文本内容...';
     default:
-      return ''
+      return '';
   }
 }
 
 function getBodyLength(): number {
   if (request.value.bodyType === 'form') {
-    return request.value.formData.reduce((acc, param) => acc + param.key.length + param.value.length, 0)
+    return request.value.formData.reduce((acc, param) => acc + param.key.length + param.value.length, 0);
   }
-  return request.value.body.length
+  return request.value.body.length;
 }
 
 function getBodyByteLength(): number {
   const text =
     request.value.bodyType === 'form'
       ? new URLSearchParams(
-          request.value.formData.reduce(
-            (acc, param) => {
-              acc[param.key] = param.value
-              return acc
-            },
-            {} as Record<string, string>
-          )
+          request.value.formData.reduce((acc, param) => {
+            acc[param.key] = param.value;
+            return acc;
+          }, {} as Record<string, string>)
         ).toString()
-      : request.value.body
+      : request.value.body;
 
-  return new Blob([text]).size
+  return new Blob([text]).size;
 }
 
 function formatBody() {
   if (request.value.bodyType === 'json') {
     try {
-      const parsed = JSON.parse(request.value.body)
-      request.value.body = JSON.stringify(parsed, null, 2)
+      const parsed = JSON.parse(request.value.body);
+      request.value.body = JSON.stringify(parsed, null, 2);
     } catch (error) {
       // 忽略格式化错误
     }
@@ -477,15 +474,15 @@ function formatBody() {
 
 async function sendRequest() {
   if (!request.value.url) {
-    error.value = '请输入请求 URL'
-    return
+    error.value = '请输入请求 URL';
+    return;
   }
 
-  isLoading.value = true
-  error.value = ''
-  response.value = null
+  isLoading.value = true;
+  error.value = '';
+  response.value = null;
 
-  const startTime = Date.now()
+  const startTime = Date.now();
 
   try {
     // 构建请求选项
@@ -493,60 +490,60 @@ async function sendRequest() {
       method: request.value.method,
       headers: {},
       signal: AbortSignal.timeout(request.value.timeout * 1000)
-    }
+    };
 
     // 添加请求头
     request.value.headers.forEach((header) => {
       if (header.key && header.value) {
-        ;(options.headers as Record<string, string>)[header.key] = header.value
+        (options.headers as Record<string, string>)[header.key] = header.value;
       }
-    })
+    });
 
     // 添加请求体
     if (request.value.method !== 'GET' && request.value.method !== 'HEAD') {
       if (request.value.bodyType === 'form') {
-        const formData = new URLSearchParams()
+        const formData = new URLSearchParams();
         request.value.formData.forEach((param) => {
           if (param.key) {
-            formData.append(param.key, param.value)
+            formData.append(param.key, param.value);
           }
-        })
-        options.body = formData.toString()
+        });
+        options.body = formData.toString();
         if (!(options.headers as Record<string, string>)['Content-Type']) {
-          ;(options.headers as Record<string, string>)['Content-Type'] = 'application/x-www-form-urlencoded'
+          (options.headers as Record<string, string>)['Content-Type'] = 'application/x-www-form-urlencoded';
         }
       } else if (request.value.bodyType !== 'none' && request.value.body) {
-        options.body = request.value.body
+        options.body = request.value.body;
 
         // 自动设置 Content-Type
         if (!(options.headers as Record<string, string>)['Content-Type']) {
           switch (request.value.bodyType) {
             case 'json':
-              ;(options.headers as Record<string, string>)['Content-Type'] = 'application/json'
-              break
+              (options.headers as Record<string, string>)['Content-Type'] = 'application/json';
+              break;
             case 'xml':
-              ;(options.headers as Record<string, string>)['Content-Type'] = 'application/xml'
-              break
+              (options.headers as Record<string, string>)['Content-Type'] = 'application/xml';
+              break;
             case 'text':
-              ;(options.headers as Record<string, string>)['Content-Type'] = 'text/plain'
-              break
+              (options.headers as Record<string, string>)['Content-Type'] = 'text/plain';
+              break;
           }
         }
       }
     }
 
-    const fetchResponse = await fetch(request.value.url, options)
-    const duration = Date.now() - startTime
+    const fetchResponse = await fetch(request.value.url, options);
+    const duration = Date.now() - startTime;
 
     // 获取响应头
-    const responseHeaders: Record<string, string> = {}
+    const responseHeaders: Record<string, string> = {};
     fetchResponse.headers.forEach((value, key) => {
-      responseHeaders[key] = value
-    })
+      responseHeaders[key] = value;
+    });
 
     // 获取响应数据
-    const responseText = await fetchResponse.text()
-    const contentType = fetchResponse.headers.get('content-type') || 'text/plain'
+    const responseText = await fetchResponse.text();
+    const contentType = fetchResponse.headers.get('content-type') || 'text/plain';
 
     response.value = {
       status: fetchResponse.status,
@@ -556,35 +553,35 @@ async function sendRequest() {
       duration,
       size: new Blob([responseText]).size,
       contentType
-    }
+    };
 
     // 自动选择响应格式
     if (contentType.includes('application/json')) {
-      responseFormat.value = 'json'
+      responseFormat.value = 'json';
     } else if (contentType.includes('xml')) {
-      responseFormat.value = 'xml'
+      responseFormat.value = 'xml';
     } else if (contentType.includes('text/html') || contentType.includes('image/')) {
-      responseFormat.value = 'preview'
+      responseFormat.value = 'preview';
     } else {
-      responseFormat.value = 'raw'
+      responseFormat.value = 'raw';
     }
 
     // 添加到历史记录
-    addToHistory(fetchResponse.status)
+    addToHistory(fetchResponse.status);
   } catch (err: any) {
-    const duration = Date.now() - startTime
-    error.value = err.name === 'AbortError' ? '请求超时' : err.message || '请求失败'
+    const duration = Date.now() - startTime;
+    error.value = err.name === 'AbortError' ? '请求超时' : err.message || '请求失败';
 
     // 添加到历史记录
-    addToHistory()
+    addToHistory();
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
 function saveRequest() {
-  const name = prompt('请输入请求名称:')
-  if (!name) return
+  const name = prompt('请输入请求名称:');
+  if (!name) return;
 
   const savedRequest: SavedRequest = {
     name,
@@ -594,11 +591,11 @@ function saveRequest() {
     body: request.value.body,
     bodyType: request.value.bodyType,
     formData: [...request.value.formData]
-  }
+  };
 
-  savedRequests.value.unshift(savedRequest)
-  savedRequests.value = savedRequests.value.slice(0, 20) // 限制数量
-  saveSavedRequests()
+  savedRequests.value.unshift(savedRequest);
+  savedRequests.value = savedRequests.value.slice(0, 20); // 限制数量
+  saveSavedRequests();
 }
 
 function loadSavedRequest(saved: SavedRequest) {
@@ -612,91 +609,91 @@ function loadSavedRequest(saved: SavedRequest) {
     timeout: request.value.timeout,
     followRedirects: request.value.followRedirects,
     validateSSL: request.value.validateSSL
-  }
+  };
 }
 
 function deleteSavedRequest(index: number) {
-  savedRequests.value.splice(index, 1)
-  saveSavedRequests()
+  savedRequests.value.splice(index, 1);
+  saveSavedRequests();
 }
 
 function exportCurl() {
-  let curl = `curl -X ${request.value.method}`
+  let curl = `curl -X ${request.value.method}`;
 
   // 添加 URL
-  curl += ` "${request.value.url}"`
+  curl += ` "${request.value.url}"`;
 
   // 添加请求头
   request.value.headers.forEach((header) => {
     if (header.key && header.value) {
-      curl += ` -H "${header.key}: ${header.value}"`
+      curl += ` -H "${header.key}: ${header.value}"`;
     }
-  })
+  });
 
   // 添加请求体
   if (request.value.method !== 'GET' && request.value.method !== 'HEAD') {
     if (request.value.bodyType === 'form') {
       request.value.formData.forEach((param) => {
         if (param.key) {
-          curl += ` -d "${param.key}=${param.value}"`
+          curl += ` -d "${param.key}=${param.value}"`;
         }
-      })
+      });
     } else if (request.value.bodyType !== 'none' && request.value.body) {
-      curl += ` -d '${request.value.body.replace(/'/g, "\\'")}'`
+      curl += ` -d '${request.value.body.replace(/'/g, "\\'")}'`;
     }
   }
 
   // 添加其他选项
   if (!request.value.followRedirects) {
-    curl += ' --no-location'
+    curl += ' --no-location';
   }
 
   if (!request.value.validateSSL) {
-    curl += ' -k'
+    curl += ' -k';
   }
 
-  curl += ` --max-time ${request.value.timeout}`
+  curl += ` --max-time ${request.value.timeout}`;
 
-  copyText(curl)
+  copyText(curl);
 }
 
 function importCurl() {
-  const curlCommand = prompt('请输入 cURL 命令:')
-  if (!curlCommand) return
+  const curlCommand = prompt('请输入 cURL 命令:');
+  if (!curlCommand) return;
 
   try {
     // 简单的 cURL 解析（实际应用中可能需要更复杂的解析器）
-    const parts = curlCommand.trim().split(/\s+/)
+    const parts = curlCommand.trim().split(/\s+/);
 
     // 重置请求
-    clearRequest()
+    clearRequest();
 
     for (let i = 0; i < parts.length; i++) {
-      const part = parts[i]
+      const part = parts[i];
 
       if (part === '-X' && i + 1 < parts.length) {
-        request.value.method = parts[i + 1].toUpperCase()
-        i++
+        request.value.method = parts[i + 1].toUpperCase();
+        i++;
       } else if (part === '-H' && i + 1 < parts.length) {
-        const header = parts[i + 1].replace(/"/g, '')
-        const [key, ...valueParts] = header.split(':')
+        const header = parts[i + 1].replace(/"/g, '');
+        const [key, ...valueParts] = header.split(':');
         if (key && valueParts.length > 0) {
           request.value.headers.push({
             key: key.trim(),
             value: valueParts.join(':').trim()
-          })
+          });
         }
-        i++
+        i++;
       } else if (part === '-d' && i + 1 < parts.length) {
-        request.value.body = parts[i + 1].replace(/^['"]|['"]$/g, '')
-        request.value.bodyType = 'json'
-        i++
+        request.value.body = parts[i + 1].replace(/^['"]|['"]$/g, '');
+        request.value.bodyType = 'json';
+        i++;
       } else if (part.startsWith('http')) {
-        request.value.url = part.replace(/"/g, '')
+        request.value.url = part.replace(/"/g, '');
       }
     }
   } catch (error) {
-    alert('cURL 命令解析失败')
+    alert('cURL 命令解析失败');
   }
 }
 
@@ -714,7 +711,7 @@ function loadExample() {
     timeout: 30,
     followRedirects: true,
     validateSSL: true
-  }
+  };
 }
 
 function clearRequest() {
@@ -728,13 +725,13 @@ function clearRequest() {
     timeout: 30,
     followRedirects: true,
     validateSSL: true
-  }
-  response.value = null
-  error.value = ''
+  };
+  response.value = null;
+  error.value = '';
 }
 
 function loadFromHistory(history: RequestHistory) {
-  request.value = { ...history.request }
+  request.value = { ...history.request };
 }
 
 function addToHistory(status?: number) {
@@ -744,156 +741,156 @@ function addToHistory(status?: number) {
     status,
     timestamp: new Date().toLocaleString(),
     request: { ...request.value }
-  }
+  };
 
-  requestHistory.value.unshift(historyItem)
-  requestHistory.value = requestHistory.value.slice(0, 50) // 限制历史记录数量
-  saveRequestHistory()
+  requestHistory.value.unshift(historyItem);
+  requestHistory.value = requestHistory.value.slice(0, 50); // 限制历史记录数量
+  saveRequestHistory();
 }
 
 function clearHistory() {
-  requestHistory.value = []
-  saveRequestHistory()
+  requestHistory.value = [];
+  saveRequestHistory();
 }
 
 async function copyText(text: string) {
   try {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(text);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 async function copyResponse() {
-  if (!response.value) return
+  if (!response.value) return;
 
   const text = `Status: ${response.value.status}\nHeaders:\n${Object.entries(response.value.headers)
     .map(([k, v]) => `${k}: ${v}`)
-    .join('\n')}\n\nBody:\n${response.value.data}`
+    .join('\n')}\n\nBody:\n${response.value.data}`;
 
   try {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(text);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function downloadResponse() {
-  if (!response.value) return
+  if (!response.value) return;
 
-  const blob = new Blob([response.value.data], { type: response.value.contentType })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `response-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([response.value.data], { type: response.value.contentType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `response-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function getStatusClass(status: number): string {
-  if (status >= 200 && status < 300) return 'text-green-600'
-  if (status >= 300 && status < 400) return 'text-yellow-600'
-  if (status >= 400 && status < 500) return 'text-orange-600'
-  if (status >= 500) return 'text-red-600'
-  return 'text-gray-600'
+  if (status >= 200 && status < 300) return 'text-green-600';
+  if (status >= 300 && status < 400) return 'text-yellow-600';
+  if (status >= 400 && status < 500) return 'text-orange-600';
+  if (status >= 500) return 'text-red-600';
+  return 'text-gray-600';
 }
 
 function getMethodClass(method: string): string {
   switch (method) {
     case 'GET':
-      return 'text-blue-600'
+      return 'text-blue-600';
     case 'POST':
-      return 'text-green-600'
+      return 'text-green-600';
     case 'PUT':
-      return 'text-yellow-600'
+      return 'text-yellow-600';
     case 'DELETE':
-      return 'text-red-600'
+      return 'text-red-600';
     case 'PATCH':
-      return 'text-purple-600'
+      return 'text-purple-600';
     default:
-      return 'text-gray-600'
+      return 'text-gray-600';
   }
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 function highlightJson(text: string): string {
   try {
-    const parsed = JSON.parse(text)
-    const formatted = JSON.stringify(parsed, null, 2)
+    const parsed = JSON.parse(text);
+    const formatted = JSON.stringify(parsed, null, 2);
 
     return formatted
       .replace(/(".*?")\s*:/g, '<span class="text-blue-600">$1</span>:')
       .replace(/:\s*(".*?")/g, ': <span class="text-green-600">$1</span>')
       .replace(/:\s*(\d+)/g, ': <span class="text-purple-600">$1</span>')
-      .replace(/:\s*(true|false|null)/g, ': <span class="text-orange-600">$1</span>')
+      .replace(/:\s*(true|false|null)/g, ': <span class="text-orange-600">$1</span>');
   } catch (error) {
-    return text
+    return text;
   }
 }
 
 function highlightXml(text: string): string {
-  return text.replace(/(&lt;\/?)([^&\s>]+)/g, '$1<span class="text-blue-600">$2</span>').replace(/(\w+)=("[^"]*")/g, '<span class="text-purple-600">$1</span>=<span class="text-green-600">$2</span>')
+  return text.replace(/(&lt;\/?)([^&\s>]+)/g, '$1<span class="text-blue-600">$2</span>').replace(/(\w+)=("[^"]*")/g, '<span class="text-purple-600">$1</span>=<span class="text-green-600">$2</span>');
 }
 
 function isImageResponse(): boolean {
-  return response.value?.contentType.startsWith('image/') || false
+  return response.value?.contentType.startsWith('image/') || false;
 }
 
 function isHtmlResponse(): boolean {
-  return response.value?.contentType.includes('text/html') || false
+  return response.value?.contentType.includes('text/html') || false;
 }
 
 function getImageDataUrl(): string {
-  if (!response.value || !isImageResponse()) return ''
+  if (!response.value || !isImageResponse()) return '';
 
   // 这里需要处理二进制数据，实际实现中可能需要更复杂的处理
-  return `data:${response.value.contentType};base64,${btoa(response.value.data)}`
+  return `data:${response.value.contentType};base64,${btoa(response.value.data)}`;
 }
 
 function loadSavedRequests() {
   try {
-    const saved = localStorage.getItem('http-requester-saved')
+    const saved = localStorage.getItem('http-requester-saved');
     if (saved) {
-      savedRequests.value = JSON.parse(saved)
+      savedRequests.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载保存的请求失败:', error)
+    console.error('加载保存的请求失败:', error);
   }
 }
 
 function saveSavedRequests() {
   try {
-    localStorage.setItem('http-requester-saved', JSON.stringify(savedRequests.value))
+    localStorage.setItem('http-requester-saved', JSON.stringify(savedRequests.value));
   } catch (error) {
-    console.error('保存请求失败:', error)
+    console.error('保存请求失败:', error);
   }
 }
 
 function loadRequestHistory() {
   try {
-    const saved = localStorage.getItem('http-requester-history')
+    const saved = localStorage.getItem('http-requester-history');
     if (saved) {
-      requestHistory.value = JSON.parse(saved)
+      requestHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载请求历史失败:', error)
+    console.error('加载请求历史失败:', error);
   }
 }
 
 function saveRequestHistory() {
   try {
-    localStorage.setItem('http-requester-history', JSON.stringify(requestHistory.value))
+    localStorage.setItem('http-requester-history', JSON.stringify(requestHistory.value));
   } catch (error) {
-    console.error('保存请求历史失败:', error)
+    console.error('保存请求历史失败:', error);
   }
 }
 </script>

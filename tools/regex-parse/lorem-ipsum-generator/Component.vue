@@ -114,120 +114,140 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
-type HistoryItem = { paragraphs: number; wordsPerParagraph: number; result: string; outputLength: number; timestamp: number }
+type HistoryItem = { paragraphs: number; wordsPerParagraph: number; result: string; outputLength: number; timestamp: number };
 
-const paragraphs = ref(3)
-const wordsPerParagraph = ref(20)
-const withPeriod = ref(true)
-const customWords = ref('')
+const paragraphs = ref(3);
+const wordsPerParagraph = ref(20);
+const withPeriod = ref(true);
+const customWords = ref('');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
-  customWords.value = ''
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
+  customWords.value = '';
 }
 function swapView() {
-  if (!result.value) return
-  copyResult()
+  if (!result.value) return;
+  copyResult();
 }
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const filename = `lorem_${new Date().toISOString().slice(0, 10)}.txt`
-  const blob = new Blob([result.value], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `lorem_${new Date().toISOString().slice(0, 10)}.txt`;
+  const blob = new Blob([result.value], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
+  if (!result.value) return;
   const item: HistoryItem = {
     paragraphs: paragraphs.value,
     wordsPerParagraph: wordsPerParagraph.value,
     result: result.value,
     outputLength: result.value.length,
     timestamp: Date.now()
-  }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('lorem-history', JSON.stringify(history.value))
+  };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('lorem-history', JSON.stringify(history.value));
 }
 function loadFromHistory(item: HistoryItem) {
-  paragraphs.value = item.paragraphs
-  wordsPerParagraph.value = item.wordsPerParagraph
-  result.value = item.result
-  error.value = ''
-  processingTime.value = null
+  paragraphs.value = item.paragraphs;
+  wordsPerParagraph.value = item.wordsPerParagraph;
+  result.value = item.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  localStorage.setItem('lorem-history', JSON.stringify(history.value))
+  history.value.splice(index, 1);
+  localStorage.setItem('lorem-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
-const DEFAULT_WORDS = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore', 'magna', 'aliqua']
+const DEFAULT_WORDS = [
+  'lorem',
+  'ipsum',
+  'dolor',
+  'sit',
+  'amet',
+  'consectetur',
+  'adipiscing',
+  'elit',
+  'sed',
+  'do',
+  'eiusmod',
+  'tempor',
+  'incididunt',
+  'ut',
+  'labore',
+  'et',
+  'dolore',
+  'magna',
+  'aliqua'
+];
 
 function randomWord(pool: string[]) {
-  return pool[Math.floor(Math.random() * pool.length)]
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 function capitalize(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1)
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
 
   try {
-    const p = Math.max(1, Math.min(50, paragraphs.value || 1))
-    const w = Math.max(3, Math.min(200, wordsPerParagraph.value || 3))
+    const p = Math.max(1, Math.min(50, paragraphs.value || 1));
+    const w = Math.max(3, Math.min(200, wordsPerParagraph.value || 3));
     const pool = (customWords.value || '')
       .split(',')
       .map((s) => s.trim())
-      .filter(Boolean)
-    const words = pool.length ? pool : DEFAULT_WORDS
+      .filter(Boolean);
+    const words = pool.length ? pool : DEFAULT_WORDS;
 
-    const paras: string[] = []
+    const paras: string[] = [];
     for (let i = 0; i < p; i++) {
-      const arr: string[] = []
-      for (let j = 0; j < w; j++) arr.push(randomWord(words))
-      let text = capitalize(arr.join(' '))
-      if (withPeriod.value) text += '.'
-      paras.push(text)
+      const arr: string[] = [];
+      for (let j = 0; j < w; j++) arr.push(randomWord(words));
+      let text = capitalize(arr.join(' '));
+      if (withPeriod.value) text += '.';
+      paras.push(text);
     }
-    result.value = paras.join('\n\n')
-    processingTime.value = Math.round(performance.now() - start)
+    result.value = paras.join('\n\n');
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '生成失败'
+    error.value = e?.message || '生成失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('lorem-history')
+  const saved = localStorage.getItem('lorem-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

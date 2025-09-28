@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'matrix-calculator',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'math-unit',
   tags: ['数学', '矩阵', '线性代数', '计算器', '行列式'],
   i18nKey: 'tools.matrix-calculator',
-  entry: 'tools/math-unit/matrix-calculator/Component.vue',
-}
-export default meta
+  entry: 'tools/math-unit/matrix-calculator/Component.vue'
+};
+export default meta;

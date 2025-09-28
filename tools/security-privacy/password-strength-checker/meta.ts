@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'password-strength-checker',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'security-privacy',
   tags: ['密码', '安全', '强度检查', '密码生成', '安全评估'],
   i18nKey: 'tools.password-strength-checker',
-  entry: 'tools/security-privacy/password-strength-checker/Component.vue',
-}
-export default meta
+  entry: 'tools/security-privacy/password-strength-checker/Component.vue'
+};
+export default meta;

@@ -80,70 +80,72 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
-type Item = { id: string; content: string; when: string; platforms: string[] }
+type Item = { id: string; content: string; when: string; platforms: string[] };
 
-const content = ref('')
-const when = ref('')
-const platforms = ref<string[]>([])
-const items = ref<Item[]>([])
+const content = ref('');
+const when = ref('');
+const platforms = ref<string[]>([]);
+const items = ref<Item[]>([]);
 
 function add() {
-  const c = content.value.trim()
-  if (!c || !when.value || platforms.value.length === 0) return
-  items.value.push({ id: crypto.randomUUID(), content: c, when: new Date(when.value).toISOString(), platforms: [...platforms.value] })
-  content.value = ''
-  when.value = ''
-  platforms.value = []
-  save()
+  const c = content.value.trim();
+  if (!c || !when.value || platforms.value.length === 0) return;
+  items.value.push({ id: crypto.randomUUID(), content: c, when: new Date(when.value).toISOString(), platforms: [...platforms.value] });
+  content.value = '';
+  when.value = '';
+  platforms.value = [];
+  save();
 }
 
 function remove(i: number) {
-  items.value.splice(i, 1)
-  save()
+  items.value.splice(i, 1);
+  save();
 }
 
 function save() {
-  localStorage.setItem('social-post-scheduler', JSON.stringify(items.value))
+  localStorage.setItem('social-post-scheduler', JSON.stringify(items.value));
 }
 
 function load() {
-  const raw = localStorage.getItem('social-post-scheduler')
-  if (!raw) return
+  const raw = localStorage.getItem('social-post-scheduler');
+  if (!raw) return;
   try {
-    const arr = JSON.parse(raw)
-    if (Array.isArray(arr)) items.value = arr
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) items.value = arr;
   } catch {}
 }
 
-const upcoming = computed(() => items.value.filter((i) => new Date(i.when).getTime() > Date.now()).length)
-const distinctPlatforms = computed(() => new Set(items.value.flatMap((i) => i.platforms)).size)
+const upcoming = computed(() => items.value.filter((i) => new Date(i.when).getTime() > Date.now()).length);
+const distinctPlatforms = computed(() => new Set(items.value.flatMap((i) => i.platforms)).size);
 const todayCount = computed(() => {
-  const d = new Date()
-  const y = d.getFullYear(), m = d.getMonth(), day = d.getDate()
+  const d = new Date();
+  const y = d.getFullYear(),
+    m = d.getMonth(),
+    day = d.getDate();
   return items.value.filter((i) => {
-    const t = new Date(i.when)
-    return t.getFullYear() === y && t.getMonth() === m && t.getDate() === day
-  }).length
-})
+    const t = new Date(i.when);
+    return t.getFullYear() === y && t.getMonth() === m && t.getDate() === day;
+  }).length;
+});
 
 async function copyJson() {
-  const json = JSON.stringify(items.value, null, 2)
+  const json = JSON.stringify(items.value, null, 2);
   try {
-    await navigator.clipboard.writeText(json)
-    alert('已复制 JSON')
+    await navigator.clipboard.writeText(json);
+    alert('已复制 JSON');
   } catch {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 
 function clearAll() {
-  if (!items.value.length) return
-  if (!confirm('确定清空所有计划？')) return
-  items.value = []
-  save()
+  if (!items.value.length) return;
+  if (!confirm('确定清空所有计划？')) return;
+  items.value = [];
+  save();
 }
 
-onMounted(load)
+onMounted(load);
 </script>

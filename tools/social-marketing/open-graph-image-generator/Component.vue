@@ -64,101 +64,101 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const w = ref(1200)
-const h = ref(630)
-const bg = ref('#0ea5e9')
-const title = ref('Open Graph 标题')
-const subtitle = ref('副标题，可选')
-const titleColor = ref('#ffffff')
-const subtitleColor = ref('#e2e8f0')
-const logoFile = ref<File | null>(null)
-const logoSize = ref(96)
-const padding = ref(64)
-const outUrl = ref('')
-const logoUrl = ref('')
+const w = ref(1200);
+const h = ref(630);
+const bg = ref('#0ea5e9');
+const title = ref('Open Graph 标题');
+const subtitle = ref('副标题，可选');
+const titleColor = ref('#ffffff');
+const subtitleColor = ref('#e2e8f0');
+const logoFile = ref<File | null>(null);
+const logoSize = ref(96);
+const padding = ref(64);
+const outUrl = ref('');
+const logoUrl = ref('');
 
 function onLogo(e: Event) {
-  const t = e.target as HTMLInputElement
-  logoFile.value = t.files?.[0] || null
-  logoUrl.value = logoFile.value ? URL.createObjectURL(logoFile.value) : ''
-  outUrl.value = ''
+  const t = e.target as HTMLInputElement;
+  logoFile.value = t.files?.[0] || null;
+  logoUrl.value = logoFile.value ? URL.createObjectURL(logoFile.value) : '';
+  outUrl.value = '';
 }
 
 async function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error('图片加载失败'))
-    img.src = src
-  })
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('图片加载失败'));
+    img.src = src;
+  });
 }
 
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, lineHeight: number) {
-  const words = text.split(/(\s+)/)
-  let line = ''
-  const lines: string[] = []
+  const words = text.split(/(\s+)/);
+  let line = '';
+  const lines: string[] = [];
   for (const w of words) {
-    const t = line + w
+    const t = line + w;
     if (ctx.measureText(t).width > maxWidth && line) {
-      lines.push(line.trim())
-      line = w.trim()
+      lines.push(line.trim());
+      line = w.trim();
     } else {
-      line = t
+      line = t;
     }
   }
-  if (line.trim()) lines.push(line.trim())
-  return lines.map((s, i) => ({ text: s, offsetY: i * lineHeight }))
+  if (line.trim()) lines.push(line.trim());
+  return lines.map((s, i) => ({ text: s, offsetY: i * lineHeight }));
 }
 
 async function generate() {
-  outUrl.value = ''
-  const canvas = document.createElement('canvas')
-  canvas.width = Math.max(300, w.value || 1200)
-  canvas.height = Math.max(200, h.value || 630)
-  const ctx = canvas.getContext('2d')!
+  outUrl.value = '';
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(300, w.value || 1200);
+  canvas.height = Math.max(200, h.value || 630);
+  const ctx = canvas.getContext('2d')!;
 
   // 背景填充
-  ctx.fillStyle = bg.value
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  ctx.fillStyle = bg.value;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // 文本区域
-  const innerW = canvas.width - padding.value * 2
-  let y = padding.value
+  const innerW = canvas.width - padding.value * 2;
+  let y = padding.value;
 
   // Logo
   if (logoUrl.value) {
-    const img = await loadImage(logoUrl.value)
-    const size = Math.min(logoSize.value, innerW)
-    ctx.drawImage(img, canvas.width - padding.value - size, padding.value, size, size)
+    const img = await loadImage(logoUrl.value);
+    const size = Math.min(logoSize.value, innerW);
+    ctx.drawImage(img, canvas.width - padding.value - size, padding.value, size, size);
   }
 
   // 标题
-  ctx.fillStyle = titleColor.value
-  ctx.font = '700 64px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto'
-  ctx.textBaseline = 'top'
-  const titleLines = wrapText(ctx, title.value || '', innerW, 72)
-  titleLines.forEach((ln) => ctx.fillText(ln.text, padding.value, y + ln.offsetY))
-  y += titleLines.length * 72 + 12
+  ctx.fillStyle = titleColor.value;
+  ctx.font = '700 64px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto';
+  ctx.textBaseline = 'top';
+  const titleLines = wrapText(ctx, title.value || '', innerW, 72);
+  titleLines.forEach((ln) => ctx.fillText(ln.text, padding.value, y + ln.offsetY));
+  y += titleLines.length * 72 + 12;
 
   // 副标题
   if (subtitle.value) {
-    ctx.fillStyle = subtitleColor.value
-    ctx.font = '400 36px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto'
-    const subLines = wrapText(ctx, subtitle.value, innerW, 44)
-    subLines.forEach((ln) => ctx.fillText(ln.text, padding.value, y + ln.offsetY))
+    ctx.fillStyle = subtitleColor.value;
+    ctx.font = '400 36px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto';
+    const subLines = wrapText(ctx, subtitle.value, innerW, 44);
+    subLines.forEach((ln) => ctx.fillText(ln.text, padding.value, y + ln.offsetY));
   }
 
-  outUrl.value = canvas.toDataURL('image/png')
+  outUrl.value = canvas.toDataURL('image/png');
 }
 
 function download() {
-  if (!outUrl.value) return
-  const a = document.createElement('a')
-  a.href = outUrl.value
-  a.download = 'og-image.png'
-  a.click()
+  if (!outUrl.value) return;
+  const a = document.createElement('a');
+  a.href = outUrl.value;
+  a.download = 'og-image.png';
+  a.click();
 }
 </script>

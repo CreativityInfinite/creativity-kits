@@ -93,130 +93,130 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-type HistoryItem = { range: string; days: number; params: any; result: string; timestamp: number }
+import { computed, onMounted, ref } from 'vue';
+type HistoryItem = { range: string; days: number; params: any; result: string; timestamp: number };
 
-const start = ref('')
-const end = ref('')
-const weekendSat = ref(true)
-const weekendSun = ref(true)
-const includeBounds = ref(true)
-const holidaysText = ref('')
+const start = ref('');
+const end = ref('');
+const weekendSat = ref(true);
+const weekendSun = ref(true);
+const includeBounds = ref(true);
+const holidaysText = ref('');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => !!start.value && !!end.value)
+const canProcess = computed(() => !!start.value && !!end.value);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'working-days.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'working-days.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const p = JSON.parse(result.value)
-  history.value.unshift({ range: p.range, days: p.workingDays, params: p.input, result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('workingdays-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const p = JSON.parse(result.value);
+  history.value.unshift({ range: p.range, days: p.workingDays, params: p.input, result: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('workingdays-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  start.value = h.params.start
-  end.value = h.params.end
-  weekendSat.value = h.params.weekendSat
-  weekendSun.value = h.params.weekendSun
-  includeBounds.value = h.params.includeBounds
-  holidaysText.value = (h.params.holidays || []).join('\n')
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  start.value = h.params.start;
+  end.value = h.params.end;
+  weekendSat.value = h.params.weekendSat;
+  weekendSun.value = h.params.weekendSun;
+  includeBounds.value = h.params.includeBounds;
+  holidaysText.value = (h.params.holidays || []).join('\n');
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('workingdays-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('workingdays-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function parseHolidays(): Set<string> {
-  const set = new Set<string>()
+  const set = new Set<string>();
   holidaysText.value
     .split(/\r?\n/)
     .map((s) => s.trim())
     .filter(Boolean)
-    .forEach((d) => set.add(d))
-  return set
+    .forEach((d) => set.add(d));
+  return set;
 }
 function isWeekend(d: Date) {
-  const wd = d.getDay()
-  return (weekendSat.value && wd === 6) || (weekendSun.value && wd === 0)
+  const wd = d.getDay();
+  return (weekendSat.value && wd === 6) || (weekendSun.value && wd === 0);
 }
 function fmtDate(d: Date) {
   const y = d.getFullYear(),
     m = d.getMonth() + 1,
-    da = d.getDate()
-  return `${y}-${String(m).padStart(2, '0')}-${String(da).padStart(2, '0')}`
+    da = d.getDate();
+  return `${y}-${String(m).padStart(2, '0')}-${String(da).padStart(2, '0')}`;
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const t0 = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const t0 = performance.now();
   try {
     const s = new Date(start.value),
-      e = new Date(end.value)
-    if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime())) throw new Error('起止日期无效')
-    if (e < s) throw new Error('结束日期必须不早于开始日期')
-    const holidays = parseHolidays()
-    let cur = new Date(s)
+      e = new Date(end.value);
+    if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime())) throw new Error('起止日期无效');
+    if (e < s) throw new Error('结束日期必须不早于开始日期');
+    const holidays = parseHolidays();
+    let cur = new Date(s);
     if (!includeBounds.value) {
-      cur.setDate(cur.getDate() + 1)
+      cur.setDate(cur.getDate() + 1);
     }
-    const last = new Date(e)
-    const days: string[] = []
+    const last = new Date(e);
+    const days: string[] = [];
     while (cur <= last) {
-      if (!isWeekend(cur) && !holidays.has(fmtDate(cur))) days.push(fmtDate(cur))
-      cur.setDate(cur.getDate() + 1)
+      if (!isWeekend(cur) && !holidays.has(fmtDate(cur))) days.push(fmtDate(cur));
+      cur.setDate(cur.getDate() + 1);
     }
     const payload = {
       input: { start: start.value, end: end.value, weekendSat: weekendSat.value, weekendSun: weekendSun.value, includeBounds: includeBounds.value, holidays: Array.from(holidays) },
       range: `${start.value} ~ ${end.value}`,
       workingDays: days.length,
       days
-    }
-    result.value = JSON.stringify(payload, null, 2)
-    processingTime.value = Math.round(performance.now() - t0)
+    };
+    result.value = JSON.stringify(payload, null, 2);
+    processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '计算失败'
+    error.value = e?.message || '计算失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('workingdays-history')
+  const saved = localStorage.getItem('workingdays-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

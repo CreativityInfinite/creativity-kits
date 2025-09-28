@@ -187,92 +187,92 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 interface HashResult {
-  fileName: string
-  fileSize: number
-  timestamp: number
-  hashes: { [algorithm: string]: string }
+  fileName: string;
+  fileSize: number;
+  timestamp: number;
+  hashes: { [algorithm: string]: string };
 }
 
 interface Progress {
-  current: number
-  total: number
+  current: number;
+  total: number;
 }
 
-const fileInput = ref<HTMLInputElement>()
-const selectedFiles = ref<File[]>([])
-const selectedAlgorithms = ref<string[]>(['MD5', 'SHA-256'])
-const results = ref<HashResult[]>([])
-const verificationHash = ref('')
-const isCalculating = ref(false)
-const isDragging = ref(false)
-const progress = ref<Progress>({ current: 0, total: 0 })
+const fileInput = ref<HTMLInputElement>();
+const selectedFiles = ref<File[]>([]);
+const selectedAlgorithms = ref<string[]>(['MD5', 'SHA-256']);
+const results = ref<HashResult[]>([]);
+const verificationHash = ref('');
+const isCalculating = ref(false);
+const isDragging = ref(false);
+const progress = ref<Progress>({ current: 0, total: 0 });
 
-const algorithms = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512']
+const algorithms = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
 
 function handleDrop(event: DragEvent) {
-  event.preventDefault()
-  isDragging.value = false
+  event.preventDefault();
+  isDragging.value = false;
 
-  const files = Array.from(event.dataTransfer?.files || [])
-  addFiles(files)
+  const files = Array.from(event.dataTransfer?.files || []);
+  addFiles(files);
 }
 
 function handleFileSelect(event: Event) {
-  const target = event.target as HTMLInputElement
-  const files = Array.from(target.files || [])
-  addFiles(files)
+  const target = event.target as HTMLInputElement;
+  const files = Array.from(target.files || []);
+  addFiles(files);
 }
 
 function addFiles(files: File[]) {
   // 避免重复添加相同文件
-  const existingNames = new Set(selectedFiles.value.map((f) => f.name))
-  const newFiles = files.filter((f) => !existingNames.has(f.name))
-  selectedFiles.value.push(...newFiles)
+  const existingNames = new Set(selectedFiles.value.map((f) => f.name));
+  const newFiles = files.filter((f) => !existingNames.has(f.name));
+  selectedFiles.value.push(...newFiles);
 }
 
 function removeFile(index: number) {
-  selectedFiles.value.splice(index, 1)
+  selectedFiles.value.splice(index, 1);
 }
 
 function selectAllAlgorithms() {
-  selectedAlgorithms.value = [...algorithms]
+  selectedAlgorithms.value = [...algorithms];
 }
 
 function clearAlgorithms() {
-  selectedAlgorithms.value = []
+  selectedAlgorithms.value = [];
 }
 
 function clearAll() {
-  selectedFiles.value = []
-  results.value = []
-  verificationHash.value = ''
+  selectedFiles.value = [];
+  results.value = [];
+  verificationHash.value = '';
   if (fileInput.value) {
-    fileInput.value.value = ''
+    fileInput.value.value = '';
   }
 }
 
 async function calculateHashes() {
   if (selectedFiles.value.length === 0 || selectedAlgorithms.value.length === 0) {
-    return
+    return;
   }
 
-  isCalculating.value = true
-  results.value = []
-  progress.value = { current: 0, total: selectedFiles.value.length }
+  isCalculating.value = true;
+  results.value = [];
+  progress.value = { current: 0, total: selectedFiles.value.length };
 
   for (let i = 0; i < selectedFiles.value.length; i++) {
-    const file = selectedFiles.value[i]
-    progress.value.current = i
+    const file = selectedFiles.value[i];
+    progress.value.current = i;
 
     try {
-      const hashes: { [algorithm: string]: string } = {}
+      const hashes: { [algorithm: string]: string } = {};
 
       for (const algorithm of selectedAlgorithms.value) {
-        const hash = await calculateFileHash(file, algorithm)
-        hashes[algorithm] = hash
+        const hash = await calculateFileHash(file, algorithm);
+        hashes[algorithm] = hash;
       }
 
       results.value.push({
@@ -280,69 +280,69 @@ async function calculateHashes() {
         fileSize: file.size,
         timestamp: Date.now(),
         hashes
-      })
+      });
     } catch (error) {
-      console.error(`计算文件 ${file.name} 的哈希值时出错:`, error)
+      console.error(`计算文件 ${file.name} 的哈希值时出错:`, error);
     }
   }
 
-  progress.value.current = selectedFiles.value.length
-  isCalculating.value = false
+  progress.value.current = selectedFiles.value.length;
+  isCalculating.value = false;
 }
 
 async function calculateFileHash(file: File, algorithm: string): Promise<string> {
-  const buffer = await file.arrayBuffer()
+  const buffer = await file.arrayBuffer();
 
-  let hashAlgorithm: string
+  let hashAlgorithm: string;
   switch (algorithm) {
     case 'MD5':
       // 浏览器不直接支持MD5，使用SHA-256代替并标注
-      hashAlgorithm = 'SHA-256'
-      break
+      hashAlgorithm = 'SHA-256';
+      break;
     case 'SHA-1':
-      hashAlgorithm = 'SHA-1'
-      break
+      hashAlgorithm = 'SHA-1';
+      break;
     case 'SHA-256':
-      hashAlgorithm = 'SHA-256'
-      break
+      hashAlgorithm = 'SHA-256';
+      break;
     case 'SHA-384':
-      hashAlgorithm = 'SHA-384'
-      break
+      hashAlgorithm = 'SHA-384';
+      break;
     case 'SHA-512':
-      hashAlgorithm = 'SHA-512'
-      break
+      hashAlgorithm = 'SHA-512';
+      break;
     default:
-      hashAlgorithm = 'SHA-256'
+      hashAlgorithm = 'SHA-256';
   }
 
-  const hashBuffer = await crypto.subtle.digest(hashAlgorithm, buffer)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+  const hashBuffer = await crypto.subtle.digest(hashAlgorithm, buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
   // 如果是MD5请求但实际使用SHA-256，添加标注
   if (algorithm === 'MD5' && hashAlgorithm === 'SHA-256') {
-    return `${hashHex} (使用SHA-256代替MD5)`
+    return `${hashHex} (使用SHA-256代替MD5)`;
   }
 
-  return hashHex
+  return hashHex;
 }
 
 function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B'
+  if (bytes === 0) return '0 B';
 
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
 async function copyHash(hash: string) {
   try {
-    await navigator.clipboard.writeText(hash)
+    await navigator.clipboard.writeText(hash);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
@@ -351,17 +351,17 @@ async function copyAllResults() {
     .map((result) => {
       const hashLines = Object.entries(result.hashes)
         .map(([algorithm, hash]) => `${algorithm}: ${hash}`)
-        .join('\n')
+        .join('\n');
 
-      return `文件: ${result.fileName}\n大小: ${formatFileSize(result.fileSize)}\n${hashLines}\n`
+      return `文件: ${result.fileName}\n大小: ${formatFileSize(result.fileSize)}\n${hashLines}\n`;
     })
-    .join('\n')
+    .join('\n');
 
   try {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(text);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
@@ -375,25 +375,25 @@ ${results.value
   .map((result, index) => {
     const hashLines = Object.entries(result.hashes)
       .map(([algorithm, hash]) => `  ${algorithm}: ${hash}`)
-      .join('\n')
+      .join('\n');
 
     return `${index + 1}. 文件名: ${result.fileName}
    大小: ${formatFileSize(result.fileSize)}
    时间: ${new Date(result.timestamp).toLocaleString('zh-CN')}
    哈希值:
-${hashLines}`
+${hashLines}`;
   })
   .join('\n\n')}
 
 报告生成时间: ${new Date().toLocaleString('zh-CN')}
-`
+`;
 
-  const blob = new Blob([report], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `file-hashes-${new Date().toISOString().slice(0, 10)}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([report], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `file-hashes-${new Date().toISOString().slice(0, 10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

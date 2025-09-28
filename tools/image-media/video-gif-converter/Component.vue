@@ -55,58 +55,58 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const file = ref<File | null>(null)
-const videoUrl = ref('')
-const gifUrl = ref('')
-const fps = ref(6)
-const outWidth = ref(320)
-const startSec = ref(0)
-const endSec = ref<number | null>(null)
-const quality = ref(0.8)
-const loading = ref(false)
-const error = ref('')
+const file = ref<File | null>(null);
+const videoUrl = ref('');
+const gifUrl = ref('');
+const fps = ref(6);
+const outWidth = ref(320);
+const startSec = ref(0);
+const endSec = ref<number | null>(null);
+const quality = ref(0.8);
+const loading = ref(false);
+const error = ref('');
 
 function onFile(e: Event) {
-  const t = e.target as HTMLInputElement
-  file.value = t.files?.[0] || null
-  videoUrl.value = file.value ? URL.createObjectURL(file.value) : ''
-  gifUrl.value = ''
-  error.value = ''
+  const t = e.target as HTMLInputElement;
+  file.value = t.files?.[0] || null;
+  videoUrl.value = file.value ? URL.createObjectURL(file.value) : '';
+  gifUrl.value = '';
+  error.value = '';
 }
 
 async function convert() {
-  error.value = ''
-  gifUrl.value = ''
+  error.value = '';
+  gifUrl.value = '';
   if (!file.value) {
-    error.value = '请先选择视频'
-    return
+    error.value = '请先选择视频';
+    return;
   }
-  loading.value = true
+  loading.value = true;
   try {
-    const vid = document.createElement('video')
-    vid.muted = true
-    vid.preload = 'auto'
-    vid.src = videoUrl.value
-    await vid.play().catch(() => Promise.resolve()) // 触发元数据加载
-    await waitEvent(vid, 'loadedmetadata')
+    const vid = document.createElement('video');
+    vid.muted = true;
+    vid.preload = 'auto';
+    vid.src = videoUrl.value;
+    await vid.play().catch(() => Promise.resolve()); // 触发元数据加载
+    await waitEvent(vid, 'loadedmetadata');
 
-    const duration = vid.duration
-    const begin = Math.max(0, Math.min(duration, startSec.value || 0))
-    const end = endSec.value == null ? duration : Math.max(begin, Math.min(duration, endSec.value))
+    const duration = vid.duration;
+    const begin = Math.max(0, Math.min(duration, startSec.value || 0));
+    const end = endSec.value == null ? duration : Math.max(begin, Math.min(duration, endSec.value));
 
-    const canvas = document.createElement('canvas')
-    const scale = outWidth.value || 320
-    const h = (vid.videoHeight / vid.videoWidth) * scale
-    canvas.width = Math.max(64, Math.floor(scale))
-    canvas.height = Math.max(64, Math.floor(h))
-    const ctx = canvas.getContext('2d')!
+    const canvas = document.createElement('canvas');
+    const scale = outWidth.value || 320;
+    const h = (vid.videoHeight / vid.videoWidth) * scale;
+    canvas.width = Math.max(64, Math.floor(scale));
+    canvas.height = Math.max(64, Math.floor(h));
+    const ctx = canvas.getContext('2d')!;
 
     // @ts-ignore
-    const GIFMod: any = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js')
+    const GIFMod: any = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js');
     // Web Worker 路径
-    const workerScript = 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js'
+    const workerScript = 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js';
     const gif = new (GIFMod as any)({
       workers: 2,
       workerScript,
@@ -114,48 +114,48 @@ async function convert() {
       width: canvas.width,
       height: canvas.height,
       transparent: null
-    })
+    });
 
-    const step = 1 / Math.max(1, Math.min(30, fps.value || 6))
+    const step = 1 / Math.max(1, Math.min(30, fps.value || 6));
     for (let t = begin; t < end; t += step) {
-      await seekTo(vid, t)
-      ctx.drawImage(vid, 0, 0, canvas.width, canvas.height)
-      gif.addFrame(ctx, { copy: true, delay: Math.round(step * 1000) })
+      await seekTo(vid, t);
+      ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+      gif.addFrame(ctx, { copy: true, delay: Math.round(step * 1000) });
     }
 
     const blob: Blob = await new Promise((resolve, reject) => {
-      gif.on('finished', (b: Blob) => resolve(b))
-      gif.on('abort', () => reject(new Error('GIF 生成被中止')))
-      gif.render()
-    })
-    gifUrl.value = URL.createObjectURL(blob)
+      gif.on('finished', (b: Blob) => resolve(b));
+      gif.on('abort', () => reject(new Error('GIF 生成被中止')));
+      gif.render();
+    });
+    gifUrl.value = URL.createObjectURL(blob);
   } catch (e: any) {
-    error.value = e?.message || '转换失败'
+    error.value = e?.message || '转换失败';
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 function waitEvent(el: EventTarget, name: string) {
-  return new Promise<void>((resolve) => el.addEventListener(name, () => resolve(), { once: true }))
+  return new Promise<void>((resolve) => el.addEventListener(name, () => resolve(), { once: true }));
 }
 
 function seekTo(vid: HTMLVideoElement, t: number) {
   return new Promise<void>((resolve) => {
     const onSeeked = () => {
-      vid.removeEventListener('seeked', onSeeked)
-      resolve()
-    }
-    vid.addEventListener('seeked', onSeeked, { once: true })
-    vid.currentTime = t
-  })
+      vid.removeEventListener('seeked', onSeeked);
+      resolve();
+    };
+    vid.addEventListener('seeked', onSeeked, { once: true });
+    vid.currentTime = t;
+  });
 }
 
 function download() {
-  if (!gifUrl.value) return
-  const a = document.createElement('a')
-  a.href = gifUrl.value
-  a.download = 'output.gif'
-  a.click()
+  if (!gifUrl.value) return;
+  const a = document.createElement('a');
+  a.href = gifUrl.value;
+  a.download = 'output.gif';
+  a.click();
 }
 </script>

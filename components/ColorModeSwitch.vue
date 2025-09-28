@@ -6,16 +6,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import UiSwitch from '~/components/ui/Switch.vue'
-import { useThemePalette } from '~/composables/useThemePalette'
-import { useFancyThemeTransition } from '~/composables/useFancyThemeTransition'
+import { computed } from 'vue';
+import UiSwitch from '~/components/ui/Switch.vue';
+import { useThemePalette } from '~/composables/useThemePalette';
+import { useFancyThemeTransition } from '~/composables/useFancyThemeTransition';
 
-const { mode } = useThemePalette()
-const { setModeWithTransition } = useFancyThemeTransition()
+const { mode } = useThemePalette();
+const { setModeWithTransition } = useFancyThemeTransition();
 
 const isDark = computed({
   get: () => mode.value === 'dark',
   set: (v: boolean) => setModeWithTransition(v ? 'dark' : 'light')
-})
+});
 </script>

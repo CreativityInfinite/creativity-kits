@@ -212,51 +212,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 interface DecimalResult {
-  isValid: boolean
-  numerator: number
-  denominator: number
-  wholeNumber?: number
-  properNumerator?: number
-  simplified: string
-  verification: string
+  isValid: boolean;
+  numerator: number;
+  denominator: number;
+  wholeNumber?: number;
+  properNumerator?: number;
+  simplified: string;
+  verification: string;
 }
 
 interface FractionResult {
-  isValid: boolean
-  decimal: string
-  type: string
-  precision: number
-  isRepeating: boolean
-  repeatingDecimal?: string
+  isValid: boolean;
+  decimal: string;
+  type: string;
+  precision: number;
+  isRepeating: boolean;
+  repeatingDecimal?: string;
 }
 
 interface ConversionRecord {
-  input: string
-  output: string
-  type: string
-  timestamp: string
+  input: string;
+  output: string;
+  type: string;
+  timestamp: string;
 }
 
 interface CommonFraction {
-  fraction: string
-  decimal: string
-  numerator: number
-  denominator: number
+  fraction: string;
+  decimal: string;
+  numerator: number;
+  denominator: number;
 }
 
-const decimalInput = ref('')
-const numerator = ref('')
-const denominator = ref('')
-const wholeNumber = ref('')
-const batchInput = ref('')
+const decimalInput = ref('');
+const numerator = ref('');
+const denominator = ref('');
+const wholeNumber = ref('');
+const batchInput = ref('');
 
-const decimalError = ref('')
-const fractionError = ref('')
-const history = ref<ConversionRecord[]>([])
-const batchResults = ref<ConversionRecord[]>([])
+const decimalError = ref('');
+const fractionError = ref('');
+const history = ref<ConversionRecord[]>([]);
+const batchResults = ref<ConversionRecord[]>([]);
 
 const commonFractions: CommonFraction[] = [
   { fraction: '1/2', decimal: '0.5', numerator: 1, denominator: 2 },
@@ -271,61 +271,61 @@ const commonFractions: CommonFraction[] = [
   { fraction: '5/8', decimal: '0.625', numerator: 5, denominator: 8 },
   { fraction: '7/8', decimal: '0.875', numerator: 7, denominator: 8 },
   { fraction: '5/6', decimal: '0.8333...', numerator: 5, denominator: 6 }
-]
+];
 
 const decimalResult = computed((): DecimalResult => {
   if (!decimalInput.value) {
-    return { isValid: false, numerator: 0, denominator: 1, simplified: '', verification: '' }
+    return { isValid: false, numerator: 0, denominator: 1, simplified: '', verification: '' };
   }
 
   try {
-    const result = decimalToFraction(decimalInput.value)
-    return result
+    const result = decimalToFraction(decimalInput.value);
+    return result;
   } catch (error) {
-    return { isValid: false, numerator: 0, denominator: 1, simplified: '', verification: '' }
+    return { isValid: false, numerator: 0, denominator: 1, simplified: '', verification: '' };
   }
-})
+});
 
 const fractionResult = computed((): FractionResult => {
-  const num = parseInt(numerator.value) || 0
-  const den = parseInt(denominator.value) || 1
-  const whole = parseInt(wholeNumber.value) || 0
+  const num = parseInt(numerator.value) || 0;
+  const den = parseInt(denominator.value) || 1;
+  const whole = parseInt(wholeNumber.value) || 0;
 
   if (den === 0) {
-    return { isValid: false, decimal: '', type: '', precision: 0, isRepeating: false }
+    return { isValid: false, decimal: '', type: '', precision: 0, isRepeating: false };
   }
 
   try {
-    const result = fractionToDecimal(whole, num, den)
-    return result
+    const result = fractionToDecimal(whole, num, den);
+    return result;
   } catch (error) {
-    return { isValid: false, decimal: '', type: '', precision: 0, isRepeating: false }
+    return { isValid: false, decimal: '', type: '', precision: 0, isRepeating: false };
   }
-})
+});
 
 function gcd(a: number, b: number): number {
-  a = Math.abs(a)
-  b = Math.abs(b)
+  a = Math.abs(a);
+  b = Math.abs(b);
   while (b !== 0) {
-    const temp = b
-    b = a % b
-    a = temp
+    const temp = b;
+    b = a % b;
+    a = temp;
   }
-  return a
+  return a;
 }
 
 function decimalToFraction(decimal: string): DecimalResult {
   // 清理输入
-  decimal = decimal.trim().replace(/,/g, '')
+  decimal = decimal.trim().replace(/,/g, '');
 
   // 检查是否为有效数字
   if (!/^-?\d*\.?\d+$/.test(decimal)) {
-    throw new Error('无效的小数格式')
+    throw new Error('无效的小数格式');
   }
 
-  const num = parseFloat(decimal)
+  const num = parseFloat(decimal);
   if (isNaN(num)) {
-    throw new Error('无效的数字')
+    throw new Error('无效的数字');
   }
 
   // 处理整数
@@ -336,48 +336,48 @@ function decimalToFraction(decimal: string): DecimalResult {
       denominator: 1,
       simplified: `${Math.abs(num)}/1`,
       verification: num.toString()
-    }
+    };
   }
 
   // 分离整数和小数部分
-  const isNegative = num < 0
-  const absNum = Math.abs(num)
-  const wholePart = Math.floor(absNum)
-  const decimalPart = absNum - wholePart
+  const isNegative = num < 0;
+  const absNum = Math.abs(num);
+  const wholePart = Math.floor(absNum);
+  const decimalPart = absNum - wholePart;
 
   // 转换小数部分为分数
-  const decimalStr = decimalPart.toString()
-  const decimalPlaces = decimalStr.split('.')[1]?.length || 0
+  const decimalStr = decimalPart.toString();
+  const decimalPlaces = decimalStr.split('.')[1]?.length || 0;
 
-  let numerator = Math.round(decimalPart * Math.pow(10, decimalPlaces))
-  let denominator = Math.pow(10, decimalPlaces)
+  let numerator = Math.round(decimalPart * Math.pow(10, decimalPlaces));
+  let denominator = Math.pow(10, decimalPlaces);
 
   // 化简分数
-  const commonDivisor = gcd(numerator, denominator)
-  numerator = numerator / commonDivisor
-  denominator = denominator / commonDivisor
+  const commonDivisor = gcd(numerator, denominator);
+  numerator = numerator / commonDivisor;
+  denominator = denominator / commonDivisor;
 
   // 如果有整数部分，转换为假分数
   if (wholePart > 0) {
-    numerator = wholePart * denominator + numerator
+    numerator = wholePart * denominator + numerator;
   }
 
   if (isNegative) {
-    numerator = -numerator
+    numerator = -numerator;
   }
 
   // 计算带分数形式
-  let wholeNumber: number | undefined
-  let properNumerator: number | undefined
+  let wholeNumber: number | undefined;
+  let properNumerator: number | undefined;
 
   if (Math.abs(numerator) > denominator) {
-    wholeNumber = Math.floor(Math.abs(numerator) / denominator)
-    properNumerator = Math.abs(numerator) % denominator
-    if (isNegative) wholeNumber = -wholeNumber
+    wholeNumber = Math.floor(Math.abs(numerator) / denominator);
+    properNumerator = Math.abs(numerator) % denominator;
+    if (isNegative) wholeNumber = -wholeNumber;
   }
 
-  const verification = (numerator / denominator).toString()
-  const simplified = `${Math.abs(numerator)}/${denominator}`
+  const verification = (numerator / denominator).toString();
+  const simplified = `${Math.abs(numerator)}/${denominator}`;
 
   return {
     isValid: true,
@@ -387,72 +387,72 @@ function decimalToFraction(decimal: string): DecimalResult {
     properNumerator,
     simplified,
     verification
-  }
+  };
 }
 
 function fractionToDecimal(whole: number, num: number, den: number): FractionResult {
   if (den === 0) {
-    throw new Error('分母不能为零')
+    throw new Error('分母不能为零');
   }
 
   // 计算总的分子
-  const totalNumerator = whole * den + num
+  const totalNumerator = whole * den + num;
 
   // 执行长除法
-  const result = longDivision(totalNumerator, den)
+  const result = longDivision(totalNumerator, den);
 
-  return result
+  return result;
 }
 
 function longDivision(numerator: number, denominator: number): FractionResult {
-  const isNegative = numerator < 0 !== denominator < 0
-  numerator = Math.abs(numerator)
-  denominator = Math.abs(denominator)
+  const isNegative = numerator < 0 !== denominator < 0;
+  numerator = Math.abs(numerator);
+  denominator = Math.abs(denominator);
 
-  const wholePart = Math.floor(numerator / denominator)
-  let remainder = numerator % denominator
+  const wholePart = Math.floor(numerator / denominator);
+  let remainder = numerator % denominator;
 
   if (remainder === 0) {
-    const decimal = isNegative ? `-${wholePart}` : wholePart.toString()
+    const decimal = isNegative ? `-${wholePart}` : wholePart.toString();
     return {
       isValid: true,
       decimal,
       type: '有限小数',
       precision: 0,
       isRepeating: false
-    }
+    };
   }
 
-  const decimalParts: string[] = []
-  const remainders: number[] = []
-  let repeatingStart = -1
+  const decimalParts: string[] = [];
+  const remainders: number[] = [];
+  let repeatingStart = -1;
 
   while (remainder !== 0) {
     if (remainders.includes(remainder)) {
-      repeatingStart = remainders.indexOf(remainder)
-      break
+      repeatingStart = remainders.indexOf(remainder);
+      break;
     }
 
-    remainders.push(remainder)
-    remainder *= 10
-    const digit = Math.floor(remainder / denominator)
-    decimalParts.push(digit.toString())
-    remainder = remainder % denominator
+    remainders.push(remainder);
+    remainder *= 10;
+    const digit = Math.floor(remainder / denominator);
+    decimalParts.push(digit.toString());
+    remainder = remainder % denominator;
   }
 
-  let decimalStr = decimalParts.join('')
-  let type = '有限小数'
-  let repeatingDecimal: string | undefined
+  let decimalStr = decimalParts.join('');
+  let type = '有限小数';
+  let repeatingDecimal: string | undefined;
 
   if (repeatingStart !== -1) {
-    type = '循环小数'
-    const nonRepeating = decimalParts.slice(0, repeatingStart).join('')
-    const repeating = decimalParts.slice(repeatingStart).join('')
-    decimalStr = nonRepeating + repeating
-    repeatingDecimal = `${wholePart}.${nonRepeating}(${repeating})`
+    type = '循环小数';
+    const nonRepeating = decimalParts.slice(0, repeatingStart).join('');
+    const repeating = decimalParts.slice(repeatingStart).join('');
+    decimalStr = nonRepeating + repeating;
+    repeatingDecimal = `${wholePart}.${nonRepeating}(${repeating})`;
   }
 
-  const decimal = `${isNegative ? '-' : ''}${wholePart}.${decimalStr}`
+  const decimal = `${isNegative ? '-' : ''}${wholePart}.${decimalStr}`;
 
   return {
     isValid: true,
@@ -461,44 +461,44 @@ function longDivision(numerator: number, denominator: number): FractionResult {
     precision: decimalParts.length,
     isRepeating: repeatingStart !== -1,
     repeatingDecimal
-  }
+  };
 }
 
 function convertDecimalToFraction() {
-  decimalError.value = ''
+  decimalError.value = '';
 
-  if (!decimalInput.value) return
+  if (!decimalInput.value) return;
 
   try {
-    const result = decimalToFraction(decimalInput.value)
+    const result = decimalToFraction(decimalInput.value);
     if (result.isValid) {
-      addToHistory(decimalInput.value, result.simplified, '小数转分数')
+      addToHistory(decimalInput.value, result.simplified, '小数转分数');
     }
   } catch (error) {
-    decimalError.value = (error as Error).message
+    decimalError.value = (error as Error).message;
   }
 }
 
 function convertFractionToDecimal() {
-  fractionError.value = ''
+  fractionError.value = '';
 
-  const num = parseInt(numerator.value) || 0
-  const den = parseInt(denominator.value) || 1
-  const whole = parseInt(wholeNumber.value) || 0
+  const num = parseInt(numerator.value) || 0;
+  const den = parseInt(denominator.value) || 1;
+  const whole = parseInt(wholeNumber.value) || 0;
 
   if (den === 0) {
-    fractionError.value = '分母不能为零'
-    return
+    fractionError.value = '分母不能为零';
+    return;
   }
 
   try {
-    const result = fractionToDecimal(whole, num, den)
+    const result = fractionToDecimal(whole, num, den);
     if (result.isValid) {
-      const fractionStr = whole > 0 ? `${whole} ${num}/${den}` : `${num}/${den}`
-      addToHistory(fractionStr, result.decimal, '分数转小数')
+      const fractionStr = whole > 0 ? `${whole} ${num}/${den}` : `${num}/${den}`;
+      addToHistory(fractionStr, result.decimal, '分数转小数');
     }
   } catch (error) {
-    fractionError.value = (error as Error).message
+    fractionError.value = (error as Error).message;
   }
 }
 
@@ -508,86 +508,86 @@ function addToHistory(input: string, output: string, type: string) {
     output,
     type,
     timestamp: new Date().toLocaleTimeString('zh-CN')
-  })
+  });
 
   // 限制历史记录数量
   if (history.value.length > 50) {
-    history.value = history.value.slice(0, 50)
+    history.value = history.value.slice(0, 50);
   }
 }
 
 function clearHistory() {
-  history.value = []
+  history.value = [];
 }
 
 function useHistoryRecord(record: ConversionRecord) {
   if (record.type === '小数转分数') {
-    decimalInput.value = record.input
-    convertDecimalToFraction()
+    decimalInput.value = record.input;
+    convertDecimalToFraction();
   } else {
     // 解析分数格式
-    const parts = record.input.split(' ')
+    const parts = record.input.split(' ');
     if (parts.length === 2) {
-      wholeNumber.value = parts[0]
-      const fraction = parts[1].split('/')
-      numerator.value = fraction[0]
-      denominator.value = fraction[1]
+      wholeNumber.value = parts[0];
+      const fraction = parts[1].split('/');
+      numerator.value = fraction[0];
+      denominator.value = fraction[1];
     } else {
-      const fraction = record.input.split('/')
-      wholeNumber.value = '0'
-      numerator.value = fraction[0]
-      denominator.value = fraction[1]
+      const fraction = record.input.split('/');
+      wholeNumber.value = '0';
+      numerator.value = fraction[0];
+      denominator.value = fraction[1];
     }
-    convertFractionToDecimal()
+    convertFractionToDecimal();
   }
 }
 
 function loadCommonFraction(common: CommonFraction) {
-  wholeNumber.value = '0'
-  numerator.value = common.numerator.toString()
-  denominator.value = common.denominator.toString()
-  convertFractionToDecimal()
+  wholeNumber.value = '0';
+  numerator.value = common.numerator.toString();
+  denominator.value = common.denominator.toString();
+  convertFractionToDecimal();
 }
 
 function processBatch() {
-  batchResults.value = []
+  batchResults.value = [];
 
-  const lines = batchInput.value.split('\n').filter((line) => line.trim())
+  const lines = batchInput.value.split('\n').filter((line) => line.trim());
 
   for (const line of lines) {
-    const input = line.trim()
+    const input = line.trim();
 
     try {
       if (input.includes('/')) {
         // 分数转小数
-        const parts = input.split(' ')
-        let whole = 0
-        let fraction = input
+        const parts = input.split(' ');
+        let whole = 0;
+        let fraction = input;
 
         if (parts.length === 2) {
-          whole = parseInt(parts[0])
-          fraction = parts[1]
+          whole = parseInt(parts[0]);
+          fraction = parts[1];
         }
 
-        const [num, den] = fraction.split('/').map((x) => parseInt(x))
-        const result = fractionToDecimal(whole, num, den)
+        const [num, den] = fraction.split('/').map((x) => parseInt(x));
+        const result = fractionToDecimal(whole, num, den);
 
         batchResults.value.push({
           input,
           output: result.decimal,
           type: '分数转小数',
           timestamp: new Date().toLocaleTimeString('zh-CN')
-        })
+        });
       } else {
         // 小数转分数
-        const result = decimalToFraction(input)
+        const result = decimalToFraction(input);
 
         batchResults.value.push({
           input,
           output: result.simplified,
           type: '小数转分数',
           timestamp: new Date().toLocaleTimeString('zh-CN')
-        })
+        });
       }
     } catch (error) {
       batchResults.value.push({
@@ -595,7 +595,7 @@ function processBatch() {
         output: '转换失败: ' + (error as Error).message,
         type: '错误',
         timestamp: new Date().toLocaleTimeString('zh-CN')
-      })
+      });
     }
   }
 }
@@ -608,19 +608,19 @@ function exportBatch() {
 转换结果:
 ${batchResults.value
   .map((result, index) => {
-    return `${index + 1}. ${result.input} → ${result.output} (${result.type})`
+    return `${index + 1}. ${result.input} → ${result.output} (${result.type})`;
   })
   .join('\n')}
 
 生成时间: ${new Date().toLocaleString('zh-CN')}
-`
+`;
 
-  const blob = new Blob([report], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `fraction-decimal-conversion-${new Date().toISOString().slice(0, 10)}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([report], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `fraction-decimal-conversion-${new Date().toISOString().slice(0, 10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

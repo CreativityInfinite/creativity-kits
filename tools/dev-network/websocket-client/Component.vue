@@ -213,34 +213,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onUnmounted } from 'vue'
+import { ref, computed, nextTick, onUnmounted } from 'vue';
 
 interface Message {
-  type: 'sent' | 'received' | 'system'
-  content: string
-  formatted?: string
-  timestamp: string
-  size?: number
+  type: 'sent' | 'received' | 'system';
+  content: string;
+  formatted?: string;
+  timestamp: string;
+  size?: number;
 }
 
 interface MessageTemplate {
-  name: string
-  type: 'text' | 'json' | 'binary'
-  content: string
+  name: string;
+  type: 'text' | 'json' | 'binary';
+  content: string;
 }
 
-const wsUrl = ref('wss://echo.websocket.org')
-const protocol = ref('')
-const messageToSend = ref('')
-const messageType = ref<'text' | 'json' | 'binary'>('text')
-const messages = ref<Message[]>([])
-const messageFilter = ref<'all' | 'sent' | 'received' | 'system'>('all')
-const autoScroll = ref(true)
-const connectionTime = ref('')
+const wsUrl = ref('wss://echo.websocket.org');
+const protocol = ref('');
+const messageToSend = ref('');
+const messageType = ref<'text' | 'json' | 'binary'>('text');
+const messages = ref<Message[]>([]);
+const messageFilter = ref<'all' | 'sent' | 'received' | 'system'>('all');
+const autoScroll = ref(true);
+const connectionTime = ref('');
 
-const ws = ref<WebSocket | null>(null)
-const connectionState = ref<'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED'>('CLOSED')
-const messagesContainer = ref<HTMLElement>()
+const ws = ref<WebSocket | null>(null);
+const connectionState = ref<'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED'>('CLOSED');
+const messagesContainer = ref<HTMLElement>();
 
 const messageTemplates: MessageTemplate[] = [
   {
@@ -272,168 +272,168 @@ const messageTemplates: MessageTemplate[] = [
       2
     )
   }
-]
+];
 
-const isConnected = computed(() => connectionState.value === 'OPEN')
+const isConnected = computed(() => connectionState.value === 'OPEN');
 
 const connectionStateText = computed(() => {
   switch (connectionState.value) {
     case 'CONNECTING':
-      return '连接中...'
+      return '连接中...';
     case 'OPEN':
-      return '已连接'
+      return '已连接';
     case 'CLOSING':
-      return '断开中...'
+      return '断开中...';
     case 'CLOSED':
-      return '已断开'
+      return '已断开';
     default:
-      return '未知'
+      return '未知';
   }
-})
+});
 
 const messagePlaceholder = computed(() => {
   switch (messageType.value) {
     case 'json':
-      return '输入 JSON 格式消息...\n{\n  "type": "message",\n  "content": "Hello"\n}'
+      return '输入 JSON 格式消息...\n{\n  "type": "message",\n  "content": "Hello"\n}';
     case 'binary':
-      return '输入十六进制字符串 (如: 48656c6c6f) 或文本'
+      return '输入十六进制字符串 (如: 48656c6c6f) 或文本';
     default:
-      return '输入要发送的文本消息...'
+      return '输入要发送的文本消息...';
   }
-})
+});
 
 const filteredMessages = computed(() => {
   if (messageFilter.value === 'all') {
-    return messages.value
+    return messages.value;
   }
-  return messages.value.filter((msg) => msg.type === messageFilter.value)
-})
+  return messages.value.filter((msg) => msg.type === messageFilter.value);
+});
 
 function connect() {
   if (ws.value) {
-    ws.value.close()
+    ws.value.close();
   }
 
   try {
-    addSystemMessage('正在连接到 ' + wsUrl.value)
-    connectionState.value = 'CONNECTING'
+    addSystemMessage('正在连接到 ' + wsUrl.value);
+    connectionState.value = 'CONNECTING';
 
-    const protocols = protocol.value ? [protocol.value] : undefined
-    ws.value = new WebSocket(wsUrl.value, protocols)
+    const protocols = protocol.value ? [protocol.value] : undefined;
+    ws.value = new WebSocket(wsUrl.value, protocols);
 
     ws.value.onopen = (event) => {
-      connectionState.value = 'OPEN'
-      connectionTime.value = new Date().toLocaleString('zh-CN')
-      addSystemMessage('连接成功')
+      connectionState.value = 'OPEN';
+      connectionTime.value = new Date().toLocaleString('zh-CN');
+      addSystemMessage('连接成功');
 
       if (ws.value?.protocol) {
-        addSystemMessage(`使用协议: ${ws.value.protocol}`)
+        addSystemMessage(`使用协议: ${ws.value.protocol}`);
       }
-    }
+    };
 
     ws.value.onmessage = (event) => {
-      let content = ''
-      let formatted = ''
-      let size = 0
+      let content = '';
+      let formatted = '';
+      let size = 0;
 
       if (typeof event.data === 'string') {
-        content = event.data
-        size = new Blob([event.data]).size
+        content = event.data;
+        size = new Blob([event.data]).size;
 
         // 尝试格式化 JSON
         try {
-          const parsed = JSON.parse(event.data)
-          formatted = JSON.stringify(parsed, null, 2)
+          const parsed = JSON.parse(event.data);
+          formatted = JSON.stringify(parsed, null, 2);
         } catch {
           // 不是 JSON，保持原样
         }
       } else if (event.data instanceof Blob) {
-        size = event.data.size
-        content = `[Blob 数据, ${size} bytes]`
+        size = event.data.size;
+        content = `[Blob 数据, ${size} bytes]`;
       } else if (event.data instanceof ArrayBuffer) {
-        size = event.data.byteLength
-        const uint8Array = new Uint8Array(event.data)
-        content = Array.from(uint8Array, (byte) => byte.toString(16).padStart(2, '0')).join(' ')
+        size = event.data.byteLength;
+        const uint8Array = new Uint8Array(event.data);
+        content = Array.from(uint8Array, (byte) => byte.toString(16).padStart(2, '0')).join(' ');
       }
 
-      addMessage('received', content, formatted, size)
-    }
+      addMessage('received', content, formatted, size);
+    };
 
     ws.value.onclose = (event) => {
-      connectionState.value = 'CLOSED'
-      connectionTime.value = ''
+      connectionState.value = 'CLOSED';
+      connectionTime.value = '';
 
       if (event.wasClean) {
-        addSystemMessage(`连接正常关闭 (代码: ${event.code})`)
+        addSystemMessage(`连接正常关闭 (代码: ${event.code})`);
       } else {
-        addSystemMessage(`连接异常断开 (代码: ${event.code}, 原因: ${event.reason || '未知'})`)
+        addSystemMessage(`连接异常断开 (代码: ${event.code}, 原因: ${event.reason || '未知'})`);
       }
-    }
+    };
 
     ws.value.onerror = (event) => {
-      addSystemMessage('连接错误')
-      console.error('WebSocket error:', event)
-    }
+      addSystemMessage('连接错误');
+      console.error('WebSocket error:', event);
+    };
   } catch (error) {
-    addSystemMessage('连接失败: ' + (error as Error).message)
-    connectionState.value = 'CLOSED'
+    addSystemMessage('连接失败: ' + (error as Error).message);
+    connectionState.value = 'CLOSED';
   }
 }
 
 function disconnect() {
   if (ws.value) {
-    connectionState.value = 'CLOSING'
-    ws.value.close(1000, '用户主动断开')
+    connectionState.value = 'CLOSING';
+    ws.value.close(1000, '用户主动断开');
   }
 }
 
 function sendMessage() {
   if (!ws.value || !isConnected.value || !messageToSend.value.trim()) {
-    return
+    return;
   }
 
   try {
-    let dataToSend: string | ArrayBuffer = messageToSend.value
-    let formatted = ''
+    let dataToSend: string | ArrayBuffer = messageToSend.value;
+    let formatted = '';
 
     if (messageType.value === 'json') {
       // 验证并格式化 JSON
       try {
-        const parsed = JSON.parse(messageToSend.value)
-        dataToSend = JSON.stringify(parsed)
-        formatted = JSON.stringify(parsed, null, 2)
+        const parsed = JSON.parse(messageToSend.value);
+        dataToSend = JSON.stringify(parsed);
+        formatted = JSON.stringify(parsed, null, 2);
       } catch (error) {
-        addSystemMessage('JSON 格式错误: ' + (error as Error).message)
-        return
+        addSystemMessage('JSON 格式错误: ' + (error as Error).message);
+        return;
       }
     } else if (messageType.value === 'binary') {
       // 处理二进制数据
       try {
         // 移除空格和非十六进制字符
-        const hexString = messageToSend.value.replace(/[^0-9a-fA-F]/g, '')
+        const hexString = messageToSend.value.replace(/[^0-9a-fA-F]/g, '');
         if (hexString.length % 2 !== 0) {
-          throw new Error('十六进制字符串长度必须是偶数')
+          throw new Error('十六进制字符串长度必须是偶数');
         }
 
-        const bytes = new Uint8Array(hexString.length / 2)
+        const bytes = new Uint8Array(hexString.length / 2);
         for (let i = 0; i < hexString.length; i += 2) {
-          bytes[i / 2] = parseInt(hexString.substr(i, 2), 16)
+          bytes[i / 2] = parseInt(hexString.substr(i, 2), 16);
         }
-        dataToSend = bytes.buffer
+        dataToSend = bytes.buffer;
       } catch (error) {
-        addSystemMessage('二进制数据格式错误: ' + (error as Error).message)
-        return
+        addSystemMessage('二进制数据格式错误: ' + (error as Error).message);
+        return;
       }
     }
 
-    ws.value.send(dataToSend)
+    ws.value.send(dataToSend);
 
-    const size = typeof dataToSend === 'string' ? new Blob([dataToSend]).size : dataToSend.byteLength
+    const size = typeof dataToSend === 'string' ? new Blob([dataToSend]).size : dataToSend.byteLength;
 
-    addMessage('sent', messageToSend.value, formatted, size)
-    messageToSend.value = ''
+    addMessage('sent', messageToSend.value, formatted, size);
+    messageToSend.value = '';
   } catch (error) {
-    addSystemMessage('发送失败: ' + (error as Error).message)
+    addSystemMessage('发送失败: ' + (error as Error).message);
   }
 }
 
@@ -444,43 +444,43 @@ function addMessage(type: 'sent' | 'received', content: string, formatted?: stri
     formatted,
     timestamp: new Date().toLocaleTimeString('zh-CN'),
     size
-  })
+  });
 
   if (autoScroll.value) {
     nextTick(() => {
       if (messagesContainer.value) {
-        messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+        messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
       }
-    })
+    });
   }
 }
 
 function addSystemMessage(content: string) {
-  addMessage('system', content)
+  addMessage('system', content);
 }
 
 function clearMessages() {
-  messages.value = []
+  messages.value = [];
 }
 
 function formatMessage() {
   if (messageType.value === 'json') {
     try {
-      const parsed = JSON.parse(messageToSend.value)
-      messageToSend.value = JSON.stringify(parsed, null, 2)
+      const parsed = JSON.parse(messageToSend.value);
+      messageToSend.value = JSON.stringify(parsed, null, 2);
     } catch (error) {
-      addSystemMessage('JSON 格式化失败: ' + (error as Error).message)
+      addSystemMessage('JSON 格式化失败: ' + (error as Error).message);
     }
   }
 }
 
 function loadTemplate(template: MessageTemplate) {
-  messageType.value = template.type
-  messageToSend.value = template.content
+  messageType.value = template.type;
+  messageToSend.value = template.content;
 }
 
 function toggleAutoScroll() {
-  autoScroll.value = !autoScroll.value
+  autoScroll.value = !autoScroll.value;
 }
 
 function exportMessages() {
@@ -493,25 +493,25 @@ function exportMessages() {
 消息详情:
 ${messages.value
   .map((msg, index) => {
-    return `${index + 1}. [${msg.timestamp}] ${msg.type.toUpperCase()}: ${msg.content}${msg.size ? ` (${msg.size} bytes)` : ''}`
+    return `${index + 1}. [${msg.timestamp}] ${msg.type.toUpperCase()}: ${msg.content}${msg.size ? ` (${msg.size} bytes)` : ''}`;
   })
   .join('\n')}
 
 导出时间: ${new Date().toLocaleString('zh-CN')}
-`
+`;
 
-  const blob = new Blob([report], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `websocket-log-${new Date().toISOString().slice(0, 10)}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([report], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `websocket-log-${new Date().toISOString().slice(0, 10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 onUnmounted(() => {
   if (ws.value) {
-    ws.value.close()
+    ws.value.close();
   }
-})
+});
 </script>

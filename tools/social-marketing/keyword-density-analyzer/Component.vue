@@ -117,118 +117,118 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
-type HistoryItem = { count: number; result: string; outputLength: number; timestamp: number }
+type HistoryItem = { count: number; result: string; outputLength: number; timestamp: number };
 
-const inputText = ref('')
-const minLength = ref(2)
-const topN = ref(50)
-const ignoreCase = ref(true)
-const stopwordsText = ref('the,a,an,is,are,of,to,in,for,with,and,or,as,at,by,from,that,this,his,her,its,our,their,和,的,了,在,是,有')
+const inputText = ref('');
+const minLength = ref(2);
+const topN = ref(50);
+const ignoreCase = ref(true);
+const stopwordsText = ref('the,a,an,is,are,of,to,in,for,with,and,or,as,at,by,from,that,this,his,her,its,our,their,和,的,了,在,是,有');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => inputText.value.trim().length > 0)
+const canProcess = computed(() => inputText.value.trim().length > 0);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function swapView() {
-  if (!result.value) return
-  copyResult()
+  if (!result.value) return;
+  copyResult();
 }
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const filename = `keyword_density_${new Date().toISOString().slice(0, 10)}.json`
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `keyword_density_${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const parsed = JSON.parse(result.value)
-  const item: HistoryItem = { count: parsed.words?.length || 0, result: result.value, outputLength: result.value.length, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('keyword-density-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const parsed = JSON.parse(result.value);
+  const item: HistoryItem = { count: parsed.words?.length || 0, result: result.value, outputLength: result.value.length, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('keyword-density-history', JSON.stringify(history.value));
 }
 function loadFromHistory(item: HistoryItem) {
-  result.value = item.result
-  error.value = ''
-  processingTime.value = null
+  result.value = item.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  localStorage.setItem('keyword-density-history', JSON.stringify(history.value))
+  history.value.splice(index, 1);
+  localStorage.setItem('keyword-density-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function tokenize(text: string, lower: boolean): string[] {
-  const s = lower ? text.toLowerCase() : text
+  const s = lower ? text.toLowerCase() : text;
   return s
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
     .replace(/[^a-zA-Z0-9\u4e00-\u9fa5]+/g, ' ')
     .trim()
     .split(/\s+/)
-    .filter(Boolean)
+    .filter(Boolean);
 }
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
   try {
-    const tokens = tokenize(inputText.value, ignoreCase.value)
+    const tokens = tokenize(inputText.value, ignoreCase.value);
     const stop = new Set(
       (stopwordsText.value || '')
         .split(',')
         .map((x) => x.trim())
         .filter(Boolean)
-    )
-    const counts = new Map<string, number>()
+    );
+    const counts = new Map<string, number>();
     for (const t of tokens) {
-      if (t.length < Math.max(1, minLength.value || 1)) continue
-      if (stop.has(t)) continue
-      counts.set(t, (counts.get(t) || 0) + 1)
+      if (t.length < Math.max(1, minLength.value || 1)) continue;
+      if (stop.has(t)) continue;
+      counts.set(t, (counts.get(t) || 0) + 1);
     }
-    const total = Array.from(counts.values()).reduce((a, b) => a + b, 0)
+    const total = Array.from(counts.values()).reduce((a, b) => a + b, 0);
     const words = Array.from(counts.entries())
       .map(([word, count]) => ({ word, count, density: total ? +(count / total).toFixed(4) : 0 }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, Math.max(1, topN.value || 1))
+      .slice(0, Math.max(1, topN.value || 1));
 
-    result.value = JSON.stringify({ total, words }, null, 2)
-    processingTime.value = Math.round(performance.now() - start)
+    result.value = JSON.stringify({ total, words }, null, 2);
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '分析失败'
+    error.value = e?.message || '分析失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('keyword-density-history')
+  const saved = localStorage.getItem('keyword-density-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

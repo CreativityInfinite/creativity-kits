@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { promises as fs } from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import { promises as fs } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 所有工具的定义
 const toolCategories = [
@@ -202,7 +202,7 @@ const toolCategories = [
       { id: 'performance-profiler', name: '性能分析器', icon: 'mdi:speedometer' }
     ]
   }
-]
+];
 
 // 生成工具的基础模板
 function generateComponentTemplate(toolId, toolName, categoryId) {
@@ -288,7 +288,7 @@ async function copyToClipboard() {
   }
 }
 </script>
-`
+`;
 }
 
 function generateMetaTemplate(toolId, toolName, categoryId, icon) {
@@ -305,51 +305,51 @@ const meta: ToolMeta = {
 }
 
 export default meta
-`
+`;
 }
 
 async function createTool(categoryId, toolId, toolName, icon) {
-  const toolDir = path.join(__dirname, '..', 'tools', categoryId, toolId)
+  const toolDir = path.join(__dirname, '..', 'tools', categoryId, toolId);
 
   try {
-    await fs.mkdir(toolDir, { recursive: true })
+    await fs.mkdir(toolDir, { recursive: true });
 
     // 检查文件是否已存在
-    const componentPath = path.join(toolDir, 'Component.vue')
-    const metaPath = path.join(toolDir, 'meta.ts')
+    const componentPath = path.join(toolDir, 'Component.vue');
+    const metaPath = path.join(toolDir, 'meta.ts');
 
     try {
-      await fs.access(componentPath)
-      console.log(`跳过已存在的工具: ${categoryId}/${toolId}`)
-      return
+      await fs.access(componentPath);
+      console.log(`跳过已存在的工具: ${categoryId}/${toolId}`);
+      return;
     } catch {
       // 文件不存在，继续创建
     }
 
-    const componentContent = generateComponentTemplate(toolId, toolName, categoryId)
-    const metaContent = generateMetaTemplate(toolId, toolName, categoryId, icon)
+    const componentContent = generateComponentTemplate(toolId, toolName, categoryId);
+    const metaContent = generateMetaTemplate(toolId, toolName, categoryId, icon);
 
-    await fs.writeFile(componentPath, componentContent)
-    await fs.writeFile(metaPath, metaContent)
+    await fs.writeFile(componentPath, componentContent);
+    await fs.writeFile(metaPath, metaContent);
 
-    console.log(`创建工具: ${categoryId}/${toolId}`)
+    console.log(`创建工具: ${categoryId}/${toolId}`);
   } catch (error) {
-    console.error(`创建工具失败 ${categoryId}/${toolId}:`, error)
+    console.error(`创建工具失败 ${categoryId}/${toolId}:`, error);
   }
 }
 
 async function main() {
-  console.log('开始生成所有工具...')
+  console.log('开始生成所有工具...');
 
   for (const category of toolCategories) {
-    console.log(`\n处理分类: ${category.name}`)
+    console.log(`\n处理分类: ${category.name}`);
 
     for (const tool of category.tools) {
-      await createTool(category.id, tool.id, tool.name, tool.icon)
+      await createTool(category.id, tool.id, tool.name, tool.icon);
     }
   }
 
-  console.log('\n所有工具生成完成！')
+  console.log('\n所有工具生成完成！');
 }
 
-main().catch(console.error)
+main().catch(console.error);

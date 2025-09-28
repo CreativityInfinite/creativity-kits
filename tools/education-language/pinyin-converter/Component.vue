@@ -30,39 +30,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const input = ref('')
-const output = ref('')
+const input = ref('');
+const output = ref('');
 
 async function convert() {
-  const text = (input.value || '').trim()
+  const text = (input.value || '').trim();
   if (!text) {
-    output.value = ''
-    return
+    output.value = '';
+    return;
   }
   try {
     // 动态按需加载
     // @ts-ignore
-    const mod: any = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/pinyin-pro@3.20.0/dist/index.esm.min.js')
-    output.value = (mod as any).pinyin(text, { toneType: 'none', type: 'array', nonZh: 'consecutive' }).join(' ')
+    const mod: any = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/pinyin-pro@3.20.0/dist/index.esm.min.js');
+    output.value = (mod as any).pinyin(text, { toneType: 'none', type: 'array', nonZh: 'consecutive' }).join(' ');
   } catch (e: any) {
-    output.value = `转换失败: ${e?.message || e}`
+    output.value = `转换失败: ${e?.message || e}`;
   }
 }
 
 function clearAll() {
-  input.value = ''
-  output.value = ''
+  input.value = '';
+  output.value = '';
 }
 
 async function copy() {
-  if (!output.value) return
+  if (!output.value) return;
   try {
-    await navigator.clipboard.writeText(output.value)
-    alert('拼音已复制')
+    await navigator.clipboard.writeText(output.value);
+    alert('拼音已复制');
   } catch {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 </script>

@@ -5,16 +5,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-const token = ref('')
+import { computed, ref } from 'vue';
+const token = ref('');
 const pretty = computed(() => {
   try {
-    const parts = token.value.split('.')
-    if (parts.length < 2) return 'Invalid JWT'
-    const payload = JSON.parse(decodeURIComponent(escape(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))))
-    return JSON.stringify(payload, null, 2)
+    const parts = token.value.split('.');
+    if (parts.length < 2) return 'Invalid JWT';
+    const payload = JSON.parse(decodeURIComponent(escape(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))));
+    return JSON.stringify(payload, null, 2);
   } catch {
-    return 'Invalid JWT'
+    return 'Invalid JWT';
   }
-})
+});
 </script>

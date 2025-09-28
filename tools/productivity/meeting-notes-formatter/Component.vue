@@ -36,41 +36,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-const raw = ref('')
-const md = ref('')
+const raw = ref('');
+const md = ref('');
 const html = computed(async () => {
-  if (!md.value) return ''
-  const { marked } = await import('https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js')
-  return marked.parse(md.value)
-})
+  if (!md.value) return '';
+  const { marked } = await import('https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js');
+  return marked.parse(md.value);
+});
 
 function formatNotes() {
-  const text = (raw.value || '').trim()
+  const text = (raw.value || '').trim();
   if (!text) {
-    md.value = ''
-    return
+    md.value = '';
+    return;
   }
   const lines = text
     .split(/\r?\n/)
     .map((s) => s.trim())
-    .filter(Boolean)
+    .filter(Boolean);
 
-  const sec = { time: [] as string[], attendees: [] as string[], agenda: [] as string[], discussion: [] as string[], decisions: [] as string[], actions: [] as string[] }
+  const sec = { time: [] as string[], attendees: [] as string[], agenda: [] as string[], discussion: [] as string[], decisions: [] as string[], actions: [] as string[] };
   for (const l of lines) {
-    const m = l.match(/^(时间|与会者|议程|讨论|结论|行动项)\s*[:：]\s*(.+)$/)
+    const m = l.match(/^(时间|与会者|议程|讨论|结论|行动项)\s*[:：]\s*(.+)$/);
     if (m) {
-      const key = m[1]
-      const val = m[2]
-      if (key === '时间') sec.time.push(val)
-      else if (key === '与会者') sec.attendees.push(val)
-      else if (key === '议程') sec.agenda.push(val)
-      else if (key === '讨论') sec.discussion.push(val)
-      else if (key === '结论') sec.decisions.push(val)
-      else if (key === '行动项') sec.actions.push(val)
+      const key = m[1];
+      const val = m[2];
+      if (key === '时间') sec.time.push(val);
+      else if (key === '与会者') sec.attendees.push(val);
+      else if (key === '议程') sec.agenda.push(val);
+      else if (key === '讨论') sec.discussion.push(val);
+      else if (key === '结论') sec.decisions.push(val);
+      else if (key === '行动项') sec.actions.push(val);
     } else {
-      sec.discussion.push(l)
+      sec.discussion.push(l);
     }
   }
 
@@ -92,16 +92,16 @@ function formatNotes() {
     ...(sec.actions.length ? sec.actions.map((i) => `- [ ] ${i}`) : ['- （无）'])
   ]
     .filter(Boolean)
-    .join('\n')
+    .join('\n');
 }
 
 async function copy() {
-  if (!md.value) return
+  if (!md.value) return;
   try {
-    await navigator.clipboard.writeText(md.value)
-    alert('已复制')
+    await navigator.clipboard.writeText(md.value);
+    alert('已复制');
   } catch {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 </script>

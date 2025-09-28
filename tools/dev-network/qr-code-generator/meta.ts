@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'qr-code-generator',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'dev-network',
   tags: ['二维码', 'QR码', '生成器', '批量', '自定义', '下载'],
   i18nKey: 'tools.qr-code-generator',
-  entry: 'tools/dev-network/qr-code-generator/Component.vue',
-}
-export default meta
+  entry: 'tools/dev-network/qr-code-generator/Component.vue'
+};
+export default meta;

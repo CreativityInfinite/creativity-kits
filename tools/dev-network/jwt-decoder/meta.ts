@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'jwt-decoder',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#22d3ee,#84cc16)',
   icon: 'tabler:shield-lock',
   i18nKey: 'tools.jwt-decoder',
-  entry: 'tools/dev-network/jwt-decoder/Component.vue',
-}
-export default meta
+  entry: 'tools/dev-network/jwt-decoder/Component.vue'
+};
+export default meta;

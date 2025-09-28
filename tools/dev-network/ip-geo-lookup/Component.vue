@@ -79,87 +79,87 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
-type HistoryItem = { ip: string; result: string; timestamp: number }
+type HistoryItem = { ip: string; result: string; timestamp: number };
 
-const ip = ref('')
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const ip = ref('');
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const filename = `ipgeo_${ip.value || 'me'}_${new Date().toISOString().slice(0, 10)}.json`
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `ipgeo_${ip.value || 'me'}_${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const item: HistoryItem = { ip: ip.value.trim(), result: result.value, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('ip-geo-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const item: HistoryItem = { ip: ip.value.trim(), result: result.value, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('ip-geo-history', JSON.stringify(history.value));
 }
 function loadFromHistory(item: HistoryItem) {
-  ip.value = item.ip
-  result.value = item.result
-  error.value = ''
-  processingTime.value = null
+  ip.value = item.ip;
+  result.value = item.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('ip-geo-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('ip-geo-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 async function query(ipStr: string) {
-  const base = 'https://ipapi.co'
-  const url = ipStr ? `${base}/${encodeURIComponent(ipStr)}/json/` : `${base}/json/`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return res.json()
+  const base = 'https://ipapi.co';
+  const url = ipStr ? `${base}/${encodeURIComponent(ipStr)}/json/` : `${base}/json/`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }
 
 async function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
   try {
-    const data = await query(ip.value.trim())
-    result.value = JSON.stringify(data, null, 2)
-    processingTime.value = Math.round(performance.now() - start)
+    const data = await query(ip.value.trim());
+    result.value = JSON.stringify(data, null, 2);
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '查询失败'
+    error.value = e?.message || '查询失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('ip-geo-history')
+  const saved = localStorage.getItem('ip-geo-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

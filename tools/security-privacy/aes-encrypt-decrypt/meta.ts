@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'aes-encrypt-decrypt',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'security-privacy',
   tags: ['AES', '加密', '解密', 'GCM', '安全', '密码学'],
   i18nKey: 'tools.aes-encrypt-decrypt',
-  entry: 'tools/security-privacy/aes-encrypt-decrypt/Component.vue',
-}
-export default meta
+  entry: 'tools/security-privacy/aes-encrypt-decrypt/Component.vue'
+};
+export default meta;

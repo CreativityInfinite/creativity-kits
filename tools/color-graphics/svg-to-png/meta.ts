@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'svg-to-png',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:image-convert',
   i18nKey: 'tools.svg-to-png',
-  entry: 'tools/color-graphics/svg-to-png/Component.vue',
-}
-export default meta
+  entry: 'tools/color-graphics/svg-to-png/Component.vue'
+};
+export default meta;

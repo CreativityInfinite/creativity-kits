@@ -65,64 +65,64 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-type HistoryItem = { query: string; summary: string; result: string; timestamp: number }
+import { computed, onMounted, ref } from 'vue';
+type HistoryItem = { query: string; summary: string; result: string; timestamp: number };
 
-const name = ref('')
-const file = ref<File | null>(null)
+const name = ref('');
+const file = ref<File | null>(null);
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => name.value.trim().length > 0 || !!file.value)
+const canProcess = computed(() => name.value.trim().length > 0 || !!file.value);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
-  file.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
+  file.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'mime-type.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'mime-type.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const p = JSON.parse(result.value)
-  const summary = `${p.inferred?.mime || '-'} | ${p.file?.type || '-'}`
-  history.value.unshift({ query: name.value || file.value?.name || '', summary, result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('mimetype-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const p = JSON.parse(result.value);
+  const summary = `${p.inferred?.mime || '-'} | ${p.file?.type || '-'}`;
+  history.value.unshift({ query: name.value || file.value?.name || '', summary, result: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('mimetype-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('mimetype-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('mimetype-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function onFile(e: Event) {
-  file.value = (e.target as HTMLInputElement).files?.[0] || null
+  file.value = (e.target as HTMLInputElement).files?.[0] || null;
 }
 
 const extMap: Record<string, string> = {
@@ -166,42 +166,42 @@ const extMap: Record<string, string> = {
   woff2: 'font/woff2',
   ttf: 'font/ttf',
   otf: 'font/otf'
-}
+};
 
 function inferByName(s: string) {
   const m = s
     .trim()
     .toLowerCase()
-    .match(/\.([a-z0-9]+)$/)
-  const ext = m?.[1] || s.replace(/^\./, '').toLowerCase()
-  if (!ext) return { ext: '', mime: null }
-  return { ext, mime: extMap[ext] || null }
+    .match(/\.([a-z0-9]+)$/);
+  const ext = m?.[1] || s.replace(/^\./, '').toLowerCase();
+  if (!ext) return { ext: '', mime: null };
+  return { ext, mime: extMap[ext] || null };
 }
 
 async function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const t0 = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const t0 = performance.now();
   try {
-    const inferred = name.value ? inferByName(name.value) : null
-    let fileInfo: any = null
+    const inferred = name.value ? inferByName(name.value) : null;
+    let fileInfo: any = null;
     if (file.value) {
-      fileInfo = { name: file.value.name, size: file.value.size, type: file.value.type || null, lastModified: file.value.lastModified }
+      fileInfo = { name: file.value.name, size: file.value.size, type: file.value.type || null, lastModified: file.value.lastModified };
     }
-    result.value = JSON.stringify({ input: { name: name.value || null, hasFile: !!file.value }, inferred, file: fileInfo }, null, 2)
-    processingTime.value = Math.round(performance.now() - t0)
+    result.value = JSON.stringify({ input: { name: name.value || null, hasFile: !!file.value }, inferred, file: fileInfo }, null, 2);
+    processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '处理失败'
+    error.value = e?.message || '处理失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('mimetype-history')
+  const saved = localStorage.getItem('mimetype-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

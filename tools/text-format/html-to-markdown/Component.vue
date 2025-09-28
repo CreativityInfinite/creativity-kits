@@ -193,45 +193,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 interface ConversionOptions {
-  preserveWhitespace: boolean
-  convertImages: boolean
-  convertLinks: boolean
-  convertTables: boolean
-  convertCodeBlocks: boolean
-  removeComments: boolean
+  preserveWhitespace: boolean;
+  convertImages: boolean;
+  convertLinks: boolean;
+  convertTables: boolean;
+  convertCodeBlocks: boolean;
+  removeComments: boolean;
 }
 
 interface ConversionStats {
-  processingTime: number
-  htmlTags: number
-  linksConverted: number
-  imagesConverted: number
-  tablesConverted: number
-  codeBlocks: number
+  processingTime: number;
+  htmlTags: number;
+  linksConverted: number;
+  imagesConverted: number;
+  tablesConverted: number;
+  codeBlocks: number;
 }
 
 interface ValidationResult {
-  isValid: boolean
-  issues: string[]
+  isValid: boolean;
+  issues: string[];
 }
 
 interface HistoryItem {
-  html: string
-  markdown: string
-  htmlLength: number
-  markdownLength: number
-  timestamp: number
+  html: string;
+  markdown: string;
+  htmlLength: number;
+  markdownLength: number;
+  timestamp: number;
 }
 
-const htmlInput = ref('')
-const markdownOutput = ref('')
-const showPreview = ref(false)
-const conversionStats = ref<ConversionStats | null>(null)
-const validationResult = ref<ValidationResult | null>(null)
-const history = ref<HistoryItem[]>([])
+const htmlInput = ref('');
+const markdownOutput = ref('');
+const showPreview = ref(false);
+const conversionStats = ref<ConversionStats | null>(null);
+const validationResult = ref<ValidationResult | null>(null);
+const history = ref<HistoryItem[]>([]);
 
 const options = ref<ConversionOptions>({
   preserveWhitespace: false,
@@ -240,20 +240,20 @@ const options = ref<ConversionOptions>({
   convertTables: true,
   convertCodeBlocks: true,
   removeComments: true
-})
+});
 
 const previewHtml = computed(() => {
-  if (!markdownOutput.value) return ''
-  return convertMarkdownToHtml(markdownOutput.value)
-})
+  if (!markdownOutput.value) return '';
+  return convertMarkdownToHtml(markdownOutput.value);
+});
 
 // HTML 转 Markdown 核心函数
 const convert = () => {
-  if (!htmlInput.value.trim()) return
+  if (!htmlInput.value.trim()) return;
 
-  const startTime = performance.now()
+  const startTime = performance.now();
 
-  let html = htmlInput.value
+  let html = htmlInput.value;
   let stats: ConversionStats = {
     processingTime: 0,
     htmlTags: 0,
@@ -261,156 +261,156 @@ const convert = () => {
     imagesConverted: 0,
     tablesConverted: 0,
     codeBlocks: 0
-  }
+  };
 
   // 移除注释
   if (options.value.removeComments) {
-    html = html.replace(/<!--[\s\S]*?-->/g, '')
+    html = html.replace(/<!--[\s\S]*?-->/g, '');
   }
 
   // 统计 HTML 标签
-  stats.htmlTags = (html.match(/<[^>]+>/g) || []).length
+  stats.htmlTags = (html.match(/<[^>]+>/g) || []).length;
 
-  let markdown = html
+  let markdown = html;
 
   // 转换标题
   markdown = markdown.replace(/<h([1-6])[^>]*>(.*?)<\/h[1-6]>/gi, (match, level, content) => {
-    const cleanContent = cleanHtml(content)
-    return '#'.repeat(parseInt(level)) + ' ' + cleanContent + '\n\n'
-  })
+    const cleanContent = cleanHtml(content);
+    return '#'.repeat(parseInt(level)) + ' ' + cleanContent + '\n\n';
+  });
 
   // 转换粗体
-  markdown = markdown.replace(/<(strong|b)[^>]*>(.*?)<\/(strong|b)>/gi, '**$2**')
+  markdown = markdown.replace(/<(strong|b)[^>]*>(.*?)<\/(strong|b)>/gi, '**$2**');
 
   // 转换斜体
-  markdown = markdown.replace(/<(em|i)[^>]*>(.*?)<\/(em|i)>/gi, '*$2*')
+  markdown = markdown.replace(/<(em|i)[^>]*>(.*?)<\/(em|i)>/gi, '*$2*');
 
   // 转换链接
   if (options.value.convertLinks) {
     markdown = markdown.replace(/<a[^>]*href=["']([^"']*)["'][^>]*>(.*?)<\/a>/gi, (match, href, text) => {
-      stats.linksConverted++
-      return `[${cleanHtml(text)}](${href})`
-    })
+      stats.linksConverted++;
+      return `[${cleanHtml(text)}](${href})`;
+    });
   }
 
   // 转换图片
   if (options.value.convertImages) {
     markdown = markdown.replace(/<img[^>]*src=["']([^"']*)["'][^>]*alt=["']([^"']*)["'][^>]*\/?>/gi, (match, src, alt) => {
-      stats.imagesConverted++
-      return `![${alt}](${src})`
-    })
+      stats.imagesConverted++;
+      return `![${alt}](${src})`;
+    });
     markdown = markdown.replace(/<img[^>]*src=["']([^"']*)["'][^>]*\/?>/gi, (match, src) => {
-      stats.imagesConverted++
-      return `![](${src})`
-    })
+      stats.imagesConverted++;
+      return `![](${src})`;
+    });
   }
 
   // 转换代码块
   if (options.value.convertCodeBlocks) {
     markdown = markdown.replace(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/gi, (match, code) => {
-      stats.codeBlocks++
-      return '```\n' + cleanHtml(code) + '\n```\n\n'
-    })
-    markdown = markdown.replace(/<code[^>]*>(.*?)<\/code>/gi, '`$1`')
+      stats.codeBlocks++;
+      return '```\n' + cleanHtml(code) + '\n```\n\n';
+    });
+    markdown = markdown.replace(/<code[^>]*>(.*?)<\/code>/gi, '`$1`');
   }
 
   // 转换引用
   markdown = markdown.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (match, content) => {
-    const lines = cleanHtml(content).split('\n')
-    return lines.map((line) => (line.trim() ? '> ' + line : '>')).join('\n') + '\n\n'
-  })
+    const lines = cleanHtml(content).split('\n');
+    return lines.map((line) => (line.trim() ? '> ' + line : '>')).join('\n') + '\n\n';
+  });
 
   // 转换无序列表
   markdown = markdown.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (match, content) => {
-    const items = content.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) || []
+    const items = content.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) || [];
     return (
       items
         .map((item) => {
-          const text = item.replace(/<li[^>]*>([\s\S]*?)<\/li>/i, '$1')
-          return '- ' + cleanHtml(text).trim()
+          const text = item.replace(/<li[^>]*>([\s\S]*?)<\/li>/i, '$1');
+          return '- ' + cleanHtml(text).trim();
         })
         .join('\n') + '\n\n'
-    )
-  })
+    );
+  });
 
   // 转换有序列表
   markdown = markdown.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (match, content) => {
-    const items = content.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) || []
+    const items = content.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) || [];
     return (
       items
         .map((item, index) => {
-          const text = item.replace(/<li[^>]*>([\s\S]*?)<\/li>/i, '$1')
-          return `${index + 1}. ` + cleanHtml(text).trim()
+          const text = item.replace(/<li[^>]*>([\s\S]*?)<\/li>/i, '$1');
+          return `${index + 1}. ` + cleanHtml(text).trim();
         })
         .join('\n') + '\n\n'
-    )
-  })
+    );
+  });
 
   // 转换表格
   if (options.value.convertTables) {
     markdown = markdown.replace(/<table[^>]*>([\s\S]*?)<\/table>/gi, (match, content) => {
-      stats.tablesConverted++
-      return convertHtmlTable(content)
-    })
+      stats.tablesConverted++;
+      return convertHtmlTable(content);
+    });
   }
 
   // 转换段落
   markdown = markdown.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (match, content) => {
-    return cleanHtml(content).trim() + '\n\n'
-  })
+    return cleanHtml(content).trim() + '\n\n';
+  });
 
   // 转换换行
-  markdown = markdown.replace(/<br\s*\/?>/gi, '\n')
+  markdown = markdown.replace(/<br\s*\/?>/gi, '\n');
 
   // 清理剩余的 HTML 标签
-  markdown = cleanHtml(markdown)
+  markdown = cleanHtml(markdown);
 
   // 处理空白字符
   if (!options.value.preserveWhitespace) {
-    markdown = markdown.replace(/\n{3,}/g, '\n\n') // 限制连续换行
-    markdown = markdown.replace(/[ \t]+/g, ' ') // 合并空格
+    markdown = markdown.replace(/\n{3,}/g, '\n\n'); // 限制连续换行
+    markdown = markdown.replace(/[ \t]+/g, ' '); // 合并空格
   }
 
-  markdown = markdown.trim()
+  markdown = markdown.trim();
 
-  const endTime = performance.now()
-  stats.processingTime = Math.round(endTime - startTime)
+  const endTime = performance.now();
+  stats.processingTime = Math.round(endTime - startTime);
 
-  markdownOutput.value = markdown
-  conversionStats.value = stats
+  markdownOutput.value = markdown;
+  conversionStats.value = stats;
 
   // 添加到历史记录
-  addToHistory(htmlInput.value, markdown)
-}
+  addToHistory(htmlInput.value, markdown);
+};
 
 // 转换 HTML 表格
 const convertHtmlTable = (tableHtml: string): string => {
-  const rows = tableHtml.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || []
-  if (rows.length === 0) return ''
+  const rows = tableHtml.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];
+  if (rows.length === 0) return '';
 
-  const markdownRows: string[] = []
-  let isFirstRow = true
+  const markdownRows: string[] = [];
+  let isFirstRow = true;
 
   rows.forEach((row) => {
-    const cells = row.match(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi) || []
+    const cells = row.match(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi) || [];
     const cellTexts = cells.map((cell) => {
-      const text = cell.replace(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/i, '$1')
-      return cleanHtml(text).trim()
-    })
+      const text = cell.replace(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/i, '$1');
+      return cleanHtml(text).trim();
+    });
 
     if (cellTexts.length > 0) {
-      markdownRows.push('| ' + cellTexts.join(' | ') + ' |')
+      markdownRows.push('| ' + cellTexts.join(' | ') + ' |');
 
       if (isFirstRow) {
         // 添加表头分隔符
-        markdownRows.push('| ' + cellTexts.map(() => '---').join(' | ') + ' |')
-        isFirstRow = false
+        markdownRows.push('| ' + cellTexts.map(() => '---').join(' | ') + ' |');
+        isFirstRow = false;
       }
     }
-  })
+  });
 
-  return markdownRows.join('\n') + '\n\n'
-}
+  return markdownRows.join('\n') + '\n\n';
+};
 
 // 清理 HTML 标签
 const cleanHtml = (html: string): string => {
@@ -421,89 +421,89 @@ const cleanHtml = (html: string): string => {
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-}
+    .replace(/&#39;/g, "'");
+};
 
 // 简单的 Markdown 转 HTML（用于预览）
 const convertMarkdownToHtml = (markdown: string): string => {
-  let html = markdown
+  let html = markdown;
 
   // 标题
-  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>')
-  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>')
-  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>')
+  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
 
   // 粗体和斜体
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>')
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
   // 链接
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
 
   // 图片
-  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
 
   // 代码
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>')
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
   // 段落
-  html = html.replace(/\n\n/g, '</p><p>')
-  html = '<p>' + html + '</p>'
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = '<p>' + html + '</p>';
 
-  return html
-}
+  return html;
+};
 
 // 验证 Markdown 语法
 const validateMarkdown = () => {
-  if (!markdownOutput.value) return
+  if (!markdownOutput.value) return;
 
-  const issues: string[] = []
-  const markdown = markdownOutput.value
+  const issues: string[] = [];
+  const markdown = markdownOutput.value;
 
   // 检查链接语法
-  const linkMatches = markdown.match(/\[([^\]]*)\]\(([^)]*)\)/g)
+  const linkMatches = markdown.match(/\[([^\]]*)\]\(([^)]*)\)/g);
   if (linkMatches) {
     linkMatches.forEach((link) => {
       if (!link.match(/\[.*\]\(.+\)/)) {
-        issues.push(`链接语法错误: ${link}`)
+        issues.push(`链接语法错误: ${link}`);
       }
-    })
+    });
   }
 
   // 检查图片语法
-  const imageMatches = markdown.match(/!\[([^\]]*)\]\(([^)]*)\)/g)
+  const imageMatches = markdown.match(/!\[([^\]]*)\]\(([^)]*)\)/g);
   if (imageMatches) {
     imageMatches.forEach((image) => {
       if (!image.match(/!\[.*\]\(.+\)/)) {
-        issues.push(`图片语法错误: ${image}`)
+        issues.push(`图片语法错误: ${image}`);
       }
-    })
+    });
   }
 
   // 检查代码块
-  const codeBlockMatches = markdown.match(/```[\s\S]*?```/g)
+  const codeBlockMatches = markdown.match(/```[\s\S]*?```/g);
   if (codeBlockMatches) {
     codeBlockMatches.forEach((block) => {
       if (!block.endsWith('```')) {
-        issues.push('代码块未正确闭合')
+        issues.push('代码块未正确闭合');
       }
-    })
+    });
   }
 
   validationResult.value = {
     isValid: issues.length === 0,
     issues
-  }
-}
+  };
+};
 
 // 其他功能函数
 const clear = () => {
-  htmlInput.value = ''
-  markdownOutput.value = ''
-  conversionStats.value = null
-  validationResult.value = null
-  showPreview.value = false
-}
+  htmlInput.value = '';
+  markdownOutput.value = '';
+  conversionStats.value = null;
+  validationResult.value = null;
+  showPreview.value = false;
+};
 
 const loadExample = () => {
   htmlInput.value = `<!DOCTYPE html>
@@ -556,38 +556,38 @@ const loadExample = () => {
         <p>这是一个引用块的示例。</p>
     </blockquote>
 </body>
-</html>`
-}
+</html>`;
+};
 
 const pasteFromClipboard = async () => {
   try {
-    const text = await navigator.clipboard.readText()
-    htmlInput.value = text
+    const text = await navigator.clipboard.readText();
+    htmlInput.value = text;
   } catch (error) {
-    console.error('无法从剪贴板读取:', error)
+    console.error('无法从剪贴板读取:', error);
   }
-}
+};
 
 const copyResult = (text?: string) => {
-  const textToCopy = text || markdownOutput.value
-  if (!textToCopy) return
+  const textToCopy = text || markdownOutput.value;
+  if (!textToCopy) return;
 
   navigator.clipboard.writeText(textToCopy).then(() => {
     // 可以添加成功提示
-  })
-}
+  });
+};
 
 const downloadResult = () => {
-  if (!markdownOutput.value) return
+  if (!markdownOutput.value) return;
 
-  const blob = new Blob([markdownOutput.value], { type: 'text/markdown' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'converted.md'
-  a.click()
-  URL.revokeObjectURL(url)
-}
+  const blob = new Blob([markdownOutput.value], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'converted.md';
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 const addToHistory = (html: string, markdown: string) => {
   const item: HistoryItem = {
@@ -596,24 +596,24 @@ const addToHistory = (html: string, markdown: string) => {
     htmlLength: html.length,
     markdownLength: markdown.length,
     timestamp: Date.now()
-  }
+  };
 
-  history.value.unshift(item)
+  history.value.unshift(item);
 
   // 限制历史记录数量
   if (history.value.length > 20) {
-    history.value = history.value.slice(0, 20)
+    history.value = history.value.slice(0, 20);
   }
-}
+};
 
 const loadFromHistory = (item: HistoryItem) => {
-  htmlInput.value = item.html
-  markdownOutput.value = item.markdown
-}
+  htmlInput.value = item.html;
+  markdownOutput.value = item.markdown;
+};
 
 const clearHistory = () => {
-  history.value = []
-}
+  history.value = [];
+};
 
 const formatTime = (timestamp: number): string => {
   return new Date(timestamp).toLocaleString('zh-CN', {
@@ -621,6 +621,6 @@ const formatTime = (timestamp: number): string => {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  })
-}
+  });
+};
 </script>

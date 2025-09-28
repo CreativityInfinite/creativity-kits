@@ -41,12 +41,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-const fromTimezone = ref('Asia/Shanghai')
-const toTimezone = ref('America/New_York')
-const sourceTime = ref('')
-const targetTime = ref('')
+const fromTimezone = ref('Asia/Shanghai');
+const toTimezone = ref('America/New_York');
+const sourceTime = ref('');
+const targetTime = ref('');
 
 const timezones = [
   { value: 'Asia/Shanghai', label: '北京时间 (UTC+8)' },
@@ -59,39 +59,39 @@ const timezones = [
   { value: 'Asia/Dubai', label: '迪拜时间 (UTC+4)' },
   { value: 'Australia/Sydney', label: '悉尼时间 (UTC+10/+11)' },
   { value: 'Asia/Kolkata', label: '印度时间 (UTC+5:30)' }
-]
+];
 
 const timeDifference = computed(() => {
-  if (!sourceTime.value) return ''
+  if (!sourceTime.value) return '';
 
   try {
-    const sourceDate = new Date(sourceTime.value)
-    const targetDate = new Date(targetTime.value)
+    const sourceDate = new Date(sourceTime.value);
+    const targetDate = new Date(targetTime.value);
 
-    const diffMs = targetDate.getTime() - sourceDate.getTime()
-    const diffHours = diffMs / (1000 * 60 * 60)
+    const diffMs = targetDate.getTime() - sourceDate.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
 
     if (diffHours > 0) {
-      return `目标时间比源时间快 ${Math.abs(diffHours)} 小时`
+      return `目标时间比源时间快 ${Math.abs(diffHours)} 小时`;
     } else if (diffHours < 0) {
-      return `目标时间比源时间慢 ${Math.abs(diffHours)} 小时`
+      return `目标时间比源时间慢 ${Math.abs(diffHours)} 小时`;
     } else {
-      return '两个时区时间相同'
+      return '两个时区时间相同';
     }
   } catch {
-    return ''
+    return '';
   }
-})
+});
 
 function convert() {
   if (!sourceTime.value) {
-    targetTime.value = ''
-    return
+    targetTime.value = '';
+    return;
   }
 
   try {
     // 创建日期对象
-    const date = new Date(sourceTime.value)
+    const date = new Date(sourceTime.value);
 
     // 使用 Intl.DateTimeFormat 进行时区转换
     const formatter = new Intl.DateTimeFormat('sv-SE', {
@@ -102,42 +102,42 @@ function convert() {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit'
-    })
+    });
 
-    const parts = formatter.formatToParts(date)
-    const year = parts.find((p) => p.type === 'year')?.value
-    const month = parts.find((p) => p.type === 'month')?.value
-    const day = parts.find((p) => p.type === 'day')?.value
-    const hour = parts.find((p) => p.type === 'hour')?.value
-    const minute = parts.find((p) => p.type === 'minute')?.value
+    const parts = formatter.formatToParts(date);
+    const year = parts.find((p) => p.type === 'year')?.value;
+    const month = parts.find((p) => p.type === 'month')?.value;
+    const day = parts.find((p) => p.type === 'day')?.value;
+    const hour = parts.find((p) => p.type === 'hour')?.value;
+    const minute = parts.find((p) => p.type === 'minute')?.value;
 
-    targetTime.value = `${year}-${month}-${day}T${hour}:${minute}`
+    targetTime.value = `${year}-${month}-${day}T${hour}:${minute}`;
   } catch (error) {
-    targetTime.value = '转换失败'
+    targetTime.value = '转换失败';
   }
 }
 
 function setCurrentTime() {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  const hours = String(now.getHours()).padStart(2, '0')
-  const minutes = String(now.getMinutes()).padStart(2, '0')
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
 
-  sourceTime.value = `${year}-${month}-${day}T${hours}:${minutes}`
-  convert()
+  sourceTime.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+  convert();
 }
 
 function swapTimezones() {
-  const temp = fromTimezone.value
-  fromTimezone.value = toTimezone.value
-  toTimezone.value = temp
+  const temp = fromTimezone.value;
+  fromTimezone.value = toTimezone.value;
+  toTimezone.value = temp;
 
-  sourceTime.value = targetTime.value
-  convert()
+  sourceTime.value = targetTime.value;
+  convert();
 }
 
 // 初始化
-setCurrentTime()
+setCurrentTime();
 </script>

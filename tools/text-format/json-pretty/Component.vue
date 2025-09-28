@@ -279,37 +279,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue';
 
 interface Analysis {
-  type: string
-  depth: number
-  keyCount: number
-  arrayLength: number
-  keys?: string[]
+  type: string;
+  depth: number;
+  keyCount: number;
+  arrayLength: number;
+  keys?: string[];
   statistics?: {
-    objects: number
-    arrays: number
-    strings: number
-    numbers: number
-    booleans: number
-    nulls: number
-  }
+    objects: number;
+    arrays: number;
+    strings: number;
+    numbers: number;
+    booleans: number;
+    nulls: number;
+  };
 }
 
 interface FormatHistory {
-  input: string
-  output: string
-  operation: string
-  timestamp: string
-  preview: string
+  input: string;
+  output: string;
+  operation: string;
+  timestamp: string;
+  preview: string;
 }
 
-const inputText = ref('')
-const outputText = ref('')
-const error = ref('')
-const isValidJson = ref<boolean | null>(null)
-const showSyntaxHighlight = ref(false)
+const inputText = ref('');
+const outputText = ref('');
+const error = ref('');
+const isValidJson = ref<boolean | null>(null);
+const showSyntaxHighlight = ref(false);
 
 const options = ref({
   indent: 2,
@@ -318,123 +318,123 @@ const options = ref({
   removeComments: false,
   escapeUnicode: false,
   autoFormat: true
-})
+});
 
-const analysis = ref<Analysis | null>(null)
-const formatHistory = ref<FormatHistory[]>([])
+const analysis = ref<Analysis | null>(null);
+const formatHistory = ref<FormatHistory[]>([]);
 
 const compressionRatio = computed(() => {
-  if (!inputText.value || !outputText.value) return null
-  const originalSize = new Blob([inputText.value]).size
-  const formattedSize = new Blob([outputText.value]).size
-  if (originalSize === 0) return null
-  return Math.round(((formattedSize - originalSize) / originalSize) * 100)
-})
+  if (!inputText.value || !outputText.value) return null;
+  const originalSize = new Blob([inputText.value]).size;
+  const formattedSize = new Blob([outputText.value]).size;
+  if (originalSize === 0) return null;
+  return Math.round(((formattedSize - originalSize) / originalSize) * 100);
+});
 
 const highlightedJson = computed(() => {
-  if (!outputText.value) return ''
-  return highlightJson(outputText.value)
-})
+  if (!outputText.value) return '';
+  return highlightJson(outputText.value);
+});
 
 watch(
   [() => options.value],
   () => {
     if (inputText.value && outputText.value && options.value.autoFormat) {
-      formatJson()
+      formatJson();
     }
   },
   { deep: true }
-)
+);
 
 function autoFormat() {
   if (!options.value.autoFormat || !inputText.value.trim()) {
-    outputText.value = ''
-    analysis.value = null
-    isValidJson.value = null
-    return
+    outputText.value = '';
+    analysis.value = null;
+    isValidJson.value = null;
+    return;
   }
 
-  formatJson()
+  formatJson();
 }
 
 function formatJson() {
-  error.value = ''
+  error.value = '';
 
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 JSON 内容'
-      return
+      error.value = '请输入 JSON 内容';
+      return;
     }
 
     // 移除注释（如果启用）
-    let processedInput = input
+    let processedInput = input;
     if (options.value.removeComments) {
-      processedInput = removeJsonComments(input)
+      processedInput = removeJsonComments(input);
     }
 
-    const parsed = JSON.parse(processedInput)
+    const parsed = JSON.parse(processedInput);
 
-    let result = parsed
+    let result = parsed;
     if (options.value.sortKeys) {
-      result = sortObjectKeys(parsed)
+      result = sortObjectKeys(parsed);
     }
 
-    const indentChar = options.value.indentType === 'tab' ? '\t' : ' '.repeat(options.value.indent)
-    let jsonString = JSON.stringify(result, null, indentChar)
+    const indentChar = options.value.indentType === 'tab' ? '\t' : ' '.repeat(options.value.indent);
+    let jsonString = JSON.stringify(result, null, indentChar);
 
     if (options.value.escapeUnicode) {
-      jsonString = escapeUnicode(jsonString)
+      jsonString = escapeUnicode(jsonString);
     }
 
-    outputText.value = jsonString
-    isValidJson.value = true
-    analyzeJson(parsed)
-    addToHistory(input, jsonString, 'JSON 美化')
+    outputText.value = jsonString;
+    isValidJson.value = true;
+    analyzeJson(parsed);
+    addToHistory(input, jsonString, 'JSON 美化');
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'JSON 解析失败'
-    isValidJson.value = false
-    analysis.value = null
+    error.value = err instanceof Error ? err.message : 'JSON 解析失败';
+    isValidJson.value = false;
+    analysis.value = null;
   }
 }
 
 function minifyJson() {
-  error.value = ''
+  error.value = '';
 
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 JSON 内容'
-      return
+      error.value = '请输入 JSON 内容';
+      return;
     }
 
     // 移除注释（如果启用）
-    let processedInput = input
+    let processedInput = input;
     if (options.value.removeComments) {
-      processedInput = removeJsonComments(input)
+      processedInput = removeJsonComments(input);
     }
 
-    const parsed = JSON.parse(processedInput)
+    const parsed = JSON.parse(processedInput);
 
-    let result = parsed
+    let result = parsed;
     if (options.value.sortKeys) {
-      result = sortObjectKeys(parsed)
+      result = sortObjectKeys(parsed);
     }
 
-    let jsonString = JSON.stringify(result)
+    let jsonString = JSON.stringify(result);
 
     if (options.value.escapeUnicode) {
-      jsonString = escapeUnicode(jsonString)
+      jsonString = escapeUnicode(jsonString);
     }
 
-    outputText.value = jsonString
-    isValidJson.value = true
-    analyzeJson(parsed)
-    addToHistory(input, jsonString, 'JSON 压缩')
+    outputText.value = jsonString;
+    isValidJson.value = true;
+    analyzeJson(parsed);
+    addToHistory(input, jsonString, 'JSON 压缩');
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'JSON 解析失败'
-    isValidJson.value = false
-    analysis.value = null
+    error.value = err instanceof Error ? err.message : 'JSON 解析失败';
+    isValidJson.value = false;
+    analysis.value = null;
   }
 }
 
@@ -442,52 +442,52 @@ function removeJsonComments(jsonString: string): string {
   // 简单的注释移除（不处理字符串内的注释）
   return jsonString
     .replace(/\/\*[\s\S]*?\*\//g, '') // 移除 /* */ 注释
-    .replace(/\/\/.*$/gm, '') // 移除 // 注释
+    .replace(/\/\/.*$/gm, ''); // 移除 // 注释
 }
 
 function sortObjectKeys(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map(sortObjectKeys)
+    return obj.map(sortObjectKeys);
   } else if (obj !== null && typeof obj === 'object') {
-    const sorted: any = {}
+    const sorted: any = {};
     Object.keys(obj)
       .sort()
       .forEach((key) => {
-        sorted[key] = sortObjectKeys(obj[key])
-      })
-    return sorted
+        sorted[key] = sortObjectKeys(obj[key]);
+      });
+    return sorted;
   }
-  return obj
+  return obj;
 }
 
 function escapeUnicode(str: string): string {
   return str.replace(/[\u0080-\uFFFF]/g, (match) => {
-    return '\\u' + ('0000' + match.charCodeAt(0).toString(16)).substr(-4)
-  })
+    return '\\u' + ('0000' + match.charCodeAt(0).toString(16)).substr(-4);
+  });
 }
 
 function highlightJson(jsonString: string): string {
   // 简单的 JSON 语法高亮
   return jsonString
     .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
-      let cls = 'text-gray-900 dark:text-gray-100'
+      let cls = 'text-gray-900 dark:text-gray-100';
       if (/^"/.test(match)) {
         if (/:$/.test(match)) {
-          cls = 'text-blue-600 dark:text-blue-400' // 键名
+          cls = 'text-blue-600 dark:text-blue-400'; // 键名
         } else {
-          cls = 'text-green-600 dark:text-green-400' // 字符串值
+          cls = 'text-green-600 dark:text-green-400'; // 字符串值
         }
       } else if (/true|false/.test(match)) {
-        cls = 'text-purple-600 dark:text-purple-400' // 布尔值
+        cls = 'text-purple-600 dark:text-purple-400'; // 布尔值
       } else if (/null/.test(match)) {
-        cls = 'text-red-600 dark:text-red-400' // null
+        cls = 'text-red-600 dark:text-red-400'; // null
       } else {
-        cls = 'text-orange-600 dark:text-orange-400' // 数字
+        cls = 'text-orange-600 dark:text-orange-400'; // 数字
       }
-      return `<span class="${cls}">${match}</span>`
+      return `<span class="${cls}">${match}</span>`;
     })
     .replace(/([{}])/g, '<span class="text-gray-600 dark:text-gray-400">$1</span>') // 大括号
-    .replace(/([[\\]])/g, '<span class="text-gray-600 dark:text-gray-400">$1</span>') // 方括号
+    .replace(/([[\\]])/g, '<span class="text-gray-600 dark:text-gray-400">$1</span>'); // 方括号
 }
 
 function analyzeJson(data: any) {
@@ -496,13 +496,13 @@ function analyzeJson(data: any) {
     depth: getDepth(data),
     keyCount: 0,
     arrayLength: 0
-  }
+  };
 
   if (Array.isArray(data)) {
-    analysis.arrayLength = data.length
+    analysis.arrayLength = data.length;
   } else if (typeof data === 'object' && data !== null) {
-    analysis.keys = Object.keys(data)
-    analysis.keyCount = analysis.keys.length
+    analysis.keys = Object.keys(data);
+    analysis.keyCount = analysis.keys.length;
   }
 
   // 统计各种类型的数量
@@ -513,146 +513,146 @@ function analyzeJson(data: any) {
     numbers: 0,
     booleans: 0,
     nulls: 0
-  }
+  };
 
-  countTypes(data, statistics)
-  analysis.statistics = statistics
+  countTypes(data, statistics);
+  analysis.statistics = statistics;
 
-  this.analysis = analysis
+  this.analysis = analysis;
 }
 
 function getDepth(obj: any, currentDepth: number = 0): number {
   if (obj === null || typeof obj !== 'object') {
-    return currentDepth
+    return currentDepth;
   }
 
-  let maxDepth = currentDepth
+  let maxDepth = currentDepth;
 
   if (Array.isArray(obj)) {
     for (const item of obj) {
-      maxDepth = Math.max(maxDepth, getDepth(item, currentDepth + 1))
+      maxDepth = Math.max(maxDepth, getDepth(item, currentDepth + 1));
     }
   } else {
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        maxDepth = Math.max(maxDepth, getDepth(obj[key], currentDepth + 1))
+        maxDepth = Math.max(maxDepth, getDepth(obj[key], currentDepth + 1));
       }
     }
   }
 
-  return maxDepth
+  return maxDepth;
 }
 
 function countTypes(obj: any, stats: any) {
   if (obj === null) {
-    stats.nulls++
+    stats.nulls++;
   } else if (Array.isArray(obj)) {
-    stats.arrays++
-    obj.forEach((item) => countTypes(item, stats))
+    stats.arrays++;
+    obj.forEach((item) => countTypes(item, stats));
   } else if (typeof obj === 'object') {
-    stats.objects++
-    Object.values(obj).forEach((value) => countTypes(value, stats))
+    stats.objects++;
+    Object.values(obj).forEach((value) => countTypes(value, stats));
   } else if (typeof obj === 'string') {
-    stats.strings++
+    stats.strings++;
   } else if (typeof obj === 'number') {
-    stats.numbers++
+    stats.numbers++;
   } else if (typeof obj === 'boolean') {
-    stats.booleans++
+    stats.booleans++;
   }
 }
 
 function validateJson() {
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      outputText.value = '❌ 请输入 JSON 内容'
-      return
+      outputText.value = '❌ 请输入 JSON 内容';
+      return;
     }
 
-    JSON.parse(input)
-    outputText.value = '✅ JSON 格式有效'
-    isValidJson.value = true
+    JSON.parse(input);
+    outputText.value = '✅ JSON 格式有效';
+    isValidJson.value = true;
   } catch (err) {
-    outputText.value = `❌ JSON 格式无效: ${err instanceof Error ? err.message : '未知错误'}`
-    isValidJson.value = false
+    outputText.value = `❌ JSON 格式无效: ${err instanceof Error ? err.message : '未知错误'}`;
+    isValidJson.value = false;
   }
 }
 
 function removeEmptyValues() {
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 JSON 内容'
-      return
+      error.value = '请输入 JSON 内容';
+      return;
     }
 
-    const parsed = JSON.parse(input)
-    const cleaned = removeEmpty(parsed)
+    const parsed = JSON.parse(input);
+    const cleaned = removeEmpty(parsed);
 
-    const indentChar = options.value.indentType === 'tab' ? '\t' : ' '.repeat(options.value.indent)
-    const jsonString = JSON.stringify(cleaned, null, indentChar)
+    const indentChar = options.value.indentType === 'tab' ? '\t' : ' '.repeat(options.value.indent);
+    const jsonString = JSON.stringify(cleaned, null, indentChar);
 
-    outputText.value = jsonString
-    analyzeJson(cleaned)
-    addToHistory(input, jsonString, '移除空值')
+    outputText.value = jsonString;
+    analyzeJson(cleaned);
+    addToHistory(input, jsonString, '移除空值');
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'JSON 解析失败'
+    error.value = err instanceof Error ? err.message : 'JSON 解析失败';
   }
 }
 
 function removeEmpty(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map(removeEmpty).filter((item) => item !== null && item !== undefined && item !== '')
+    return obj.map(removeEmpty).filter((item) => item !== null && item !== undefined && item !== '');
   } else if (obj !== null && typeof obj === 'object') {
-    const cleaned: any = {}
+    const cleaned: any = {};
     Object.keys(obj).forEach((key) => {
-      const value = removeEmpty(obj[key])
+      const value = removeEmpty(obj[key]);
       if (value !== null && value !== undefined && value !== '') {
-        cleaned[key] = value
+        cleaned[key] = value;
       }
-    })
-    return cleaned
+    });
+    return cleaned;
   }
-  return obj
+  return obj;
 }
 
 function flattenJson() {
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 JSON 内容'
-      return
+      error.value = '请输入 JSON 内容';
+      return;
     }
 
-    const parsed = JSON.parse(input)
-    const flattened = flatten(parsed)
+    const parsed = JSON.parse(input);
+    const flattened = flatten(parsed);
 
-    const indentChar = options.value.indentType === 'tab' ? '\t' : ' '.repeat(options.value.indent)
-    const jsonString = JSON.stringify(flattened, null, indentChar)
+    const indentChar = options.value.indentType === 'tab' ? '\t' : ' '.repeat(options.value.indent);
+    const jsonString = JSON.stringify(flattened, null, indentChar);
 
-    outputText.value = jsonString
-    analyzeJson(flattened)
-    addToHistory(input, jsonString, 'JSON 扁平化')
+    outputText.value = jsonString;
+    analyzeJson(flattened);
+    addToHistory(input, jsonString, 'JSON 扁平化');
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'JSON 解析失败'
+    error.value = err instanceof Error ? err.message : 'JSON 解析失败';
   }
 }
 
 function flatten(obj: any, prefix: string = ''): any {
-  const flattened: any = {}
+  const flattened: any = {};
 
   Object.keys(obj).forEach((key) => {
-    const newKey = prefix ? `${prefix}.${key}` : key
-    const value = obj[key]
+    const newKey = prefix ? `${prefix}.${key}` : key;
+    const value = obj[key];
 
     if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-      Object.assign(flattened, flatten(value, newKey))
+      Object.assign(flattened, flatten(value, newKey));
     } else {
-      flattened[newKey] = value
+      flattened[newKey] = value;
     }
-  })
+  });
 
-  return flattened
+  return flattened;
 }
 
 function loadSampleJson() {
@@ -683,86 +683,86 @@ function loadSampleJson() {
       "duration": 3
     }
   ]
-}`
+}`;
 
   if (options.value.autoFormat) {
-    formatJson()
+    formatJson();
   }
 }
 
 function toggleSyntaxHighlight() {
-  showSyntaxHighlight.value = !showSyntaxHighlight.value
+  showSyntaxHighlight.value = !showSyntaxHighlight.value;
 }
 
 function clearAll() {
-  inputText.value = ''
-  outputText.value = ''
-  error.value = ''
-  analysis.value = null
-  isValidJson.value = null
+  inputText.value = '';
+  outputText.value = '';
+  error.value = '';
+  analysis.value = null;
+  isValidJson.value = null;
 }
 
 async function copyOutput() {
-  if (!outputText.value) return
+  if (!outputText.value) return;
 
   try {
-    await navigator.clipboard.writeText(outputText.value)
+    await navigator.clipboard.writeText(outputText.value);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function downloadResult() {
-  if (!outputText.value) return
+  if (!outputText.value) return;
 
-  const filename = 'formatted.json'
-  const mimeType = 'application/json'
+  const filename = 'formatted.json';
+  const mimeType = 'application/json';
 
-  const blob = new Blob([outputText.value], { type: mimeType })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([outputText.value], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function handleFileUpload(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    inputText.value = content
+    const content = e.target?.result as string;
+    inputText.value = content;
 
     if (options.value.autoFormat) {
-      formatJson()
+      formatJson();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
+  event.preventDefault();
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
 
-  const file = files[0]
-  const reader = new FileReader()
+  const file = files[0];
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    inputText.value = content
+    const content = e.target?.result as string;
+    inputText.value = content;
 
     if (options.value.autoFormat) {
-      formatJson()
+      formatJson();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function addToHistory(input: string, output: string, operation: string) {
@@ -772,46 +772,46 @@ function addToHistory(input: string, output: string, operation: string) {
     operation,
     timestamp: new Date().toLocaleString(),
     preview: input.slice(0, 50) + (input.length > 50 ? '...' : '')
-  }
+  };
 
-  formatHistory.value.unshift(historyItem)
-  formatHistory.value = formatHistory.value.slice(0, 10)
-  saveFormatHistory()
+  formatHistory.value.unshift(historyItem);
+  formatHistory.value = formatHistory.value.slice(0, 10);
+  saveFormatHistory();
 }
 
 function loadFromHistory(history: FormatHistory) {
-  inputText.value = history.input
-  outputText.value = history.output
+  inputText.value = history.input;
+  outputText.value = history.output;
 }
 
 function clearHistory() {
-  formatHistory.value = []
-  saveFormatHistory()
+  formatHistory.value = [];
+  saveFormatHistory();
 }
 
 function saveFormatHistory() {
   try {
-    localStorage.setItem('json-format-history', JSON.stringify(formatHistory.value))
+    localStorage.setItem('json-format-history', JSON.stringify(formatHistory.value));
   } catch (error) {
-    console.error('保存格式化历史失败:', error)
+    console.error('保存格式化历史失败:', error);
   }
 }
 
 function loadFormatHistory() {
   try {
-    const saved = localStorage.getItem('json-format-history')
+    const saved = localStorage.getItem('json-format-history');
     if (saved) {
-      formatHistory.value = JSON.parse(saved)
+      formatHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载格式化历史失败:', error)
+    console.error('加载格式化历史失败:', error);
   }
 }
 
 // 组件挂载时加载历史记录
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
-  loadFormatHistory()
-})
+  loadFormatHistory();
+});
 </script>

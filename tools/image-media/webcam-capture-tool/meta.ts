@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'webcam-capture-tool',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.webcam-capture-tool',
   entry: 'tools/image-media/webcam-capture-tool/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

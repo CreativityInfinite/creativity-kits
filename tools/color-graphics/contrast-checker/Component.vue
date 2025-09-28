@@ -101,121 +101,121 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
-type HistoryItem = { fg: string; bg: string; ratio: string; result: string; timestamp: number }
+type HistoryItem = { fg: string; bg: string; ratio: string; result: string; timestamp: number };
 
-const fg = ref('#222222')
-const bg = ref('#ffffff')
-const largeText = ref(false)
-const sampleText = ref('示例文本 Sample')
+const fg = ref('#222222');
+const bg = ref('#ffffff');
+const largeText = ref(false);
+const sampleText = ref('示例文本 Sample');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => !!parseColor(fg.value) && !!parseColor(bg.value))
+const canProcess = computed(() => !!parseColor(fg.value) && !!parseColor(bg.value));
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function swapColors() {
-  const t = fg.value
-  fg.value = bg.value
-  bg.value = t
+  const t = fg.value;
+  fg.value = bg.value;
+  bg.value = t;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const filename = `contrast_${new Date().toISOString().slice(0, 10)}.json`
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `contrast_${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const parsed = JSON.parse(result.value)
-  const item: HistoryItem = { fg: parsed.input.fg, bg: parsed.input.bg, ratio: parsed.ratio, result: result.value, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('contrast-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const parsed = JSON.parse(result.value);
+  const item: HistoryItem = { fg: parsed.input.fg, bg: parsed.input.bg, ratio: parsed.ratio, result: result.value, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('contrast-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  result.value = h.result
-  fg.value = h.fg
-  bg.value = h.bg
+  result.value = h.result;
+  fg.value = h.fg;
+  bg.value = h.bg;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('contrast-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('contrast-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function parseColor(hex: string) {
-  const m = hex.trim().match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)
-  if (!m) return null
-  let h = m[1]
+  const m = hex.trim().match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (!m) return null;
+  let h = m[1];
   if (h.length === 3)
     h = h
       .split('')
       .map((c) => c + c)
-      .join('')
-  const n = parseInt(h, 16)
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }
+      .join('');
+  const n = parseInt(h, 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
 function luminance({ r, g, b }: { r: number; g: number; b: number }) {
-  const srgb = [r, g, b].map((v) => v / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)))
-  return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2]
+  const srgb = [r, g, b].map((v) => v / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
 }
 function contrastRatio(fgRgb: any, bgRgb: any) {
-  const L1 = luminance(fgRgb)
-  const L2 = luminance(bgRgb)
+  const L1 = luminance(fgRgb);
+  const L2 = luminance(bgRgb);
   const lighter = Math.max(L1, L2),
-    darker = Math.min(L1, L2)
-  return (lighter + 0.05) / (darker + 0.05)
+    darker = Math.min(L1, L2);
+  return (lighter + 0.05) / (darker + 0.05);
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
   try {
-    const f = parseColor(fg.value)
-    const b = parseColor(bg.value)
-    if (!f || !b) throw new Error('颜色格式需为 #RGB 或 #RRGGBB')
-    const ratioNum = contrastRatio(f, b)
-    const ratio = ratioNum.toFixed(2)
-    const isLarge = !!largeText.value
-    const passAA = isLarge ? ratioNum >= 3 : ratioNum >= 4.5
-    const passAAA = isLarge ? ratioNum >= 4.5 : ratioNum >= 7
-    result.value = JSON.stringify({ input: { fg: fg.value, bg: bg.value, largeText: isLarge }, ratio, wcag: { AA: passAA, AAA: passAAA } }, null, 2)
-    processingTime.value = Math.round(performance.now() - start)
+    const f = parseColor(fg.value);
+    const b = parseColor(bg.value);
+    if (!f || !b) throw new Error('颜色格式需为 #RGB 或 #RRGGBB');
+    const ratioNum = contrastRatio(f, b);
+    const ratio = ratioNum.toFixed(2);
+    const isLarge = !!largeText.value;
+    const passAA = isLarge ? ratioNum >= 3 : ratioNum >= 4.5;
+    const passAAA = isLarge ? ratioNum >= 4.5 : ratioNum >= 7;
+    result.value = JSON.stringify({ input: { fg: fg.value, bg: bg.value, largeText: isLarge }, ratio, wcag: { AA: passAA, AAA: passAAA } }, null, 2);
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '计算失败'
+    error.value = e?.message || '计算失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('contrast-history')
+  const saved = localStorage.getItem('contrast-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

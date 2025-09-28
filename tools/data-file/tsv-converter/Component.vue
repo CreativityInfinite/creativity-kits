@@ -124,171 +124,171 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
-type HistoryItem = { rows: number; cols: number; result: string; timestamp: number }
-type Stats = { rows: number; cols: number }
+type HistoryItem = { rows: number; cols: number; result: string; timestamp: number };
+type Stats = { rows: number; cols: number };
 
-const inputText = ref('')
-const src = ref<'auto' | ',' | '\\t'>('auto')
-const dst = ref<',' | '\\t'>(',')
-const quote = ref('"')
-const hasHeader = ref(true)
-const trimCell = ref(true)
+const inputText = ref('');
+const src = ref<'auto' | ',' | '\\t'>('auto');
+const dst = ref<',' | '\\t'>(',');
+const quote = ref('"');
+const hasHeader = ref(true);
+const trimCell = ref(true);
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const stats = ref<Stats>({ rows: 0, cols: 0 })
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const stats = ref<Stats>({ rows: 0, cols: 0 });
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => inputText.value.trim().length > 0)
+const canProcess = computed(() => inputText.value.trim().length > 0);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
-  stats.value = { rows: 0, cols: 0 }
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
+  stats.value = { rows: 0, cols: 0 };
 }
 function swapView() {
-  if (result.value) copyResult()
+  if (result.value) copyResult();
 }
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const ext = dst.value === ',' ? 'csv' : 'tsv'
-  const filename = `convert_${new Date().toISOString().slice(0, 10)}.${ext}`
-  const blob = new Blob([result.value], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const ext = dst.value === ',' ? 'csv' : 'tsv';
+  const filename = `convert_${new Date().toISOString().slice(0, 10)}.${ext}`;
+  const blob = new Blob([result.value], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const item: HistoryItem = { rows: stats.value.rows, cols: stats.value.cols, result: result.value, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('tsv-convert-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const item: HistoryItem = { rows: stats.value.rows, cols: stats.value.cols, result: result.value, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('tsv-convert-history', JSON.stringify(history.value));
 }
 function loadFromHistory(item: HistoryItem) {
-  result.value = item.result
-  stats.value = { rows: item.rows, cols: item.cols }
+  result.value = item.result;
+  stats.value = { rows: item.rows, cols: item.cols };
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('tsv-convert-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('tsv-convert-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function autoDetectSep(text: string): string {
-  const first = text.split(/\r?\n/, 1)[0] || ''
-  const c = (first.match(/,/g) || []).length
-  const t = (first.match(/\t/g) || []).length
-  return t > c ? '\t' : ','
+  const first = text.split(/\r?\n/, 1)[0] || '';
+  const c = (first.match(/,/g) || []).length;
+  const t = (first.match(/\t/g) || []).length;
+  return t > c ? '\t' : ',';
 }
 function parse(text: string, sep: string): string[][] {
-  const q = quote.value || '"'
-  const rows: string[][] = []
+  const q = quote.value || '"';
+  const rows: string[][] = [];
   let cell = '',
     row: string[] = [],
-    inQ = false
+    inQ = false;
   const pushCell = () => {
-    row.push(trimCell.value ? cell.trim() : cell)
-    cell = ''
-  }
+    row.push(trimCell.value ? cell.trim() : cell);
+    cell = '';
+  };
   const pushRow = () => {
-    rows.push(row)
-    row = []
-  }
+    rows.push(row);
+    row = [];
+  };
   for (let i = 0; i < text.length; i++) {
-    const ch = text[i]
+    const ch = text[i];
     if (inQ) {
       if (ch === q) {
         if (text[i + 1] === q) {
-          cell += q
-          i++
+          cell += q;
+          i++;
         } else {
-          inQ = false
+          inQ = false;
         }
       } else {
-        cell += ch
+        cell += ch;
       }
     } else {
-      if (ch === q) inQ = true
-      else if (ch === sep) pushCell()
+      if (ch === q) inQ = true;
+      else if (ch === sep) pushCell();
       else if (ch === '\n') {
-        pushCell()
-        pushRow()
+        pushCell();
+        pushRow();
       } else if (ch === '\r') {
         /* ignore */
-      } else cell += ch
+      } else cell += ch;
     }
   }
-  pushCell()
-  pushRow()
-  if (rows.length && rows[rows.length - 1].length === 1 && rows[rows.length - 1][0] === '') rows.pop()
-  return rows
+  pushCell();
+  pushRow();
+  if (rows.length && rows[rows.length - 1].length === 1 && rows[rows.length - 1][0] === '') rows.pop();
+  return rows;
 }
 function toSeparated(rows: string[][], sep: string): string {
-  const q = quote.value || '"'
-  const needsQuote = (s: string) => s.includes(sep) || s.includes('\n') || s.includes('\r') || s.includes(q)
+  const q = quote.value || '"';
+  const needsQuote = (s: string) => s.includes(sep) || s.includes('\n') || s.includes('\r') || s.includes(q);
   return rows
     .map((r) =>
       r
         .map((c) => {
-          if (c == null) c = ''
-          c = String(c)
-          if (needsQuote(c)) return q + c.replaceAll(q, q + q) + q
-          return c
+          if (c == null) c = '';
+          c = String(c);
+          if (needsQuote(c)) return q + c.replaceAll(q, q + q) + q;
+          return c;
         })
         .join(sep)
     )
-    .join('\n')
+    .join('\n');
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  stats.value = { rows: 0, cols: 0 }
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  stats.value = { rows: 0, cols: 0 };
+  const start = performance.now();
   try {
-    const text = inputText.value
-    const sep = src.value === 'auto' ? autoDetectSep(text) : src.value === '\\t' ? '\t' : ','
-    const outSep = dst.value === '\\t' ? '\t' : ','
-    const rows = parse(text, sep)
-    if (!rows.length) throw new Error('无有效数据')
-    const cols = Math.max(...rows.map((r) => r.length))
-    stats.value = { rows: rows.length, cols }
+    const text = inputText.value;
+    const sep = src.value === 'auto' ? autoDetectSep(text) : src.value === '\\t' ? '\t' : ',';
+    const outSep = dst.value === '\\t' ? '\t' : ',';
+    const rows = parse(text, sep);
+    if (!rows.length) throw new Error('无有效数据');
+    const cols = Math.max(...rows.map((r) => r.length));
+    stats.value = { rows: rows.length, cols };
     // 若目标分隔符与源相同，仍重建以规范化
     const normalized = rows.map((r) => {
-      const rr = r.slice()
-      while (rr.length < cols) rr.push('')
-      return rr
-    })
-    result.value = toSeparated(normalized, outSep)
-    processingTime.value = Math.round(performance.now() - start)
+      const rr = r.slice();
+      while (rr.length < cols) rr.push('');
+      return rr;
+    });
+    result.value = toSeparated(normalized, outSep);
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '转换失败'
+    error.value = e?.message || '转换失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('tsv-convert-history')
+  const saved = localStorage.getItem('tsv-convert-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

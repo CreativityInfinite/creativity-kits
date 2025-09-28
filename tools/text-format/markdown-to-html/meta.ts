@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'markdown-to-html',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'text-format',
   tags: ['markdown', 'html', '转换', '预览', '文档'],
   i18nKey: 'tools.markdown-to-html',
-  entry: 'tools/text-format/markdown-to-html/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/markdown-to-html/Component.vue'
+};
+export default meta;

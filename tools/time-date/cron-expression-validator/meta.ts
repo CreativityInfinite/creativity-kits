@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'cron-expression-validator',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'time-date',
   tags: ['Cron', '定时任务', '表达式验证', '时间计划', '调度'],
   i18nKey: 'tools.cron-expression-validator',
-  entry: 'tools/time-date/cron-expression-validator/Component.vue',
-}
-export default meta
+  entry: 'tools/time-date/cron-expression-validator/Component.vue'
+};
+export default meta;

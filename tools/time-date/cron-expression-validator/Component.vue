@@ -177,43 +177,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 interface CronExample {
-  expression: string
-  description: string
+  expression: string;
+  description: string;
 }
 
 interface CronSymbol {
-  char: string
-  description: string
+  char: string;
+  description: string;
 }
 
 interface NextRun {
-  date: Date
-  formatted: string
-  relative: string
+  date: Date;
+  formatted: string;
+  relative: string;
 }
 
 interface CronFields {
-  minute: string
-  hour: string
-  day: string
-  month: string
-  weekday: string
+  minute: string;
+  hour: string;
+  day: string;
+  month: string;
+  weekday: string;
 }
 
 interface Statistics {
-  perHour: number
-  perDay: number
-  perWeek: number
-  perMonth: number
+  perHour: number;
+  perDay: number;
+  perWeek: number;
+  perMonth: number;
 }
 
-const cronExpression = ref('')
-const error = ref('')
-const isValid = ref(false)
-const nextRuns = ref<NextRun[]>([])
+const cronExpression = ref('');
+const error = ref('');
+const isValid = ref(false);
+const nextRuns = ref<NextRun[]>([]);
 
 const cronExamples: CronExample[] = [
   { expression: '0 9 * * 1-5', description: '工作日上午9点' },
@@ -228,7 +228,7 @@ const cronExamples: CronExample[] = [
   { expression: '*/5 * * * *', description: '每5分钟' },
   { expression: '0 22 * * 1-5', description: '工作日晚上10点' },
   { expression: '0 0 1 1 *', description: '每年1月1号午夜' }
-]
+];
 
 const cronSymbols: CronSymbol[] = [
   { char: '*', description: '匹配任何值' },
@@ -239,16 +239,16 @@ const cronSymbols: CronSymbol[] = [
   { char: 'L', description: '最后一天' },
   { char: 'W', description: '工作日' },
   { char: '#', description: '第几个星期几' }
-]
+];
 
 const fields = computed((): CronFields => {
   if (!cronExpression.value) {
-    return { minute: '', hour: '', day: '', month: '', weekday: '' }
+    return { minute: '', hour: '', day: '', month: '', weekday: '' };
   }
 
-  const parts = cronExpression.value.trim().split(/\s+/)
+  const parts = cronExpression.value.trim().split(/\s+/);
   if (parts.length !== 5) {
-    return { minute: '', hour: '', day: '', month: '', weekday: '' }
+    return { minute: '', hour: '', day: '', month: '', weekday: '' };
   }
 
   return {
@@ -257,255 +257,255 @@ const fields = computed((): CronFields => {
     day: parts[2],
     month: parts[3],
     weekday: parts[4]
-  }
-})
+  };
+});
 
 const description = computed((): string => {
-  if (!isValid.value) return ''
+  if (!isValid.value) return '';
 
-  const f = fields.value
-  let desc = '执行时间: '
+  const f = fields.value;
+  let desc = '执行时间: ';
 
   // 分钟
   if (f.minute === '*') {
-    desc += '每分钟'
+    desc += '每分钟';
   } else if (f.minute.includes('/')) {
-    const step = f.minute.split('/')[1]
-    desc += `每${step}分钟`
+    const step = f.minute.split('/')[1];
+    desc += `每${step}分钟`;
   } else if (f.minute.includes(',')) {
-    desc += `第${f.minute}分钟`
+    desc += `第${f.minute}分钟`;
   } else {
-    desc += `第${f.minute}分钟`
+    desc += `第${f.minute}分钟`;
   }
 
   // 小时
   if (f.hour === '*') {
-    desc += '的每小时'
+    desc += '的每小时';
   } else if (f.hour.includes('/')) {
-    const step = f.hour.split('/')[1]
-    desc += `，每${step}小时`
+    const step = f.hour.split('/')[1];
+    desc += `，每${step}小时`;
   } else if (f.hour.includes(',')) {
-    desc += `，在${f.hour}点`
+    desc += `，在${f.hour}点`;
   } else if (f.hour.includes('-')) {
-    desc += `，在${f.hour}点之间`
+    desc += `，在${f.hour}点之间`;
   } else {
-    desc += `，在${f.hour}点`
+    desc += `，在${f.hour}点`;
   }
 
   // 日期
   if (f.day === '*') {
-    desc += '的每天'
+    desc += '的每天';
   } else if (f.day.includes(',')) {
-    desc += `，每月${f.day}号`
+    desc += `，每月${f.day}号`;
   } else if (f.day.includes('-')) {
-    desc += `，每月${f.day}号之间`
+    desc += `，每月${f.day}号之间`;
   } else {
-    desc += `，每月${f.day}号`
+    desc += `，每月${f.day}号`;
   }
 
   // 月份
   if (f.month !== '*') {
     if (f.month.includes(',')) {
-      desc += `，在${f.month}月`
+      desc += `，在${f.month}月`;
     } else if (f.month.includes('-')) {
-      desc += `，在${f.month}月之间`
+      desc += `，在${f.month}月之间`;
     } else {
-      desc += `，在${f.month}月`
+      desc += `，在${f.month}月`;
     }
   }
 
   // 星期
   if (f.weekday !== '*') {
-    const weekdays = ['日', '一', '二', '三', '四', '五', '六', '日']
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六', '日'];
     if (f.weekday.includes(',')) {
       const days = f.weekday
         .split(',')
         .map((d) => `周${weekdays[parseInt(d)]}`)
-        .join('、')
-      desc += `，在${days}`
+        .join('、');
+      desc += `，在${days}`;
     } else if (f.weekday.includes('-')) {
-      const [start, end] = f.weekday.split('-')
-      desc += `，在周${weekdays[parseInt(start)]}到周${weekdays[parseInt(end)]}`
+      const [start, end] = f.weekday.split('-');
+      desc += `，在周${weekdays[parseInt(start)]}到周${weekdays[parseInt(end)]}`;
     } else {
-      desc += `，在周${weekdays[parseInt(f.weekday)]}`
+      desc += `，在周${weekdays[parseInt(f.weekday)]}`;
     }
   }
 
-  return desc
-})
+  return desc;
+});
 
 const frequency = computed((): string => {
-  if (!isValid.value) return ''
+  if (!isValid.value) return '';
 
-  const stats = statistics.value
+  const stats = statistics.value;
 
-  if (stats.perMonth >= 30 * 24 * 60) return '每分钟'
-  if (stats.perMonth >= 30 * 24) return '每小时'
-  if (stats.perMonth >= 30) return '每天'
-  if (stats.perMonth >= 4) return '每周'
-  return '每月'
-})
+  if (stats.perMonth >= 30 * 24 * 60) return '每分钟';
+  if (stats.perMonth >= 30 * 24) return '每小时';
+  if (stats.perMonth >= 30) return '每天';
+  if (stats.perMonth >= 4) return '每周';
+  return '每月';
+});
 
 const statistics = computed((): Statistics => {
   if (!isValid.value) {
-    return { perHour: 0, perDay: 0, perWeek: 0, perMonth: 0 }
+    return { perHour: 0, perDay: 0, perWeek: 0, perMonth: 0 };
   }
 
-  const f = fields.value
+  const f = fields.value;
 
   // 计算每小时执行次数
-  let minuteCount = 1
-  if (f.minute === '*') minuteCount = 60
-  else if (f.minute.includes('/')) minuteCount = 60 / parseInt(f.minute.split('/')[1])
-  else if (f.minute.includes(',')) minuteCount = f.minute.split(',').length
+  let minuteCount = 1;
+  if (f.minute === '*') minuteCount = 60;
+  else if (f.minute.includes('/')) minuteCount = 60 / parseInt(f.minute.split('/')[1]);
+  else if (f.minute.includes(',')) minuteCount = f.minute.split(',').length;
 
-  let hourCount = 1
-  if (f.hour === '*') hourCount = 24
-  else if (f.hour.includes('/')) hourCount = 24 / parseInt(f.hour.split('/')[1])
-  else if (f.hour.includes(',')) hourCount = f.hour.split(',').length
+  let hourCount = 1;
+  if (f.hour === '*') hourCount = 24;
+  else if (f.hour.includes('/')) hourCount = 24 / parseInt(f.hour.split('/')[1]);
+  else if (f.hour.includes(',')) hourCount = f.hour.split(',').length;
   else if (f.hour.includes('-')) {
-    const [start, end] = f.hour.split('-').map(Number)
-    hourCount = end - start + 1
+    const [start, end] = f.hour.split('-').map(Number);
+    hourCount = end - start + 1;
   }
 
-  const perHour = f.hour === '*' ? minuteCount : 0
-  const perDay = minuteCount * (f.hour === '*' ? 24 : hourCount)
-  const perWeek = perDay * 7
-  const perMonth = perDay * 30
+  const perHour = f.hour === '*' ? minuteCount : 0;
+  const perDay = minuteCount * (f.hour === '*' ? 24 : hourCount);
+  const perWeek = perDay * 7;
+  const perMonth = perDay * 30;
 
   return {
     perHour: Math.round(perHour),
     perDay: Math.round(perDay),
     perWeek: Math.round(perWeek),
     perMonth: Math.round(perMonth)
-  }
-})
+  };
+});
 
 function validateCron() {
-  error.value = ''
-  isValid.value = false
+  error.value = '';
+  isValid.value = false;
 
-  if (!cronExpression.value.trim()) return
+  if (!cronExpression.value.trim()) return;
 
-  const parts = cronExpression.value.trim().split(/\s+/)
+  const parts = cronExpression.value.trim().split(/\s+/);
 
   if (parts.length !== 5) {
-    error.value = 'Cron 表达式必须包含5个字段（分钟 小时 日期 月份 星期）'
-    return
+    error.value = 'Cron 表达式必须包含5个字段（分钟 小时 日期 月份 星期）';
+    return;
   }
 
   try {
     // 验证分钟 (0-59)
     if (!validateField(parts[0], 0, 59)) {
-      error.value = '分钟字段无效，应为 0-59'
-      return
+      error.value = '分钟字段无效，应为 0-59';
+      return;
     }
 
     // 验证小时 (0-23)
     if (!validateField(parts[1], 0, 23)) {
-      error.value = '小时字段无效，应为 0-23'
-      return
+      error.value = '小时字段无效，应为 0-23';
+      return;
     }
 
     // 验证日期 (1-31)
     if (!validateField(parts[2], 1, 31)) {
-      error.value = '日期字段无效，应为 1-31'
-      return
+      error.value = '日期字段无效，应为 1-31';
+      return;
     }
 
     // 验证月份 (1-12)
     if (!validateField(parts[3], 1, 12)) {
-      error.value = '月份字段无效，应为 1-12'
-      return
+      error.value = '月份字段无效，应为 1-12';
+      return;
     }
 
     // 验证星期 (0-7)
     if (!validateField(parts[4], 0, 7)) {
-      error.value = '星期字段无效，应为 0-7（0和7都表示周日）'
-      return
+      error.value = '星期字段无效，应为 0-7（0和7都表示周日）';
+      return;
     }
 
-    isValid.value = true
-    generateNextRuns()
+    isValid.value = true;
+    generateNextRuns();
   } catch (err) {
-    error.value = '表达式格式错误'
+    error.value = '表达式格式错误';
   }
 }
 
 function validateField(field: string, min: number, max: number): boolean {
-  if (field === '*') return true
+  if (field === '*') return true;
 
   // 处理步长 */n
   if (field.includes('/')) {
-    const [range, step] = field.split('/')
-    if (range !== '*' && !validateField(range, min, max)) return false
-    const stepNum = parseInt(step)
-    return !isNaN(stepNum) && stepNum > 0 && stepNum <= max
+    const [range, step] = field.split('/');
+    if (range !== '*' && !validateField(range, min, max)) return false;
+    const stepNum = parseInt(step);
+    return !isNaN(stepNum) && stepNum > 0 && stepNum <= max;
   }
 
   // 处理范围 n-m
   if (field.includes('-')) {
-    const [start, end] = field.split('-').map(Number)
-    return !isNaN(start) && !isNaN(end) && start >= min && end <= max && start <= end
+    const [start, end] = field.split('-').map(Number);
+    return !isNaN(start) && !isNaN(end) && start >= min && end <= max && start <= end;
   }
 
   // 处理列表 n,m,o
   if (field.includes(',')) {
-    const values = field.split(',').map(Number)
-    return values.every((val) => !isNaN(val) && val >= min && val <= max)
+    const values = field.split(',').map(Number);
+    return values.every((val) => !isNaN(val) && val >= min && val <= max);
   }
 
   // 单个数值
-  const num = parseInt(field)
-  return !isNaN(num) && num >= min && num <= max
+  const num = parseInt(field);
+  return !isNaN(num) && num >= min && num <= max;
 }
 
 function generateNextRuns() {
-  if (!isValid.value) return
+  if (!isValid.value) return;
 
-  nextRuns.value = []
-  const now = new Date()
-  let current = new Date(now)
+  nextRuns.value = [];
+  const now = new Date();
+  let current = new Date(now);
 
   // 生成接下来的10次执行时间
   for (let i = 0; i < 10; i++) {
-    const next = getNextRun(current)
+    const next = getNextRun(current);
     if (next) {
       nextRuns.value.push({
         date: next,
         formatted: next.toLocaleString('zh-CN'),
         relative: getRelativeTime(next)
-      })
-      current = new Date(next.getTime() + 60000) // 加1分钟避免重复
+      });
+      current = new Date(next.getTime() + 60000); // 加1分钟避免重复
     } else {
-      break
+      break;
     }
   }
 }
 
 function getNextRun(from: Date): Date | null {
-  const f = fields.value
-  let next = new Date(from)
+  const f = fields.value;
+  let next = new Date(from);
 
   // 简化的下次执行时间计算
   // 这里只是一个基本实现，实际的 cron 解析会更复杂
 
   for (let attempts = 0; attempts < 366 * 24 * 60; attempts++) {
     if (matchesCron(next, f)) {
-      return next
+      return next;
     }
-    next = new Date(next.getTime() + 60000) // 每次增加1分钟
+    next = new Date(next.getTime() + 60000); // 每次增加1分钟
   }
 
-  return null
+  return null;
 }
 
 function matchesCron(date: Date, fields: CronFields): boolean {
-  const minute = date.getMinutes()
-  const hour = date.getHours()
-  const day = date.getDate()
-  const month = date.getMonth() + 1
-  const weekday = date.getDay()
+  const minute = date.getMinutes();
+  const hour = date.getHours();
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const weekday = date.getDay();
 
   return (
     matchesField(minute, fields.minute, 0, 59) &&
@@ -513,71 +513,71 @@ function matchesCron(date: Date, fields: CronFields): boolean {
     matchesField(day, fields.day, 1, 31) &&
     matchesField(month, fields.month, 1, 12) &&
     matchesField(weekday, fields.weekday, 0, 7)
-  )
+  );
 }
 
 function matchesField(value: number, field: string, min: number, max: number): boolean {
-  if (field === '*') return true
+  if (field === '*') return true;
 
   // 处理星期的特殊情况（7也表示周日）
   if (max === 7 && value === 0 && field.includes('7')) {
-    field = field.replace('7', '0')
+    field = field.replace('7', '0');
   }
 
   if (field.includes('/')) {
-    const [range, step] = field.split('/')
-    const stepNum = parseInt(step)
+    const [range, step] = field.split('/');
+    const stepNum = parseInt(step);
     if (range === '*') {
-      return value % stepNum === 0
+      return value % stepNum === 0;
     }
     // 处理范围步长
-    return matchesField(value, range, min, max) && value % stepNum === 0
+    return matchesField(value, range, min, max) && value % stepNum === 0;
   }
 
   if (field.includes('-')) {
-    const [start, end] = field.split('-').map(Number)
-    return value >= start && value <= end
+    const [start, end] = field.split('-').map(Number);
+    return value >= start && value <= end;
   }
 
   if (field.includes(',')) {
-    const values = field.split(',').map(Number)
-    return values.includes(value)
+    const values = field.split(',').map(Number);
+    return values.includes(value);
   }
 
-  return value === parseInt(field)
+  return value === parseInt(field);
 }
 
 function getRelativeTime(date: Date): string {
-  const now = new Date()
-  const diff = date.getTime() - now.getTime()
+  const now = new Date();
+  const diff = date.getTime() - now.getTime();
 
-  if (diff < 0) return '已过期'
+  if (diff < 0) return '已过期';
 
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
 
-  if (days > 0) return `${days}天后`
-  if (hours > 0) return `${hours}小时后`
-  if (minutes > 0) return `${minutes}分钟后`
-  return '即将执行'
+  if (days > 0) return `${days}天后`;
+  if (hours > 0) return `${hours}小时后`;
+  if (minutes > 0) return `${minutes}分钟后`;
+  return '即将执行';
 }
 
 function loadExample() {
-  const example = cronExamples[Math.floor(Math.random() * cronExamples.length)]
-  loadCronExample(example)
+  const example = cronExamples[Math.floor(Math.random() * cronExamples.length)];
+  loadCronExample(example);
 }
 
 function loadCronExample(example: CronExample) {
-  cronExpression.value = example.expression
-  validateCron()
+  cronExpression.value = example.expression;
+  validateCron();
 }
 
 function clearAll() {
-  cronExpression.value = ''
-  error.value = ''
-  isValid.value = false
-  nextRuns.value = []
+  cronExpression.value = '';
+  error.value = '';
+  isValid.value = false;
+  nextRuns.value = [];
 }
 
 function copyExpression() {
@@ -587,12 +587,12 @@ function copyExpression() {
       // 可以添加成功提示
     })
     .catch((err) => {
-      console.error('复制失败:', err)
-    })
+      console.error('复制失败:', err);
+    });
 }
 
 function exportSchedule() {
-  if (!isValid.value) return
+  if (!isValid.value) return;
 
   const report = `Cron 表达式执行计划
 表达式: ${cronExpression.value}
@@ -609,14 +609,14 @@ function exportSchedule() {
 ${nextRuns.value.map((run, index) => `${index + 1}. ${run.formatted} (${run.relative})`).join('\n')}
 
 生成时间: ${new Date().toLocaleString('zh-CN')}
-`
+`;
 
-  const blob = new Blob([report], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `cron-schedule-${new Date().toISOString().slice(0, 10)}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([report], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cron-schedule-${new Date().toISOString().slice(0, 10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

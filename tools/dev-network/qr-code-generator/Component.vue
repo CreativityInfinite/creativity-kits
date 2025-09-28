@@ -457,65 +457,65 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface QROptions {
-  size: number
-  errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H'
-  margin: number
+  size: number;
+  errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H';
+  margin: number;
   color: {
-    dark: string
-    light: string
-  }
+    dark: string;
+    light: string;
+  };
 }
 
 interface UrlData {
-  url: string
+  url: string;
 }
 
 interface EmailData {
-  email: string
-  subject: string
-  body: string
+  email: string;
+  subject: string;
+  body: string;
 }
 
 interface PhoneData {
-  number: string
+  number: string;
 }
 
 interface SmsData {
-  number: string
-  message: string
+  number: string;
+  message: string;
 }
 
 interface WifiData {
-  ssid: string
-  password: string
-  security: 'WPA' | 'WEP' | 'nopass'
-  hidden: boolean
+  ssid: string;
+  password: string;
+  security: 'WPA' | 'WEP' | 'nopass';
+  hidden: boolean;
 }
 
 interface VcardData {
-  name: string
-  organization: string
-  title: string
-  phone: string
-  email: string
-  url: string
+  name: string;
+  organization: string;
+  title: string;
+  phone: string;
+  email: string;
+  url: string;
 }
 
 interface LocationData {
-  latitude: string
-  longitude: string
-  name: string
+  latitude: string;
+  longitude: string;
+  name: string;
 }
 
-const contentType = ref('text')
-const content = ref('')
-const qrCodeDataUrl = ref('')
-const qrCodeSvg = ref('')
-const isGenerating = ref(false)
-const batchContent = ref('')
+const contentType = ref('text');
+const content = ref('');
+const qrCodeDataUrl = ref('');
+const qrCodeSvg = ref('');
+const isGenerating = ref(false);
+const batchContent = ref('');
 
 const qrOptions = ref<QROptions>({
   size: 256,
@@ -525,33 +525,33 @@ const qrOptions = ref<QROptions>({
     dark: '#000000',
     light: '#ffffff'
   }
-})
+});
 
 const urlData = ref<UrlData>({
   url: ''
-})
+});
 
 const emailData = ref<EmailData>({
   email: '',
   subject: '',
   body: ''
-})
+});
 
 const phoneData = ref<PhoneData>({
   number: ''
-})
+});
 
 const smsData = ref<SmsData>({
   number: '',
   message: ''
-})
+});
 
 const wifiData = ref<WifiData>({
   ssid: '',
   password: '',
   security: 'WPA',
   hidden: false
-})
+});
 
 const vcardData = ref<VcardData>({
   name: '',
@@ -560,107 +560,107 @@ const vcardData = ref<VcardData>({
   phone: '',
   email: '',
   url: ''
-})
+});
 
 const locationData = ref<LocationData>({
   latitude: '',
   longitude: '',
   name: ''
-})
+});
 
 const estimatedFileSize = computed(() => {
-  if (!qrCodeDataUrl.value) return '0 KB'
+  if (!qrCodeDataUrl.value) return '0 KB';
 
   // 估算base64图片大小
-  const base64Length = qrCodeDataUrl.value.length
-  const sizeInBytes = (base64Length * 3) / 4
+  const base64Length = qrCodeDataUrl.value.length;
+  const sizeInBytes = (base64Length * 3) / 4;
 
   if (sizeInBytes < 1024) {
-    return `${Math.round(sizeInBytes)} B`
+    return `${Math.round(sizeInBytes)} B`;
   } else if (sizeInBytes < 1024 * 1024) {
-    return `${Math.round(sizeInBytes / 1024)} KB`
+    return `${Math.round(sizeInBytes / 1024)} KB`;
   } else {
-    return `${Math.round(sizeInBytes / (1024 * 1024))} MB`
+    return `${Math.round(sizeInBytes / (1024 * 1024))} MB`;
   }
-})
+});
 
 onMounted(() => {
   // 加载示例内容
-  content.value = 'Hello, QR Code!'
-  generateQRCode()
-})
+  content.value = 'Hello, QR Code!';
+  generateQRCode();
+});
 
 function updateContent() {
   // 根据内容类型更新内容
   switch (contentType.value) {
     case 'text':
       // 保持当前内容
-      break
+      break;
     case 'url':
-      updateUrlContent()
-      break
+      updateUrlContent();
+      break;
     case 'email':
-      updateEmailContent()
-      break
+      updateEmailContent();
+      break;
     case 'phone':
-      updatePhoneContent()
-      break
+      updatePhoneContent();
+      break;
     case 'sms':
-      updateSmsContent()
-      break
+      updateSmsContent();
+      break;
     case 'wifi':
-      updateWifiContent()
-      break
+      updateWifiContent();
+      break;
     case 'vcard':
-      updateVcardContent()
-      break
+      updateVcardContent();
+      break;
     case 'location':
-      updateLocationContent()
-      break
+      updateLocationContent();
+      break;
   }
 }
 
 function updateUrlContent() {
-  content.value = urlData.value.url
-  generateQRCode()
+  content.value = urlData.value.url;
+  generateQRCode();
 }
 
 function updateEmailContent() {
-  let emailContent = `mailto:${emailData.value.email}`
-  const params = []
+  let emailContent = `mailto:${emailData.value.email}`;
+  const params = [];
 
   if (emailData.value.subject) {
-    params.push(`subject=${encodeURIComponent(emailData.value.subject)}`)
+    params.push(`subject=${encodeURIComponent(emailData.value.subject)}`);
   }
 
   if (emailData.value.body) {
-    params.push(`body=${encodeURIComponent(emailData.value.body)}`)
+    params.push(`body=${encodeURIComponent(emailData.value.body)}`);
   }
 
   if (params.length > 0) {
-    emailContent += `?${params.join('&')}`
+    emailContent += `?${params.join('&')}`;
   }
 
-  content.value = emailContent
-  generateQRCode()
+  content.value = emailContent;
+  generateQRCode();
 }
 
 function updatePhoneContent() {
-  content.value = `tel:${phoneData.value.number}`
-  generateQRCode()
+  content.value = `tel:${phoneData.value.number}`;
+  generateQRCode();
 }
 
 function updateSmsContent() {
-  content.value = `sms:${smsData.value.number}?body=${encodeURIComponent(smsData.value.message)}`
-  generateQRCode()
+  content.value = `sms:${smsData.value.number}?body=${encodeURIComponent(smsData.value.message)}`;
+  generateQRCode();
 }
 
 function updateWifiContent() {
-  const security = wifiData.value.security === 'nopass' ? 'nopass' : wifiData.value.security
-  const hidden = wifiData.value.hidden ? 'true' : 'false'
+  const security = wifiData.value.security === 'nopass' ? 'nopass' : wifiData.value.security;
+  const hidden = wifiData.value.hidden ? 'true' : 'false';
 
-  content.value = `WIFI:T:${security};S:${wifiData.value.ssid};P:${wifiData.value.password};H:${hidden};;`
-  generateQRCode()
+  content.value = `WIFI:T:${security};S:${wifiData.value.ssid};P:${wifiData.value.password};H:${hidden};;`;
+  generateQRCode();
 }
 
 function updateVcardContent() {
@@ -674,125 +674,125 @@ function updateVcardContent() {
     `EMAIL:${vcardData.value.email}`,
     `URL:${vcardData.value.url}`,
     'END:VCARD'
-  ].filter((line) => !line.endsWith(':'))
+  ].filter((line) => !line.endsWith(':'));
 
-  content.value = vcard.join('\n')
-  generateQRCode()
+  content.value = vcard.join('\n');
+  generateQRCode();
 }
 
 function updateLocationContent() {
   if (locationData.value.latitude && locationData.value.longitude) {
-    content.value = `geo:${locationData.value.latitude},${locationData.value.longitude}`
+    content.value = `geo:${locationData.value.latitude},${locationData.value.longitude}`;
     if (locationData.value.name) {
-      content.value += `?q=${encodeURIComponent(locationData.value.name)}`
+      content.value += `?q=${encodeURIComponent(locationData.value.name)}`;
     }
   } else {
-    content.value = ''
+    content.value = '';
   }
-  generateQRCode()
+  generateQRCode();
 }
 
 async function generateQRCode() {
   if (!content.value.trim()) {
-    qrCodeDataUrl.value = ''
-    qrCodeSvg.value = ''
-    return
+    qrCodeDataUrl.value = '';
+    qrCodeSvg.value = '';
+    return;
   }
 
-  isGenerating.value = true
+  isGenerating.value = true;
 
   try {
     // 使用简单的二维码生成算法 (这里使用模拟实现)
     // 在实际项目中，你可能需要使用 qrcode.js 或类似的库
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')!
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
 
-    canvas.width = qrOptions.value.size
-    canvas.height = qrOptions.value.size
+    canvas.width = qrOptions.value.size;
+    canvas.height = qrOptions.value.size;
 
     // 填充背景
-    ctx.fillStyle = qrOptions.value.color.light
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.fillStyle = qrOptions.value.color.light;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // 生成简单的二维码模式 (这是一个简化的实现)
-    const moduleSize = Math.floor((qrOptions.value.size - qrOptions.value.margin * 2) / 25)
-    const startX = qrOptions.value.margin
-    const startY = qrOptions.value.margin
+    const moduleSize = Math.floor((qrOptions.value.size - qrOptions.value.margin * 2) / 25);
+    const startX = qrOptions.value.margin;
+    const startY = qrOptions.value.margin;
 
-    ctx.fillStyle = qrOptions.value.color.dark
+    ctx.fillStyle = qrOptions.value.color.dark;
 
     // 生成基于内容的伪随机模式
-    const hash = simpleHash(content.value)
+    const hash = simpleHash(content.value);
     for (let i = 0; i < 25; i++) {
       for (let j = 0; j < 25; j++) {
-        const shouldFill = (hash + i * 25 + j) % 3 === 0
+        const shouldFill = (hash + i * 25 + j) % 3 === 0;
         if (shouldFill) {
-          ctx.fillRect(startX + i * moduleSize, startY + j * moduleSize, moduleSize, moduleSize)
+          ctx.fillRect(startX + i * moduleSize, startY + j * moduleSize, moduleSize, moduleSize);
         }
       }
     }
 
     // 添加定位标记
-    drawFinderPattern(ctx, startX, startY, moduleSize)
-    drawFinderPattern(ctx, startX + 18 * moduleSize, startY, moduleSize)
-    drawFinderPattern(ctx, startX, startY + 18 * moduleSize, moduleSize)
+    drawFinderPattern(ctx, startX, startY, moduleSize);
+    drawFinderPattern(ctx, startX + 18 * moduleSize, startY, moduleSize);
+    drawFinderPattern(ctx, startX, startY + 18 * moduleSize, moduleSize);
 
-    qrCodeDataUrl.value = canvas.toDataURL('image/png')
+    qrCodeDataUrl.value = canvas.toDataURL('image/png');
 
     // 生成SVG版本
-    generateSVGQRCode()
+    generateSVGQRCode();
   } catch (error) {
-    console.error('生成二维码失败:', error)
+    console.error('生成二维码失败:', error);
   } finally {
-    isGenerating.value = false
+    isGenerating.value = false;
   }
 }
 
 function drawFinderPattern(ctx: CanvasRenderingContext2D, x: number, y: number, moduleSize: number) {
   // 绘制定位标记 (7x7 的方形图案)
-  ctx.fillStyle = qrOptions.value.color.dark
+  ctx.fillStyle = qrOptions.value.color.dark;
 
   // 外框
-  ctx.fillRect(x, y, 7 * moduleSize, moduleSize)
-  ctx.fillRect(x, y, moduleSize, 7 * moduleSize)
-  ctx.fillRect(x + 6 * moduleSize, y, moduleSize, 7 * moduleSize)
-  ctx.fillRect(x, y + 6 * moduleSize, 7 * moduleSize, moduleSize)
+  ctx.fillRect(x, y, 7 * moduleSize, moduleSize);
+  ctx.fillRect(x, y, moduleSize, 7 * moduleSize);
+  ctx.fillRect(x + 6 * moduleSize, y, moduleSize, 7 * moduleSize);
+  ctx.fillRect(x, y + 6 * moduleSize, 7 * moduleSize, moduleSize);
 
   // 内部方块
-  ctx.fillRect(x + 2 * moduleSize, y + 2 * moduleSize, 3 * moduleSize, 3 * moduleSize)
+  ctx.fillRect(x + 2 * moduleSize, y + 2 * moduleSize, 3 * moduleSize, 3 * moduleSize);
 }
 
 function generateSVGQRCode() {
-  const size = qrOptions.value.size
-  const moduleSize = Math.floor((size - qrOptions.value.margin * 2) / 25)
-  const startX = qrOptions.value.margin
-  const startY = qrOptions.value.margin
+  const size = qrOptions.value.size;
+  const moduleSize = Math.floor((size - qrOptions.value.margin * 2) / 25);
+  const startX = qrOptions.value.margin;
+  const startY = qrOptions.value.margin;
 
-  let svg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">`
-  svg += `<rect width="${size}" height="${size}" fill="${qrOptions.value.color.light}"/>`
+  let svg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect width="${size}" height="${size}" fill="${qrOptions.value.color.light}"/>`;
 
-  const hash = simpleHash(content.value)
+  const hash = simpleHash(content.value);
   for (let i = 0; i < 25; i++) {
     for (let j = 0; j < 25; j++) {
-      const shouldFill = (hash + i * 25 + j) % 3 === 0
+      const shouldFill = (hash + i * 25 + j) % 3 === 0;
       if (shouldFill) {
-        svg += `<rect x="${startX + i * moduleSize}" y="${startY + j * moduleSize}" width="${moduleSize}" height="${moduleSize}" fill="${qrOptions.value.color.dark}"/>`
+        svg += `<rect x="${startX + i * moduleSize}" y="${startY + j * moduleSize}" width="${moduleSize}" height="${moduleSize}" fill="${qrOptions.value.color.dark}"/>`;
       }
     }
   }
 
-  svg += '</svg>'
-  qrCodeSvg.value = svg
+  svg += '</svg>';
+  qrCodeSvg.value = svg;
 }
 
 function simpleHash(str: string): number {
-  let hash = 0
+  let hash = 0;
   for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i)
-    hash = (hash << 5) - hash + char
-    hash = hash & hash // 转换为32位整数
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // 转换为32位整数
   }
-  return Math.abs(hash)
+  return Math.abs(hash);
 }
 
 function resetOptions() {
@@ -804,89 +804,89 @@ function resetOptions() {
       dark: '#000000',
       light: '#ffffff'
     }
-  }
-  generateQRCode()
+  };
+  generateQRCode();
 }
 
 function loadPreset(preset: string) {
   switch (preset) {
     case 'minimal':
-      qrOptions.value.color.dark = '#2563eb'
-      qrOptions.value.color.light = '#f8fafc'
-      qrOptions.value.margin = 2
-      break
+      qrOptions.value.color.dark = '#2563eb';
+      qrOptions.value.color.light = '#f8fafc';
+      qrOptions.value.margin = 2;
+      break;
     case 'colorful':
-      qrOptions.value.color.dark = '#7c3aed'
-      qrOptions.value.color.light = '#fef3c7'
-      qrOptions.value.margin = 6
-      break
+      qrOptions.value.color.dark = '#7c3aed';
+      qrOptions.value.color.light = '#fef3c7';
+      qrOptions.value.margin = 6;
+      break;
   }
-  generateQRCode()
+  generateQRCode();
 }
 
 async function downloadQRCode(format: 'png' | 'svg') {
   if (format === 'png' && qrCodeDataUrl.value) {
-    const link = document.createElement('a')
-    link.download = `qrcode-${Date.now()}.png`
-    link.href = qrCodeDataUrl.value
-    link.click()
+    const link = document.createElement('a');
+    link.download = `qrcode-${Date.now()}.png`;
+    link.href = qrCodeDataUrl.value;
+    link.click();
   } else if (format === 'svg' && qrCodeSvg.value) {
-    const blob = new Blob([qrCodeSvg.value], { type: 'image/svg+xml' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.download = `qrcode-${Date.now()}.svg`
-    link.href = url
-    link.click()
-    URL.revokeObjectURL(url)
+    const blob = new Blob([qrCodeSvg.value], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = `qrcode-${Date.now()}.svg`;
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 }
 
 async function copyQRCode() {
-  if (!qrCodeDataUrl.value) return
+  if (!qrCodeDataUrl.value) return;
 
   try {
     // 将base64转换为blob
-    const response = await fetch(qrCodeDataUrl.value)
-    const blob = await response.blob()
+    const response = await fetch(qrCodeDataUrl.value);
+    const blob = await response.blob();
 
-    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
 
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 async function generateBatchQRCodes() {
-  if (!batchContent.value.trim()) return
+  if (!batchContent.value.trim()) return;
 
-  const lines = batchContent.value.split('\n').filter((line) => line.trim())
-  const zip = new (window as any).JSZip()
+  const lines = batchContent.value.split('\n').filter((line) => line.trim());
+  const zip = new (window as any).JSZip();
 
   for (let i = 0; i < lines.length; i++) {
-    const originalContent = content.value
-    content.value = lines[i].trim()
+    const originalContent = content.value;
+    content.value = lines[i].trim();
 
-    await generateQRCode()
+    await generateQRCode();
 
     if (qrCodeDataUrl.value) {
-      const base64Data = qrCodeDataUrl.value.split(',')[1]
-      zip.file(`qrcode-${i + 1}.png`, base64Data, { base64: true })
+      const base64Data = qrCodeDataUrl.value.split(',')[1];
+      zip.file(`qrcode-${i + 1}.png`, base64Data, { base64: true });
     }
   }
 
   // 恢复原始内容
-  content.value = batchContent.value.split('\n')[0] || ''
-  generateQRCode()
+  content.value = batchContent.value.split('\n')[0] || '';
+  generateQRCode();
 
   // 下载zip文件
-  const zipBlob = await zip.generateAsync({ type: 'blob' })
-  const url = URL.createObjectURL(zipBlob)
-  const link = document.createElement('a')
-  link.download = `qrcodes-batch-${Date.now()}.zip`
-  link.href = url
-  link.click()
-  URL.revokeObjectURL(url)
+  const zipBlob = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(zipBlob);
+  const link = document.createElement('a');
+  link.download = `qrcodes-batch-${Date.now()}.zip`;
+  link.href = url;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 function getContentTypeLabel(type: string): string {
@@ -899,8 +899,8 @@ function getContentTypeLabel(type: string): string {
     wifi: 'WiFi配置',
     vcard: '联系人名片',
     location: '地理位置'
-  }
-  return labels[type] || type
+  };
+  return labels[type] || type;
 }
 
 function getErrorCorrectionLabel(level: string): string {
@@ -909,7 +909,7 @@ function getErrorCorrectionLabel(level: string): string {
     M: '中 (15%)',
     Q: '较高 (25%)',
     H: '高 (30%)'
-  }
-  return labels[level] || level
+  };
+  return labels[level] || level;
 }
 </script>

@@ -297,55 +297,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface PasswordSettings {
-  length: number
-  count: number
-  includeUppercase: boolean
-  includeLowercase: boolean
-  includeNumbers: boolean
-  includeSymbols: boolean
-  excludeAmbiguous: boolean
-  customChars: string
-  noRepeats: boolean
-  noSequential: boolean
-  startWithLetter: boolean
-  includeWords: boolean
-  wordSeparator: string
+  length: number;
+  count: number;
+  includeUppercase: boolean;
+  includeLowercase: boolean;
+  includeNumbers: boolean;
+  includeSymbols: boolean;
+  excludeAmbiguous: boolean;
+  customChars: string;
+  noRepeats: boolean;
+  noSequential: boolean;
+  startWithLetter: boolean;
+  includeWords: boolean;
+  wordSeparator: string;
 }
 
 interface PasswordStrength {
-  score: number
-  label: string
+  score: number;
+  label: string;
 }
 
 interface PasswordAnalysis {
-  strength: PasswordStrength
-  entropy: number
+  strength: PasswordStrength;
+  entropy: number;
   charTypes: {
-    uppercase: number
-    lowercase: number
-    numbers: number
-    symbols: number
-  }
+    uppercase: number;
+    lowercase: number;
+    numbers: number;
+    symbols: number;
+  };
   crackTime: {
-    online: string
-    offline: string
-  }
-  suggestions: string[]
+    online: string;
+    offline: string;
+  };
+  suggestions: string[];
 }
 
 interface GeneratedPassword {
-  value: string
-  strength: PasswordStrength
-  entropy: number
+  value: string;
+  strength: PasswordStrength;
+  entropy: number;
 }
 
 interface PasswordHistory {
-  password: string
-  timestamp: string
-  strength: string
+  password: string;
+  timestamp: string;
+  strength: string;
 }
 
 const settings = ref<PasswordSettings>({
@@ -362,16 +362,16 @@ const settings = ref<PasswordSettings>({
   startWithLetter: false,
   includeWords: false,
   wordSeparator: '-'
-})
+});
 
-const generatedPasswords = ref<GeneratedPassword[]>([])
-const passwordHistory = ref<PasswordHistory[]>([])
+const generatedPasswords = ref<GeneratedPassword[]>([]);
+const passwordHistory = ref<PasswordHistory[]>([]);
 
-const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz'
-const numberChars = '0123456789'
-const symbolChars = '!@#$%^&*()_+-=[]{}|;:,.<>?'
-const ambiguousChars = '0Ol1I'
+const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+const numberChars = '0123456789';
+const symbolChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+const ambiguousChars = '0Ol1I';
 
 const commonWords = [
   'apple',
@@ -398,158 +398,158 @@ const commonWords = [
   'winter',
   'yellow',
   'zebra'
-]
+];
 
 const currentAnalysis = computed(() => {
-  if (generatedPasswords.value.length === 0) return null
+  if (generatedPasswords.value.length === 0) return null;
 
-  const password = generatedPasswords.value[0]
-  return analyzePassword(password.value)
-})
+  const password = generatedPasswords.value[0];
+  return analyzePassword(password.value);
+});
 
 onMounted(() => {
-  generatePassword()
-  loadPasswordHistory()
-})
+  generatePassword();
+  loadPasswordHistory();
+});
 
 function getCharacterSet(): string {
-  let charset = ''
+  let charset = '';
 
   if (settings.value.includeUppercase) {
-    charset += uppercaseChars
+    charset += uppercaseChars;
   }
 
   if (settings.value.includeLowercase) {
-    charset += lowercaseChars
+    charset += lowercaseChars;
   }
 
   if (settings.value.includeNumbers) {
-    charset += numberChars
+    charset += numberChars;
   }
 
   if (settings.value.includeSymbols) {
-    let symbols = symbolChars
+    let symbols = symbolChars;
     if (settings.value.excludeAmbiguous) {
       symbols = symbols
         .split('')
         .filter((char) => !ambiguousChars.includes(char))
-        .join('')
+        .join('');
     }
-    charset += symbols
+    charset += symbols;
   }
 
   if (settings.value.customChars) {
-    charset += settings.value.customChars
+    charset += settings.value.customChars;
   }
 
   if (settings.value.excludeAmbiguous) {
     charset = charset
       .split('')
       .filter((char) => !ambiguousChars.includes(char))
-      .join('')
+      .join('');
   }
 
-  return charset
+  return charset;
 }
 
 function generateSinglePassword(): string {
   if (settings.value.includeWords) {
-    return generateWordBasedPassword()
+    return generateWordBasedPassword();
   }
 
-  const charset = getCharacterSet()
-  if (!charset) return ''
+  const charset = getCharacterSet();
+  if (!charset) return '';
 
-  let password = ''
-  const usedChars = new Set<string>()
+  let password = '';
+  const usedChars = new Set<string>();
 
   // 确保包含每种字符类型至少一个
-  const requiredChars: string[] = []
-  if (settings.value.includeUppercase) requiredChars.push(getRandomChar(uppercaseChars))
-  if (settings.value.includeLowercase) requiredChars.push(getRandomChar(lowercaseChars))
-  if (settings.value.includeNumbers) requiredChars.push(getRandomChar(numberChars))
+  const requiredChars: string[] = [];
+  if (settings.value.includeUppercase) requiredChars.push(getRandomChar(uppercaseChars));
+  if (settings.value.includeLowercase) requiredChars.push(getRandomChar(lowercaseChars));
+  if (settings.value.includeNumbers) requiredChars.push(getRandomChar(numberChars));
   if (settings.value.includeSymbols) {
-    let symbols = symbolChars
+    let symbols = symbolChars;
     if (settings.value.excludeAmbiguous) {
       symbols = symbols
         .split('')
         .filter((char) => !ambiguousChars.includes(char))
-        .join('')
+        .join('');
     }
-    requiredChars.push(getRandomChar(symbols))
+    requiredChars.push(getRandomChar(symbols));
   }
 
   // 添加必需字符
   for (const char of requiredChars) {
-    password += char
+    password += char;
     if (settings.value.noRepeats) {
-      usedChars.add(char)
+      usedChars.add(char);
     }
   }
 
   // 填充剩余长度
   while (password.length < settings.value.length) {
-    let char = getRandomChar(charset)
+    let char = getRandomChar(charset);
 
     // 检查重复字符
     if (settings.value.noRepeats && usedChars.has(char)) {
-      continue
+      continue;
     }
 
     // 检查连续字符
     if (settings.value.noSequential && password.length > 0) {
-      const lastChar = password[password.length - 1]
+      const lastChar = password[password.length - 1];
       if (isSequential(lastChar, char)) {
-        continue
+        continue;
       }
     }
 
-    password += char
+    password += char;
     if (settings.value.noRepeats) {
-      usedChars.add(char)
+      usedChars.add(char);
     }
   }
 
   // 打乱字符顺序（除了必须以字母开头的情况）
-  let shuffled = shuffleString(password)
+  let shuffled = shuffleString(password);
 
   // 确保以字母开头
   if (settings.value.startWithLetter) {
-    const letters = (settings.value.includeUppercase ? uppercaseChars : '') + (settings.value.includeLowercase ? lowercaseChars : '')
+    const letters = (settings.value.includeUppercase ? uppercaseChars : '') + (settings.value.includeLowercase ? lowercaseChars : '');
     if (letters && !letters.includes(shuffled[0])) {
-      const letterIndex = shuffled.split('').findIndex((char) => letters.includes(char))
+      const letterIndex = shuffled.split('').findIndex((char) => letters.includes(char));
       if (letterIndex > 0) {
         // 交换第一个字符和找到的字母
-        const chars = shuffled.split('')
-        ;[chars[0], chars[letterIndex]] = [chars[letterIndex], chars[0]]
-        shuffled = chars.join('')
+        const chars = shuffled.split('');
+        [chars[0], chars[letterIndex]] = [chars[letterIndex], chars[0]];
+        shuffled = chars.join('');
       }
     }
   }
 
-  return shuffled
+  return shuffled;
 }
 
 function generateWordBasedPassword(): string {
-  const wordCount = Math.max(2, Math.floor(settings.value.length / 6))
-  const selectedWords: string[] = []
+  const wordCount = Math.max(2, Math.floor(settings.value.length / 6));
+  const selectedWords: string[] = [];
 
   for (let i = 0; i < wordCount; i++) {
-    const word = commonWords[Math.floor(Math.random() * commonWords.length)]
-    selectedWords.push(word)
+    const word = commonWords[Math.floor(Math.random() * commonWords.length)];
+    selectedWords.push(word);
   }
 
-  let password = selectedWords.join(settings.value.wordSeparator)
+  let password = selectedWords.join(settings.value.wordSeparator);
 
   // 添加数字和符号以增强安全性
   if (settings.value.includeNumbers) {
     password += Math.floor(Math.random() * 100)
       .toString()
-      .padStart(2, '0')
+      .padStart(2, '0');
   }
 
   if (settings.value.includeSymbols) {
-    password += getRandomChar(symbolChars)
+    password += getRandomChar(symbolChars);
   }
 
   // 随机大写一些字母
@@ -558,142 +558,142 @@ function generateWordBasedPassword(): string {
       .split('')
       .map((char) => {
         if (char.match(/[a-z]/) && Math.random() < 0.3) {
-          return char.toUpperCase()
+          return char.toUpperCase();
         }
-        return char
+        return char;
       })
-      .join('')
+      .join('');
   }
 
-  return password.slice(0, settings.value.length)
+  return password.slice(0, settings.value.length);
 }
 
 function getRandomChar(charset: string): string {
-  return charset[Math.floor(Math.random() * charset.length)]
+  return charset[Math.floor(Math.random() * charset.length)];
 }
 
 function shuffleString(str: string): string {
-  const chars = str.split('')
+  const chars = str.split('');
   for (let i = chars.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[chars[i], chars[j]] = [chars[j], chars[i]]
+    const j = Math.floor(Math.random() * (i + 1));
+    [chars[i], chars[j]] = [chars[j], chars[i]];
   }
-  return chars.join('')
+  return chars.join('');
 }
 
 function isSequential(char1: string, char2: string): boolean {
-  const code1 = char1.charCodeAt(0)
-  const code2 = char2.charCodeAt(0)
-  return Math.abs(code1 - code2) === 1
+  const code1 = char1.charCodeAt(0);
+  const code2 = char2.charCodeAt(0);
+  return Math.abs(code1 - code2) === 1;
 }
 
 function generatePassword() {
-  const charset = getCharacterSet()
+  const charset = getCharacterSet();
   if (!charset && !settings.value.includeWords) {
-    generatedPasswords.value = []
-    return
+    generatedPasswords.value = [];
+    return;
   }
 
-  const passwords: GeneratedPassword[] = []
+  const passwords: GeneratedPassword[] = [];
 
   for (let i = 0; i < settings.value.count; i++) {
-    const password = generateSinglePassword()
+    const password = generateSinglePassword();
     if (password) {
-      const strength = calculatePasswordStrength(password)
-      const entropy = calculateEntropy(password)
+      const strength = calculatePasswordStrength(password);
+      const entropy = calculateEntropy(password);
 
       passwords.push({
         value: password,
         strength,
         entropy
-      })
+      });
 
       // 添加到历史记录
-      addToHistory(password, strength.label)
+      addToHistory(password, strength.label);
     }
   }
 
-  generatedPasswords.value = passwords
+  generatedPasswords.value = passwords;
 }
 
 function regeneratePassword(index: number) {
-  const password = generateSinglePassword()
+  const password = generateSinglePassword();
   if (password) {
-    const strength = calculatePasswordStrength(password)
-    const entropy = calculateEntropy(password)
+    const strength = calculatePasswordStrength(password);
+    const entropy = calculateEntropy(password);
 
     generatedPasswords.value[index] = {
       value: password,
       strength,
       entropy
-    }
+    };
 
-    addToHistory(password, strength.label)
+    addToHistory(password, strength.label);
   }
 }
 
 function calculatePasswordStrength(password: string): PasswordStrength {
-  let score = 0
+  let score = 0;
 
   // 长度评分
-  if (password.length >= 8) score += 1
-  if (password.length >= 12) score += 1
-  if (password.length >= 16) score += 1
+  if (password.length >= 8) score += 1;
+  if (password.length >= 12) score += 1;
+  if (password.length >= 16) score += 1;
 
   // 字符类型评分
-  if (/[a-z]/.test(password)) score += 1
-  if (/[A-Z]/.test(password)) score += 1
-  if (/[0-9]/.test(password)) score += 1
-  if (/[^a-zA-Z0-9]/.test(password)) score += 1
+  if (/[a-z]/.test(password)) score += 1;
+  if (/[A-Z]/.test(password)) score += 1;
+  if (/[0-9]/.test(password)) score += 1;
+  if (/[^a-zA-Z0-9]/.test(password)) score += 1;
 
   // 复杂度评分
-  const uniqueChars = new Set(password).size
-  if (uniqueChars >= password.length * 0.7) score += 1
+  const uniqueChars = new Set(password).size;
+  if (uniqueChars >= password.length * 0.7) score += 1;
 
-  if (score <= 2) return { score, label: '弱' }
-  if (score <= 4) return { score, label: '中等' }
-  if (score <= 6) return { score, label: '强' }
-  return { score, label: '很强' }
+  if (score <= 2) return { score, label: '弱' };
+  if (score <= 4) return { score, label: '中等' };
+  if (score <= 6) return { score, label: '强' };
+  return { score, label: '很强' };
 }
 
 function calculateEntropy(password: string): number {
-  const charset = getCharacterSet()
-  const charsetSize = charset.length || 95 // 默认ASCII可打印字符数
-  return Math.log2(Math.pow(charsetSize, password.length))
+  const charset = getCharacterSet();
+  const charsetSize = charset.length || 95; // 默认ASCII可打印字符数
+  return Math.log2(Math.pow(charsetSize, password.length));
 }
 
 function analyzePassword(password: string): PasswordAnalysis {
-  const strength = calculatePasswordStrength(password)
-  const entropy = calculateEntropy(password)
+  const strength = calculatePasswordStrength(password);
+  const entropy = calculateEntropy(password);
 
   const charTypes = {
     uppercase: (password.match(/[A-Z]/g) || []).length,
     lowercase: (password.match(/[a-z]/g) || []).length,
     numbers: (password.match(/[0-9]/g) || []).length,
     symbols: (password.match(/[^a-zA-Z0-9]/g) || []).length
-  }
+  };
 
   // 计算破解时间（简化估算）
-  const combinations = Math.pow(getCharacterSet().length || 95, password.length)
-  const onlineAttacksPerSecond = 1000 // 在线攻击速度
-  const offlineAttacksPerSecond = 1000000000 // 离线攻击速度
+  const combinations = Math.pow(getCharacterSet().length || 95, password.length);
+  const onlineAttacksPerSecond = 1000; // 在线攻击速度
+  const offlineAttacksPerSecond = 1000000000; // 离线攻击速度
 
-  const onlineSeconds = combinations / (2 * onlineAttacksPerSecond)
-  const offlineSeconds = combinations / (2 * offlineAttacksPerSecond)
+  const onlineSeconds = combinations / (2 * onlineAttacksPerSecond);
+  const offlineSeconds = combinations / (2 * offlineAttacksPerSecond);
 
   const crackTime = {
     online: formatTime(onlineSeconds),
     offline: formatTime(offlineSeconds)
-  }
+  };
 
   // 生成改进建议
-  const suggestions: string[] = []
-  if (password.length < 12) suggestions.push('增加密码长度至12位以上')
-  if (charTypes.uppercase === 0) suggestions.push('添加大写字母')
-  if (charTypes.lowercase === 0) suggestions.push('添加小写字母')
-  if (charTypes.numbers === 0) suggestions.push('添加数字')
-  if (charTypes.symbols === 0) suggestions.push('添加特殊符号')
-  if (entropy < 50) suggestions.push('增加字符种类以提高熵值')
+  const suggestions: string[] = [];
+  if (password.length < 12) suggestions.push('增加密码长度至12位以上');
+  if (charTypes.uppercase === 0) suggestions.push('添加大写字母');
+  if (charTypes.lowercase === 0) suggestions.push('添加小写字母');
+  if (charTypes.numbers === 0) suggestions.push('添加数字');
+  if (charTypes.symbols === 0) suggestions.push('添加特殊符号');
+  if (entropy < 50) suggestions.push('增加字符种类以提高熵值');
 
   return {
     strength,
@@ -701,16 +701,16 @@ function analyzePassword(password: string): PasswordAnalysis {
     charTypes,
     crackTime,
     suggestions
-  }
+  };
 }
 
 function formatTime(seconds: number): string {
-  if (seconds < 60) return `${seconds.toFixed(0)} 秒`
-  if (seconds < 3600) return `${(seconds / 60).toFixed(0)} 分钟`
-  if (seconds < 86400) return `${(seconds / 3600).toFixed(0)} 小时`
-  if (seconds < 31536000) return `${(seconds / 86400).toFixed(0)} 天`
-  if (seconds < 31536000000) return `${(seconds / 31536000).toFixed(0)} 年`
-  return '数千年'
+  if (seconds < 60) return `${seconds.toFixed(0)} 秒`;
+  if (seconds < 3600) return `${(seconds / 60).toFixed(0)} 分钟`;
+  if (seconds < 86400) return `${(seconds / 3600).toFixed(0)} 小时`;
+  if (seconds < 31536000) return `${(seconds / 86400).toFixed(0)} 天`;
+  if (seconds < 31536000000) return `${(seconds / 31536000).toFixed(0)} 年`;
+  return '数千年';
 }
 
 function applyPreset(preset: string) {
@@ -728,8 +728,8 @@ function applyPreset(preset: string) {
         noSequential: true,
         startWithLetter: false,
         includeWords: false
-      }
-      break
+      };
+      break;
     case 'medium':
       settings.value = {
         ...settings.value,
@@ -743,8 +743,8 @@ function applyPreset(preset: string) {
         noSequential: false,
         startWithLetter: false,
         includeWords: false
-      }
-      break
+      };
+      break;
     case 'simple':
       settings.value = {
         ...settings.value,
@@ -758,8 +758,8 @@ function applyPreset(preset: string) {
         noSequential: false,
         startWithLetter: true,
         includeWords: false
-      }
-      break
+      };
+      break;
     case 'pin':
       settings.value = {
         ...settings.value,
@@ -773,8 +773,8 @@ function applyPreset(preset: string) {
         noSequential: true,
         startWithLetter: false,
         includeWords: false
-      }
-      break
+      };
+      break;
     case 'memorable':
       settings.value = {
         ...settings.value,
@@ -789,8 +789,8 @@ function applyPreset(preset: string) {
         startWithLetter: false,
         includeWords: true,
         wordSeparator: '-'
-      }
-      break
+      };
+      break;
     case 'secure':
       settings.value = {
         ...settings.value,
@@ -804,11 +804,11 @@ function applyPreset(preset: string) {
         noSequential: true,
         startWithLetter: false,
         includeWords: false
-      }
-      break
+      };
+      break;
   }
 
-  generatePassword()
+  generatePassword();
 }
 
 function resetSettings() {
@@ -826,39 +826,39 @@ function resetSettings() {
     startWithLetter: false,
     includeWords: false,
     wordSeparator: '-'
-  }
-  generatePassword()
+  };
+  generatePassword();
 }
 
 async function copyPassword(password: string) {
   try {
-    await navigator.clipboard.writeText(password)
+    await navigator.clipboard.writeText(password);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 async function copyAllPasswords() {
-  const passwords = generatedPasswords.value.map((p) => p.value).join('\n')
+  const passwords = generatedPasswords.value.map((p) => p.value).join('\n');
   try {
-    await navigator.clipboard.writeText(passwords)
+    await navigator.clipboard.writeText(passwords);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function exportPasswords() {
-  const content = generatedPasswords.value.map((p, index) => `密码 ${index + 1}: ${p.value}\n强度: ${p.strength.label}\n熵值: ${p.entropy.toFixed(1)} bits\n`).join('\n')
+  const content = generatedPasswords.value.map((p, index) => `密码 ${index + 1}: ${p.value}\n强度: ${p.strength.label}\n熵值: ${p.entropy.toFixed(1)} bits\n`).join('\n');
 
-  const blob = new Blob([content], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `passwords-${new Date().toISOString().slice(0, 10)}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `passwords-${new Date().toISOString().slice(0, 10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function addToHistory(password: string, strength: string) {
@@ -866,49 +866,49 @@ function addToHistory(password: string, strength: string) {
     password,
     timestamp: new Date().toLocaleString(),
     strength
-  }
+  };
 
-  passwordHistory.value.unshift(historyItem)
-  passwordHistory.value = passwordHistory.value.slice(0, 100) // 限制历史记录数量
-  savePasswordHistory()
+  passwordHistory.value.unshift(historyItem);
+  passwordHistory.value = passwordHistory.value.slice(0, 100); // 限制历史记录数量
+  savePasswordHistory();
 }
 
 function clearHistory() {
-  passwordHistory.value = []
-  savePasswordHistory()
+  passwordHistory.value = [];
+  savePasswordHistory();
 }
 
 function getPasswordStrengthClass(strength: PasswordStrength): string {
   switch (strength.label) {
     case '弱':
-      return 'text-red-500'
+      return 'text-red-500';
     case '中等':
-      return 'text-yellow-500'
+      return 'text-yellow-500';
     case '强':
-      return 'text-green-500'
+      return 'text-green-500';
     case '很强':
-      return 'text-blue-500'
+      return 'text-blue-500';
     default:
-      return 'text-gray-500'
+      return 'text-gray-500';
   }
 }
 
 function loadPasswordHistory() {
   try {
-    const saved = localStorage.getItem('password-generator-history')
+    const saved = localStorage.getItem('password-generator-history');
     if (saved) {
-      passwordHistory.value = JSON.parse(saved)
+      passwordHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载密码历史失败:', error)
+    console.error('加载密码历史失败:', error);
   }
 }
 
 function savePasswordHistory() {
   try {
-    localStorage.setItem('password-generator-history', JSON.stringify(passwordHistory.value))
+    localStorage.setItem('password-generator-history', JSON.stringify(passwordHistory.value));
   } catch (error) {
-    console.error('保存密码历史失败:', error)
+    console.error('保存密码历史失败:', error);
   }
 }
 </script>

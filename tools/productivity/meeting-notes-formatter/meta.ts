@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'meeting-notes-formatter',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.meeting-notes-formatter',
   entry: 'tools/productivity/meeting-notes-formatter/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

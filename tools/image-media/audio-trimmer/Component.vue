@@ -38,107 +38,107 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const file = ref<File | null>(null)
-const audioUrl = ref('')
-const outUrl = ref('')
-const startSec = ref(0)
-const endSec = ref(0)
+const file = ref<File | null>(null);
+const audioUrl = ref('');
+const outUrl = ref('');
+const startSec = ref(0);
+const endSec = ref(0);
 
 function onFile(e: Event) {
-  const t = e.target as HTMLInputElement
-  file.value = t.files?.[0] || null
-  audioUrl.value = file.value ? URL.createObjectURL(file.value) : ''
-  outUrl.value = ''
+  const t = e.target as HTMLInputElement;
+  file.value = t.files?.[0] || null;
+  audioUrl.value = file.value ? URL.createObjectURL(file.value) : '';
+  outUrl.value = '';
 }
 
 async function trim() {
-  outUrl.value = ''
+  outUrl.value = '';
   if (!file.value) {
-    alert('请先选择音频')
-    return
+    alert('请先选择音频');
+    return;
   }
-  const arrayBuf = await file.value.arrayBuffer()
-  const ctx = new AudioContext()
-  const decoded = await ctx.decodeAudioData(arrayBuf.slice(0))
-  const sr = decoded.sampleRate
-  const ch = decoded.numberOfChannels
+  const arrayBuf = await file.value.arrayBuffer();
+  const ctx = new AudioContext();
+  const decoded = await ctx.decodeAudioData(arrayBuf.slice(0));
+  const sr = decoded.sampleRate;
+  const ch = decoded.numberOfChannels;
 
-  const start = Math.max(0, Math.min(decoded.duration, startSec.value || 0))
-  const end = Math.max(start, Math.min(decoded.duration, endSec.value || decoded.duration))
-  const frames = Math.floor((end - start) * sr)
+  const start = Math.max(0, Math.min(decoded.duration, startSec.value || 0));
+  const end = Math.max(start, Math.min(decoded.duration, endSec.value || decoded.duration));
+  const frames = Math.floor((end - start) * sr);
 
-  const outBuf = ctx.createBuffer(ch, frames, sr)
+  const outBuf = ctx.createBuffer(ch, frames, sr);
   for (let c = 0; c < ch; c++) {
-    const src = decoded.getChannelData(c)
-    const dst = outBuf.getChannelData(c)
-    const startIdx = Math.floor(start * sr)
-    for (let i = 0; i < frames; i++) dst[i] = src[startIdx + i] || 0
+    const src = decoded.getChannelData(c);
+    const dst = outBuf.getChannelData(c);
+    const startIdx = Math.floor(start * sr);
+    for (let i = 0; i < frames; i++) dst[i] = src[startIdx + i] || 0;
   }
-  outUrl.value = bufferToWavUrl(outBuf)
+  outUrl.value = bufferToWavUrl(outBuf);
 }
 
 function bufferToWavUrl(buffer: AudioBuffer) {
-  const numCh = buffer.numberOfChannels
-  const sampleRate = buffer.sampleRate
-  const length = buffer.length * numCh * 2 + 44
-  const ab = new ArrayBuffer(length)
-  const view = new DataView(ab)
+  const numCh = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const length = buffer.length * numCh * 2 + 44;
+  const ab = new ArrayBuffer(length);
+  const view = new DataView(ab);
 
   function writeStr(offset: number, str: string) {
-    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i))
+    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
   }
-  let offset = 0
-  writeStr(offset, 'RIFF')
-  offset += 4
-  view.setUint32(offset, 36 + buffer.length * numCh * 2, true)
-  offset += 4
-  writeStr(offset, 'WAVE')
-  offset += 4
-  writeStr(offset, 'fmt ')
-  offset += 4
-  view.setUint32(offset, 16, true)
-  offset += 4 // PCM chunk size
-  view.setUint16(offset, 1, true)
-  offset += 2 // audio format = PCM
-  view.setUint16(offset, numCh, true)
-  offset += 2
-  view.setUint32(offset, sampleRate, true)
-  offset += 4
-  view.setUint32(offset, sampleRate * numCh * 2, true)
-  offset += 4 // byte rate
-  view.setUint16(offset, numCh * 2, true)
-  offset += 2 // block align
-  view.setUint16(offset, 16, true)
-  offset += 2 // bits per sample
-  writeStr(offset, 'data')
-  offset += 4
-  view.setUint32(offset, buffer.length * numCh * 2, true)
-  offset += 4
+  let offset = 0;
+  writeStr(offset, 'RIFF');
+  offset += 4;
+  view.setUint32(offset, 36 + buffer.length * numCh * 2, true);
+  offset += 4;
+  writeStr(offset, 'WAVE');
+  offset += 4;
+  writeStr(offset, 'fmt ');
+  offset += 4;
+  view.setUint32(offset, 16, true);
+  offset += 4; // PCM chunk size
+  view.setUint16(offset, 1, true);
+  offset += 2; // audio format = PCM
+  view.setUint16(offset, numCh, true);
+  offset += 2;
+  view.setUint32(offset, sampleRate, true);
+  offset += 4;
+  view.setUint32(offset, sampleRate * numCh * 2, true);
+  offset += 4; // byte rate
+  view.setUint16(offset, numCh * 2, true);
+  offset += 2; // block align
+  view.setUint16(offset, 16, true);
+  offset += 2; // bits per sample
+  writeStr(offset, 'data');
+  offset += 4;
+  view.setUint32(offset, buffer.length * numCh * 2, true);
+  offset += 4;
 
   // Interleave
-  const channels: Float32Array[] = []
-  for (let c = 0; c < numCh; c++) channels.push(buffer.getChannelData(c))
-  let idx = 0
+  const channels: Float32Array[] = [];
+  for (let c = 0; c < numCh; c++) channels.push(buffer.getChannelData(c));
+  let idx = 0;
   for (let i = 0; i < buffer.length; i++) {
     for (let c = 0; c < numCh; c++) {
-      let sample = Math.max(-1, Math.min(1, channels[c][i]))
-      sample = sample < 0 ? sample * 32768 : sample * 32767
-      view.setInt16(offset + idx, sample | 0, true)
-      idx += 2
+      let sample = Math.max(-1, Math.min(1, channels[c][i]));
+      sample = sample < 0 ? sample * 32768 : sample * 32767;
+      view.setInt16(offset + idx, sample | 0, true);
+      idx += 2;
     }
   }
 
-  const blob = new Blob([view], { type: 'audio/wav' })
-  return URL.createObjectURL(blob)
+  const blob = new Blob([view], { type: 'audio/wav' });
+  return URL.createObjectURL(blob);
 }
 
 function download() {
-  if (!outUrl.value) return
-  const a = document.createElement('a')
-  a.href = outUrl.value
-  a.download = 'trimmed.wav'
-  a.click()
+  if (!outUrl.value) return;
+  const a = document.createElement('a');
+  a.href = outUrl.value;
+  a.download = 'trimmed.wav';
+  a.click();
 }
 </script>

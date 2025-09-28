@@ -82,41 +82,41 @@
 
 <script setup lang="ts">
 // @ts-nocheck
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useTools } from '~/composables/useTools'
-import { useAsyncData } from '#app'
-import { useI18n } from 'vue-i18n'
-import { Icon } from '@iconify/vue'
-import { getDisplayBgUnified, getDisplayIconUnified } from '~/composables/useToolIcon'
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { useTools } from '~/composables/useTools';
+import { useAsyncData } from '#app';
+import { useI18n } from 'vue-i18n';
+import { Icon } from '@iconify/vue';
+import { getDisplayBgUnified, getDisplayIconUnified } from '~/composables/useToolIcon';
 
 type ToolMetaRuntime = {
-  id: string
-  name: string
-  description?: string
-  i18nKey: string
-  category: string
-  tags?: string[]
-  color?: string
-  component: any
-}
+  id: string;
+  name: string;
+  description?: string;
+  i18nKey: string;
+  category: string;
+  tags?: string[];
+  color?: string;
+  component: any;
+};
 
-definePageMeta({ ssr: false })
+definePageMeta({ ssr: false });
 
-const { t } = useI18n()
-const route = useRoute()
+const { t } = useI18n();
+const route = useRoute();
 
 /**
  * 避免 Ref 的 Ref：直接返回数组数据，防止 toolsRef.value 变成一个 Ref 对象
  */
 const { data: toolsRef } = useAsyncData('tools', async () => {
-  const { tools } = await useTools()
-  return tools.value
-})
-const tools = computed(() => (Array.isArray(toolsRef.value) ? toolsRef.value : []))
-const tool = computed(() => tools.value.find((x: ToolMetaRuntime) => x.id === String(route.params.id)))
-const displayBg = computed(() => getDisplayBgUnified((tool.value as any)?.color, (tool.value as any)?.category))
-const displayIcon = computed(() => getDisplayIconUnified((tool.value as any)?.icon, (tool.value as any)?.category))
+  const { tools } = await useTools();
+  return tools.value;
+});
+const tools = computed(() => (Array.isArray(toolsRef.value) ? toolsRef.value : []));
+const tool = computed(() => tools.value.find((x: ToolMetaRuntime) => x.id === String(route.params.id)));
+const displayBg = computed(() => getDisplayBgUnified((tool.value as any)?.color, (tool.value as any)?.category));
+const displayIcon = computed(() => getDisplayIconUnified((tool.value as any)?.icon, (tool.value as any)?.category));
 </script>
 
 <style scoped>

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'timestamp-converter',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'time-date',
   tags: ['时间戳', 'Unix', 'ISO 8601', '时区转换', '日期时间', '批量转换'],
   i18nKey: 'tools.timestamp-converter',
-  entry: 'tools/time-date/timestamp-converter/Component.vue',
-}
-export default meta
+  entry: 'tools/time-date/timestamp-converter/Component.vue'
+};
+export default meta;

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'fraction-decimal-converter',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'math-unit',
   tags: ['分数', '小数', '数学转换', '循环小数', '批量转换'],
   i18nKey: 'tools.fraction-decimal-converter',
-  entry: 'tools/math-unit/fraction-decimal-converter/Component.vue',
-}
-export default meta
+  entry: 'tools/math-unit/fraction-decimal-converter/Component.vue'
+};
+export default meta;

@@ -23,25 +23,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-const md = ref('# Hello\n\n- 这是一个示例\n- 支持实时预览')
+const md = ref('# Hello\n\n- 这是一个示例\n- 支持实时预览');
 const html = computed(async () => {
-  const { marked } = await import('https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js')
-  return marked.parse(md.value)
-})
+  const { marked } = await import('https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js');
+  return marked.parse(md.value);
+});
 
 async function copy() {
   try {
-    await navigator.clipboard.writeText(md.value)
-    alert('已复制')
+    await navigator.clipboard.writeText(md.value);
+    alert('已复制');
   } catch {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 
 function clearAll() {
-  md.value = ''
+  md.value = '';
 }
 </script>
 

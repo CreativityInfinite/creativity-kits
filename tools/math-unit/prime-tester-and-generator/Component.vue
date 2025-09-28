@@ -80,126 +80,126 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-type HistoryItem = { testN: number; mode: string; limit: number; result: string; summary: string; timestamp: number }
+import { ref, onMounted } from 'vue';
+type HistoryItem = { testN: number; mode: string; limit: number; result: string; summary: string; timestamp: number };
 
-const testN = ref(97)
-const mode = ref<'upto' | 'nextN'>('upto')
-const limit = ref(100)
+const testN = ref(97);
+const mode = ref<'upto' | 'nextN'>('upto');
+const limit = ref(100);
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const filename = `primes_${new Date().toISOString().slice(0, 10)}.json`
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `primes_${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const parsed = JSON.parse(result.value)
-  const item: HistoryItem = { testN: testN.value, mode: mode.value, limit: limit.value, result: result.value, summary: parsed.summary, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('prime-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const parsed = JSON.parse(result.value);
+  const item: HistoryItem = { testN: testN.value, mode: mode.value, limit: limit.value, result: result.value, summary: parsed.summary, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('prime-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  testN.value = h.testN
-  mode.value = h.mode as any
-  limit.value = h.limit
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  testN.value = h.testN;
+  mode.value = h.mode as any;
+  limit.value = h.limit;
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('prime-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('prime-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function isPrime(n: number) {
-  if (n < 2) return false
-  if (n % 2 === 0) return n === 2
-  if (n % 3 === 0) return n === 3
-  const r = Math.floor(Math.sqrt(n))
+  if (n < 2) return false;
+  if (n % 2 === 0) return n === 2;
+  if (n % 3 === 0) return n === 3;
+  const r = Math.floor(Math.sqrt(n));
   for (let i = 5; i <= r; i += 6) {
-    if (n % i === 0 || n % (i + 2) === 0) return false
+    if (n % i === 0 || n % (i + 2) === 0) return false;
   }
-  return true
+  return true;
 }
 function sieve(limit: number) {
-  const lim = Math.max(2, limit | 0)
-  const mark = new Uint8Array(lim + 1)
-  const out: number[] = []
+  const lim = Math.max(2, limit | 0);
+  const mark = new Uint8Array(lim + 1);
+  const out: number[] = [];
   for (let i = 2; i <= lim; i++) {
     if (!mark[i]) {
-      out.push(i)
-      if (i * i <= lim) for (let j = i * i; j <= lim; j += i) mark[j] = 1
+      out.push(i);
+      if (i * i <= lim) for (let j = i * i; j <= lim; j += i) mark[j] = 1;
     }
   }
-  return out
+  return out;
 }
 function nextPrimes(start: number, k: number) {
-  const out: number[] = []
-  let n = Math.max(2, start)
+  const out: number[] = [];
+  let n = Math.max(2, start);
   while (out.length < k) {
-    if (isPrime(n)) out.push(n)
-    n++
-    if (n > 10_000_000) break
+    if (isPrime(n)) out.push(n);
+    n++;
+    if (n > 10_000_000) break;
   }
-  return out
+  return out;
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const t0 = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const t0 = performance.now();
   try {
-    const tested = isPrime(testN.value)
-    let list: number[] = []
+    const tested = isPrime(testN.value);
+    let list: number[] = [];
     if (mode.value === 'upto') {
-      const up = Math.min(5_000_000, Math.max(2, limit.value || 100))
-      list = sieve(up)
+      const up = Math.min(5_000_000, Math.max(2, limit.value || 100));
+      list = sieve(up);
     } else {
-      const k = Math.min(1000, Math.max(1, limit.value || 20))
-      list = nextPrimes(testN.value, k)
+      const k = Math.min(1000, Math.max(1, limit.value || 20));
+      list = nextPrimes(testN.value, k);
     }
-    const out = { input: { n: testN.value, mode: mode.value, limit: limit.value }, tested, count: list.length, summary: list.slice(0, 20).join(', ') + (list.length > 20 ? '...' : ''), primes: list }
-    result.value = JSON.stringify(out, null, 2)
-    processingTime.value = Math.round(performance.now() - t0)
+    const out = { input: { n: testN.value, mode: mode.value, limit: limit.value }, tested, count: list.length, summary: list.slice(0, 20).join(', ') + (list.length > 20 ? '...' : ''), primes: list };
+    result.value = JSON.stringify(out, null, 2);
+    processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '处理失败'
+    error.value = e?.message || '处理失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('prime-history')
+  const saved = localStorage.getItem('prime-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

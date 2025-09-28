@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'utm-builder',
@@ -8,6 +8,6 @@ const meta: ToolMeta = {
   tags: ['UTM', '营销跟踪', '链接生成', '二维码', '数据分析'],
   icon: 'tabler:link',
   i18nKey: 'tools.utm-builder',
-  entry: 'tools/social-marketing/utm-builder/Component.vue',
-}
-export default meta
+  entry: 'tools/social-marketing/utm-builder/Component.vue'
+};
+export default meta;

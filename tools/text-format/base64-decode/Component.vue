@@ -272,45 +272,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue';
 
 interface DecodeOptions {
-  autoDecode: boolean
-  removeWhitespace: boolean
-  urlSafe: boolean
-  strictMode: boolean
-  outputFormat: 'text' | 'hex' | 'binary'
-  encoding: string
+  autoDecode: boolean;
+  removeWhitespace: boolean;
+  urlSafe: boolean;
+  strictMode: boolean;
+  outputFormat: 'text' | 'hex' | 'binary';
+  encoding: string;
 }
 
 interface Analysis {
-  compressionRatio: number
-  paddingChars: number
-  dataType: string
-  charset: string
-  isBinary: boolean
-  entropy: number
+  compressionRatio: number;
+  paddingChars: number;
+  dataType: string;
+  charset: string;
+  isBinary: boolean;
+  entropy: number;
 }
 
 interface DecodeHistory {
-  encoded: string
-  decoded: string
-  timestamp: string
-  preview: string
-  size: number
+  encoded: string;
+  decoded: string;
+  timestamp: string;
+  preview: string;
+  size: number;
 }
 
 interface FilePreview {
-  type: 'image' | 'json' | 'xml' | 'text' | 'binary'
-  content?: string
-  dataUrl?: string
-  info: string
+  type: 'image' | 'json' | 'xml' | 'text' | 'binary';
+  content?: string;
+  dataUrl?: string;
+  info: string;
 }
 
-const encodedText = ref('')
-const decodedText = ref('')
-const decodedBytes = ref<Uint8Array>(new Uint8Array())
-const error = ref('')
+const encodedText = ref('');
+const decodedText = ref('');
+const decodedBytes = ref<Uint8Array>(new Uint8Array());
+const error = ref('');
 
 const options = ref<DecodeOptions>({
   autoDecode: true,
@@ -319,69 +319,69 @@ const options = ref<DecodeOptions>({
   strictMode: false,
   outputFormat: 'text',
   encoding: 'utf-8'
-})
+});
 
-const decodeHistory = ref<DecodeHistory[]>([])
-const filePreview = ref<FilePreview | null>(null)
+const decodeHistory = ref<DecodeHistory[]>([]);
+const filePreview = ref<FilePreview | null>(null);
 
 const isValidBase64 = computed(() => {
-  if (!encodedText.value.trim()) return false
-  return validateBase64Format(encodedText.value)
-})
+  if (!encodedText.value.trim()) return false;
+  return validateBase64Format(encodedText.value);
+});
 
 const hexOutput = computed(() => {
-  if (!decodedBytes.value.length) return ''
+  if (!decodedBytes.value.length) return '';
   return Array.from(decodedBytes.value)
     .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join(' ')
-})
+    .join(' ');
+});
 
 const binaryOutput = computed(() => {
-  if (!decodedBytes.value.length) return ''
+  if (!decodedBytes.value.length) return '';
   return Array.from(decodedBytes.value)
     .map((byte) => byte.toString(2).padStart(8, '0'))
-    .join(' ')
-})
+    .join(' ');
+});
 
 const analysis = computed((): Analysis | null => {
-  if (!encodedText.value.trim() || !decodedBytes.value.length) return null
+  if (!encodedText.value.trim() || !decodedBytes.value.length) return null;
 
-  const originalSize = encodedText.value.length
-  const decodedSize = decodedBytes.value.length
-  const compressionRatio = Math.round(((originalSize - decodedSize) / originalSize) * 100)
+  const originalSize = encodedText.value.length;
+  const decodedSize = decodedBytes.value.length;
+  const compressionRatio = Math.round(((originalSize - decodedSize) / originalSize) * 100);
 
-  const paddingChars = (encodedText.value.match(/=/g) || []).length
+  const paddingChars = (encodedText.value.match(/=/g) || []).length;
 
   // 检测数据类型
-  let dataType = 'Unknown'
-  const firstBytes = Array.from(decodedBytes.value.slice(0, 8))
+  let dataType = 'Unknown';
+  const firstBytes = Array.from(decodedBytes.value.slice(0, 8));
 
   if (firstBytes[0] === 0xff && firstBytes[1] === 0xd8) {
-    dataType = 'JPEG Image'
+    dataType = 'JPEG Image';
   } else if (firstBytes[0] === 0x89 && firstBytes[1] === 0x50 && firstBytes[2] === 0x4e && firstBytes[3] === 0x47) {
-    dataType = 'PNG Image'
+    dataType = 'PNG Image';
   } else if (firstBytes[0] === 0x47 && firstBytes[1] === 0x49 && firstBytes[2] === 0x46) {
-    dataType = 'GIF Image'
+    dataType = 'GIF Image';
   } else if (firstBytes[0] === 0x25 && firstBytes[1] === 0x50 && firstBytes[2] === 0x44 && firstBytes[3] === 0x46) {
-    dataType = 'PDF Document'
+    dataType = 'PDF Document';
   } else if (decodedText.value.trim().startsWith('{') || decodedText.value.trim().startsWith('[')) {
-    dataType = 'JSON Data'
+    dataType = 'JSON Data';
   } else if (decodedText.value.trim().startsWith('<')) {
-    dataType = 'XML/HTML Data'
+    dataType = 'XML/HTML Data';
   } else if (/^[\x20-\x7E\s]*$/.test(decodedText.value)) {
-    dataType = 'Text Data'
+    dataType = 'Text Data';
   } else {
-    dataType = 'Binary Data'
+    dataType = 'Binary Data';
   }
 
   // 检测字符集
-  const charset = detectCharset(decodedBytes.value)
+  const charset = detectCharset(decodedBytes.value);
 
   // 检测是否为二进制数据
-  const isBinary = decodedBytes.value.some((byte) => byte < 32 && byte !== 9 && byte !== 10 && byte !== 13)
+  const isBinary = decodedBytes.value.some((byte) => byte < 32 && byte !== 9 && byte !== 10 && byte !== 13);
 
   // 计算熵值
-  const entropy = calculateEntropy(decodedBytes.value)
+  const entropy = calculateEntropy(decodedBytes.value);
 
   return {
     compressionRatio,
@@ -390,158 +390,158 @@ const analysis = computed((): Analysis | null => {
     charset,
     isBinary,
     entropy
-  }
-})
+  };
+});
 
 watch(
   [() => options.value],
   () => {
     if (encodedText.value && options.value.autoDecode) {
-      performDecode()
+      performDecode();
     }
   },
   { deep: true }
-)
+);
 
 function autoDecode() {
   if (!options.value.autoDecode || !encodedText.value.trim()) {
-    clearResults()
-    return
+    clearResults();
+    return;
   }
 
-  performDecode()
+  performDecode();
 }
 
 function performDecode() {
   if (!encodedText.value.trim()) {
-    clearResults()
-    return
+    clearResults();
+    return;
   }
 
   try {
-    error.value = ''
+    error.value = '';
 
-    let input = encodedText.value
+    let input = encodedText.value;
 
     // 移除空白字符
     if (options.value.removeWhitespace) {
-      input = input.replace(/\s/g, '')
+      input = input.replace(/\s/g, '');
     }
 
     // URL 安全模式转换
     if (options.value.urlSafe) {
-      input = input.replace(/-/g, '+').replace(/_/g, '/')
+      input = input.replace(/-/g, '+').replace(/_/g, '/');
     }
 
     // 验证 Base64 格式
     if (options.value.strictMode && !validateBase64Format(input)) {
-      throw new Error('无效的 Base64 格式')
+      throw new Error('无效的 Base64 格式');
     }
 
     // 解码
-    const decoded = atob(input)
-    const bytes = new Uint8Array(decoded.length)
+    const decoded = atob(input);
+    const bytes = new Uint8Array(decoded.length);
     for (let i = 0; i < decoded.length; i++) {
-      bytes[i] = decoded.charCodeAt(i)
+      bytes[i] = decoded.charCodeAt(i);
     }
 
-    decodedBytes.value = bytes
+    decodedBytes.value = bytes;
 
     // 根据编码格式转换文本
-    decodedText.value = decodeToText(bytes, options.value.encoding)
+    decodedText.value = decodeToText(bytes, options.value.encoding);
 
     // 生成文件预览
-    generateFilePreview(bytes, decodedText.value)
+    generateFilePreview(bytes, decodedText.value);
 
     // 添加到历史记录
-    addToHistory(encodedText.value, decodedText.value)
+    addToHistory(encodedText.value, decodedText.value);
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '解码失败'
-    decodedText.value = ''
-    decodedBytes.value = new Uint8Array()
-    filePreview.value = null
+    error.value = err instanceof Error ? err.message : '解码失败';
+    decodedText.value = '';
+    decodedBytes.value = new Uint8Array();
+    filePreview.value = null;
   }
 }
 
 function validateBase64Format(text: string): boolean {
   // 移除空白字符
-  const cleaned = text.replace(/\s/g, '')
+  const cleaned = text.replace(/\s/g, '');
 
   // 检查长度是否为4的倍数
-  if (cleaned.length % 4 !== 0) return false
+  if (cleaned.length % 4 !== 0) return false;
 
   // 检查字符是否有效
-  const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/
-  const urlSafeRegex = /^[A-Za-z0-9\-_]*={0,2}$/
+  const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+  const urlSafeRegex = /^[A-Za-z0-9\-_]*={0,2}$/;
 
-  return base64Regex.test(cleaned) || urlSafeRegex.test(cleaned)
+  return base64Regex.test(cleaned) || urlSafeRegex.test(cleaned);
 }
 
 function decodeToText(bytes: Uint8Array, encoding: string): string {
   try {
-    const decoder = new TextDecoder(encoding)
-    return decoder.decode(bytes)
+    const decoder = new TextDecoder(encoding);
+    return decoder.decode(bytes);
   } catch {
     // 如果解码失败，尝试 UTF-8
     try {
-      const decoder = new TextDecoder('utf-8')
-      return decoder.decode(bytes)
+      const decoder = new TextDecoder('utf-8');
+      return decoder.decode(bytes);
     } catch {
       // 如果还是失败，返回原始字符串
-      return String.fromCharCode(...bytes)
+      return String.fromCharCode(...bytes);
     }
   }
 }
 
 function detectCharset(bytes: Uint8Array): string {
   // 简单的字符集检测
-  const hasHighBytes = bytes.some((byte) => byte > 127)
+  const hasHighBytes = bytes.some((byte) => byte > 127);
 
   if (!hasHighBytes) {
-    return 'ASCII'
+    return 'ASCII';
   }
 
   // 检测 UTF-8 BOM
   if (bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) {
-    return 'UTF-8 (BOM)'
+    return 'UTF-8 (BOM)';
   }
 
   // 检测 UTF-16 BOM
   if (bytes.length >= 2) {
     if ((bytes[0] === 0xff && bytes[1] === 0xfe) || (bytes[0] === 0xfe && bytes[1] === 0xff)) {
-      return 'UTF-16 (BOM)'
+      return 'UTF-16 (BOM)';
     }
   }
 
-  return 'UTF-8'
+  return 'UTF-8';
 }
 
 function calculateEntropy(bytes: Uint8Array): number {
-  const frequency = new Array(256).fill(0)
+  const frequency = new Array(256).fill(0);
 
   for (const byte of bytes) {
-    frequency[byte]++
+    frequency[byte]++;
   }
 
-  let entropy = 0
-  const length = bytes.length
+  let entropy = 0;
+  const length = bytes.length;
 
   for (const count of frequency) {
     if (count > 0) {
-      const probability = count / length
-      entropy -= probability * Math.log2(probability)
+      const probability = count / length;
+      entropy -= probability * Math.log2(probability);
     }
   }
 
-  return entropy
+  return entropy;
 }
 
 function generateFilePreview(bytes: Uint8Array, text: string) {
-  filePreview.value = null
+  filePreview.value = null;
 
   // 检测图片
   if (bytes.length > 8) {
-    const header = Array.from(bytes.slice(0, 8))
+    const header = Array.from(bytes.slice(0, 8));
 
     if (
       (header[0] === 0xff && header[1] === 0xd8) || // JPEG
@@ -550,29 +550,29 @@ function generateFilePreview(bytes: Uint8Array, text: string) {
     ) {
       // GIF
 
-      const blob = new Blob([bytes])
-      const dataUrl = URL.createObjectURL(blob)
+      const blob = new Blob([bytes]);
+      const dataUrl = URL.createObjectURL(blob);
 
       filePreview.value = {
         type: 'image',
         dataUrl,
         info: `图片文件 (${formatBytes(bytes.length)})`
-      }
-      return
+      };
+      return;
     }
   }
 
   // 检测 JSON
   try {
-    const trimmed = text.trim()
+    const trimmed = text.trim();
     if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
-      JSON.parse(trimmed)
+      JSON.parse(trimmed);
       filePreview.value = {
         type: 'json',
         content: JSON.stringify(JSON.parse(trimmed), null, 2),
         info: `JSON 数据 (${formatBytes(bytes.length)})`
-      }
-      return
+      };
+      return;
     }
   } catch {
     // 不是有效的 JSON
@@ -584,60 +584,60 @@ function generateFilePreview(bytes: Uint8Array, text: string) {
       type: 'xml',
       content: text,
       info: `XML/HTML 数据 (${formatBytes(bytes.length)})`
-    }
-    return
+    };
+    return;
   }
 
   // 检测文本
-  const isBinary = bytes.some((byte) => byte < 32 && byte !== 9 && byte !== 10 && byte !== 13)
+  const isBinary = bytes.some((byte) => byte < 32 && byte !== 9 && byte !== 10 && byte !== 13);
   if (!isBinary) {
     filePreview.value = {
       type: 'text',
       content: text,
       info: `文本数据 (${formatBytes(bytes.length)})`
-    }
+    };
   } else {
     filePreview.value = {
       type: 'binary',
       info: `二进制数据 (${formatBytes(bytes.length)})`
-    }
+    };
   }
 }
 
 function clearResults() {
-  decodedText.value = ''
-  decodedBytes.value = new Uint8Array()
-  error.value = ''
-  filePreview.value = null
+  decodedText.value = '';
+  decodedBytes.value = new Uint8Array();
+  error.value = '';
+  filePreview.value = null;
 }
 
 function loadSampleData() {
   // 示例：编码的 JSON 数据
   encodedText.value =
-    'eyJuYW1lIjoi5byg5LiJIiwiYWdlIjoyNSwiZW1haWwiOiJ6aGFuZ3NhbkBleGFtcGxlLmNvbSIsImhvYmJpZXMiOlsi6ZiF6K+7Iiwi5ri45oiPIiwi5peF6KGMIl0sImFkZHJlc3MiOnsiY2l0eSI6IuWMl+S6rCIsImNvdW50cnkiOiLkuK3lm70ifX0='
+    'eyJuYW1lIjoi5byg5LiJIiwiYWdlIjoyNSwiZW1haWwiOiJ6aGFuZ3NhbkBleGFtcGxlLmNvbSIsImhvYmJpZXMiOlsi6ZiF6K+7Iiwi5ri45oiPIiwi5peF6KGMIl0sImFkZHJlc3MiOnsiY2l0eSI6IuWMl+S6rCIsImNvdW50cnkiOiLkuK3lm70ifX0=';
 
   if (options.value.autoDecode) {
-    performDecode()
+    performDecode();
   }
 }
 
 function decodeManually() {
-  performDecode()
+  performDecode();
 }
 
 function validateBase64() {
-  const isValid = validateBase64Format(encodedText.value)
-  const message = isValid ? 'Base64 格式有效' : 'Base64 格式无效'
-  alert(message)
+  const isValid = validateBase64Format(encodedText.value);
+  const message = isValid ? 'Base64 格式有效' : 'Base64 格式无效';
+  alert(message);
 }
 
 function analyzeData() {
   if (!analysis.value) {
-    alert('请先输入并解码 Base64 数据')
-    return
+    alert('请先输入并解码 Base64 数据');
+    return;
   }
 
-  const stats = analysis.value
+  const stats = analysis.value;
   const message = `数据分析结果:
 数据类型: ${stats.dataType}
 字符集: ${stats.charset}
@@ -646,85 +646,85 @@ function analyzeData() {
 填充字符数: ${stats.paddingChars}
 熵值: ${stats.entropy.toFixed(2)}
 原始大小: ${formatBytes(encodedText.value.length)}
-解码后大小: ${formatBytes(decodedBytes.value.length)}`
+解码后大小: ${formatBytes(decodedBytes.value.length)}`;
 
-  alert(message)
+  alert(message);
 }
 
 function clearAll() {
-  encodedText.value = ''
-  clearResults()
+  encodedText.value = '';
+  clearResults();
 }
 
 async function copyResult() {
-  if (!decodedText.value) return
+  if (!decodedText.value) return;
 
   try {
-    await navigator.clipboard.writeText(decodedText.value)
+    await navigator.clipboard.writeText(decodedText.value);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function encodeResult() {
-  if (!decodedText.value) return
+  if (!decodedText.value) return;
 
   try {
-    const encoded = btoa(decodedText.value)
-    encodedText.value = encoded
+    const encoded = btoa(decodedText.value);
+    encodedText.value = encoded;
   } catch (error) {
-    console.error('编码失败:', error)
+    console.error('编码失败:', error);
   }
 }
 
 function downloadDecoded() {
-  if (!decodedBytes.value.length) return
+  if (!decodedBytes.value.length) return;
 
-  const blob = new Blob([decodedBytes.value])
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'decoded-data.bin'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([decodedBytes.value]);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'decoded-data.bin';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function handleFileUpload(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    encodedText.value = content
+    const content = e.target?.result as string;
+    encodedText.value = content;
 
     if (options.value.autoDecode) {
-      performDecode()
+      performDecode();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
+  event.preventDefault();
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
 
-  const file = files[0]
-  const reader = new FileReader()
+  const file = files[0];
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    encodedText.value = content
+    const content = e.target?.result as string;
+    encodedText.value = content;
 
     if (options.value.autoDecode) {
-      performDecode()
+      performDecode();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function addToHistory(encoded: string, decoded: string) {
@@ -734,56 +734,56 @@ function addToHistory(encoded: string, decoded: string) {
     timestamp: new Date().toLocaleString(),
     preview: decoded.slice(0, 50) + (decoded.length > 50 ? '...' : ''),
     size: decodedBytes.value.length
-  }
+  };
 
-  decodeHistory.value.unshift(historyItem)
-  decodeHistory.value = decodeHistory.value.slice(0, 10)
-  saveDecodeHistory()
+  decodeHistory.value.unshift(historyItem);
+  decodeHistory.value = decodeHistory.value.slice(0, 10);
+  saveDecodeHistory();
 }
 
 function loadFromHistory(history: DecodeHistory) {
-  encodedText.value = history.encoded
-  decodedText.value = history.decoded
+  encodedText.value = history.encoded;
+  decodedText.value = history.decoded;
 }
 
 function clearHistory() {
-  decodeHistory.value = []
-  saveDecodeHistory()
+  decodeHistory.value = [];
+  saveDecodeHistory();
 }
 
 function saveDecodeHistory() {
   try {
-    localStorage.setItem('base64-decode-history', JSON.stringify(decodeHistory.value))
+    localStorage.setItem('base64-decode-history', JSON.stringify(decodeHistory.value));
   } catch (error) {
-    console.error('保存解码历史失败:', error)
+    console.error('保存解码历史失败:', error);
   }
 }
 
 function loadDecodeHistory() {
   try {
-    const saved = localStorage.getItem('base64-decode-history')
+    const saved = localStorage.getItem('base64-decode-history');
     if (saved) {
-      decodeHistory.value = JSON.parse(saved)
+      decodeHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载解码历史失败:', error)
+    console.error('加载解码历史失败:', error);
   }
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B'
+  if (bytes === 0) return '0 B';
 
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 // 组件挂载时加载历史记录
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
-  loadDecodeHistory()
-})
+  loadDecodeHistory();
+});
 </script>

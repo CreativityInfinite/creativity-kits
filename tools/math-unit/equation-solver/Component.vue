@@ -77,119 +77,119 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-type HistoryItem = { type: string; params: string; result: string; timestamp: number }
+import { ref, onMounted } from 'vue';
+type HistoryItem = { type: string; params: string; result: string; timestamp: number };
 
-const type = ref<'linear' | 'quadratic' | 'linear2'>('linear')
-const params = ref('')
+const type = ref<'linear' | 'quadratic' | 'linear2'>('linear');
+const params = ref('');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'equations.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'equations.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  history.value.unshift({ type: type.value, params: params.value, result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('equation-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  history.value.unshift({ type: type.value, params: params.value, result: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('equation-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  type.value = h.type as any
-  params.value = h.params
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  type.value = h.type as any;
+  params.value = h.params;
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('equation-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('equation-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function solveLinear(a: number, b: number) {
-  if (a === 0) return b === 0 ? { infinite: true } : { none: true }
-  return { x: -b / a }
+  if (a === 0) return b === 0 ? { infinite: true } : { none: true };
+  return { x: -b / a };
 }
 function solveQuadratic(a: number, b: number, c: number) {
-  if (a === 0) return { linear: solveLinear(b, c) }
-  const d = b * b - 4 * a * c
+  if (a === 0) return { linear: solveLinear(b, c) };
+  const d = b * b - 4 * a * c;
   if (d > 0) {
-    const s = Math.sqrt(d)
-    return { x1: (-b + s) / (2 * a), x2: (-b - s) / (2 * a), discriminant: d }
+    const s = Math.sqrt(d);
+    return { x1: (-b + s) / (2 * a), x2: (-b - s) / (2 * a), discriminant: d };
   }
   if (d === 0) {
-    return { x: -b / (2 * a), discriminant: d }
+    return { x: -b / (2 * a), discriminant: d };
   }
   const rp = -b / (2 * a),
-    ip = Math.sqrt(-d) / (2 * a)
-  return { complex: true, x1: `${rp}+${ip}i`, x2: `${rp}-${ip}i`, discriminant: d }
+    ip = Math.sqrt(-d) / (2 * a);
+  return { complex: true, x1: `${rp}+${ip}i`, x2: `${rp}-${ip}i`, discriminant: d };
 }
 function solveLinear2(A: number, B: number, C: number, D: number, E: number, F: number) {
-  const det = A * E - B * D
-  if (det === 0) return { noneOrInfinite: true }
-  const x = (C * E - B * F) / det
-  const y = (A * F - C * D) / det
-  return { x, y, det }
+  const det = A * E - B * D;
+  if (det === 0) return { noneOrInfinite: true };
+  const x = (C * E - B * F) / det;
+  const y = (A * F - C * D) / det;
+  return { x, y, det };
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const t0 = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const t0 = performance.now();
   try {
     const nums = params.value
       .split(',')
       .map((s) => parseFloat(s.trim()))
-      .filter((n) => Number.isFinite(n))
-    let out: any
+      .filter((n) => Number.isFinite(n));
+    let out: any;
     if (type.value === 'linear') {
-      if (nums.length < 2) throw new Error('一次方程需参数 a,b')
-      out = solveLinear(nums[0], nums[1])
+      if (nums.length < 2) throw new Error('一次方程需参数 a,b');
+      out = solveLinear(nums[0], nums[1]);
     } else if (type.value === 'quadratic') {
-      if (nums.length < 3) throw new Error('二次方程需参数 a,b,c')
-      out = solveQuadratic(nums[0], nums[1], nums[2])
+      if (nums.length < 3) throw new Error('二次方程需参数 a,b,c');
+      out = solveQuadratic(nums[0], nums[1], nums[2]);
     } else {
-      if (nums.length < 6) throw new Error('二元一次需参数 A,B,C,D,E,F')
-      out = solveLinear2(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5])
+      if (nums.length < 6) throw new Error('二元一次需参数 A,B,C,D,E,F');
+      out = solveLinear2(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5]);
     }
-    result.value = JSON.stringify({ type: type.value, params: nums, solution: out }, null, 2)
-    processingTime.value = Math.round(performance.now() - t0)
+    result.value = JSON.stringify({ type: type.value, params: nums, solution: out }, null, 2);
+    processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '求解失败'
+    error.value = e?.message || '求解失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('equation-history')
+  const saved = localStorage.getItem('equation-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

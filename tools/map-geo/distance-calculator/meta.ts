@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'distance-calculator',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'map-geo',
   tags: ['距离计算', 'Haversine', '地理', '坐标', '方位角'],
   i18nKey: 'tools.distance-calculator',
-  entry: 'tools/map-geo/distance-calculator/Component.vue',
-}
-export default meta
+  entry: 'tools/map-geo/distance-calculator/Component.vue'
+};
+export default meta;

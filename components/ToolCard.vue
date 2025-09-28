@@ -46,14 +46,14 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import { computed } from 'vue'
-import type { ToolMetaRuntime } from '~/types/tool'
-import { getDisplayBgUnified, getDisplayIconUnified } from '~/composables/useToolIcon'
+import { Icon } from '@iconify/vue';
+import { computed } from 'vue';
+import type { ToolMetaRuntime } from '~/types/tool';
+import { getDisplayBgUnified, getDisplayIconUnified } from '~/composables/useToolIcon';
 
 // 接收 props 以便在脚本中安全访问
-const { tool, active, disabled } = defineProps<{ tool: ToolMetaRuntime; active?: boolean; disabled?: boolean }>()
+const { tool, active, disabled } = defineProps<{ tool: ToolMetaRuntime; active?: boolean; disabled?: boolean }>();
 
-const displayIcon = computed(() => getDisplayIconUnified(tool.icon as any, tool.category as any))
-const displayBg = computed(() => getDisplayBgUnified(tool.color as any, tool.category as any))
+const displayIcon = computed(() => getDisplayIconUnified(tool.icon as any, tool.category as any));
+const displayBg = computed(() => getDisplayBgUnified(tool.color as any, tool.category as any));
 </script>

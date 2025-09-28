@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
+const path = require('path');
 
-const root = path.resolve(process.cwd(), 'FancyTools/tools')
+const root = path.resolve(process.cwd(), 'FancyTools/tools');
 
 // 依据需求清单，期望的分类->工具ID列表
 const wanted = {
@@ -121,14 +121,14 @@ const wanted = {
   'education-language': ['phonetic-transcriber', 'pinyin-converter', 'text-readability-analyzer', 'flashcard-generator', 'typing-practice', 'quiz-maker'],
   'map-geo': ['geojson-viewer-editor', 'coordinates-converter', 'distance-calculator', 'elevation-profiler', 'map-snapshot-generator'],
   'system-browser': ['clipboard-manager', 'file-drop-inspector', 'notifications-tester', 'service-worker-tester', 'localstorage-inspector', 'cookie-editor', 'performance-profiler']
-}
+};
 
 function ensureDir(p) {
-  if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true })
+  if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
 }
 
 function writeIfMissing(p, content) {
-  if (!fs.existsSync(p)) fs.writeFileSync(p, content, 'utf8')
+  if (!fs.existsSync(p)) fs.writeFileSync(p, content, 'utf8');
 }
 
 function metaContent(category, id) {
@@ -143,7 +143,7 @@ const meta: ToolMeta = {
   entry: 'tools/${category}/${id}/Component.vue'
 }
 export default meta
-`
+`;
 }
 
 function componentContent(id) {
@@ -156,27 +156,27 @@ function componentContent(id) {
 <script setup lang="ts">
 // TODO: 实现 ${id}
 </script>
-`
+`;
 }
 
 function main() {
-  let created = 0
+  let created = 0;
   Object.entries(wanted).forEach(([category, ids]) => {
-    const catDir = path.join(root, category)
-    ensureDir(catDir)
+    const catDir = path.join(root, category);
+    ensureDir(catDir);
     ids.forEach((id) => {
-      const toolDir = path.join(catDir, id)
-      ensureDir(toolDir)
-      const metaPath = path.join(toolDir, 'meta.ts')
-      const compPath = path.join(toolDir, 'Component.vue')
+      const toolDir = path.join(catDir, id);
+      ensureDir(toolDir);
+      const metaPath = path.join(toolDir, 'meta.ts');
+      const compPath = path.join(toolDir, 'Component.vue');
       if (!fs.existsSync(metaPath)) {
-        fs.writeFileSync(metaPath, metaContent(category, id), 'utf8')
-        created++
-        console.log('[created meta]', path.relative(process.cwd(), metaPath))
+        fs.writeFileSync(metaPath, metaContent(category, id), 'utf8');
+        created++;
+        console.log('[created meta]', path.relative(process.cwd(), metaPath));
       }
-      writeIfMissing(compPath, componentContent(id))
-    })
-  })
-  console.log('ensure-tools done. created meta:', created)
+      writeIfMissing(compPath, componentContent(id));
+    });
+  });
+  console.log('ensure-tools done. created meta:', created);
 }
-main()
+main();

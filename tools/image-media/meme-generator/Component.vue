@@ -91,99 +91,99 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-type HistoryItem = { summary: string; url: string; timestamp: number }
+import { onMounted, ref } from 'vue';
+type HistoryItem = { summary: string; url: string; timestamp: number };
 
-const img = ref<HTMLImageElement | null>(null)
-const cv = ref<HTMLCanvasElement | null>(null)
+const img = ref<HTMLImageElement | null>(null);
+const cv = ref<HTMLCanvasElement | null>(null);
 
-const topText = ref('')
-const bottomText = ref('')
-const fontSize = ref(48)
-const fill = ref('#ffffff')
-const stroke = ref('#000000')
+const topText = ref('');
+const bottomText = ref('');
+const fontSize = ref(48);
+const fill = ref('#ffffff');
+const stroke = ref('#000000');
 
-const outUrl = ref('')
-const error = ref('')
-const history = ref<HistoryItem[]>([])
+const outUrl = ref('');
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
-  outUrl.value = ''
-  error.value = ''
+  outUrl.value = '';
+  error.value = '';
 }
 function copyUrl() {
-  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'))
+  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'));
 }
 function downloadResult() {
-  if (!outUrl.value) return
-  const a = document.createElement('a')
-  a.href = outUrl.value
-  a.download = 'meme.png'
-  a.click()
+  if (!outUrl.value) return;
+  const a = document.createElement('a');
+  a.href = outUrl.value;
+  a.download = 'meme.png';
+  a.click();
 }
 function saveToHistory() {
-  if (!outUrl.value) return
-  history.value.unshift({ summary: `${topText.value} | ${bottomText.value}`.trim(), url: outUrl.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('meme-history', JSON.stringify(history.value))
+  if (!outUrl.value) return;
+  history.value.unshift({ summary: `${topText.value} | ${bottomText.value}`.trim(), url: outUrl.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('meme-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  outUrl.value = h.url
+  outUrl.value = h.url;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('meme-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('meme-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function onFile(e: Event) {
-  const f = (e.target as HTMLInputElement).files?.[0]
-  if (!f) return
-  const im = new Image()
-  im.onload = () => (img.value = im)
-  im.onerror = () => (error.value = '图片加载失败')
-  im.src = URL.createObjectURL(f)
+  const f = (e.target as HTMLInputElement).files?.[0];
+  if (!f) return;
+  const im = new Image();
+  im.onload = () => (img.value = im);
+  im.onerror = () => (error.value = '图片加载失败');
+  im.src = URL.createObjectURL(f);
 }
 
 function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number) {
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.font = `bold ${fontSize.value || 48}px Impact, system-ui, sans-serif`
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `bold ${fontSize.value || 48}px Impact, system-ui, sans-serif`;
   if (stroke.value) {
-    ctx.strokeStyle = stroke.value
-    ctx.lineWidth = Math.max(2, Math.floor((fontSize.value || 48) / 10))
-    ctx.strokeText(text, x, y, maxWidth)
+    ctx.strokeStyle = stroke.value;
+    ctx.lineWidth = Math.max(2, Math.floor((fontSize.value || 48) / 10));
+    ctx.strokeText(text, x, y, maxWidth);
   }
-  ctx.fillStyle = fill.value
-  ctx.fillText(text, x, y, maxWidth)
+  ctx.fillStyle = fill.value;
+  ctx.fillText(text, x, y, maxWidth);
 }
 
 function process() {
-  error.value = ''
+  error.value = '';
   try {
-    if (!img.value) throw new Error('请先选择图片')
-    const canvas = cv.value!
-    canvas.width = img.value.naturalWidth
-    canvas.height = img.value.naturalHeight
-    const ctx = canvas.getContext('2d')!
-    ctx.drawImage(img.value, 0, 0, canvas.width, canvas.height)
-    const margin = Math.max(10, Math.floor((fontSize.value || 48) * 0.6))
-    if (topText.value) drawText(ctx, topText.value, canvas.width / 2, margin + (fontSize.value || 48) / 2, canvas.width - margin * 2)
-    if (bottomText.value) drawText(ctx, bottomText.value, canvas.width / 2, canvas.height - margin - (fontSize.value || 48) / 2, canvas.width - margin * 2)
-    outUrl.value = canvas.toDataURL('image/png')
+    if (!img.value) throw new Error('请先选择图片');
+    const canvas = cv.value!;
+    canvas.width = img.value.naturalWidth;
+    canvas.height = img.value.naturalHeight;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(img.value, 0, 0, canvas.width, canvas.height);
+    const margin = Math.max(10, Math.floor((fontSize.value || 48) * 0.6));
+    if (topText.value) drawText(ctx, topText.value, canvas.width / 2, margin + (fontSize.value || 48) / 2, canvas.width - margin * 2);
+    if (bottomText.value) drawText(ctx, bottomText.value, canvas.width / 2, canvas.height - margin - (fontSize.value || 48) / 2, canvas.width - margin * 2);
+    outUrl.value = canvas.toDataURL('image/png');
   } catch (e: any) {
-    error.value = e?.message || '生成失败'
+    error.value = e?.message || '生成失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('meme-history')
+  const saved = localStorage.getItem('meme-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

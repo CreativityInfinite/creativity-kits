@@ -201,76 +201,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface Point {
-  lat: string
-  lng: string
-  name: string
+  lat: string;
+  lng: string;
+  name: string;
 }
 
 interface DistanceResult {
-  kilometers: number
-  miles: number
-  nauticalMiles: number
-  meters: number
-  initialBearing: number
-  finalBearing: number
+  kilometers: number;
+  miles: number;
+  nauticalMiles: number;
+  meters: number;
+  initialBearing: number;
+  finalBearing: number;
   midpoint: {
-    lat: number
-    lng: number
-  }
+    lat: number;
+    lng: number;
+  };
 }
 
 interface HistoryItem {
-  startLat: number
-  startLng: number
-  endLat: number
-  endLng: number
-  startName: string
-  endName: string
-  distance: number
-  direction: string
-  timestamp: number
+  startLat: number;
+  startLng: number;
+  endLat: number;
+  endLng: number;
+  startName: string;
+  endName: string;
+  distance: number;
+  direction: string;
+  timestamp: number;
 }
 
 const startPoint = ref<Point>({
   lat: '',
   lng: '',
   name: ''
-})
+});
 
 const endPoint = ref<Point>({
   lat: '',
   lng: '',
   name: ''
-})
+});
 
-const result = ref<DistanceResult | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref<DistanceResult | null>(null);
+const history = ref<HistoryItem[]>([]);
 
 const canCalculate = computed(() => {
-  return startPoint.value.lat !== '' && startPoint.value.lng !== '' && endPoint.value.lat !== '' && endPoint.value.lng !== ''
-})
+  return startPoint.value.lat !== '' && startPoint.value.lng !== '' && endPoint.value.lat !== '' && endPoint.value.lng !== '';
+});
 
 function calculateDistance() {
-  if (!canCalculate.value) return
+  if (!canCalculate.value) return;
 
-  const lat1 = parseFloat(startPoint.value.lat)
-  const lng1 = parseFloat(startPoint.value.lng)
-  const lat2 = parseFloat(endPoint.value.lat)
-  const lng2 = parseFloat(endPoint.value.lng)
+  const lat1 = parseFloat(startPoint.value.lat);
+  const lng1 = parseFloat(startPoint.value.lng);
+  const lat2 = parseFloat(endPoint.value.lat);
+  const lng2 = parseFloat(endPoint.value.lng);
 
   // 验证坐标范围
   if (lat1 < -90 || lat1 > 90 || lat2 < -90 || lat2 > 90 || lng1 < -180 || lng1 > 180 || lng2 < -180 || lng2 > 180) {
-    alert('坐标超出有效范围！纬度: -90° 到 90°，经度: -180° 到 180°')
-    return
+    alert('坐标超出有效范围！纬度: -90° 到 90°，经度: -180° 到 180°');
+    return;
   }
 
-  const distance = haversineDistance(lat1, lng1, lat2, lng2)
-  const initialBearing = calculateBearing(lat1, lng1, lat2, lng2)
-  const finalBearing = calculateBearing(lat2, lng2, lat1, lng1)
-  const midpoint = calculateMidpoint(lat1, lng1, lat2, lng2)
+  const distance = haversineDistance(lat1, lng1, lat2, lng2);
+  const initialBearing = calculateBearing(lat1, lng1, lat2, lng2);
+  const finalBearing = calculateBearing(lat2, lng2, lat1, lng1);
+  const midpoint = calculateMidpoint(lat1, lng1, lat2, lng2);
 
   result.value = {
     kilometers: distance,
@@ -280,77 +280,77 @@ function calculateDistance() {
     initialBearing: (initialBearing + 360) % 360,
     finalBearing: (finalBearing + 180) % 360,
     midpoint
-  }
+  };
 }
 
 function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 6371 // 地球半径 (公里)
-  const dLat = toRadians(lat2 - lat1)
-  const dLng = toRadians(lng2 - lng1)
+  const R = 6371; // 地球半径 (公里)
+  const dLat = toRadians(lat2 - lat1);
+  const dLng = toRadians(lng2 - lng1);
 
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2)
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c
+  return R * c;
 }
 
 function calculateBearing(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const dLng = toRadians(lng2 - lng1)
-  const lat1Rad = toRadians(lat1)
-  const lat2Rad = toRadians(lat2)
+  const dLng = toRadians(lng2 - lng1);
+  const lat1Rad = toRadians(lat1);
+  const lat2Rad = toRadians(lat2);
 
-  const y = Math.sin(dLng) * Math.cos(lat2Rad)
-  const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLng)
+  const y = Math.sin(dLng) * Math.cos(lat2Rad);
+  const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLng);
 
-  return toDegrees(Math.atan2(y, x))
+  return toDegrees(Math.atan2(y, x));
 }
 
 function calculateMidpoint(lat1: number, lng1: number, lat2: number, lng2: number): { lat: number; lng: number } {
-  const lat1Rad = toRadians(lat1)
-  const lat2Rad = toRadians(lat2)
-  const dLng = toRadians(lng2 - lng1)
+  const lat1Rad = toRadians(lat1);
+  const lat2Rad = toRadians(lat2);
+  const dLng = toRadians(lng2 - lng1);
 
-  const Bx = Math.cos(lat2Rad) * Math.cos(dLng)
-  const By = Math.cos(lat2Rad) * Math.sin(dLng)
+  const Bx = Math.cos(lat2Rad) * Math.cos(dLng);
+  const By = Math.cos(lat2Rad) * Math.sin(dLng);
 
-  const lat3 = Math.atan2(Math.sin(lat1Rad) + Math.sin(lat2Rad), Math.sqrt((Math.cos(lat1Rad) + Bx) * (Math.cos(lat1Rad) + Bx) + By * By))
+  const lat3 = Math.atan2(Math.sin(lat1Rad) + Math.sin(lat2Rad), Math.sqrt((Math.cos(lat1Rad) + Bx) * (Math.cos(lat1Rad) + Bx) + By * By));
 
-  const lng3 = toRadians(lng1) + Math.atan2(By, Math.cos(lat1Rad) + Bx)
+  const lng3 = toRadians(lng1) + Math.atan2(By, Math.cos(lat1Rad) + Bx);
 
   return {
     lat: toDegrees(lat3),
     lng: toDegrees(lng3)
-  }
+  };
 }
 
 function toRadians(degrees: number): number {
-  return degrees * (Math.PI / 180)
+  return degrees * (Math.PI / 180);
 }
 
 function toDegrees(radians: number): number {
-  return radians * (180 / Math.PI)
+  return radians * (180 / Math.PI);
 }
 
 function getCompassDirection(bearing: number): string {
-  const directions = ['北', '北北东', '东北', '东北东', '东', '东南东', '东南', '南南东', '南', '南南西', '西南', '西南西', '西', '西北西', '西北', '北北西']
+  const directions = ['北', '北北东', '东北', '东北东', '东', '东南东', '东南', '南南东', '南', '南南西', '西南', '西南西', '西', '西北西', '西北', '北北西'];
 
-  const index = Math.round(bearing / 22.5) % 16
-  return directions[index]
+  const index = Math.round(bearing / 22.5) % 16;
+  return directions[index];
 }
 
 function formatTravelTime(hours: number): string {
   if (hours < 1) {
-    const minutes = Math.round(hours * 60)
-    return `${minutes} 分钟`
+    const minutes = Math.round(hours * 60);
+    return `${minutes} 分钟`;
   } else if (hours < 24) {
-    const h = Math.floor(hours)
-    const m = Math.round((hours - h) * 60)
-    return m > 0 ? `${h} 小时 ${m} 分钟` : `${h} 小时`
+    const h = Math.floor(hours);
+    const m = Math.round((hours - h) * 60);
+    return m > 0 ? `${h} 小时 ${m} 分钟` : `${h} 小时`;
   } else {
-    const days = Math.floor(hours / 24)
-    const h = Math.round(hours % 24)
-    return h > 0 ? `${days} 天 ${h} 小时` : `${days} 天`
+    const days = Math.floor(hours / 24);
+    const h = Math.round(hours % 24);
+    return h > 0 ? `${days} 天 ${h} 小时` : `${days} 天`;
   }
 }
 
@@ -359,44 +359,44 @@ function loadExample() {
     lat: '39.9042',
     lng: '116.4074',
     name: '北京天安门'
-  }
+  };
   endPoint.value = {
     lat: '31.2304',
     lng: '121.4737',
     name: '上海外滩'
-  }
+  };
 }
 
 function swapPoints() {
-  const temp = { ...startPoint.value }
-  startPoint.value = { ...endPoint.value }
-  endPoint.value = temp
+  const temp = { ...startPoint.value };
+  startPoint.value = { ...endPoint.value };
+  endPoint.value = temp;
 }
 
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text).then(() => {
-    alert('已复制到剪贴板')
-  })
+    alert('已复制到剪贴板');
+  });
 }
 
 function viewOnMap() {
-  if (!result.value) return
+  if (!result.value) return;
 
-  const lat1 = parseFloat(startPoint.value.lat)
-  const lng1 = parseFloat(startPoint.value.lng)
-  const lat2 = parseFloat(endPoint.value.lat)
-  const lng2 = parseFloat(endPoint.value.lng)
+  const lat1 = parseFloat(startPoint.value.lat);
+  const lng1 = parseFloat(startPoint.value.lng);
+  const lat2 = parseFloat(endPoint.value.lat);
+  const lng2 = parseFloat(endPoint.value.lng);
 
   // 计算地图中心点和缩放级别
-  const centerLat = (lat1 + lat2) / 2
-  const centerLng = (lng1 + lng2) / 2
+  const centerLat = (lat1 + lat2) / 2;
+  const centerLng = (lng1 + lng2) / 2;
 
-  const url = `https://www.google.com/maps/dir/${lat1},${lng1}/${lat2},${lng2}/@${centerLat},${centerLng},8z`
-  window.open(url, '_blank')
+  const url = `https://www.google.com/maps/dir/${lat1},${lng1}/${lat2},${lng2}/@${centerLat},${centerLng},8z`;
+  window.open(url, '_blank');
 }
 
 function saveToHistory() {
-  if (!result.value) return
+  if (!result.value) return;
 
   const item: HistoryItem = {
     startLat: parseFloat(startPoint.value.lat),
@@ -408,22 +408,22 @@ function saveToHistory() {
     distance: result.value.kilometers,
     direction: getCompassDirection(result.value.initialBearing),
     timestamp: Date.now()
-  }
+  };
 
   // 避免重复
   const exists = history.value.some(
     (h) => Math.abs(h.startLat - item.startLat) < 0.0001 && Math.abs(h.startLng - item.startLng) < 0.0001 && Math.abs(h.endLat - item.endLat) < 0.0001 && Math.abs(h.endLng - item.endLng) < 0.0001
-  )
+  );
 
   if (!exists) {
-    history.value.unshift(item)
+    history.value.unshift(item);
 
     // 只保留最近20条
     if (history.value.length > 20) {
-      history.value = history.value.slice(0, 20)
+      history.value = history.value.slice(0, 20);
     }
 
-    saveHistoryToStorage()
+    saveHistoryToStorage();
   }
 }
 
@@ -432,24 +432,24 @@ function loadFromHistory(item: HistoryItem) {
     lat: item.startLat.toString(),
     lng: item.startLng.toString(),
     name: item.startName
-  }
+  };
   endPoint.value = {
     lat: item.endLat.toString(),
     lng: item.endLng.toString(),
     name: item.endName
-  }
+  };
 
   // 重新计算
-  calculateDistance()
+  calculateDistance();
 }
 
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  saveHistoryToStorage()
+  history.value.splice(index, 1);
+  saveHistoryToStorage();
 }
 
 function exportResult() {
-  if (!result.value) return
+  if (!result.value) return;
 
   const data = {
     起点: {
@@ -473,15 +473,15 @@ function exportResult() {
     },
     中点坐标: `${result.value.midpoint.lat.toFixed(6)}, ${result.value.midpoint.lng.toFixed(6)}`,
     计算时间: new Date().toLocaleString('zh-CN')
-  }
+  };
 
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `距离计算结果_${new Date().toISOString().slice(0, 10)}.json`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `距离计算结果_${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function formatDate(timestamp: number): string {
@@ -490,25 +490,25 @@ function formatDate(timestamp: number): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  })
+  });
 }
 
 function saveHistoryToStorage() {
-  localStorage.setItem('distance-history', JSON.stringify(history.value))
+  localStorage.setItem('distance-history', JSON.stringify(history.value));
 }
 
 function loadHistoryFromStorage() {
-  const saved = localStorage.getItem('distance-history')
+  const saved = localStorage.getItem('distance-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch (error) {
-      console.error('加载历史记录失败:', error)
+      console.error('加载历史记录失败:', error);
     }
   }
 }
 
 onMounted(() => {
-  loadHistoryFromStorage()
-})
+  loadHistoryFromStorage();
+});
 </script>

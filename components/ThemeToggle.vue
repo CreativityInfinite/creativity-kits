@@ -10,13 +10,13 @@
 
 <script setup lang="ts">
 // @ts-nocheck
-import { useFancyThemeTransition } from '~/composables/useFancyThemeTransition'
+import { useFancyThemeTransition } from '~/composables/useFancyThemeTransition';
 
-const colorMode = useColorMode()
-const { setModeWithTransition } = useFancyThemeTransition()
+const colorMode = useColorMode();
+const { setModeWithTransition } = useFancyThemeTransition();
 
 function toggle() {
-  const next = colorMode.value === 'dark' ? 'light' : 'dark'
-  setModeWithTransition(next)
+  const next = colorMode.value === 'dark' ? 'light' : 'dark';
+  setModeWithTransition(next);
 }
 </script>

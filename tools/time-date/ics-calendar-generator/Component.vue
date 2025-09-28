@@ -83,103 +83,103 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-type HistoryItem = { calName: string; count: number; result: string; timestamp: number }
+import { ref, computed, onMounted } from 'vue';
+type HistoryItem = { calName: string; count: number; result: string; timestamp: number };
 
-const eventsText = ref('')
-const asUTC = ref(false)
-const calName = ref('MyCalendar')
+const eventsText = ref('');
+const asUTC = ref(false);
+const calName = ref('MyCalendar');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => eventsText.value.trim().length > 0)
+const canProcess = computed(() => eventsText.value.trim().length > 0);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'text/calendar' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = (calName.value || 'calendar') + '.ics'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (calName.value || 'calendar') + '.ics';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const lines = result.value.split('\n').filter((l) => l.startsWith('BEGIN:VEVENT')).length
-  const item: HistoryItem = { calName: calName.value, count: lines, result: result.value, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('ics-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const lines = result.value.split('\n').filter((l) => l.startsWith('BEGIN:VEVENT')).length;
+  const item: HistoryItem = { calName: calName.value, count: lines, result: result.value, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('ics-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('ics-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('ics-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function fmt(dt: string) {
-  const d = new Date(dt)
-  if (Number.isNaN(d.getTime())) throw new Error('无效时间: ' + dt)
+  const d = new Date(dt);
+  if (Number.isNaN(d.getTime())) throw new Error('无效时间: ' + dt);
   if (asUTC.value) {
-    const yyyy = d.getUTCFullYear().toString().padStart(4, '0')
-    const MM = (d.getUTCMonth() + 1).toString().padStart(2, '0')
-    const DD = d.getUTCDate().toString().padStart(2, '0')
-    const hh = d.getUTCHours().toString().padStart(2, '0')
-    const mm = d.getUTCMinutes().toString().padStart(2, '0')
-    const ss = d.getUTCSeconds().toString().padStart(2, '0')
-    return `${yyyy}${MM}${DD}T${hh}${mm}${ss}Z`
+    const yyyy = d.getUTCFullYear().toString().padStart(4, '0');
+    const MM = (d.getUTCMonth() + 1).toString().padStart(2, '0');
+    const DD = d.getUTCDate().toString().padStart(2, '0');
+    const hh = d.getUTCHours().toString().padStart(2, '0');
+    const mm = d.getUTCMinutes().toString().padStart(2, '0');
+    const ss = d.getUTCSeconds().toString().padStart(2, '0');
+    return `${yyyy}${MM}${DD}T${hh}${mm}${ss}Z`;
   } else {
-    const yyyy = d.getFullYear().toString().padStart(4, '0')
-    const MM = (d.getMonth() + 1).toString().padStart(2, '0')
-    const DD = d.getDate().toString().padStart(2, '0')
-    const hh = d.getHours().toString().padStart(2, '0')
-    const mm = d.getMinutes().toString().padStart(2, '0')
-    const ss = d.getSeconds().toString().padStart(2, '0')
-    return `${yyyy}${MM}${DD}T${hh}${mm}${ss}`
+    const yyyy = d.getFullYear().toString().padStart(4, '0');
+    const MM = (d.getMonth() + 1).toString().padStart(2, '0');
+    const DD = d.getDate().toString().padStart(2, '0');
+    const hh = d.getHours().toString().padStart(2, '0');
+    const mm = d.getMinutes().toString().padStart(2, '0');
+    const ss = d.getSeconds().toString().padStart(2, '0');
+    return `${yyyy}${MM}${DD}T${hh}${mm}${ss}`;
   }
 }
 function uid() {
-  return Math.random().toString(36).slice(2)
+  return Math.random().toString(36).slice(2);
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
   try {
     const lines = eventsText.value
       .split(/\r?\n/)
       .map((s) => s.trim())
-      .filter(Boolean)
-    if (!lines.length) throw new Error('无事件')
-    const blocks: string[] = []
+      .filter(Boolean);
+    if (!lines.length) throw new Error('无事件');
+    const blocks: string[] = [];
     for (const line of lines) {
-      const [summary, dtStart, dtEnd, location = '', desc = ''] = line.split('\t')
-      if (!summary || !dtStart || !dtEnd) throw new Error('每行至少包含：标题 开始 结束')
-      const uid = uid()
+      const [summary, dtStart, dtEnd, location = '', desc = ''] = line.split('\t');
+      if (!summary || !dtStart || !dtEnd) throw new Error('每行至少包含：标题 开始 结束');
+      const uid = uid();
       blocks.push(
         `BEGIN:VEVENT
 UID:${uid}@fancytools
@@ -189,9 +189,9 @@ DTEND:${fmt(dtEnd)}
 LOCATION:${location || ''}
 DESCRIPTION:${desc || ''}
 END:VEVENT`
-      )
+      );
     }
-    const now = new Date()
+    const now = new Date();
     const cal = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
@@ -200,20 +200,20 @@ END:VEVENT`
       `DTSTAMP:${fmt(now.toISOString())}`,
       ...blocks,
       'END:VCALENDAR'
-    ].join('\n')
-    result.value = cal
-    processingTime.value = Math.round(performance.now() - start)
+    ].join('\n');
+    result.value = cal;
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '生成失败'
+    error.value = e?.message || '生成失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('ics-history')
+  const saved = localStorage.getItem('ics-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'json-pretty',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'text-format',
   tags: ['JSON', '格式化', '美化', '压缩', '语法高亮', '数据分析'],
   i18nKey: 'tools.json-pretty',
-  entry: 'tools/text-format/json-pretty/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/json-pretty/Component.vue'
+};
+export default meta;

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'typing-practice',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'education-language',
   tags: ['打字', '练习', '速度', '准确率', 'WPM', '键盘'],
   i18nKey: 'tools.typing-practice',
-  entry: 'tools/education-language/typing-practice/Component.vue',
-}
-export default meta
+  entry: 'tools/education-language/typing-practice/Component.vue'
+};
+export default meta;

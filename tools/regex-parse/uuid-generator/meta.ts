@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'uuid-generator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:identifier',
   i18nKey: 'tools.uuid-generator',
-  entry: 'tools/regex-parse/uuid-generator/Component.vue',
-}
-export default meta
+  entry: 'tools/regex-parse/uuid-generator/Component.vue'
+};
+export default meta;

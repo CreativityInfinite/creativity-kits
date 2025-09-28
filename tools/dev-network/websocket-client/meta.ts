@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'websocket-client',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#22c55e,#14b8a6)',
   icon: 'tabler:cloud-network',
   i18nKey: 'tools.websocket-client',
-  entry: 'tools/dev-network/websocket-client/Component.vue',
-}
-export default meta
+  entry: 'tools/dev-network/websocket-client/Component.vue'
+};
+export default meta;

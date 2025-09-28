@@ -83,40 +83,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const principal = ref(1000000)
-const annualRate = ref(3.8)
-const years = ref(30)
+const principal = ref(1000000);
+const annualRate = ref(3.8);
+const years = ref(30);
 const result = ref<null | {
-  monthlyPayment: number
-  totalMonths: number
-  totalPayment: number
-  totalInterest: number
+  monthlyPayment: number;
+  totalMonths: number;
+  totalPayment: number;
+  totalInterest: number;
   schedule: {
-    first: { principal: number; interest: number; balance: number }
-    last: { principal: number; interest: number; balance: number }
-  }
-}>(null)
+    first: { principal: number; interest: number; balance: number };
+    last: { principal: number; interest: number; balance: number };
+  };
+}>(null);
 
 function calculate() {
-  const P = Math.max(0, Number(principal.value || 0))
-  const r = Math.max(0, Number(annualRate.value || 0)) / 100 / 12
-  const n = Math.max(1, Math.floor((years.value || 1) * 12))
+  const P = Math.max(0, Number(principal.value || 0));
+  const r = Math.max(0, Number(annualRate.value || 0)) / 100 / 12;
+  const n = Math.max(1, Math.floor((years.value || 1) * 12));
   if (P === 0) {
-    result.value = null
-    return
+    result.value = null;
+    return;
   }
 
-  const M = r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)
-  let balance = P
-  const firstInterest = balance * r
-  const firstPrincipal = M - firstInterest
-  const lastInterest = (balance - (M * (n - 1) - (firstInterest * (1 - Math.pow(1 + r, -(n - 1)))) / r)) * r // 近似
-  const lastPrincipal = M - lastInterest
+  const M = r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+  let balance = P;
+  const firstInterest = balance * r;
+  const firstPrincipal = M - firstInterest;
+  const lastInterest = (balance - (M * (n - 1) - (firstInterest * (1 - Math.pow(1 + r, -(n - 1)))) / r)) * r; // 近似
+  const lastPrincipal = M - lastInterest;
 
-  const totalPayment = M * n
-  const totalInterest = totalPayment - P
+  const totalPayment = M * n;
+  const totalInterest = totalPayment - P;
 
   result.value = {
     monthlyPayment: round2(M),
@@ -127,13 +127,13 @@ function calculate() {
       first: { principal: round2(firstPrincipal), interest: round2(firstInterest), balance: round2(P - firstPrincipal) },
       last: { principal: round2(lastPrincipal), interest: round2(lastInterest), balance: 0 }
     }
-  }
+  };
 }
 
 function round2(x: number) {
-  return Math.round(x * 100) / 100
+  return Math.round(x * 100) / 100;
 }
 function formatCNY(n: number) {
-  return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', maximumFractionDigits: 2 }).format(n)
+  return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', maximumFractionDigits: 2 }).format(n);
 }
 </script>

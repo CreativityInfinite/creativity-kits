@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'timezone-converter',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:earth',
   i18nKey: 'tools.timezone-converter',
-  entry: 'tools/time-date/timezone-converter/Component.vue',
-}
-export default meta
+  entry: 'tools/time-date/timezone-converter/Component.vue'
+};
+export default meta;

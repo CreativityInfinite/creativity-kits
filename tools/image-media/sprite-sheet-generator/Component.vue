@@ -95,136 +95,136 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-type HistoryItem = { count: number; cols: number; sheetMeta: string; url: string; json: string; timestamp: number }
+import { onMounted, ref } from 'vue';
+type HistoryItem = { count: number; cols: number; sheetMeta: string; url: string; json: string; timestamp: number };
 
-type Item = { name: string; image: HTMLImageElement; w: number; h: number }
-const items = ref<Item[]>([])
-const cols = ref(4)
-const gap = ref(2)
-const bg = ref('#00000000')
+type Item = { name: string; image: HTMLImageElement; w: number; h: number };
+const items = ref<Item[]>([]);
+const cols = ref(4);
+const gap = ref(2);
+const bg = ref('#00000000');
 
-const cv = ref<HTMLCanvasElement | null>(null)
-const outUrl = ref('')
-const sheetMeta = ref('')
-const result = ref('')
-const error = ref('')
-const history = ref<HistoryItem[]>([])
+const cv = ref<HTMLCanvasElement | null>(null);
+const outUrl = ref('');
+const sheetMeta = ref('');
+const result = ref('');
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
-  items.value = []
-  outUrl.value = ''
-  result.value = ''
-  sheetMeta.value = ''
-  error.value = ''
+  items.value = [];
+  outUrl.value = '';
+  result.value = '';
+  sheetMeta.value = '';
+  error.value = '';
 }
 function copyUrl() {
-  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'))
+  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'));
 }
 function downloadResult() {
-  if (!outUrl.value) return
-  const a = document.createElement('a')
-  a.href = outUrl.value
-  a.download = 'sprite.png'
-  a.click()
+  if (!outUrl.value) return;
+  const a = document.createElement('a');
+  a.href = outUrl.value;
+  a.download = 'sprite.png';
+  a.click();
 }
 function copyResult() {
-  if (result.value) navigator.clipboard.writeText(result.value).then(() => alert('已复制到剪贴板'))
+  if (result.value) navigator.clipboard.writeText(result.value).then(() => alert('已复制到剪贴板'));
 }
 function downloadJson() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'sprite.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sprite.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!outUrl.value || !result.value) return
-  history.value.unshift({ count: items.value.length, cols: cols.value, sheetMeta: sheetMeta.value, url: outUrl.value, json: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('sprite-history', JSON.stringify(history.value))
+  if (!outUrl.value || !result.value) return;
+  history.value.unshift({ count: items.value.length, cols: cols.value, sheetMeta: sheetMeta.value, url: outUrl.value, json: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('sprite-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  outUrl.value = h.url
-  result.value = h.json
-  sheetMeta.value = h.sheetMeta
+  outUrl.value = h.url;
+  result.value = h.json;
+  sheetMeta.value = h.sheetMeta;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('sprite-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('sprite-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function onFiles(e: Event) {
-  const fl = Array.from((e.target as HTMLInputElement).files || [])
-  if (!fl.length) return
-  items.value = []
-  let loaded = 0
+  const fl = Array.from((e.target as HTMLInputElement).files || []);
+  if (!fl.length) return;
+  items.value = [];
+  let loaded = 0;
   for (const f of fl) {
-    const img = new Image()
+    const img = new Image();
     img.onload = () => {
-      items.value.push({ name: f.name, image: img, w: img.naturalWidth, h: img.naturalHeight })
-      loaded++
-    }
-    img.onerror = () => (error.value = '有图片加载失败')
-    img.src = URL.createObjectURL(f)
+      items.value.push({ name: f.name, image: img, w: img.naturalWidth, h: img.naturalHeight });
+      loaded++;
+    };
+    img.onerror = () => (error.value = '有图片加载失败');
+    img.src = URL.createObjectURL(f);
   }
 }
 
 function process() {
-  error.value = ''
-  outUrl.value = ''
-  result.value = ''
+  error.value = '';
+  outUrl.value = '';
+  result.value = '';
   try {
-    if (!items.value.length) throw new Error('请先选择图片')
-    const c = Math.max(1, cols.value | 0)
-    const rows = Math.ceil(items.value.length / c)
+    if (!items.value.length) throw new Error('请先选择图片');
+    const c = Math.max(1, cols.value | 0);
+    const rows = Math.ceil(items.value.length / c);
     // 采用各自尺寸，网格以单元最大宽高为准（简单策略）
-    const cellW = Math.max(...items.value.map((i) => i.w))
-    const cellH = Math.max(...items.value.map((i) => i.h))
-    const W = c * cellW + (c - 1) * gap.value
-    const H = rows * cellH + (rows - 1) * gap.value
-    const canvas = cv.value!
-    canvas.width = W
-    canvas.height = H
-    const ctx = canvas.getContext('2d')!
+    const cellW = Math.max(...items.value.map((i) => i.w));
+    const cellH = Math.max(...items.value.map((i) => i.h));
+    const W = c * cellW + (c - 1) * gap.value;
+    const H = rows * cellH + (rows - 1) * gap.value;
+    const canvas = cv.value!;
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d')!;
     if (bg.value && bg.value !== '#00000000') {
-      ctx.fillStyle = bg.value
-      ctx.fillRect(0, 0, W, H)
+      ctx.fillStyle = bg.value;
+      ctx.fillRect(0, 0, W, H);
     } else {
-      ctx.clearRect(0, 0, W, H)
+      ctx.clearRect(0, 0, W, H);
     }
-    const mapping: Record<string, { x: number; y: number; w: number; h: number; row: number; col: number }> = {}
+    const mapping: Record<string, { x: number; y: number; w: number; h: number; row: number; col: number }> = {};
     for (let i = 0; i < items.value.length; i++) {
       const r = Math.floor(i / c),
-        col = i % c
-      const x = col * (cellW + gap.value)
-      const y = r * (cellH + gap.value)
-      const it = items.value[i]
-      const dx = x + Math.floor((cellW - it.w) / 2)
-      const dy = y + Math.floor((cellH - it.h) / 2)
-      ctx.drawImage(it.image, dx, dy)
-      mapping[it.name] = { x, y, w: it.w, h: it.h, row: r, col }
+        col = i % c;
+      const x = col * (cellW + gap.value);
+      const y = r * (cellH + gap.value);
+      const it = items.value[i];
+      const dx = x + Math.floor((cellW - it.w) / 2);
+      const dy = y + Math.floor((cellH - it.h) / 2);
+      ctx.drawImage(it.image, dx, dy);
+      mapping[it.name] = { x, y, w: it.w, h: it.h, row: r, col };
     }
-    outUrl.value = canvas.toDataURL('image/png')
-    result.value = JSON.stringify({ sheet: { width: W, height: H }, cell: { width: cellW, height: cellH, gap: gap.value, cols: c }, mapping }, null, 2)
-    sheetMeta.value = `${W}x${H} (cell ${cellW}x${cellH}, cols ${c})`
+    outUrl.value = canvas.toDataURL('image/png');
+    result.value = JSON.stringify({ sheet: { width: W, height: H }, cell: { width: cellW, height: cellH, gap: gap.value, cols: c }, mapping }, null, 2);
+    sheetMeta.value = `${W}x${H} (cell ${cellW}x${cellH}, cols ${c})`;
   } catch (e: any) {
-    error.value = e?.message || '生成失败'
+    error.value = e?.message || '生成失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('sprite-history')
+  const saved = localStorage.getItem('sprite-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

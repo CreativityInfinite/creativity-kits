@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'clipboard-manager',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'system-browser',
   tags: ['剪贴板', '历史记录', '复制粘贴', '管理工具', '效率'],
   i18nKey: 'tools.clipboard-manager',
-  entry: 'tools/system-browser/clipboard-manager/Component.vue',
-}
-export default meta
+  entry: 'tools/system-browser/clipboard-manager/Component.vue'
+};
+export default meta;

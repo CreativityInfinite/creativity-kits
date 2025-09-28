@@ -74,44 +74,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-const text = ref('')
+const text = ref('');
 const result = ref<null | {
-  chars: number
-  words: number
-  sentences: number
-  avgSentenceLen: number
-  flesch: number | null
-  chinese: { uniqueChars: number; score: number | null }
-}>(null)
+  chars: number;
+  words: number;
+  sentences: number;
+  avgSentenceLen: number;
+  flesch: number | null;
+  chinese: { uniqueChars: number; score: number | null };
+}>(null);
 
-const jsonOut = computed(() => (result.value ? JSON.stringify(result.value, null, 2) : ''))
+const jsonOut = computed(() => (result.value ? JSON.stringify(result.value, null, 2) : ''));
 
 function analyze() {
-  const t = (text.value || '').trim()
+  const t = (text.value || '').trim();
   if (!t) {
-    result.value = null
-    return
+    result.value = null;
+    return;
   }
 
   const sentences = t
     .split(/(?<=[。！？!?\.]+)\s*/u)
     .map((s) => s.trim())
-    .filter(Boolean)
+    .filter(Boolean);
   const words = t
     .toLowerCase()
     .split(/[\s，。！？、；;:：“”"'()\[\]\{\}]+/u)
-    .filter(Boolean)
-  const chars = t.replace(/\s+/g, '').length
+    .filter(Boolean);
+  const chars = t.replace(/\s+/g, '').length;
 
-  const syllables = estimateSyllablesEnglish(t)
-  const flesch = sentences.length ? 206.835 - 1.015 * (words.length / sentences.length) - 84.6 * (syllables / Math.max(1, words.length)) : null
+  const syllables = estimateSyllablesEnglish(t);
+  const flesch = sentences.length ? 206.835 - 1.015 * (words.length / sentences.length) - 84.6 * (syllables / Math.max(1, words.length)) : null;
 
-  const zhChars = t.match(/[\u4e00-\u9fa5]/g) || []
-  const uniqueZh = new Set(zhChars).size
-  const avgSentenceLen = sentences.length ? words.length / sentences.length : 0
-  const cnScore = sentences.length ? Math.max(0, 100 - avgSentenceLen * 5 + (uniqueZh / Math.max(1, zhChars.length)) * 20) : null
+  const zhChars = t.match(/[\u4e00-\u9fa5]/g) || [];
+  const uniqueZh = new Set(zhChars).size;
+  const avgSentenceLen = sentences.length ? words.length / sentences.length : 0;
+  const cnScore = sentences.length ? Math.max(0, 100 - avgSentenceLen * 5 + (uniqueZh / Math.max(1, zhChars.length)) * 20) : null;
 
   result.value = {
     chars,
@@ -123,45 +123,45 @@ function analyze() {
       uniqueChars: uniqueZh,
       score: cnScore == null ? null : Number(cnScore.toFixed(2))
     }
-  }
+  };
 }
 
 function estimateSyllablesEnglish(t: string): number {
-  let s = 0
-  const wordList = t.toLowerCase().match(/[a-z]+/g) || []
-  const vowel = /[aeiouy]/
+  let s = 0;
+  const wordList = t.toLowerCase().match(/[a-z]+/g) || [];
+  const vowel = /[aeiouy]/;
   for (const w of wordList) {
-    let count = 0
-    let prevV = false
+    let count = 0;
+    let prevV = false;
     for (const ch of w) {
-      const isV = vowel.test(ch)
-      if (isV && !prevV) count++
-      prevV = isV
+      const isV = vowel.test(ch);
+      if (isV && !prevV) count++;
+      prevV = isV;
     }
-    if (w.endsWith('e')) count = Math.max(1, count - 1)
-    s += Math.max(1, count)
+    if (w.endsWith('e')) count = Math.max(1, count - 1);
+    s += Math.max(1, count);
   }
-  return s
+  return s;
 }
 
 async function copy() {
-  if (!jsonOut.value) return
+  if (!jsonOut.value) return;
   try {
-    await navigator.clipboard.writeText(jsonOut.value)
-    alert('已复制到剪贴板')
+    await navigator.clipboard.writeText(jsonOut.value);
+    alert('已复制到剪贴板');
   } catch (e) {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 
 function download() {
-  if (!jsonOut.value) return
-  const blob = new Blob([jsonOut.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'readability.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!jsonOut.value) return;
+  const blob = new Blob([jsonOut.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'readability.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

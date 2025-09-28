@@ -96,8 +96,7 @@ function ensureMeta(file) {
   if (isPopular) lines.push(`  isPopular: ${isPopular === 'true' ? 'true' : 'false'},`);
   // Remove trailing comma on last property
   let content = lines.join('\n').replace(/,\n(?=\s*(i18nKey|entry|isNew|isPopular)\:)/g, '\n');
-  if (content.endsWith(','))
-    content = content.slice(0, -1);
+  if (content.endsWith(',')) content = content.slice(0, -1);
   content += `\n}\nexport default meta\n`;
 
   write(file, content);

@@ -86,127 +86,127 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue';
 
-type KV = { key: string; value: string }
+type KV = { key: string; value: string };
 const k = ref(''),
-  v = ref('')
-const result = ref('')
-const error = ref('')
-const list = ref<KV[]>([])
+  v = ref('');
+const result = ref('');
+const error = ref('');
+const list = ref<KV[]>([]);
 
 function clearError() {
-  error.value = ''
+  error.value = '';
 }
 
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'localstorage.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'localstorage.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function refresh() {
-  clearError()
+  clearError();
   try {
-    const items: KV[] = []
+    const items: KV[] = [];
     for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)!
-      items.push({ key, value: localStorage.getItem(key) ?? '' })
+      const key = localStorage.key(i)!;
+      items.push({ key, value: localStorage.getItem(key) ?? '' });
     }
-    list.value = items.sort((a, b) => a.key.localeCompare(b.key))
-    result.value = JSON.stringify(Object.fromEntries(items.map((x) => [x.key, x.value])), null, 2)
+    list.value = items.sort((a, b) => a.key.localeCompare(b.key));
+    result.value = JSON.stringify(Object.fromEntries(items.map((x) => [x.key, x.value])), null, 2);
   } catch (e: any) {
-    error.value = e?.message || '读取失败'
+    error.value = e?.message || '读取失败';
   }
 }
 
 function setItem() {
-  clearError()
+  clearError();
   try {
-    localStorage.setItem(k.value, v.value)
-    refresh()
+    localStorage.setItem(k.value, v.value);
+    refresh();
   } catch (e: any) {
-    error.value = e?.message || '设置失败'
+    error.value = e?.message || '设置失败';
   }
 }
 function getItem() {
-  clearError()
+  clearError();
   try {
-    const val = localStorage.getItem(k.value)
-    result.value = JSON.stringify({ key: k.value, value: val }, null, 2)
+    const val = localStorage.getItem(k.value);
+    result.value = JSON.stringify({ key: k.value, value: val }, null, 2);
   } catch (e: any) {
-    error.value = e?.message || '读取失败'
+    error.value = e?.message || '读取失败';
   }
 }
 function removeItem() {
-  clearError()
+  clearError();
   try {
-    localStorage.removeItem(k.value)
-    refresh()
+    localStorage.removeItem(k.value);
+    refresh();
   } catch (e: any) {
-    error.value = e?.message || '删除失败'
+    error.value = e?.message || '删除失败';
   }
 }
 function quickRemove(key: string) {
-  clearError()
+  clearError();
   try {
-    localStorage.removeItem(key)
-    refresh()
+    localStorage.removeItem(key);
+    refresh();
   } catch (e: any) {
-    error.value = e?.message || '删除失败'
+    error.value = e?.message || '删除失败';
   }
 }
 function clearAllStore() {
-  clearError()
+  clearError();
   try {
-    localStorage.clear()
-    refresh()
+    localStorage.clear();
+    refresh();
   } catch (e: any) {
-    error.value = e?.message || '清空失败'
+    error.value = e?.message || '清空失败';
   }
 }
 
 function exportAll() {
-  if (!list.value.length) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'localstorage.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!list.value.length) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'localstorage.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function importAll(e: Event) {
-  clearError()
+  clearError();
   try {
-    const f = (e.target as HTMLInputElement).files?.[0]
-    if (!f) return
-    const reader = new FileReader()
+    const f = (e.target as HTMLInputElement).files?.[0];
+    if (!f) return;
+    const reader = new FileReader();
     reader.onload = () => {
       try {
-        const obj = JSON.parse(String(reader.result || '{}'))
-        for (const [key, val] of Object.entries(obj)) localStorage.setItem(key, String(val))
-        refresh()
+        const obj = JSON.parse(String(reader.result || '{}'));
+        for (const [key, val] of Object.entries(obj)) localStorage.setItem(key, String(val));
+        refresh();
       } catch (err: any) {
-        error.value = 'JSON 解析失败'
+        error.value = 'JSON 解析失败';
       }
-    }
-    reader.readAsText(f)
+    };
+    reader.readAsText(f);
   } catch (err: any) {
-    error.value = err?.message || '导入失败'
+    error.value = err?.message || '导入失败';
   }
 }
 
-onMounted(() => refresh())
+onMounted(() => refresh());
 </script>

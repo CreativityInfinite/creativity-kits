@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'working-days-calculator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:briefcase-clock',
   i18nKey: 'tools.working-days-calculator',
-  entry: 'tools/time-date/working-days-calculator/Component.vue',
-}
-export default meta
+  entry: 'tools/time-date/working-days-calculator/Component.vue'
+};
+export default meta;

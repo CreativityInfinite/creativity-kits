@@ -253,27 +253,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
 interface GeneratedUUID {
-  value: string
-  type: string
-  timestamp: string
+  value: string;
+  type: string;
+  timestamp: string;
 }
 
 interface UUIDHistory {
-  uuid: string
-  timestamp: string
-  type: string
+  uuid: string;
+  timestamp: string;
+  type: string;
 }
 
 interface ValidationResult {
-  valid: boolean
-  type?: string
-  version?: string
-  format?: string
-  timestamp?: string
-  error?: string
+  valid: boolean;
+  type?: string;
+  version?: string;
+  format?: string;
+  timestamp?: string;
+  error?: string;
 }
 
 const settings = ref({
@@ -288,12 +288,12 @@ const settings = ref({
   nanoidAlphabet: 'default',
   customAlphabet: '',
   customFormat: 'XXXX-XXXX-XXXX'
-})
+});
 
-const generatedUUIDs = ref<GeneratedUUID[]>([])
-const validationInput = ref('')
-const validationResult = ref<ValidationResult | null>(null)
-const uuidHistory = ref<UUIDHistory[]>([])
+const generatedUUIDs = ref<GeneratedUUID[]>([]);
+const validationInput = ref('');
+const validationResult = ref<ValidationResult | null>(null);
+const uuidHistory = ref<UUIDHistory[]>([]);
 
 // 字符集定义
 const alphabets = {
@@ -303,32 +303,32 @@ const alphabets = {
   uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
   numbers: '0123456789',
   hex: '0123456789ABCDEF'
-}
+};
 
 onMounted(() => {
-  loadUUIDHistory()
-  generateUUIDs()
-})
+  loadUUIDHistory();
+  generateUUIDs();
+});
 
 // UUID v4 生成
 function generateUUIDv4(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = (Math.random() * 16) | 0
-    const v = c === 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 }
 
 // UUID v1 生成 (简化版)
 function generateUUIDv1(): string {
-  const timestamp = Date.now()
-  const timeHex = timestamp.toString(16).padStart(12, '0')
-  const clockSeq = Math.floor(Math.random() * 0x4000)
+  const timestamp = Date.now();
+  const timeHex = timestamp.toString(16).padStart(12, '0');
+  const clockSeq = Math.floor(Math.random() * 0x4000);
   const node = Array.from({ length: 6 }, () =>
     Math.floor(Math.random() * 256)
       .toString(16)
       .padStart(2, '0')
-  ).join('')
+  ).join('');
 
   return [
     timeHex.slice(-8),
@@ -336,165 +336,165 @@ function generateUUIDv1(): string {
     '1' + timeHex.slice(-15, -12),
     ((clockSeq >> 8) | 0x80).toString(16).padStart(2, '0') + (clockSeq & 0xff).toString(16).padStart(2, '0'),
     node
-  ].join('-')
+  ].join('-');
 }
 
 // Nano ID 生成
 function generateNanoID(length: number = 21, alphabet?: string): string {
-  const chars = alphabet || getAlphabet()
-  let result = ''
+  const chars = alphabet || getAlphabet();
+  let result = '';
 
   for (let i = 0; i < length; i++) {
-    result += chars[Math.floor(Math.random() * chars.length)]
+    result += chars[Math.floor(Math.random() * chars.length)];
   }
 
-  return result
+  return result;
 }
 
 // 自定义格式生成
 function generateCustomFormat(format: string): string {
   return format.replace(/X/g, () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    return chars[Math.floor(Math.random() * chars.length)]
-  })
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    return chars[Math.floor(Math.random() * chars.length)];
+  });
 }
 
 // 获取字符集
 function getAlphabet(): string {
   if (settings.value.nanoidAlphabet === 'custom') {
-    return settings.value.customAlphabet || alphabets.default
+    return settings.value.customAlphabet || alphabets.default;
   }
-  return alphabets[settings.value.nanoidAlphabet as keyof typeof alphabets] || alphabets.default
+  return alphabets[settings.value.nanoidAlphabet as keyof typeof alphabets] || alphabets.default;
 }
 
 // 格式化 UUID
 function formatUUID(uuid: string): string {
-  let formatted = uuid
+  let formatted = uuid;
 
   if (settings.value.uppercase) {
-    formatted = formatted.toUpperCase()
+    formatted = formatted.toUpperCase();
   } else {
-    formatted = formatted.toLowerCase()
+    formatted = formatted.toLowerCase();
   }
 
   if (settings.value.removeDashes) {
-    formatted = formatted.replace(/-/g, '')
+    formatted = formatted.replace(/-/g, '');
   }
 
   if (settings.value.addBraces) {
-    formatted = `{${formatted}}`
+    formatted = `{${formatted}}`;
   }
 
   if (settings.value.addPrefix && settings.value.prefix) {
-    formatted = settings.value.prefix + formatted
+    formatted = settings.value.prefix + formatted;
   }
 
-  return formatted
+  return formatted;
 }
 
 // 生成 UUID
 function generateUUIDs() {
-  const uuids: GeneratedUUID[] = []
+  const uuids: GeneratedUUID[] = [];
 
   for (let i = 0; i < settings.value.count; i++) {
-    let uuid = ''
-    let type = settings.value.type
+    let uuid = '';
+    let type = settings.value.type;
 
     switch (settings.value.type) {
       case 'v4':
-        uuid = generateUUIDv4()
-        break
+        uuid = generateUUIDv4();
+        break;
       case 'v1':
-        uuid = generateUUIDv1()
-        break
+        uuid = generateUUIDv1();
+        break;
       case 'nanoid':
-        uuid = generateNanoID(settings.value.nanoidLength, getAlphabet())
-        type = `Nano ID (${settings.value.nanoidLength})`
-        break
+        uuid = generateNanoID(settings.value.nanoidLength, getAlphabet());
+        type = `Nano ID (${settings.value.nanoidLength})`;
+        break;
       case 'custom':
-        uuid = generateCustomFormat(settings.value.customFormat)
-        type = '自定义格式'
-        break
+        uuid = generateCustomFormat(settings.value.customFormat);
+        type = '自定义格式';
+        break;
     }
 
-    const formatted = formatUUID(uuid)
-    const timestamp = new Date().toLocaleTimeString()
+    const formatted = formatUUID(uuid);
+    const timestamp = new Date().toLocaleTimeString();
 
     uuids.push({
       value: formatted,
       type,
       timestamp
-    })
+    });
 
     // 添加到历史记录
-    addToHistory(formatted, type)
+    addToHistory(formatted, type);
   }
 
-  generatedUUIDs.value = uuids
+  generatedUUIDs.value = uuids;
 }
 
 // 重新生成单个 UUID
 function regenerateUUID(index: number) {
-  let uuid = ''
-  let type = settings.value.type
+  let uuid = '';
+  let type = settings.value.type;
 
   switch (settings.value.type) {
     case 'v4':
-      uuid = generateUUIDv4()
-      break
+      uuid = generateUUIDv4();
+      break;
     case 'v1':
-      uuid = generateUUIDv1()
-      break
+      uuid = generateUUIDv1();
+      break;
     case 'nanoid':
-      uuid = generateNanoID(settings.value.nanoidLength, getAlphabet())
-      type = `Nano ID (${settings.value.nanoidLength})`
-      break
+      uuid = generateNanoID(settings.value.nanoidLength, getAlphabet());
+      type = `Nano ID (${settings.value.nanoidLength})`;
+      break;
     case 'custom':
-      uuid = generateCustomFormat(settings.value.customFormat)
-      type = '自定义格式'
-      break
+      uuid = generateCustomFormat(settings.value.customFormat);
+      type = '自定义格式';
+      break;
   }
 
-  const formatted = formatUUID(uuid)
-  const timestamp = new Date().toLocaleTimeString()
+  const formatted = formatUUID(uuid);
+  const timestamp = new Date().toLocaleTimeString();
 
   generatedUUIDs.value[index] = {
     value: formatted,
     type,
     timestamp
-  }
+  };
 
-  addToHistory(formatted, type)
+  addToHistory(formatted, type);
 }
 
 // 快速生成
 function quickGenerate(type: string, count: number) {
-  settings.value.type = type
-  settings.value.count = count
-  generateUUIDs()
+  settings.value.type = type;
+  settings.value.count = count;
+  generateUUIDs();
 }
 
 // 验证 UUID
 function validateUUID() {
-  const input = validationInput.value.trim()
+  const input = validationInput.value.trim();
 
   if (!input) {
-    validationResult.value = null
-    return
+    validationResult.value = null;
+    return;
   }
 
   // 清理输入（移除大括号和前缀）
-  let cleanInput = input.replace(/^\{|\}$/g, '')
+  let cleanInput = input.replace(/^\{|\}$/g, '');
 
   // UUID v4 验证
-  const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-  const uuidv4NoHyphenRegex = /^[0-9a-f]{32}$/i
+  const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const uuidv4NoHyphenRegex = /^[0-9a-f]{32}$/i;
 
   // UUID v1 验证
-  const uuidv1Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  const uuidv1Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   // 通用 UUID 验证
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   if (uuidv4Regex.test(cleanInput)) {
     validationResult.value = {
@@ -502,7 +502,7 @@ function validateUUID() {
       type: 'UUID',
       version: 'v4',
       format: '标准格式 (带连字符)'
-    }
+    };
   } else if (uuidv1Regex.test(cleanInput)) {
     validationResult.value = {
       valid: true,
@@ -510,74 +510,74 @@ function validateUUID() {
       version: 'v1',
       format: '标准格式 (带连字符)',
       timestamp: '包含时间戳信息'
-    }
+    };
   } else if (uuidRegex.test(cleanInput)) {
-    const version = cleanInput.charAt(14)
+    const version = cleanInput.charAt(14);
     validationResult.value = {
       valid: true,
       type: 'UUID',
       version: `v${version}`,
       format: '标准格式 (带连字符)'
-    }
+    };
   } else if (uuidv4NoHyphenRegex.test(cleanInput)) {
     validationResult.value = {
       valid: true,
       type: 'UUID',
       version: '未知',
       format: '无连字符格式'
-    }
+    };
   } else if (cleanInput.length >= 6 && /^[A-Za-z0-9_-]+$/.test(cleanInput)) {
     validationResult.value = {
       valid: true,
       type: 'Nano ID',
       format: `长度: ${cleanInput.length} 字符`
-    }
+    };
   } else {
     validationResult.value = {
       valid: false,
       error: '不是有效的 UUID 或 Nano ID 格式'
-    }
+    };
   }
 }
 
 // 复制功能
 async function copyUUID(uuid: string) {
   try {
-    await navigator.clipboard.writeText(uuid)
+    await navigator.clipboard.writeText(uuid);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 async function copyAllUUIDs() {
-  const uuids = generatedUUIDs.value.map((u) => u.value).join('\n')
+  const uuids = generatedUUIDs.value.map((u) => u.value).join('\n');
   try {
-    await navigator.clipboard.writeText(uuids)
+    await navigator.clipboard.writeText(uuids);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 // 导出功能
 function exportUUIDs() {
-  const content = generatedUUIDs.value.map((u, index) => `${index + 1}. ${u.value} (${u.type}) - ${u.timestamp}`).join('\n')
+  const content = generatedUUIDs.value.map((u, index) => `${index + 1}. ${u.value} (${u.type}) - ${u.timestamp}`).join('\n');
 
-  const blob = new Blob([content], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `uuids-${new Date().toISOString().slice(0, 10)}.txt`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `uuids-${new Date().toISOString().slice(0, 10)}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // 清空功能
 function clearAll() {
-  generatedUUIDs.value = []
+  generatedUUIDs.value = [];
 }
 
 // 历史记录管理
@@ -586,34 +586,34 @@ function addToHistory(uuid: string, type: string) {
     uuid,
     timestamp: new Date().toLocaleString(),
     type
-  }
+  };
 
-  uuidHistory.value.unshift(historyItem)
-  uuidHistory.value = uuidHistory.value.slice(0, 100) // 限制历史记录数量
-  saveUUIDHistory()
+  uuidHistory.value.unshift(historyItem);
+  uuidHistory.value = uuidHistory.value.slice(0, 100); // 限制历史记录数量
+  saveUUIDHistory();
 }
 
 function clearHistory() {
-  uuidHistory.value = []
-  saveUUIDHistory()
+  uuidHistory.value = [];
+  saveUUIDHistory();
 }
 
 function loadUUIDHistory() {
   try {
-    const saved = localStorage.getItem('uuid-generator-history')
+    const saved = localStorage.getItem('uuid-generator-history');
     if (saved) {
-      uuidHistory.value = JSON.parse(saved)
+      uuidHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载UUID历史失败:', error)
+    console.error('加载UUID历史失败:', error);
   }
 }
 
 function saveUUIDHistory() {
   try {
-    localStorage.setItem('uuid-generator-history', JSON.stringify(uuidHistory.value))
+    localStorage.setItem('uuid-generator-history', JSON.stringify(uuidHistory.value));
   } catch (error) {
-    console.error('保存UUID历史失败:', error)
+    console.error('保存UUID历史失败:', error);
   }
 }
 </script>

@@ -146,78 +146,78 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 type HistoryItem = {
-  angle: number
-  steps: number
-  colors: string[]
-  outputFormat: 'css' | 'json'
-  result: string
-  outputLength: number
-  timestamp: number
-}
+  angle: number;
+  steps: number;
+  colors: string[];
+  outputFormat: 'css' | 'json';
+  result: string;
+  outputLength: number;
+  timestamp: number;
+};
 
-const angle = ref(0)
-const steps = ref(8)
-const colorsText = ref('#ff7e5f, #feb47b')
-const inputText = ref('')
-const outputFormat = ref<'css' | 'json'>('css')
+const angle = ref(0);
+const steps = ref(8);
+const colorsText = ref('#ff7e5f, #feb47b');
+const inputText = ref('');
+const outputFormat = ref<'css' | 'json'>('css');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
 // 解析输入与上方参数得到规范颜色数组
 const colors = computed(() => {
-  const list: string[] = []
+  const list: string[] = [];
   const add = (c: string) => {
-    const t = c.trim()
-    if (!t) return
-    if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(t)) list.push(t.toLowerCase())
-  }
+    const t = c.trim();
+    if (!t) return;
+    if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(t)) list.push(t.toLowerCase());
+  };
 
   // 先用上方 colorsText
-  colorsText.value.split(',').forEach(add)
+  colorsText.value.split(',').forEach(add);
 
   // 若输入提供颜色行也合并
   if (inputText.value.trim()) {
     const lines = inputText.value
       .split(/\r?\n/)
       .map((s) => s.trim())
-      .filter(Boolean)
+      .filter(Boolean);
     for (const line of lines) {
-      const kv = line.match(/^(\w+)\s*=\s*(.+)$/)
-      if (kv) continue
-      add(line)
+      const kv = line.match(/^(\w+)\s*=\s*(.+)$/);
+      if (kv) continue;
+      add(line);
     }
   }
   // 去重
-  return Array.from(new Set(list))
-})
+  return Array.from(new Set(list));
+});
 
-const canProcess = computed(() => colors.value.length >= 2 && steps.value >= 2)
+const canProcess = computed(() => colors.value.length >= 2 && steps.value >= 2);
 
-const lastInfo = ref({ angle: 0, steps: 0 })
-const palette = ref<string[]>([])
+const lastInfo = ref({ angle: 0, steps: 0 });
+const palette = ref<string[]>([]);
 const previewCss = computed(() => {
-  const css = `linear-gradient(${angle.value}deg, ${colors.value.join(', ')})`
-  return css
-})
+  const css = `linear-gradient(${angle.value}deg, ${colors.value.join(', ')})`;
+  return css;
+});
 
 function hexToRgb(hex: string) {
-  const m = hex.trim().match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)
-  if (!m) return null
-  let h = m[1]
+  const m = hex.trim().match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (!m) return null;
+  let h = m[1];
   if (h.length === 3) {
     h = h
       .split('')
       .map((c) => c + c)
-      .join('')
+      .join('');
   }
-  const n = parseInt(h, 16)
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }
+  const n = parseInt(h, 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
 const rgbToHex = (r: number, g: number, b: number) =>
   '#' +
@@ -227,49 +227,49 @@ const rgbToHex = (r: number, g: number, b: number) =>
         .toString(16)
         .padStart(2, '0')
     )
-    .join('')
+    .join('');
 
 function interpolatePalette(cols: string[], n: number): string[] {
-  const rgb = cols.map((c) => hexToRgb(c)).filter(Boolean) as { r: number; g: number; b: number }[]
-  if (rgb.length < 2) return []
-  const res: string[] = []
+  const rgb = cols.map((c) => hexToRgb(c)).filter(Boolean) as { r: number; g: number; b: number }[];
+  if (rgb.length < 2) return [];
+  const res: string[] = [];
   for (let i = 0; i < n; i++) {
-    const t = i / (n - 1)
-    const seg = (rgb.length - 1) * t
-    const i0 = Math.floor(seg)
-    const i1 = Math.min(rgb.length - 1, i0 + 1)
-    const local = seg - i0
-    const r = rgb[i0].r + (rgb[i1].r - rgb[i0].r) * local
-    const g = rgb[i0].g + (rgb[i1].g - rgb[i0].g) * local
-    const b = rgb[i0].b + (rgb[i1].b - rgb[i0].b) * local
-    res.push(rgbToHex(r, g, b))
+    const t = i / (n - 1);
+    const seg = (rgb.length - 1) * t;
+    const i0 = Math.floor(seg);
+    const i1 = Math.min(rgb.length - 1, i0 + 1);
+    const local = seg - i0;
+    const r = rgb[i0].r + (rgb[i1].r - rgb[i0].r) * local;
+    const g = rgb[i0].g + (rgb[i1].g - rgb[i0].g) * local;
+    const b = rgb[i0].b + (rgb[i1].b - rgb[i0].b) * local;
+    res.push(rgbToHex(r, g, b));
   }
-  return res
+  return res;
 }
 
 function parseKvFromInput() {
-  if (!inputText.value.trim()) return
+  if (!inputText.value.trim()) return;
   const lines = inputText.value
     .split(/\r?\n/)
     .map((s) => s.trim())
-    .filter(Boolean)
+    .filter(Boolean);
   for (const line of lines) {
-    const m = line.match(/^(\w+)\s*=\s*(.+)$/)
-    if (!m) continue
-    const k = m[1].toLowerCase()
-    const v = m[2]
+    const m = line.match(/^(\w+)\s*=\s*(.+)$/);
+    if (!m) continue;
+    const k = m[1].toLowerCase();
+    const v = m[2];
     if (k === 'angle') {
-      const a = parseFloat(v)
-      if (!Number.isNaN(a)) angle.value = a
+      const a = parseFloat(v);
+      if (!Number.isNaN(a)) angle.value = a;
     } else if (k === 'steps') {
-      const s = parseInt(v, 10)
-      if (!Number.isNaN(s)) steps.value = Math.max(2, Math.min(64, s))
+      const s = parseInt(v, 10);
+      if (!Number.isNaN(s)) steps.value = Math.max(2, Math.min(64, s));
     }
   }
 }
 
 function buildCssGradient(cols: string[]) {
-  return `background: linear-gradient(${angle.value}deg, ${cols.join(', ')});`
+  return `background: linear-gradient(${angle.value}deg, ${cols.join(', ')});`;
 }
 
 function buildJsonPalette(cols: string[], pal: string[]) {
@@ -282,46 +282,46 @@ function buildJsonPalette(cols: string[], pal: string[]) {
     },
     null,
     2
-  )
+  );
 }
 
 function swapView() {
-  if (!result.value) return
-  outputFormat.value = outputFormat.value === 'css' ? 'json' : 'css'
+  if (!result.value) return;
+  outputFormat.value = outputFormat.value === 'css' ? 'json' : 'css';
 }
 
 function clearAll() {
-  inputText.value = ''
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
-  palette.value = []
-  lastInfo.value = { angle: 0, steps: 0 }
+  inputText.value = '';
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
+  palette.value = [];
+  lastInfo.value = { angle: 0, steps: 0 };
 }
 
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
 }
 
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 
 function downloadResult() {
-  if (!result.value) return
-  const ext = outputFormat.value === 'css' ? 'css' : 'json'
-  const filename = `gradient_${new Date().toISOString().slice(0, 10)}.${ext}`
-  const blob = new Blob([result.value], { type: ext === 'css' ? 'text/css' : 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const ext = outputFormat.value === 'css' ? 'css' : 'json';
+  const filename = `gradient_${new Date().toISOString().slice(0, 10)}.${ext}`;
+  const blob = new Blob([result.value], { type: ext === 'css' ? 'text/css' : 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function saveToHistory() {
-  if (!result.value) return
+  if (!result.value) return;
   const item: HistoryItem = {
     angle: angle.value,
     steps: steps.value,
@@ -330,68 +330,68 @@ function saveToHistory() {
     result: result.value,
     outputLength: result.value.length,
     timestamp: Date.now()
-  }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('gradient-history', JSON.stringify(history.value))
+  };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('gradient-history', JSON.stringify(history.value));
 }
 
 function loadFromHistory(item: HistoryItem) {
-  angle.value = item.angle
-  steps.value = item.steps
-  colorsText.value = item.colors.join(', ')
-  outputFormat.value = item.outputFormat
-  result.value = item.result
-  processingTime.value = null
-  error.value = ''
+  angle.value = item.angle;
+  steps.value = item.steps;
+  colorsText.value = item.colors.join(', ');
+  outputFormat.value = item.outputFormat;
+  result.value = item.result;
+  processingTime.value = null;
+  error.value = '';
   // 重新计算预览与 palette
-  palette.value = interpolatePalette(item.colors, item.steps)
-  lastInfo.value = { angle: item.angle, steps: item.steps }
+  palette.value = interpolatePalette(item.colors, item.steps);
+  lastInfo.value = { angle: item.angle, steps: item.steps };
 }
 
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  localStorage.setItem('gradient-history', JSON.stringify(history.value))
+  history.value.splice(index, 1);
+  localStorage.setItem('gradient-history', JSON.stringify(history.value));
 }
 
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
 
-  const start = performance.now()
+  const start = performance.now();
   try {
-    parseKvFromInput()
+    parseKvFromInput();
 
     if (!canProcess.value) {
-      throw new Error('请至少提供两种颜色，且步数 >= 2')
+      throw new Error('请至少提供两种颜色，且步数 >= 2');
     }
-    const cols = colors.value
-    const pal = interpolatePalette(cols, Math.max(2, Math.min(64, steps.value)))
-    palette.value = pal
-    lastInfo.value = { angle: angle.value, steps: steps.value }
+    const cols = colors.value;
+    const pal = interpolatePalette(cols, Math.max(2, Math.min(64, steps.value)));
+    palette.value = pal;
+    lastInfo.value = { angle: angle.value, steps: steps.value };
 
     if (outputFormat.value === 'css') {
-      result.value = buildCssGradient(cols)
+      result.value = buildCssGradient(cols);
     } else {
-      result.value = buildJsonPalette(cols, pal)
+      result.value = buildJsonPalette(cols, pal);
     }
-    processingTime.value = Math.round(performance.now() - start)
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '处理失败'
+    error.value = e?.message || '处理失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('gradient-history')
+  const saved = localStorage.getItem('gradient-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

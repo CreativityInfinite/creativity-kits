@@ -44,139 +44,139 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const file = ref<File | null>(null)
-const audioUrl = ref('')
-const outUrl = ref('')
-const format = ref<'wav' | 'mp3'>('wav')
-const bitrate = ref(192)
-const loading = ref(false)
-const error = ref('')
+const file = ref<File | null>(null);
+const audioUrl = ref('');
+const outUrl = ref('');
+const format = ref<'wav' | 'mp3'>('wav');
+const bitrate = ref(192);
+const loading = ref(false);
+const error = ref('');
 
 function onFile(e: Event) {
-  const t = e.target as HTMLInputElement
-  file.value = t.files?.[0] || null
-  audioUrl.value = file.value ? URL.createObjectURL(file.value) : ''
-  outUrl.value = ''
-  error.value = ''
+  const t = e.target as HTMLInputElement;
+  file.value = t.files?.[0] || null;
+  audioUrl.value = file.value ? URL.createObjectURL(file.value) : '';
+  outUrl.value = '';
+  error.value = '';
 }
 
 async function convert() {
-  error.value = ''
-  outUrl.value = ''
+  error.value = '';
+  outUrl.value = '';
   if (!file.value) {
-    error.value = '请先选择音频'
-    return
+    error.value = '请先选择音频';
+    return;
   }
-  loading.value = true
+  loading.value = true;
   try {
-    const ab = await file.value.arrayBuffer()
-    const ctx = new AudioContext()
-    const buffer = await ctx.decodeAudioData(ab.slice(0))
+    const ab = await file.value.arrayBuffer();
+    const ctx = new AudioContext();
+    const buffer = await ctx.decodeAudioData(ab.slice(0));
     if (format.value === 'wav') {
-      outUrl.value = bufferToWavUrl(buffer)
+      outUrl.value = bufferToWavUrl(buffer);
     } else {
-      outUrl.value = await bufferToMp3Url(buffer, bitrate.value || 192)
+      outUrl.value = await bufferToMp3Url(buffer, bitrate.value || 192);
     }
   } catch (e: any) {
-    error.value = e?.message || '转换失败'
+    error.value = e?.message || '转换失败';
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 function bufferToWavUrl(buffer: AudioBuffer) {
-  const numCh = buffer.numberOfChannels
-  const sampleRate = buffer.sampleRate
-  const length = buffer.length * numCh * 2 + 44
-  const ab = new ArrayBuffer(length)
-  const view = new DataView(ab)
+  const numCh = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const length = buffer.length * numCh * 2 + 44;
+  const ab = new ArrayBuffer(length);
+  const view = new DataView(ab);
 
   function writeStr(offset: number, str: string) {
-    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i))
+    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
   }
-  let offset = 0
-  writeStr(offset, 'RIFF')
-  offset += 4
-  view.setUint32(offset, 36 + buffer.length * numCh * 2, true)
-  offset += 4
-  writeStr(offset, 'WAVE')
-  offset += 4
-  writeStr(offset, 'fmt ')
-  offset += 4
-  view.setUint32(offset, 16, true)
-  offset += 4 // PCM chunk size
-  view.setUint16(offset, 1, true)
-  offset += 2 // audio format = PCM
-  view.setUint16(offset, numCh, true)
-  offset += 2
-  view.setUint32(offset, sampleRate, true)
-  offset += 4
-  view.setUint32(offset, sampleRate * numCh * 2, true)
-  offset += 4 // byte rate
-  view.setUint16(offset, numCh * 2, true)
-  offset += 2 // block align
-  view.setUint16(offset, 16, true)
-  offset += 2 // bits per sample
-  writeStr(offset, 'data')
-  offset += 4
-  view.setUint32(offset, buffer.length * numCh * 2, true)
-  offset += 4
+  let offset = 0;
+  writeStr(offset, 'RIFF');
+  offset += 4;
+  view.setUint32(offset, 36 + buffer.length * numCh * 2, true);
+  offset += 4;
+  writeStr(offset, 'WAVE');
+  offset += 4;
+  writeStr(offset, 'fmt ');
+  offset += 4;
+  view.setUint32(offset, 16, true);
+  offset += 4; // PCM chunk size
+  view.setUint16(offset, 1, true);
+  offset += 2; // audio format = PCM
+  view.setUint16(offset, numCh, true);
+  offset += 2;
+  view.setUint32(offset, sampleRate, true);
+  offset += 4;
+  view.setUint32(offset, sampleRate * numCh * 2, true);
+  offset += 4; // byte rate
+  view.setUint16(offset, numCh * 2, true);
+  offset += 2; // block align
+  view.setUint16(offset, 16, true);
+  offset += 2; // bits per sample
+  writeStr(offset, 'data');
+  offset += 4;
+  view.setUint32(offset, buffer.length * numCh * 2, true);
+  offset += 4;
 
-  const channels: Float32Array[] = []
-  for (let c = 0; c < numCh; c++) channels.push(buffer.getChannelData(c))
-  let pos = 0
+  const channels: Float32Array[] = [];
+  for (let c = 0; c < numCh; c++) channels.push(buffer.getChannelData(c));
+  let pos = 0;
   for (let i = 0; i < buffer.length; i++) {
     for (let c = 0; c < numCh; c++) {
-      let sample = Math.max(-1, Math.min(1, channels[c][i]))
-      sample = sample < 0 ? sample * 32768 : sample * 32767
-      view.setInt16(offset + pos, sample | 0, true)
-      pos += 2
+      let sample = Math.max(-1, Math.min(1, channels[c][i]));
+      sample = sample < 0 ? sample * 32768 : sample * 32767;
+      view.setInt16(offset + pos, sample | 0, true);
+      pos += 2;
     }
   }
-  const blob = new Blob([view], { type: 'audio/wav' })
-  return URL.createObjectURL(blob)
+  const blob = new Blob([view], { type: 'audio/wav' });
+  return URL.createObjectURL(blob);
 }
 
 async function bufferToMp3Url(buffer: AudioBuffer, kbps: number) {
   // @ts-ignore
-  const lamejs: any = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/lamejs@1.2.0/lame.min.js')
-  const mp3Encoder = new (lamejs as any).Mp3Encoder(buffer.numberOfChannels, buffer.sampleRate, Math.max(64, Math.min(320, Math.floor(kbps))))
-  const blockSize = 1152
-  const numCh = buffer.numberOfChannels
-  const samples = []
-  for (let ch = 0; ch < numCh; ch++) samples.push(buffer.getChannelData(ch))
+  const lamejs: any = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/lamejs@1.2.0/lame.min.js');
+  const mp3Encoder = new (lamejs as any).Mp3Encoder(buffer.numberOfChannels, buffer.sampleRate, Math.max(64, Math.min(320, Math.floor(kbps))));
+  const blockSize = 1152;
+  const numCh = buffer.numberOfChannels;
+  const samples = [];
+  for (let ch = 0; ch < numCh; ch++) samples.push(buffer.getChannelData(ch));
 
-  const mp3Data: Uint8Array[] = []
-  let i = 0
+  const mp3Data: Uint8Array[] = [];
+  let i = 0;
   while (i < buffer.length) {
-    const left = floatTo16(samples[0].subarray(i, i + blockSize))
-    const right = numCh > 1 ? floatTo16(samples[1].subarray(i, i + blockSize)) : left
-    const enc: Uint8Array = mp3Encoder.encodeBuffer(left, right)
-    if (enc.length > 0) mp3Data.push(enc)
-    i += blockSize
+    const left = floatTo16(samples[0].subarray(i, i + blockSize));
+    const right = numCh > 1 ? floatTo16(samples[1].subarray(i, i + blockSize)) : left;
+    const enc: Uint8Array = mp3Encoder.encodeBuffer(left, right);
+    if (enc.length > 0) mp3Data.push(enc);
+    i += blockSize;
   }
-  const encLast: Uint8Array = mp3Encoder.flush()
-  if (encLast.length > 0) mp3Data.push(encLast)
-  const blob = new Blob(mp3Data, { type: 'audio/mpeg' })
-  return URL.createObjectURL(blob)
+  const encLast: Uint8Array = mp3Encoder.flush();
+  if (encLast.length > 0) mp3Data.push(encLast);
+  const blob = new Blob(mp3Data, { type: 'audio/mpeg' });
+  return URL.createObjectURL(blob);
 }
 
 function floatTo16(input: Float32Array) {
-  const out = new Int16Array(input.length)
+  const out = new Int16Array(input.length);
   for (let i = 0; i < input.length; i++) {
-    const s = Math.max(-1, Math.min(1, input[i]))
-    out[i] = s < 0 ? s * 0x8000 : s * 0x7fff
+    const s = Math.max(-1, Math.min(1, input[i]));
+    out[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
   }
-  return out
+  return out;
 }
 
 function download() {
-  if (!outUrl.value) return
-  const a = document.createElement('a')
-  a.href = outUrl.value
-  a.download = `audio.${format.value}`
-  a.click()
+  if (!outUrl.value) return;
+  const a = document.createElement('a');
+  a.href = outUrl.value;
+  a.download = `audio.${format.value}`;
+  a.click();
 }
 </script>

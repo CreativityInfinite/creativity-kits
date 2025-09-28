@@ -36,27 +36,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-const startDate = ref('')
-const endDate = ref('')
+const startDate = ref('');
+const endDate = ref('');
 
 const result = computed(() => {
-  if (!startDate.value || !endDate.value) return null
+  if (!startDate.value || !endDate.value) return null;
 
-  const start = new Date(startDate.value)
-  const end = new Date(endDate.value)
-  const diff = Math.abs(end.getTime() - start.getTime())
+  const start = new Date(startDate.value);
+  const end = new Date(endDate.value);
+  const diff = Math.abs(end.getTime() - start.getTime());
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-  const minutes = Math.floor(diff / (1000 * 60))
-  const seconds = Math.floor(diff / 1000)
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor(diff / (1000 * 60));
+  const seconds = Math.floor(diff / 1000);
 
-  return { days, hours, minutes, seconds }
-})
+  return { days, hours, minutes, seconds };
+});
 
 // 设置默认值
-startDate.value = new Date().toISOString().split('T')[0]
-endDate.value = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+startDate.value = new Date().toISOString().split('T')[0];
+endDate.value = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 </script>

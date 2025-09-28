@@ -59,57 +59,57 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-type HistoryItem = { summary: string; result: string; timestamp: number }
+import { computed, onMounted, ref } from 'vue';
+type HistoryItem = { summary: string; result: string; timestamp: number };
 
-const iban = ref('')
+const iban = ref('');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => iban.value.trim().length > 0)
+const canProcess = computed(() => iban.value.trim().length > 0);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'iban-validate.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'iban-validate.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const p = JSON.parse(result.value)
-  history.value.unshift({ summary: `${p.normalized} | ${p.valid ? '有效' : '无效'}`, result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('iban-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const p = JSON.parse(result.value);
+  history.value.unshift({ summary: `${p.normalized} | ${p.valid ? '有效' : '无效'}`, result: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('iban-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('iban-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('iban-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 // 常见国家 IBAN 长度（部分）
@@ -174,46 +174,46 @@ const countryLen: Record<string, number> = {
   GB: 22,
   VA: 22,
   XK: 20
-}
+};
 
 function normalize(s: string) {
-  return s.replace(/\s+/g, '').toUpperCase()
+  return s.replace(/\s+/g, '').toUpperCase();
 }
 function spaced(s: string) {
-  return s.replace(/(.{4})/g, '$1 ').trim()
+  return s.replace(/(.{4})/g, '$1 ').trim();
 }
 function mod97(s: string) {
   // 大数分段取模
-  let rem = 0
+  let rem = 0;
   for (let i = 0; i < s.length; i++) {
-    const ch = s.charCodeAt(i)
-    const v = ch >= 65 && ch <= 90 ? ch - 55 : ch - 48
-    rem = (rem * 10 + v) % 97
+    const ch = s.charCodeAt(i);
+    const v = ch >= 65 && ch <= 90 ? ch - 55 : ch - 48;
+    rem = (rem * 10 + v) % 97;
   }
-  return rem
+  return rem;
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const t0 = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const t0 = performance.now();
   try {
-    const raw = iban.value
-    const norm = normalize(raw)
-    if (!/^[A-Z0-9]+$/.test(norm) || norm.length < 4) throw new Error('格式不正确')
-    const cc = norm.slice(0, 2)
-    const lenOk = countryLen[cc] ? countryLen[cc] === norm.length : true
+    const raw = iban.value;
+    const norm = normalize(raw);
+    if (!/^[A-Z0-9]+$/.test(norm) || norm.length < 4) throw new Error('格式不正确');
+    const cc = norm.slice(0, 2);
+    const lenOk = countryLen[cc] ? countryLen[cc] === norm.length : true;
     // Rearrange and convert
-    const moved = norm.slice(4) + norm.slice(0, 4)
-    let converted = ''
+    const moved = norm.slice(4) + norm.slice(0, 4);
+    let converted = '';
     for (let i = 0; i < moved.length; i++) {
-      const ch = moved[i]
-      if (ch >= 'A' && ch <= 'Z') converted += String(ch.charCodeAt(0) - 55)
-      else converted += ch
+      const ch = moved[i];
+      if (ch >= 'A' && ch <= 'Z') converted += String(ch.charCodeAt(0) - 55);
+      else converted += ch;
     }
-    const checksumOk = mod97(converted) === 1
-    const valid = lenOk && checksumOk
+    const checksumOk = mod97(converted) === 1;
+    const valid = lenOk && checksumOk;
     const payload = {
       input: raw,
       normalized: norm,
@@ -224,20 +224,20 @@ function process() {
       lengthOk: lenOk,
       checksumOk,
       valid
-    }
-    result.value = JSON.stringify(payload, null, 2)
-    processingTime.value = Math.round(performance.now() - t0)
+    };
+    result.value = JSON.stringify(payload, null, 2);
+    processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '校验失败'
+    error.value = e?.message || '校验失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('iban-history')
+  const saved = localStorage.getItem('iban-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

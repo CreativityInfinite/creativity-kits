@@ -74,113 +74,113 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, ref } from 'vue'
+import { onUnmounted, ref } from 'vue';
 
-const mode = ref<'zip' | 'unzip'>('zip')
-const files = ref<File[]>([])
-const zipFile = ref<File | null>(null)
-const zipName = ref('archive.zip')
+const mode = ref<'zip' | 'unzip'>('zip');
+const files = ref<File[]>([]);
+const zipFile = ref<File | null>(null);
+const zipName = ref('archive.zip');
 
-const output = ref('')
-const outFiles = ref<{ name: string; blob: Blob; size: number }[]>([])
-const urls = new Set<string>()
+const output = ref('');
+const outFiles = ref<{ name: string; blob: Blob; size: number }[]>([]);
+const urls = new Set<string>();
 
 function formatSize(n: number) {
-  if (n < 1024) return n + ' B'
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB'
-  return (n / 1024 / 1024).toFixed(1) + ' MB'
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / 1024 / 1024).toFixed(1) + ' MB';
 }
 function clearOutputs() {
-  outFiles.value = []
-  for (const u of urls) URL.revokeObjectURL(u)
-  urls.clear()
+  outFiles.value = [];
+  for (const u of urls) URL.revokeObjectURL(u);
+  urls.clear();
 }
 function onFiles(e: Event) {
-  files.value = Array.from((e.target as HTMLInputElement).files || [])
-  clearOutputs()
-  output.value = files.value.length ? `已选择 ${files.value.length} 个文件` : ''
+  files.value = Array.from((e.target as HTMLInputElement).files || []);
+  clearOutputs();
+  output.value = files.value.length ? `已选择 ${files.value.length} 个文件` : '';
 }
 function onZip(e: Event) {
-  zipFile.value = (e.target as HTMLInputElement).files?.[0] || null
-  clearOutputs()
-  output.value = zipFile.value ? `已选择：${zipFile.value.name}` : ''
+  zipFile.value = (e.target as HTMLInputElement).files?.[0] || null;
+  clearOutputs();
+  output.value = zipFile.value ? `已选择：${zipFile.value.name}` : '';
 }
 function removeAt(i: number) {
-  const arr = files.value.slice()
-  arr.splice(i, 1)
-  files.value = arr
-  if (!files.value.length) clearOutputs()
+  const arr = files.value.slice();
+  arr.splice(i, 1);
+  files.value = arr;
+  if (!files.value.length) clearOutputs();
 }
 
 async function process() {
-  clearOutputs()
-  output.value = ''
-  const t0 = performance.now()
+  clearOutputs();
+  output.value = '';
+  const t0 = performance.now();
   try {
-    let JSZip: any
+    let JSZip: any;
     try {
-      JSZip = (await import('https://esm.sh/jszip@3.10.1?bundle')).default
+      JSZip = (await import('https://esm.sh/jszip@3.10.1?bundle')).default;
     } catch {
-      JSZip = (await import('https://cdn.skypack.dev/jszip@3.10.1')).default
+      JSZip = (await import('https://cdn.skypack.dev/jszip@3.10.1')).default;
     }
 
     if (mode.value === 'zip') {
       if (!files.value.length) {
-        output.value = '请先选择需要压缩的文件'
-        return
+        output.value = '请先选择需要压缩的文件';
+        return;
       }
-      const zip = new JSZip()
-      for (const f of files.value) zip.file(f.name, await f.arrayBuffer())
-      const blob = await zip.generateAsync({ type: 'blob' })
-      outFiles.value.push({ name: zipName.value || 'archive.zip', blob, size: blob.size })
-      const ms = Math.round(performance.now() - t0)
-      output.value = `压缩完成：${files.value.length} 个文件 → ${formatSize(blob.size)}，用时 ${ms}ms`
+      const zip = new JSZip();
+      for (const f of files.value) zip.file(f.name, await f.arrayBuffer());
+      const blob = await zip.generateAsync({ type: 'blob' });
+      outFiles.value.push({ name: zipName.value || 'archive.zip', blob, size: blob.size });
+      const ms = Math.round(performance.now() - t0);
+      output.value = `压缩完成：${files.value.length} 个文件 → ${formatSize(blob.size)}，用时 ${ms}ms`;
     } else {
       if (!zipFile.value) {
-        output.value = '请先选择 ZIP 文件'
-        return
+        output.value = '请先选择 ZIP 文件';
+        return;
       }
-      const zip = await JSZip.loadAsync(await zipFile.value.arrayBuffer())
-      const entries = Object.keys(zip.files)
+      const zip = await JSZip.loadAsync(await zipFile.value.arrayBuffer());
+      const entries = Object.keys(zip.files);
       for (const name of entries) {
-        const entry = zip.files[name]
-        if (entry.dir) continue
-        const blob = await entry.async('blob')
-        outFiles.value.push({ name, blob, size: blob.size })
+        const entry = zip.files[name];
+        if (entry.dir) continue;
+        const blob = await entry.async('blob');
+        outFiles.value.push({ name, blob, size: blob.size });
       }
-      const ms = Math.round(performance.now() - t0)
-      output.value = `解压完成：${entries.length} 个条目，导出文件 ${outFiles.value.length} 个，用时 ${ms}ms`
+      const ms = Math.round(performance.now() - t0);
+      output.value = `解压完成：${entries.length} 个条目，导出文件 ${outFiles.value.length} 个，用时 ${ms}ms`;
     }
   } catch (e: any) {
-    console.error(e)
-    output.value = (mode.value === 'zip' ? '压缩失败：' : '解压失败：') + (e?.message || String(e))
+    console.error(e);
+    output.value = (mode.value === 'zip' ? '压缩失败：' : '解压失败：') + (e?.message || String(e));
   }
 }
 
 function downloadOut(i: number) {
-  const it = outFiles.value[i]
-  if (!it) return
-  const url = URL.createObjectURL(it.blob)
-  urls.add(url)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = it.name
-  a.click()
+  const it = outFiles.value[i];
+  if (!it) return;
+  const url = URL.createObjectURL(it.blob);
+  urls.add(url);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = it.name;
+  a.click();
 }
 
 async function copyToClipboard() {
-  if (!output.value) return
+  if (!output.value) return;
   try {
-    await navigator.clipboard.writeText(output.value)
-    alert('已复制到剪贴板')
+    await navigator.clipboard.writeText(output.value);
+    alert('已复制到剪贴板');
   } catch (err) {
-    console.error('复制失败:', err)
-    alert('复制失败，请手动复制')
+    console.error('复制失败:', err);
+    alert('复制失败，请手动复制');
   }
 }
 
 onUnmounted(() => {
-  for (const u of urls) URL.revokeObjectURL(u)
-  urls.clear()
-})
+  for (const u of urls) URL.revokeObjectURL(u);
+  urls.clear();
+});
 </script>

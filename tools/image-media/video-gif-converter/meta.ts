@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'video-gif-converter',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.video-gif-converter',
   entry: 'tools/image-media/video-gif-converter/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

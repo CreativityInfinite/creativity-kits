@@ -28,45 +28,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-type Task = { id: string; title: string; status: 'todo' | 'doing' | 'done' }
+type Task = { id: string; title: string; status: 'todo' | 'doing' | 'done' };
 
-const tasks = ref<Task[]>([])
-const newTitle = ref('')
-const filter = ref('')
+const tasks = ref<Task[]>([]);
+const newTitle = ref('');
+const filter = ref('');
 
 function addTask() {
-  const t = newTitle.value.trim()
-  if (!t) return
-  tasks.value.push({ id: crypto.randomUUID(), title: t, status: 'todo' })
-  newTitle.value = ''
+  const t = newTitle.value.trim();
+  if (!t) return;
+  tasks.value.push({ id: crypto.randomUUID(), title: t, status: 'todo' });
+  newTitle.value = '';
 }
 
 function filtered(status: Task['status']) {
-  const f = filter.value.trim().toLowerCase()
-  return tasks.value.filter((t) => t.status === status && (!f || t.title.toLowerCase().includes(f)))
+  const f = filter.value.trim().toLowerCase();
+  return tasks.value.filter((t) => t.status === status && (!f || t.title.toLowerCase().includes(f)));
 }
 
 function move(id: string, to: Task['status']) {
-  const t = tasks.value.find((x) => x.id === id)
-  if (t) t.status = to
+  const t = tasks.value.find((x) => x.id === id);
+  if (t) t.status = to;
 }
 </script>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-export default {}
+import { defineComponent } from 'vue';
+export default {};
 </script>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits } from 'vue';
 </script>
 
 <template #KanbanColumn="{ title, list, move }"></template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 export const KanbanColumn = defineComponent({
   name: 'KanbanColumn',
   props: {
@@ -75,8 +75,8 @@ export const KanbanColumn = defineComponent({
   },
   emits: ['move'],
   setup(props, { emit }) {
-    const moveTo = (id: string, to: 'todo' | 'doing' | 'done') => emit('move', id, to)
-    return { moveTo, props }
+    const moveTo = (id: string, to: 'todo' | 'doing' | 'done') => emit('move', id, to);
+    return { moveTo, props };
   },
   template: `
   <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
@@ -93,5 +93,5 @@ export const KanbanColumn = defineComponent({
     </div>
   </div>
   `
-})
+});
 </script>

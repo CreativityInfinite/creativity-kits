@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'age-calculator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:cake-variant',
   i18nKey: 'tools.age-calculator',
-  entry: 'tools/time-date/age-calculator/Component.vue',
-}
-export default meta
+  entry: 'tools/time-date/age-calculator/Component.vue'
+};
+export default meta;

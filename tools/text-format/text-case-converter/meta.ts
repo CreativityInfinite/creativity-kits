@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'text-case-converter',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'text-format',
   tags: ['文本转换', '大小写', '驼峰命名', '蛇形命名', '编程规范', '格式化'],
   i18nKey: 'tools.text-case-converter',
-  entry: 'tools/text-format/text-case-converter/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/text-case-converter/Component.vue'
+};
+export default meta;

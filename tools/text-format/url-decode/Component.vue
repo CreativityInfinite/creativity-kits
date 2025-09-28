@@ -319,53 +319,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue';
 
 interface DecodeOptions {
-  autoDecode: boolean
-  decodePlus: boolean
-  strictMode: boolean
-  multipleDecoding: boolean
-  decodeType: 'component' | 'uri' | 'form' | 'auto'
-  charset: string
+  autoDecode: boolean;
+  decodePlus: boolean;
+  strictMode: boolean;
+  multipleDecoding: boolean;
+  decodeType: 'component' | 'uri' | 'form' | 'auto';
+  charset: string;
 }
 
 interface Analysis {
-  encodedChars: number
-  decodeSteps: number
-  detectedType: string
-  encodingFormat: string
-  isUrl: boolean
-  paramCount: number
+  encodedChars: number;
+  decodeSteps: number;
+  detectedType: string;
+  encodingFormat: string;
+  isUrl: boolean;
+  paramCount: number;
 }
 
 interface UrlAnalysis {
-  protocol?: string
-  hostname?: string
-  port?: string
-  pathname?: string
-  search?: string
-  hash?: string
-  params?: Record<string, string>
-  decodedParams?: Record<string, string>
+  protocol?: string;
+  hostname?: string;
+  port?: string;
+  pathname?: string;
+  search?: string;
+  hash?: string;
+  params?: Record<string, string>;
+  decodedParams?: Record<string, string>;
 }
 
 interface DecodeHistory {
-  encoded: string
-  decoded: string
-  timestamp: string
-  preview: string
-  type: string
+  encoded: string;
+  decoded: string;
+  timestamp: string;
+  preview: string;
+  type: string;
 }
 
 interface DecodingStep {
-  method: string
-  result: string
+  method: string;
+  result: string;
 }
 
-const encodedText = ref('')
-const decodedText = ref<string | null>(null)
-const error = ref('')
+const encodedText = ref('');
+const decodedText = ref<string | null>(null);
+const error = ref('');
 
 const options = ref<DecodeOptions>({
   autoDecode: true,
@@ -374,59 +374,59 @@ const options = ref<DecodeOptions>({
   multipleDecoding: true,
   decodeType: 'auto',
   charset: 'utf-8'
-})
+});
 
-const decodeHistory = ref<DecodeHistory[]>([])
-const urlAnalysis = ref<UrlAnalysis | null>(null)
-const decodingSteps = ref<DecodingStep[]>([])
+const decodeHistory = ref<DecodeHistory[]>([]);
+const urlAnalysis = ref<UrlAnalysis | null>(null);
+const decodingSteps = ref<DecodingStep[]>([]);
 
 const encodedCharCount = computed(() => {
-  return (encodedText.value.match(/%[0-9A-Fa-f]{2}/g) || []).length
-})
+  return (encodedText.value.match(/%[0-9A-Fa-f]{2}/g) || []).length;
+});
 
 const compressionRatio = computed(() => {
-  if (!encodedText.value || !decodedText.value) return 0
-  const originalSize = getByteLength(encodedText.value)
-  const decodedSize = getByteLength(decodedText.value)
-  return Math.round(((originalSize - decodedSize) / originalSize) * 100)
-})
+  if (!encodedText.value || !decodedText.value) return 0;
+  const originalSize = getByteLength(encodedText.value);
+  const decodedSize = getByteLength(decodedText.value);
+  return Math.round(((originalSize - decodedSize) / originalSize) * 100);
+});
 
 const analysis = computed((): Analysis | null => {
-  if (!encodedText.value || decodedText.value === null) return null
+  if (!encodedText.value || decodedText.value === null) return null;
 
-  const encodedChars = encodedCharCount.value
-  const decodeSteps = decodingSteps.value.length
+  const encodedChars = encodedCharCount.value;
+  const decodeSteps = decodingSteps.value.length;
 
   // 检测编码类型
-  let detectedType = 'Unknown'
-  let encodingFormat = 'Standard'
+  let detectedType = 'Unknown';
+  let encodingFormat = 'Standard';
 
   if (encodedText.value.includes('+') && encodedText.value.includes('%')) {
-    detectedType = 'Form Data'
-    encodingFormat = 'application/x-www-form-urlencoded'
+    detectedType = 'Form Data';
+    encodingFormat = 'application/x-www-form-urlencoded';
   } else if (encodedText.value.includes('%')) {
-    detectedType = 'URL Encoded'
-    encodingFormat = 'Percent Encoding'
+    detectedType = 'URL Encoded';
+    encodingFormat = 'Percent Encoding';
   } else if (encodedText.value.includes('+')) {
-    detectedType = 'Form Data (Plus)'
-    encodingFormat = 'Plus Encoding'
+    detectedType = 'Form Data (Plus)';
+    encodingFormat = 'Plus Encoding';
   } else {
-    detectedType = 'Plain Text'
-    encodingFormat = 'None'
+    detectedType = 'Plain Text';
+    encodingFormat = 'None';
   }
 
   // 检测是否为 URL
-  let isUrl = false
-  let paramCount = 0
+  let isUrl = false;
+  let paramCount = 0;
 
   try {
     if (decodedText.value && (decodedText.value.includes('://') || decodedText.value.startsWith('//'))) {
-      const url = new URL(decodedText.value.startsWith('//') ? 'http:' + decodedText.value : decodedText.value)
-      isUrl = true
-      paramCount = Array.from(url.searchParams.keys()).length
+      const url = new URL(decodedText.value.startsWith('//') ? 'http:' + decodedText.value : decodedText.value);
+      isUrl = true;
+      paramCount = Array.from(url.searchParams.keys()).length;
     } else if (decodedText.value && decodedText.value.includes('=') && decodedText.value.includes('&')) {
-      const params = new URLSearchParams(decodedText.value)
-      paramCount = Array.from(params.keys()).length
+      const params = new URLSearchParams(decodedText.value);
+      paramCount = Array.from(params.keys()).length;
     }
   } catch {
     // 不是有效的 URL
@@ -439,65 +439,65 @@ const analysis = computed((): Analysis | null => {
     encodingFormat,
     isUrl,
     paramCount
-  }
-})
+  };
+});
 
 watch(
   [() => options.value],
   () => {
     if (encodedText.value && options.value.autoDecode) {
-      performDecode()
+      performDecode();
     }
   },
   { deep: true }
-)
+);
 
 function autoDecode() {
   if (!options.value.autoDecode || !encodedText.value.trim()) {
-    clearResults()
-    return
+    clearResults();
+    return;
   }
 
-  performDecode()
+  performDecode();
 }
 
 function performDecode() {
   if (!encodedText.value.trim()) {
-    clearResults()
-    return
+    clearResults();
+    return;
   }
 
   try {
-    error.value = ''
-    decodingSteps.value = []
+    error.value = '';
+    decodingSteps.value = [];
 
-    let result = encodedText.value
-    let currentStep = 1
-    const maxSteps = options.value.multipleDecoding ? 10 : 1
+    let result = encodedText.value;
+    let currentStep = 1;
+    const maxSteps = options.value.multipleDecoding ? 10 : 1;
 
     // 记录原始输入
     decodingSteps.value.push({
       method: 'Original',
       result: result
-    })
+    });
 
     while (currentStep <= maxSteps) {
-      const previousResult = result
+      const previousResult = result;
 
       // 根据解码类型选择方法
       switch (options.value.decodeType) {
         case 'component':
-          result = decodeURIComponent(result)
-          break
+          result = decodeURIComponent(result);
+          break;
         case 'uri':
-          result = decodeURI(result)
-          break
+          result = decodeURI(result);
+          break;
         case 'form':
-          result = decodeFormData(result)
-          break
+          result = decodeFormData(result);
+          break;
         case 'auto':
-          result = autoDetectDecode(result)
-          break
+          result = autoDetectDecode(result);
+          break;
       }
 
       // 记录解码步骤
@@ -505,128 +505,128 @@ function performDecode() {
         decodingSteps.value.push({
           method: `${options.value.decodeType} (Step ${currentStep})`,
           result: result
-        })
+        });
       }
 
       // 如果结果没有变化或不需要多重解码，停止
       if (result === previousResult || !options.value.multipleDecoding) {
-        break
+        break;
       }
 
       // 检查是否还有编码字符
       if (!result.includes('%') && (!options.value.decodePlus || !result.includes('+'))) {
-        break
+        break;
       }
 
-      currentStep++
+      currentStep++;
     }
 
-    decodedText.value = result
+    decodedText.value = result;
 
     // 分析 URL（如果是 URL）
-    analyzeDecodedUrl(result)
+    analyzeDecodedUrl(result);
 
     // 添加到历史记录
-    addToHistory(encodedText.value, result, options.value.decodeType)
+    addToHistory(encodedText.value, result, options.value.decodeType);
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '解码失败'
-    decodedText.value = null
-    urlAnalysis.value = null
-    decodingSteps.value = []
+    error.value = err instanceof Error ? err.message : '解码失败';
+    decodedText.value = null;
+    urlAnalysis.value = null;
+    decodingSteps.value = [];
   }
 }
 
 function decodeFormData(text: string): string {
-  let result = text
+  let result = text;
 
   // 处理 + 号
   if (options.value.decodePlus) {
-    result = result.replace(/\+/g, ' ')
+    result = result.replace(/\+/g, ' ');
   }
 
   // 处理百分号编码
   try {
-    result = decodeURIComponent(result)
+    result = decodeURIComponent(result);
   } catch {
     // 如果解码失败，尝试手动解码
     result = result.replace(/%([0-9A-Fa-f]{2})/g, (match, hex) => {
       try {
-        return String.fromCharCode(parseInt(hex, 16))
+        return String.fromCharCode(parseInt(hex, 16));
       } catch {
-        return match
+        return match;
       }
-    })
+    });
   }
 
-  return result
+  return result;
 }
 
 function autoDetectDecode(text: string): string {
   // 检测编码类型并选择合适的解码方法
   if (text.includes('+') && text.includes('%')) {
-    return decodeFormData(text)
+    return decodeFormData(text);
   } else if (text.includes('%')) {
     try {
-      return decodeURIComponent(text)
+      return decodeURIComponent(text);
     } catch {
-      return decodeURI(text)
+      return decodeURI(text);
     }
   } else if (text.includes('+') && options.value.decodePlus) {
-    return text.replace(/\+/g, ' ')
+    return text.replace(/\+/g, ' ');
   }
 
-  return text
+  return text;
 }
 
 function analyzeDecodedUrl(text: string) {
-  urlAnalysis.value = null
+  urlAnalysis.value = null;
 
   try {
-    let url: URL
+    let url: URL;
 
     if (text.includes('://')) {
-      url = new URL(text)
+      url = new URL(text);
     } else if (text.startsWith('//')) {
-      url = new URL('http:' + text)
+      url = new URL('http:' + text);
     } else if (text.startsWith('/')) {
-      url = new URL('http://example.com' + text)
+      url = new URL('http://example.com' + text);
     } else {
       // 尝试解析查询字符串
       if (text.includes('=')) {
-        const params: Record<string, string> = {}
-        const decodedParams: Record<string, string> = {}
+        const params: Record<string, string> = {};
+        const decodedParams: Record<string, string> = {};
 
-        const searchParams = new URLSearchParams(text)
+        const searchParams = new URLSearchParams(text);
         searchParams.forEach((value, key) => {
-          params[key] = value
+          params[key] = value;
           try {
-            decodedParams[decodeURIComponent(key)] = decodeURIComponent(value)
+            decodedParams[decodeURIComponent(key)] = decodeURIComponent(value);
           } catch {
-            decodedParams[key] = value
+            decodedParams[key] = value;
           }
-        })
+        });
 
         if (Object.keys(params).length > 0) {
           urlAnalysis.value = {
             params,
             decodedParams: Object.keys(decodedParams).some((k) => k !== params[k] || decodedParams[k] !== params[k]) ? decodedParams : undefined
-          }
+          };
         }
       }
-      return
+      return;
     }
 
-    const params: Record<string, string> = {}
-    const decodedParams: Record<string, string> = {}
+    const params: Record<string, string> = {};
+    const decodedParams: Record<string, string> = {};
 
     url.searchParams.forEach((value, key) => {
-      params[key] = value
+      params[key] = value;
       try {
-        decodedParams[decodeURIComponent(key)] = decodeURIComponent(value)
+        decodedParams[decodeURIComponent(key)] = decodeURIComponent(value);
       } catch {
-        decodedParams[key] = value
+        decodedParams[key] = value;
       }
-    })
+    });
 
     urlAnalysis.value = {
       protocol: url.protocol,
@@ -637,97 +637,97 @@ function analyzeDecodedUrl(text: string) {
       hash: url.hash,
       params: Object.keys(params).length > 0 ? params : undefined,
       decodedParams: Object.keys(decodedParams).some((k) => k !== params[k] || decodedParams[k] !== params[k]) ? decodedParams : undefined
-    }
+    };
   } catch {
     // 解析失败
   }
 }
 
 function clearResults() {
-  decodedText.value = null
-  error.value = ''
-  urlAnalysis.value = null
-  decodingSteps.value = []
+  decodedText.value = null;
+  error.value = '';
+  urlAnalysis.value = null;
+  decodingSteps.value = [];
 }
 
 function loadSampleData() {
-  encodedText.value = 'https%3A//example.com/search%3Fq%3DHello%2BWorld%26lang%3Dzh-CN%26category%3D%E6%8A%80%E6%9C%AF%26date%3D2024-01-01'
+  encodedText.value = 'https%3A//example.com/search%3Fq%3DHello%2BWorld%26lang%3Dzh-CN%26category%3D%E6%8A%80%E6%9C%AF%26date%3D2024-01-01';
 
   if (options.value.autoDecode) {
-    performDecode()
+    performDecode();
   }
 }
 
 function decodeManually() {
-  performDecode()
+  performDecode();
 }
 
 function validateEncoding() {
   if (!encodedText.value.trim()) {
-    alert('请先输入编码文本')
-    return
+    alert('请先输入编码文本');
+    return;
   }
 
-  const encodedChars = encodedCharCount.value
-  const hasPlus = encodedText.value.includes('+')
-  const hasPercent = encodedText.value.includes('%')
+  const encodedChars = encodedCharCount.value;
+  const hasPlus = encodedText.value.includes('+');
+  const hasPercent = encodedText.value.includes('%');
 
-  let message = '编码验证结果:\n'
-  message += `编码字符数: ${encodedChars}\n`
-  message += `包含 + 号: ${hasPlus ? '是' : '否'}\n`
-  message += `包含 % 编码: ${hasPercent ? '是' : '否'}\n`
+  let message = '编码验证结果:\n';
+  message += `编码字符数: ${encodedChars}\n`;
+  message += `包含 + 号: ${hasPlus ? '是' : '否'}\n`;
+  message += `包含 % 编码: ${hasPercent ? '是' : '否'}\n`;
 
   if (encodedChars > 0 || hasPlus) {
-    message += '检测到有效的 URL 编码'
+    message += '检测到有效的 URL 编码';
   } else {
-    message += '未检测到 URL 编码'
+    message += '未检测到 URL 编码';
   }
 
-  alert(message)
+  alert(message);
 }
 
 function analyzeUrl() {
   if (!decodedText.value) {
-    alert('请先解码文本')
-    return
+    alert('请先解码文本');
+    return;
   }
 
-  analyzeDecodedUrl(decodedText.value)
+  analyzeDecodedUrl(decodedText.value);
 
   if (!urlAnalysis.value) {
-    alert('无法分析 URL 结构')
+    alert('无法分析 URL 结构');
   }
 }
 
 function clearAll() {
-  encodedText.value = ''
-  clearResults()
+  encodedText.value = '';
+  clearResults();
 }
 
 async function copyResult() {
-  if (!decodedText.value) return
+  if (!decodedText.value) return;
 
   try {
-    await navigator.clipboard.writeText(decodedText.value)
+    await navigator.clipboard.writeText(decodedText.value);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function encodeResult() {
-  if (!decodedText.value) return
+  if (!decodedText.value) return;
 
   try {
-    const encoded = encodeURIComponent(decodedText.value)
-    encodedText.value = encoded
+    const encoded = encodeURIComponent(decodedText.value);
+    encodedText.value = encoded;
   } catch (error) {
-    console.error('编码失败:', error)
+    console.error('编码失败:', error);
   }
 }
 
 function downloadDecoded() {
-  if (!decodedText.value) return
+  if (!decodedText.value) return;
 
   const content = `编码文本:
 ${encodedText.value}
@@ -738,52 +738,52 @@ ${decodedText.value}
 解码类型: ${options.value.decodeType}
 解码步骤: ${decodingSteps.value.length}
 生成时间: ${new Date().toLocaleString()}
-`
+`;
 
-  const blob = new Blob([content], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'url-decoded.txt'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'url-decoded.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function handleFileUpload(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    encodedText.value = content
+    const content = e.target?.result as string;
+    encodedText.value = content;
 
     if (options.value.autoDecode) {
-      performDecode()
+      performDecode();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
+  event.preventDefault();
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
 
-  const file = files[0]
-  const reader = new FileReader()
+  const file = files[0];
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    encodedText.value = content
+    const content = e.target?.result as string;
+    encodedText.value = content;
 
     if (options.value.autoDecode) {
-      performDecode()
+      performDecode();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function addToHistory(encoded: string, decoded: string, type: string) {
@@ -793,60 +793,60 @@ function addToHistory(encoded: string, decoded: string, type: string) {
     timestamp: new Date().toLocaleString(),
     preview: decoded.slice(0, 50) + (decoded.length > 50 ? '...' : ''),
     type
-  }
+  };
 
-  decodeHistory.value.unshift(historyItem)
-  decodeHistory.value = decodeHistory.value.slice(0, 10)
-  saveDecodeHistory()
+  decodeHistory.value.unshift(historyItem);
+  decodeHistory.value = decodeHistory.value.slice(0, 10);
+  saveDecodeHistory();
 }
 
 function loadFromHistory(history: DecodeHistory) {
-  encodedText.value = history.encoded
-  decodedText.value = history.decoded
+  encodedText.value = history.encoded;
+  decodedText.value = history.decoded;
 }
 
 function clearHistory() {
-  decodeHistory.value = []
-  saveDecodeHistory()
+  decodeHistory.value = [];
+  saveDecodeHistory();
 }
 
 function saveDecodeHistory() {
   try {
-    localStorage.setItem('url-decode-history', JSON.stringify(decodeHistory.value))
+    localStorage.setItem('url-decode-history', JSON.stringify(decodeHistory.value));
   } catch (error) {
-    console.error('保存解码历史失败:', error)
+    console.error('保存解码历史失败:', error);
   }
 }
 
 function loadDecodeHistory() {
   try {
-    const saved = localStorage.getItem('url-decode-history')
+    const saved = localStorage.getItem('url-decode-history');
     if (saved) {
-      decodeHistory.value = JSON.parse(saved)
+      decodeHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载解码历史失败:', error)
+    console.error('加载解码历史失败:', error);
   }
 }
 
 function getByteLength(str: string): number {
-  return new Blob([str]).size
+  return new Blob([str]).size;
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B'
+  if (bytes === 0) return '0 B';
 
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 // 组件挂载时加载历史记录
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
-  loadDecodeHistory()
-})
+  loadDecodeHistory();
+});
 </script>

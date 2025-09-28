@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'base64-encode',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#10b981,#3b82f6)',
   icon: 'mdi:code-braces',
   i18nKey: 'tools.base64-encode',
-  entry: 'tools/text-format/base64-encode/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/base64-encode/Component.vue'
+};
+export default meta;

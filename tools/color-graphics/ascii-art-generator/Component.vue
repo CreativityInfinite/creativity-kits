@@ -39,79 +39,79 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const file = ref<File | null>(null)
-const previewUrl = ref('')
-const width = ref(80)
-const charset = ref(' .:-=+*#%@')
-const ascii = ref('')
+const file = ref<File | null>(null);
+const previewUrl = ref('');
+const width = ref(80);
+const charset = ref(' .:-=+*#%@');
+const ascii = ref('');
 
 function onFile(e: Event) {
-  const t = e.target as HTMLInputElement
-  const f = t.files?.[0] || null
-  file.value = f
-  ascii.value = ''
+  const t = e.target as HTMLInputElement;
+  const f = t.files?.[0] || null;
+  file.value = f;
+  ascii.value = '';
   if (f) {
-    previewUrl.value = URL.createObjectURL(f)
+    previewUrl.value = URL.createObjectURL(f);
   }
 }
 
 async function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error('图片加载失败'))
-    img.src = src
-  })
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('图片加载失败'));
+    img.src = src;
+  });
 }
 
 async function generate() {
-  ascii.value = ''
+  ascii.value = '';
   if (!previewUrl.value) {
-    alert('请先选择图片')
-    return
+    alert('请先选择图片');
+    return;
   }
-  const img = await loadImage(previewUrl.value)
-  const w = Math.max(10, Math.min(300, Math.floor(width.value || 80)))
-  const ratio = img.naturalHeight / img.naturalWidth
+  const img = await loadImage(previewUrl.value);
+  const w = Math.max(10, Math.min(300, Math.floor(width.value || 80)));
+  const ratio = img.naturalHeight / img.naturalWidth;
   // 字符的宽高比例通常接近 0.5（终端字体更“窄”）
-  const h = Math.max(5, Math.floor(w * ratio * 0.5))
+  const h = Math.max(5, Math.floor(w * ratio * 0.5));
 
-  const canvas = document.createElement('canvas')
-  canvas.width = w
-  canvas.height = h
-  const ctx = canvas.getContext('2d')!
-  ctx.drawImage(img, 0, 0, w, h)
-  const data = ctx.getImageData(0, 0, w, h).data
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d')!;
+  ctx.drawImage(img, 0, 0, w, h);
+  const data = ctx.getImageData(0, 0, w, h).data;
 
-  const chars = charset.value || ' .:-=+*#%@'
-  const scale = chars.length - 1
-  let out = ''
+  const chars = charset.value || ' .:-=+*#%@';
+  const scale = chars.length - 1;
+  let out = '';
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      const i = (y * w + x) * 4
+      const i = (y * w + x) * 4;
       const r = data[i],
         g = data[i + 1],
-        b = data[i + 2]
+        b = data[i + 2];
       // 亮度估算 (Rec. 709)
-      const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
-      const idx = Math.round((1 - lum / 255) * scale)
-      out += chars[idx] || chars[scale]
+      const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      const idx = Math.round((1 - lum / 255) * scale);
+      out += chars[idx] || chars[scale];
     }
-    out += '\n'
+    out += '\n';
   }
-  ascii.value = out
+  ascii.value = out;
 }
 
 async function copy() {
-  if (!ascii.value) return
+  if (!ascii.value) return;
   try {
-    await navigator.clipboard.writeText(ascii.value)
-    alert('已复制')
+    await navigator.clipboard.writeText(ascii.value);
+    alert('已复制');
   } catch {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 </script>

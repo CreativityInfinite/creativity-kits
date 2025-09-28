@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'table-editor',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.table-editor',
   entry: 'tools/productivity/table-editor/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

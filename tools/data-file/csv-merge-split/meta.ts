@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'csv-merge-split',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.csv-merge-split',
   entry: 'tools/data-file/csv-merge-split/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

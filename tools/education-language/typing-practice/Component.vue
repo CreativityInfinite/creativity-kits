@@ -113,30 +113,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue';
 
 interface TypingRecord {
-  date: number
-  wpm: number
-  accuracy: number
-  time: number
-  errors: number
+  date: number;
+  wpm: number;
+  accuracy: number;
+  time: number;
+  errors: number;
 }
 
-const selectedText = ref('english')
-const customText = ref('')
-const practiceText = ref('')
-const userInput = ref('')
-const currentIndex = ref(0)
-const startTime = ref(0)
-const elapsedTime = ref(0)
-const isStarted = ref(false)
-const isFinished = ref(false)
-const errors = ref(0)
-const inputArea = ref<HTMLTextAreaElement>()
-const history = ref<TypingRecord[]>([])
+const selectedText = ref('english');
+const customText = ref('');
+const practiceText = ref('');
+const userInput = ref('');
+const currentIndex = ref(0);
+const startTime = ref(0);
+const elapsedTime = ref(0);
+const isStarted = ref(false);
+const isFinished = ref(false);
+const errors = ref(0);
+const inputArea = ref<HTMLTextAreaElement>();
+const history = ref<TypingRecord[]>([]);
 
-let timer: number | null = null
+let timer: number | null = null;
 
 const sampleTexts = {
   english: `The quick brown fox jumps over the lazy dog. This pangram contains every letter of the English alphabet at least once. It is commonly used for typing practice and font testing. Regular practice with such texts can significantly improve your typing speed and accuracy.`,
@@ -153,121 +153,121 @@ const startTime = Date.now();
 console.log("Practice started");`,
 
   numbers: `1234567890 9876543210 1357924680 2468013579 1122334455 9988776655 1029384756 5647382910 3141592653 2718281828 1618033988 1414213562`
-}
+};
 
 const wpm = computed(() => {
-  if (!isStarted.value || elapsedTime.value === 0) return 0
-  const minutes = elapsedTime.value / 60000
-  const words = currentIndex.value / 5 // 标准：5个字符为一个单词
-  return Math.round(words / minutes)
-})
+  if (!isStarted.value || elapsedTime.value === 0) return 0;
+  const minutes = elapsedTime.value / 60000;
+  const words = currentIndex.value / 5; // 标准：5个字符为一个单词
+  return Math.round(words / minutes);
+});
 
 const accuracy = computed(() => {
-  if (currentIndex.value === 0) return 100
-  const correct = currentIndex.value - errors.value
-  return Math.round((correct / currentIndex.value) * 100)
-})
+  if (currentIndex.value === 0) return 100;
+  const correct = currentIndex.value - errors.value;
+  return Math.round((correct / currentIndex.value) * 100);
+});
 
 const progress = computed(() => {
-  if (!practiceText.value) return 0
-  return Math.round((currentIndex.value / practiceText.value.length) * 100)
-})
+  if (!practiceText.value) return 0;
+  return Math.round((currentIndex.value / practiceText.value.length) * 100);
+});
 
 const finalStats = computed(() => ({
   wpm: wpm.value,
   accuracy: accuracy.value,
   totalTime: elapsedTime.value,
   errors: errors.value
-}))
+}));
 
 function getCharClass(index: number): string {
   if (index < currentIndex.value) {
-    const userChar = userInput.value[index]
-    const correctChar = practiceText.value[index]
+    const userChar = userInput.value[index];
+    const correctChar = practiceText.value[index];
     if (userChar === correctChar) {
-      return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30'
+      return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30';
     } else {
-      return 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30'
+      return 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30';
     }
   } else if (index === currentIndex.value) {
-    return 'bg-blue-200 dark:bg-blue-800'
+    return 'bg-blue-200 dark:bg-blue-800';
   }
-  return 'text-gray-600 dark:text-gray-400'
+  return 'text-gray-600 dark:text-gray-400';
 }
 
 function handleInput() {
   if (!isStarted.value) {
-    startPractice()
+    startPractice();
   }
 
-  const inputLength = userInput.value.length
+  const inputLength = userInput.value.length;
 
   // 检查每个字符
   for (let i = currentIndex.value; i < inputLength && i < practiceText.value.length; i++) {
     if (userInput.value[i] !== practiceText.value[i]) {
-      errors.value++
+      errors.value++;
     }
-    currentIndex.value++
+    currentIndex.value++;
   }
 
   // 检查是否完成
   if (currentIndex.value >= practiceText.value.length) {
-    finishPractice()
+    finishPractice();
   }
 }
 
 function handleKeydown(event: KeyboardEvent) {
   // 防止退格键删除内容
   if (event.key === 'Backspace') {
-    event.preventDefault()
+    event.preventDefault();
   }
 }
 
 function startPractice() {
-  isStarted.value = true
-  startTime.value = Date.now()
+  isStarted.value = true;
+  startTime.value = Date.now();
 
   timer = setInterval(() => {
-    elapsedTime.value = Date.now() - startTime.value
-  }, 100)
+    elapsedTime.value = Date.now() - startTime.value;
+  }, 100);
 }
 
 function finishPractice() {
-  isFinished.value = true
+  isFinished.value = true;
   if (timer) {
-    clearInterval(timer)
-    timer = null
+    clearInterval(timer);
+    timer = null;
   }
 }
 
 function resetPractice() {
-  userInput.value = ''
-  currentIndex.value = 0
-  elapsedTime.value = 0
-  errors.value = 0
-  isStarted.value = false
-  isFinished.value = false
+  userInput.value = '';
+  currentIndex.value = 0;
+  elapsedTime.value = 0;
+  errors.value = 0;
+  isStarted.value = false;
+  isFinished.value = false;
 
   if (timer) {
-    clearInterval(timer)
-    timer = null
+    clearInterval(timer);
+    timer = null;
   }
 
   // 设置练习文本
   if (selectedText.value !== 'custom') {
-    practiceText.value = sampleTexts[selectedText.value as keyof typeof sampleTexts]
+    practiceText.value = sampleTexts[selectedText.value as keyof typeof sampleTexts];
   }
 
   nextTick(() => {
-    inputArea.value?.focus()
-  })
+    inputArea.value?.focus();
+  });
 }
 
 function startCustomPractice() {
-  if (!customText.value.trim()) return
+  if (!customText.value.trim()) return;
 
-  practiceText.value = customText.value.trim()
-  resetPractice()
+  practiceText.value = customText.value.trim();
+  resetPractice();
 }
 
 function saveResult() {
@@ -277,42 +277,42 @@ function saveResult() {
     accuracy: finalStats.value.accuracy,
     time: finalStats.value.totalTime,
     errors: finalStats.value.errors
-  }
+  };
 
-  history.value.unshift(record)
+  history.value.unshift(record);
 
   // 只保留最近20条记录
   if (history.value.length > 20) {
-    history.value = history.value.slice(0, 20)
+    history.value = history.value.slice(0, 20);
   }
 
-  saveHistory()
+  saveHistory();
 }
 
 function formatTime(ms: number): string {
-  const seconds = Math.floor(ms / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
 
   if (minutes > 0) {
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
-  return `${remainingSeconds}s`
+  return `${remainingSeconds}s`;
 }
 
 function saveHistory() {
-  localStorage.setItem('typing-practice-history', JSON.stringify(history.value))
+  localStorage.setItem('typing-practice-history', JSON.stringify(history.value));
 }
 
 function loadHistory() {
-  const saved = localStorage.getItem('typing-practice-history')
+  const saved = localStorage.getItem('typing-practice-history');
   if (saved) {
-    history.value = JSON.parse(saved)
+    history.value = JSON.parse(saved);
   }
 }
 
 onMounted(() => {
-  loadHistory()
-  resetPractice()
-})
+  loadHistory();
+  resetPractice();
+});
 </script>

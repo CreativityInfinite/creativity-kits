@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'map-snapshot-generator',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.map-snapshot-generator',
   entry: 'tools/map-geo/map-snapshot-generator/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

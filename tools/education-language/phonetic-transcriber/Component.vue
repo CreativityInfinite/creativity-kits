@@ -169,41 +169,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
 interface TranscriptionResult {
-  phonetic: string
+  phonetic: string;
   breakdown: Array<{
-    word: string
-    phonetic: string
-  }>
+    word: string;
+    phonetic: string;
+  }>;
   stats: {
-    totalChars: number
-    wordCount: number
-    syllableCount: number
-  }
+    totalChars: number;
+    wordCount: number;
+    syllableCount: number;
+  };
 }
 
 interface HistoryItem {
-  original: string
-  phonetic: string
-  language: string
-  type: string
-  timestamp: string
+  original: string;
+  phonetic: string;
+  language: string;
+  type: string;
+  timestamp: string;
 }
 
 interface BatchResult {
-  original: string
-  phonetic: string
+  original: string;
+  phonetic: string;
 }
 
-const inputText = ref('')
-const batchInput = ref('')
-const inputLanguage = ref('en')
-const phoneticType = ref('ipa')
-const result = ref<TranscriptionResult | null>(null)
-const history = ref<HistoryItem[]>([])
-const batchResults = ref<BatchResult[]>([])
+const inputText = ref('');
+const batchInput = ref('');
+const inputLanguage = ref('en');
+const phoneticType = ref('ipa');
+const result = ref<TranscriptionResult | null>(null);
+const history = ref<HistoryItem[]>([]);
+const batchResults = ref<BatchResult[]>([]);
 
 // 简化的英语单词音标映射（常用词汇）
 const englishPhonetics: Record<string, string> = {
@@ -416,7 +416,7 @@ const englishPhonetics: Record<string, string> = {
   cake: '/keɪk/',
   chocolate: '/ˈtʃɔːklət/',
   pizza: '/ˈpiːtsə/'
-}
+};
 
 // 简化的中文拼音映射
 const chinesePinyin: Record<string, string> = {
@@ -524,70 +524,70 @@ const chinesePinyin: Record<string, string> = {
   百: 'bǎi',
   千: 'qiān',
   万: 'wàn'
-}
+};
 
 // 转换文本为音标
 const transcribe = () => {
   if (!inputText.value.trim()) {
-    result.value = null
-    return
+    result.value = null;
+    return;
   }
 
-  const text = inputText.value.trim()
-  let phonetic = ''
-  const breakdown: Array<{ word: string; phonetic: string }> = []
+  const text = inputText.value.trim();
+  let phonetic = '';
+  const breakdown: Array<{ word: string; phonetic: string }> = [];
 
   if (inputLanguage.value === 'en') {
     // 英语处理
-    const words = text.toLowerCase().split(/\s+/)
-    const phoneticParts: string[] = []
+    const words = text.toLowerCase().split(/\s+/);
+    const phoneticParts: string[] = [];
 
     words.forEach((word) => {
-      const cleanWord = word.replace(/[^\w]/g, '')
+      const cleanWord = word.replace(/[^\w]/g, '');
       if (englishPhonetics[cleanWord]) {
-        phoneticParts.push(englishPhonetics[cleanWord])
+        phoneticParts.push(englishPhonetics[cleanWord]);
         breakdown.push({
           word: word,
           phonetic: englishPhonetics[cleanWord]
-        })
+        });
       } else {
         // 简单的音标生成规则
-        const simplePhonetic = generateSimplePhonetic(cleanWord)
-        phoneticParts.push(simplePhonetic)
+        const simplePhonetic = generateSimplePhonetic(cleanWord);
+        phoneticParts.push(simplePhonetic);
         breakdown.push({
           word: word,
           phonetic: simplePhonetic
-        })
+        });
       }
-    })
+    });
 
-    phonetic = phoneticParts.join(' ')
+    phonetic = phoneticParts.join(' ');
   } else {
     // 中文处理
-    const chars = text.split('')
-    const phoneticParts: string[] = []
+    const chars = text.split('');
+    const phoneticParts: string[] = [];
 
     chars.forEach((char) => {
       if (chinesePinyin[char]) {
-        phoneticParts.push(chinesePinyin[char])
+        phoneticParts.push(chinesePinyin[char]);
         breakdown.push({
           word: char,
           phonetic: chinesePinyin[char]
-        })
+        });
       } else if (/[\u4e00-\u9fff]/.test(char)) {
         // 中文字符但不在字典中
-        phoneticParts.push('[?]')
+        phoneticParts.push('[?]');
         breakdown.push({
           word: char,
           phonetic: '[?]'
-        })
+        });
       } else {
         // 非中文字符
-        phoneticParts.push(char)
+        phoneticParts.push(char);
       }
-    })
+    });
 
-    phonetic = phoneticParts.join(' ')
+    phonetic = phoneticParts.join(' ');
   }
 
   // 计算统计信息
@@ -595,141 +595,141 @@ const transcribe = () => {
     totalChars: text.length,
     wordCount: inputLanguage.value === 'en' ? text.split(/\s+/).length : text.replace(/\s/g, '').length,
     syllableCount: breakdown.length
-  }
+  };
 
   result.value = {
     phonetic,
     breakdown,
     stats
-  }
+  };
 
   // 添加到历史记录
-  addToHistory(text, phonetic)
-}
+  addToHistory(text, phonetic);
+};
 
 // 生成简单的英语音标（基于常见规则）
 const generateSimplePhonetic = (word: string): string => {
-  if (!word) return ''
+  if (!word) return '';
 
   // 这是一个非常简化的音标生成器
   // 实际应用中需要更复杂的规则或使用专业的音标库
-  let phonetic = '/'
+  let phonetic = '/';
 
   for (let i = 0; i < word.length; i++) {
-    const char = word[i].toLowerCase()
+    const char = word[i].toLowerCase();
     switch (char) {
       case 'a':
-        phonetic += 'æ'
-        break
+        phonetic += 'æ';
+        break;
       case 'e':
-        phonetic += 'e'
-        break
+        phonetic += 'e';
+        break;
       case 'i':
-        phonetic += 'ɪ'
-        break
+        phonetic += 'ɪ';
+        break;
       case 'o':
-        phonetic += 'ɑː'
-        break
+        phonetic += 'ɑː';
+        break;
       case 'u':
-        phonetic += 'ʌ'
-        break
+        phonetic += 'ʌ';
+        break;
       case 'th':
-        phonetic += 'θ'
-        i++ // 跳过下一个字符
-        break
+        phonetic += 'θ';
+        i++; // 跳过下一个字符
+        break;
       case 'sh':
-        phonetic += 'ʃ'
-        i++ // 跳过下一个字符
-        break
+        phonetic += 'ʃ';
+        i++; // 跳过下一个字符
+        break;
       case 'ch':
-        phonetic += 'tʃ'
-        i++ // 跳过下一个字符
-        break
+        phonetic += 'tʃ';
+        i++; // 跳过下一个字符
+        break;
       default:
-        phonetic += char
+        phonetic += char;
     }
   }
 
-  phonetic += '/'
-  return phonetic
-}
+  phonetic += '/';
+  return phonetic;
+};
 
 // 批量转换
 const batchTranscribe = () => {
-  if (!batchInput.value.trim()) return
+  if (!batchInput.value.trim()) return;
 
-  const lines = batchInput.value.trim().split('\n')
-  batchResults.value = []
+  const lines = batchInput.value.trim().split('\n');
+  batchResults.value = [];
 
   lines.forEach((line) => {
     if (line.trim()) {
-      const originalInput = inputText.value
-      inputText.value = line.trim()
-      transcribe()
+      const originalInput = inputText.value;
+      inputText.value = line.trim();
+      transcribe();
 
       if (result.value) {
         batchResults.value.push({
           original: line.trim(),
           phonetic: result.value.phonetic
-        })
+        });
       }
 
-      inputText.value = originalInput
+      inputText.value = originalInput;
     }
-  })
+  });
 
   // 恢复原始结果
-  transcribe()
-}
+  transcribe();
+};
 
 // 导出批量结果
 const exportBatch = () => {
-  if (batchResults.value.length === 0) return
+  if (batchResults.value.length === 0) return;
 
-  const content = batchResults.value.map((item) => `${item.original}\t${item.phonetic}`).join('\n')
+  const content = batchResults.value.map((item) => `${item.original}\t${item.phonetic}`).join('\n');
 
-  const blob = new Blob([content], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `phonetic-transcription-${Date.now()}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
-}
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `phonetic-transcription-${Date.now()}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 // 复制结果
 const copyResult = async () => {
-  if (!result.value) return
+  if (!result.value) return;
 
   try {
-    await navigator.clipboard.writeText(result.value.phonetic)
+    await navigator.clipboard.writeText(result.value.phonetic);
     // 这里可以添加成功提示
   } catch (err) {
-    console.error('复制失败:', err)
+    console.error('复制失败:', err);
   }
-}
+};
 
 // 清空所有内容
 const clearAll = () => {
-  inputText.value = ''
-  result.value = null
-}
+  inputText.value = '';
+  result.value = null;
+};
 
 // 加载示例
 const loadSample = () => {
   if (inputLanguage.value === 'en') {
-    inputText.value = 'Hello world! How are you today?'
+    inputText.value = 'Hello world! How are you today?';
   } else {
-    inputText.value = '你好世界！你今天好吗？'
+    inputText.value = '你好世界！你今天好吗？';
   }
-  transcribe()
-}
+  transcribe();
+};
 
 // 清空批量结果
 const clearBatchResults = () => {
-  batchResults.value = []
-  batchInput.value = ''
-}
+  batchResults.value = [];
+  batchInput.value = '';
+};
 
 // 添加到历史记录
 const addToHistory = (original: string, phonetic: string) => {
@@ -739,40 +739,40 @@ const addToHistory = (original: string, phonetic: string) => {
     language: inputLanguage.value,
     type: phoneticType.value,
     timestamp: new Date().toLocaleString()
-  }
+  };
 
-  history.value.unshift(item)
+  history.value.unshift(item);
   if (history.value.length > 50) {
-    history.value = history.value.slice(0, 50)
+    history.value = history.value.slice(0, 50);
   }
 
   // 保存到本地存储
-  localStorage.setItem('phonetic-history', JSON.stringify(history.value))
-}
+  localStorage.setItem('phonetic-history', JSON.stringify(history.value));
+};
 
 // 从历史记录加载
 const loadFromHistory = (item: HistoryItem) => {
-  inputText.value = item.original
-  inputLanguage.value = item.language
-  phoneticType.value = item.type
-  transcribe()
-}
+  inputText.value = item.original;
+  inputLanguage.value = item.language;
+  phoneticType.value = item.type;
+  transcribe();
+};
 
 // 清空历史记录
 const clearHistory = () => {
-  history.value = []
-  localStorage.removeItem('phonetic-history')
-}
+  history.value = [];
+  localStorage.removeItem('phonetic-history');
+};
 
 // 组件挂载时加载历史记录
 onMounted(() => {
-  const savedHistory = localStorage.getItem('phonetic-history')
+  const savedHistory = localStorage.getItem('phonetic-history');
   if (savedHistory) {
     try {
-      history.value = JSON.parse(savedHistory)
+      history.value = JSON.parse(savedHistory);
     } catch (err) {
-      console.error('加载历史记录失败:', err)
+      console.error('加载历史记录失败:', err);
     }
   }
-})
+});
 </script>

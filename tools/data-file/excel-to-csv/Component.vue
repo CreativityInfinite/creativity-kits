@@ -56,98 +56,98 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, ref } from 'vue'
+import { onUnmounted, ref } from 'vue';
 
-const file = ref<File | null>(null)
-const sep = ref(',')
-const withBOM = ref(false)
-const output = ref('')
-const csvFiles = ref<{ name: string; blob: Blob; size: number }[]>([])
-const urls = new Set<string>()
+const file = ref<File | null>(null);
+const sep = ref(',');
+const withBOM = ref(false);
+const output = ref('');
+const csvFiles = ref<{ name: string; blob: Blob; size: number }[]>([]);
+const urls = new Set<string>();
 
 function onFile(e: Event) {
-  const f = (e.target as HTMLInputElement).files?.[0] || null
-  file.value = f
-  clearOutputs()
-  output.value = f ? `已选择：${f.name}` : ''
+  const f = (e.target as HTMLInputElement).files?.[0] || null;
+  file.value = f;
+  clearOutputs();
+  output.value = f ? `已选择：${f.name}` : '';
 }
 function clearOutputs() {
-  csvFiles.value = []
-  for (const u of urls) URL.revokeObjectURL(u)
-  urls.clear()
+  csvFiles.value = [];
+  for (const u of urls) URL.revokeObjectURL(u);
+  urls.clear();
 }
 function formatSize(n: number) {
-  if (n < 1024) return n + ' B'
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB'
-  return (n / 1024 / 1024).toFixed(1) + ' MB'
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / 1024 / 1024).toFixed(1) + ' MB';
 }
 function toCSV(rows: any[][], delimiter: string) {
   const escape = (v: any) => {
-    const s = v == null ? '' : String(v)
-    if (/[",\n\r]/.test(s) || s.includes(delimiter)) return '"' + s.replace(/"/g, '""') + '"'
-    return s
-  }
-  return rows.map((r) => r.map(escape).join(delimiter)).join('\r\n')
+    const s = v == null ? '' : String(v);
+    if (/[",\n\r]/.test(s) || s.includes(delimiter)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  };
+  return rows.map((r) => r.map(escape).join(delimiter)).join('\r\n');
 }
 
 async function process() {
-  clearOutputs()
-  output.value = ''
+  clearOutputs();
+  output.value = '';
   if (!file.value) {
-    output.value = '请先选择 Excel 文件'
-    return
+    output.value = '请先选择 Excel 文件';
+    return;
   }
-  const t0 = performance.now()
+  const t0 = performance.now();
   try {
-    let XLSX: any
+    let XLSX: any;
     try {
-      XLSX = (await import('https://esm.sh/xlsx@0.18.5?bundle')).default
+      XLSX = (await import('https://esm.sh/xlsx@0.18.5?bundle')).default;
     } catch {
-      XLSX = (await import('https://cdn.skypack.dev/xlsx@0.18.5')).default
+      XLSX = (await import('https://cdn.skypack.dev/xlsx@0.18.5')).default;
     }
-    const buf = await file.value.arrayBuffer()
-    const wb = XLSX.read(buf, { type: 'array' })
-    const sheets = wb.SheetNames
+    const buf = await file.value.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    const sheets = wb.SheetNames;
     for (const name of sheets) {
-      const ws = wb.Sheets[name]
-      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }) as any[][]
-      const csvText = toCSV(rows, sep.value || ',')
-      const bom = withBOM.value ? '\uFEFF' : ''
-      const blob = new Blob([bom + csvText], { type: 'text/csv;charset=utf-8' })
-      csvFiles.value.push({ name: `${name}.csv`, blob, size: blob.size })
+      const ws = wb.Sheets[name];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }) as any[][];
+      const csvText = toCSV(rows, sep.value || ',');
+      const bom = withBOM.value ? '\uFEFF' : '';
+      const blob = new Blob([bom + csvText], { type: 'text/csv;charset=utf-8' });
+      csvFiles.value.push({ name: `${name}.csv`, blob, size: blob.size });
     }
-    const ms = Math.round(performance.now() - t0)
-    output.value = `转换完成：工作表 ${sheets.length} 个，用时 ${ms}ms`
+    const ms = Math.round(performance.now() - t0);
+    output.value = `转换完成：工作表 ${sheets.length} 个，用时 ${ms}ms`;
   } catch (e: any) {
-    console.error(e)
-    output.value = '转换失败：' + (e?.message || String(e))
+    console.error(e);
+    output.value = '转换失败：' + (e?.message || String(e));
   }
 }
 
 function downloadCSV(i: number) {
-  const it = csvFiles.value[i]
-  if (!it) return
-  const url = URL.createObjectURL(it.blob)
-  urls.add(url)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = it.name
-  a.click()
+  const it = csvFiles.value[i];
+  if (!it) return;
+  const url = URL.createObjectURL(it.blob);
+  urls.add(url);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = it.name;
+  a.click();
 }
 
 async function copyToClipboard() {
-  if (!output.value) return
+  if (!output.value) return;
   try {
-    await navigator.clipboard.writeText(output.value)
-    alert('已复制到剪贴板')
+    await navigator.clipboard.writeText(output.value);
+    alert('已复制到剪贴板');
   } catch (err) {
-    console.error('复制失败:', err)
-    alert('复制失败，请手动复制')
+    console.error('复制失败:', err);
+    alert('复制失败，请手动复制');
   }
 }
 
 onUnmounted(() => {
-  for (const u of urls) URL.revokeObjectURL(u)
-  urls.clear()
-})
+  for (const u of urls) URL.revokeObjectURL(u);
+  urls.clear();
+});
 </script>

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { promises as fs } from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import { promises as fs } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 所有工具的定义（与生成脚本保持一致）
 const toolCategories = [
@@ -82,7 +82,7 @@ const toolCategories = [
     name: '生产力与办公',
     tools: [{ id: 'pomodoro-timer', name: '番茄钟', icon: 'mdi:timer' }]
   }
-]
+];
 
 function generateMetaContent(toolId, toolName, categoryId, icon) {
   return `import type { ToolMeta } from '~/types/tool'
@@ -100,33 +100,33 @@ const meta: ToolMeta = {
 }
 
 export default meta
-`
+`;
 }
 
 async function updateMeta(categoryId, toolId, toolName, icon) {
-  const metaPath = path.join(__dirname, '..', 'tools', categoryId, toolId, 'meta.ts')
+  const metaPath = path.join(__dirname, '..', 'tools', categoryId, toolId, 'meta.ts');
 
   try {
-    const metaContent = generateMetaContent(toolId, toolName, categoryId, icon)
-    await fs.writeFile(metaPath, metaContent)
-    console.log(`更新 meta: ${categoryId}/${toolId}`)
+    const metaContent = generateMetaContent(toolId, toolName, categoryId, icon);
+    await fs.writeFile(metaPath, metaContent);
+    console.log(`更新 meta: ${categoryId}/${toolId}`);
   } catch (error) {
-    console.error(`更新 meta 失败 ${categoryId}/${toolId}:`, error)
+    console.error(`更新 meta 失败 ${categoryId}/${toolId}:`, error);
   }
 }
 
 async function main() {
-  console.log('开始更新所有工具的 meta 文件...')
+  console.log('开始更新所有工具的 meta 文件...');
 
   for (const category of toolCategories) {
-    console.log(`\n处理分类: ${category.name}`)
+    console.log(`\n处理分类: ${category.name}`);
 
     for (const tool of category.tools) {
-      await updateMeta(category.id, tool.id, tool.name, tool.icon)
+      await updateMeta(category.id, tool.id, tool.name, tool.icon);
     }
   }
 
-  console.log('\n所有 meta 文件更新完成！')
+  console.log('\n所有 meta 文件更新完成！');
 }
 
-main().catch(console.error)
+main().catch(console.error);

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'cron-next-run',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:timer-play',
   i18nKey: 'tools.cron-next-run',
-  entry: 'tools/time-date/cron-next-run/Component.vue',
-}
-export default meta
+  entry: 'tools/time-date/cron-next-run/Component.vue'
+};
+export default meta;

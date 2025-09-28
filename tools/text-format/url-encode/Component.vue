@@ -298,47 +298,47 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue';
 
 interface EncodeOptions {
-  autoEncode: boolean
-  encodeSpaces: boolean
-  encodeUnicode: boolean
-  strictMode: boolean
-  encodeType: 'component' | 'uri' | 'form' | 'custom'
-  customChars: string
-  charset: string
+  autoEncode: boolean;
+  encodeSpaces: boolean;
+  encodeUnicode: boolean;
+  strictMode: boolean;
+  encodeType: 'component' | 'uri' | 'form' | 'custom';
+  customChars: string;
+  charset: string;
 }
 
 interface Analysis {
-  encodedChars: number
-  encodingRatio: number
-  urlType: string
-  protocol?: string
-  hostname?: string
-  paramCount: number
+  encodedChars: number;
+  encodingRatio: number;
+  urlType: string;
+  protocol?: string;
+  hostname?: string;
+  paramCount: number;
 }
 
 interface UrlParts {
-  protocol?: string
-  hostname?: string
-  port?: string
-  pathname?: string
-  search?: string
-  hash?: string
-  params?: Record<string, string>
+  protocol?: string;
+  hostname?: string;
+  port?: string;
+  pathname?: string;
+  search?: string;
+  hash?: string;
+  params?: Record<string, string>;
 }
 
 interface EncodeHistory {
-  input: string
-  encoded: string
-  timestamp: string
-  preview: string
-  type: string
+  input: string;
+  encoded: string;
+  timestamp: string;
+  preview: string;
+  type: string;
 }
 
-const inputText = ref('')
-const encodedText = ref('')
+const inputText = ref('');
+const encodedText = ref('');
 
 const options = ref<EncodeOptions>({
   autoEncode: true,
@@ -348,44 +348,44 @@ const options = ref<EncodeOptions>({
   encodeType: 'component',
   customChars: '',
   charset: 'utf-8'
-})
+});
 
-const encodeHistory = ref<EncodeHistory[]>([])
-const urlParts = ref<UrlParts | null>(null)
+const encodeHistory = ref<EncodeHistory[]>([]);
+const urlParts = ref<UrlParts | null>(null);
 
 const compressionRatio = computed(() => {
-  if (!inputText.value || !encodedText.value) return 0
-  const originalSize = getByteLength(inputText.value)
-  const encodedSize = getByteLength(encodedText.value)
-  return Math.round(((encodedSize - originalSize) / originalSize) * 100)
-})
+  if (!inputText.value || !encodedText.value) return 0;
+  const originalSize = getByteLength(inputText.value);
+  const encodedSize = getByteLength(encodedText.value);
+  return Math.round(((encodedSize - originalSize) / originalSize) * 100);
+});
 
 const analysis = computed((): Analysis | null => {
-  if (!inputText.value || !encodedText.value) return null
+  if (!inputText.value || !encodedText.value) return null;
 
-  const originalChars = inputText.value.length
-  const encodedChars = encodedText.value.match(/%[0-9A-Fa-f]{2}/g)?.length || 0
-  const encodingRatio = Math.round((encodedChars / originalChars) * 100)
+  const originalChars = inputText.value.length;
+  const encodedChars = encodedText.value.match(/%[0-9A-Fa-f]{2}/g)?.length || 0;
+  const encodingRatio = Math.round((encodedChars / originalChars) * 100);
 
   // 检测 URL 类型
-  let urlType = 'Text'
-  let protocol = ''
-  let hostname = ''
-  let paramCount = 0
+  let urlType = 'Text';
+  let protocol = '';
+  let hostname = '';
+  let paramCount = 0;
 
   try {
     if (inputText.value.includes('://') || inputText.value.startsWith('//')) {
-      const url = new URL(inputText.value.startsWith('//') ? 'http:' + inputText.value : inputText.value)
-      urlType = 'Complete URL'
-      protocol = url.protocol
-      hostname = url.hostname
-      paramCount = Array.from(url.searchParams.keys()).length
+      const url = new URL(inputText.value.startsWith('//') ? 'http:' + inputText.value : inputText.value);
+      urlType = 'Complete URL';
+      protocol = url.protocol;
+      hostname = url.hostname;
+      paramCount = Array.from(url.searchParams.keys()).length;
     } else if (inputText.value.includes('=') && inputText.value.includes('&')) {
-      urlType = 'Query String'
-      const params = new URLSearchParams(inputText.value)
-      paramCount = Array.from(params.keys()).length
+      urlType = 'Query String';
+      const params = new URLSearchParams(inputText.value);
+      paramCount = Array.from(params.keys()).length;
     } else if (inputText.value.startsWith('/')) {
-      urlType = 'Path'
+      urlType = 'Path';
     }
   } catch {
     // 不是有效的 URL
@@ -398,68 +398,68 @@ const analysis = computed((): Analysis | null => {
     protocol,
     hostname,
     paramCount
-  }
-})
+  };
+});
 
 watch(
   [() => options.value],
   () => {
     if (inputText.value && options.value.autoEncode) {
-      performEncode()
+      performEncode();
     }
   },
   { deep: true }
-)
+);
 
 function autoEncode() {
   if (!options.value.autoEncode || !inputText.value.trim()) {
-    clearResults()
-    return
+    clearResults();
+    return;
   }
 
-  performEncode()
+  performEncode();
 }
 
 function performEncode() {
   if (!inputText.value.trim()) {
-    clearResults()
-    return
+    clearResults();
+    return;
   }
 
   try {
-    let result = ''
-    const text = inputText.value
+    let result = '';
+    const text = inputText.value;
 
     switch (options.value.encodeType) {
       case 'component':
-        result = encodeURIComponent(text)
-        break
+        result = encodeURIComponent(text);
+        break;
       case 'uri':
-        result = encodeURI(text)
-        break
+        result = encodeURI(text);
+        break;
       case 'form':
-        result = encodeFormData(text)
-        break
+        result = encodeFormData(text);
+        break;
       case 'custom':
-        result = encodeCustom(text, options.value.customChars)
-        break
+        result = encodeCustom(text, options.value.customChars);
+        break;
     }
 
     // 空格处理
     if (!options.value.encodeSpaces && options.value.encodeType === 'form') {
-      result = result.replace(/%20/g, '+')
+      result = result.replace(/%20/g, '+');
     }
 
-    encodedText.value = result
+    encodedText.value = result;
 
     // 解析 URL（如果是 URL）
-    parseUrlParts(text)
+    parseUrlParts(text);
 
     // 添加到历史记录
-    addToHistory(text, result, options.value.encodeType)
+    addToHistory(text, result, options.value.encodeType);
   } catch (error) {
-    console.error('编码失败:', error)
-    encodedText.value = ''
+    console.error('编码失败:', error);
+    encodedText.value = '';
   }
 }
 
@@ -467,7 +467,7 @@ function encodeFormData(text: string): string {
   return text
     .split('')
     .map((char) => {
-      const code = char.charCodeAt(0)
+      const code = char.charCodeAt(0);
       if (
         (code >= 48 && code <= 57) || // 0-9
         (code >= 65 && code <= 90) || // A-Z
@@ -477,50 +477,50 @@ function encodeFormData(text: string): string {
         char === '.' ||
         char === '~'
       ) {
-        return char
+        return char;
       }
       if (char === ' ') {
-        return options.value.encodeSpaces ? '%20' : '+'
+        return options.value.encodeSpaces ? '%20' : '+';
       }
-      return encodeURIComponent(char)
+      return encodeURIComponent(char);
     })
-    .join('')
+    .join('');
 }
 
 function encodeCustom(text: string, customChars: string): string {
-  if (!customChars) return text
+  if (!customChars) return text;
 
   return text
     .split('')
     .map((char) => {
       if (customChars.includes(char)) {
-        return encodeURIComponent(char)
+        return encodeURIComponent(char);
       }
-      return char
+      return char;
     })
-    .join('')
+    .join('');
 }
 
 function parseUrlParts(text: string) {
-  urlParts.value = null
+  urlParts.value = null;
 
   try {
-    let url: URL
+    let url: URL;
 
     if (text.includes('://')) {
-      url = new URL(text)
+      url = new URL(text);
     } else if (text.startsWith('//')) {
-      url = new URL('http:' + text)
+      url = new URL('http:' + text);
     } else if (text.startsWith('/')) {
-      url = new URL('http://example.com' + text)
+      url = new URL('http://example.com' + text);
     } else {
-      return
+      return;
     }
 
-    const params: Record<string, string> = {}
+    const params: Record<string, string> = {};
     url.searchParams.forEach((value, key) => {
-      params[key] = value
-    })
+      params[key] = value;
+    });
 
     urlParts.value = {
       protocol: url.protocol,
@@ -530,19 +530,19 @@ function parseUrlParts(text: string) {
       search: url.search,
       hash: url.hash,
       params: Object.keys(params).length > 0 ? params : undefined
-    }
+    };
   } catch {
     // 不是有效的 URL，尝试解析查询字符串
     if (text.includes('=')) {
       try {
-        const params: Record<string, string> = {}
-        const searchParams = new URLSearchParams(text)
+        const params: Record<string, string> = {};
+        const searchParams = new URLSearchParams(text);
         searchParams.forEach((value, key) => {
-          params[key] = value
-        })
+          params[key] = value;
+        });
 
         if (Object.keys(params).length > 0) {
-          urlParts.value = { params }
+          urlParts.value = { params };
         }
       } catch {
         // 解析失败
@@ -552,83 +552,83 @@ function parseUrlParts(text: string) {
 }
 
 function clearResults() {
-  encodedText.value = ''
-  urlParts.value = null
+  encodedText.value = '';
+  urlParts.value = null;
 }
 
 function loadSampleUrl() {
-  inputText.value = 'https://example.com/search?q=Hello World&lang=zh-CN&category=技术&date=2024-01-01'
+  inputText.value = 'https://example.com/search?q=Hello World&lang=zh-CN&category=技术&date=2024-01-01';
 
   if (options.value.autoEncode) {
-    performEncode()
+    performEncode();
   }
 }
 
 function encodeManually() {
-  performEncode()
+  performEncode();
 }
 
 function parseUrl() {
   if (!inputText.value.trim()) {
-    alert('请先输入 URL 或文本')
-    return
+    alert('请先输入 URL 或文本');
+    return;
   }
 
-  parseUrlParts(inputText.value)
+  parseUrlParts(inputText.value);
 
   if (!urlParts.value) {
-    alert('无法解析 URL 结构')
+    alert('无法解析 URL 结构');
   }
 }
 
 function validateUrl() {
   if (!inputText.value.trim()) {
-    alert('请先输入 URL')
-    return
+    alert('请先输入 URL');
+    return;
   }
 
   try {
-    new URL(inputText.value)
-    alert('URL 格式有效')
+    new URL(inputText.value);
+    alert('URL 格式有效');
   } catch {
     try {
-      new URL('http://' + inputText.value)
-      alert('URL 格式有效（缺少协议）')
+      new URL('http://' + inputText.value);
+      alert('URL 格式有效（缺少协议）');
     } catch {
-      alert('URL 格式无效')
+      alert('URL 格式无效');
     }
   }
 }
 
 function clearAll() {
-  inputText.value = ''
-  clearResults()
+  inputText.value = '';
+  clearResults();
 }
 
 async function copyResult() {
-  if (!encodedText.value) return
+  if (!encodedText.value) return;
 
   try {
-    await navigator.clipboard.writeText(encodedText.value)
+    await navigator.clipboard.writeText(encodedText.value);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function decodeResult() {
-  if (!encodedText.value) return
+  if (!encodedText.value) return;
 
   try {
-    const decoded = decodeURIComponent(encodedText.value)
-    inputText.value = decoded
+    const decoded = decodeURIComponent(encodedText.value);
+    inputText.value = decoded;
   } catch (error) {
-    console.error('解码失败:', error)
+    console.error('解码失败:', error);
   }
 }
 
 function downloadEncoded() {
-  if (!encodedText.value) return
+  if (!encodedText.value) return;
 
   const content = `原始文本:
 ${inputText.value}
@@ -638,52 +638,52 @@ ${encodedText.value}
 
 编码类型: ${options.value.encodeType}
 生成时间: ${new Date().toLocaleString()}
-`
+`;
 
-  const blob = new Blob([content], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'url-encoded.txt'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'url-encoded.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function handleFileUpload(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    inputText.value = content
+    const content = e.target?.result as string;
+    inputText.value = content;
 
     if (options.value.autoEncode) {
-      performEncode()
+      performEncode();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
+  event.preventDefault();
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
 
-  const file = files[0]
-  const reader = new FileReader()
+  const file = files[0];
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    inputText.value = content
+    const content = e.target?.result as string;
+    inputText.value = content;
 
     if (options.value.autoEncode) {
-      performEncode()
+      performEncode();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function addToHistory(input: string, encoded: string, type: string) {
@@ -693,60 +693,60 @@ function addToHistory(input: string, encoded: string, type: string) {
     timestamp: new Date().toLocaleString(),
     preview: input.slice(0, 50) + (input.length > 50 ? '...' : ''),
     type
-  }
+  };
 
-  encodeHistory.value.unshift(historyItem)
-  encodeHistory.value = encodeHistory.value.slice(0, 10)
-  saveEncodeHistory()
+  encodeHistory.value.unshift(historyItem);
+  encodeHistory.value = encodeHistory.value.slice(0, 10);
+  saveEncodeHistory();
 }
 
 function loadFromHistory(history: EncodeHistory) {
-  inputText.value = history.input
-  encodedText.value = history.encoded
+  inputText.value = history.input;
+  encodedText.value = history.encoded;
 }
 
 function clearHistory() {
-  encodeHistory.value = []
-  saveEncodeHistory()
+  encodeHistory.value = [];
+  saveEncodeHistory();
 }
 
 function saveEncodeHistory() {
   try {
-    localStorage.setItem('url-encode-history', JSON.stringify(encodeHistory.value))
+    localStorage.setItem('url-encode-history', JSON.stringify(encodeHistory.value));
   } catch (error) {
-    console.error('保存编码历史失败:', error)
+    console.error('保存编码历史失败:', error);
   }
 }
 
 function loadEncodeHistory() {
   try {
-    const saved = localStorage.getItem('url-encode-history')
+    const saved = localStorage.getItem('url-encode-history');
     if (saved) {
-      encodeHistory.value = JSON.parse(saved)
+      encodeHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载编码历史失败:', error)
+    console.error('加载编码历史失败:', error);
   }
 }
 
 function getByteLength(str: string): number {
-  return new Blob([str]).size
+  return new Blob([str]).size;
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B'
+  if (bytes === 0) return '0 B';
 
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 // 组件挂载时加载历史记录
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
-  loadEncodeHistory()
-})
+  loadEncodeHistory();
+});
 </script>

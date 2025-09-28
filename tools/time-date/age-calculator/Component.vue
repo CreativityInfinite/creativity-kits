@@ -63,62 +63,62 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const birthDate = ref('')
-const targetDate = ref('')
-const ageResult = ref<any>(null)
+const birthDate = ref('');
+const targetDate = ref('');
+const ageResult = ref<any>(null);
 
 function calculateAge() {
   if (!birthDate.value || !targetDate.value) {
-    ageResult.value = null
-    return
+    ageResult.value = null;
+    return;
   }
 
-  const birth = new Date(birthDate.value)
-  const target = new Date(targetDate.value)
+  const birth = new Date(birthDate.value);
+  const target = new Date(targetDate.value);
 
   if (birth > target) {
-    ageResult.value = { error: '出生日期不能晚于计算日期' }
-    return
+    ageResult.value = { error: '出生日期不能晚于计算日期' };
+    return;
   }
 
   // 计算精确年龄
-  let years = target.getFullYear() - birth.getFullYear()
-  let months = target.getMonth() - birth.getMonth()
-  let days = target.getDate() - birth.getDate()
+  let years = target.getFullYear() - birth.getFullYear();
+  let months = target.getMonth() - birth.getMonth();
+  let days = target.getDate() - birth.getDate();
 
   if (days < 0) {
-    months--
-    const lastMonth = new Date(target.getFullYear(), target.getMonth(), 0)
-    days += lastMonth.getDate()
+    months--;
+    const lastMonth = new Date(target.getFullYear(), target.getMonth(), 0);
+    days += lastMonth.getDate();
   }
 
   if (months < 0) {
-    years--
-    months += 12
+    years--;
+    months += 12;
   }
 
   // 计算总数
-  const totalMs = target.getTime() - birth.getTime()
-  const totalDays = Math.floor(totalMs / (1000 * 60 * 60 * 24))
-  const totalWeeks = Math.floor(totalDays / 7)
-  const totalMonths = years * 12 + months
-  const totalHours = Math.floor(totalMs / (1000 * 60 * 60))
+  const totalMs = target.getTime() - birth.getTime();
+  const totalDays = Math.floor(totalMs / (1000 * 60 * 60 * 24));
+  const totalWeeks = Math.floor(totalDays / 7);
+  const totalMonths = years * 12 + months;
+  const totalHours = Math.floor(totalMs / (1000 * 60 * 60));
 
   // 计算下次生日
-  let nextBirthday = null
+  let nextBirthday = null;
   if (targetDate.value === getTodayString()) {
-    const nextBirthdayDate = new Date(target.getFullYear(), birth.getMonth(), birth.getDate())
+    const nextBirthdayDate = new Date(target.getFullYear(), birth.getMonth(), birth.getDate());
     if (nextBirthdayDate <= target) {
-      nextBirthdayDate.setFullYear(target.getFullYear() + 1)
+      nextBirthdayDate.setFullYear(target.getFullYear() + 1);
     }
 
-    const daysToNext = Math.ceil((nextBirthdayDate.getTime() - target.getTime()) / (1000 * 60 * 60 * 24))
+    const daysToNext = Math.ceil((nextBirthdayDate.getTime() - target.getTime()) / (1000 * 60 * 60 * 24));
     nextBirthday = {
       days: daysToNext,
       date: nextBirthdayDate.toLocaleDateString('zh-CN')
-    }
+    };
   }
 
   ageResult.value = {
@@ -130,19 +130,19 @@ function calculateAge() {
     totalMonths,
     totalHours,
     nextBirthday
-  }
+  };
 }
 
 function setToday() {
-  targetDate.value = getTodayString()
-  calculateAge()
+  targetDate.value = getTodayString();
+  calculateAge();
 }
 
 function getTodayString() {
-  const today = new Date()
-  return today.toISOString().split('T')[0]
+  const today = new Date();
+  return today.toISOString().split('T')[0];
 }
 
 // 初始化
-setToday()
+setToday();
 </script>

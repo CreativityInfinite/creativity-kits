@@ -295,41 +295,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 interface QueryParam {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }
 
 interface UrlBuilder {
-  protocol: string
-  hostname: string
-  port: string
-  pathname: string
-  searchParams: QueryParam[]
-  hash: string
+  protocol: string;
+  hostname: string;
+  port: string;
+  pathname: string;
+  searchParams: QueryParam[];
+  hash: string;
 }
 
 interface UrlAnalysis {
-  isSecure: boolean
-  isLocalhost: boolean
-  isIpAddress: boolean
-  defaultPort: string
-  domainLevels: number
-  pathDepth: number
+  isSecure: boolean;
+  isLocalhost: boolean;
+  isIpAddress: boolean;
+  defaultPort: string;
+  domainLevels: number;
+  pathDepth: number;
 }
 
 interface UrlVariants {
-  withoutQuery: string
-  withoutHash: string
-  domainOnly: string
-  relativePath: string
+  withoutQuery: string;
+  withoutHash: string;
+  domainOnly: string;
+  relativePath: string;
 }
 
-const urlInput = ref('')
-const parseError = ref('')
-const parsedUrl = ref<URL | null>(null)
+const urlInput = ref('');
+const parseError = ref('');
+const parsedUrl = ref<URL | null>(null);
 
 const builder = ref<UrlBuilder>({
   protocol: 'https:',
@@ -338,21 +338,21 @@ const builder = ref<UrlBuilder>({
   pathname: '',
   searchParams: [],
   hash: ''
-})
+});
 
 const isValidUrl = computed(() => {
-  return parsedUrl.value !== null && !parseError.value
-})
+  return parsedUrl.value !== null && !parseError.value;
+});
 
 const queryParams = computed((): QueryParam[] => {
-  if (!parsedUrl.value) return []
+  if (!parsedUrl.value) return [];
 
-  const params: QueryParam[] = []
+  const params: QueryParam[] = [];
   parsedUrl.value.searchParams.forEach((value, key) => {
-    params.push({ key, value })
-  })
-  return params
-})
+    params.push({ key, value });
+  });
+  return params;
+});
 
 const urlAnalysis = computed((): UrlAnalysis => {
   if (!parsedUrl.value) {
@@ -363,13 +363,13 @@ const urlAnalysis = computed((): UrlAnalysis => {
       defaultPort: '',
       domainLevels: 0,
       pathDepth: 0
-    }
+    };
   }
 
-  const url = parsedUrl.value
-  const isSecure = url.protocol === 'https:' || url.protocol === 'wss:'
-  const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname.endsWith('.local')
-  const isIpAddress = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(url.hostname)
+  const url = parsedUrl.value;
+  const isSecure = url.protocol === 'https:' || url.protocol === 'wss:';
+  const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname.endsWith('.local');
+  const isIpAddress = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(url.hostname);
 
   const defaultPorts: { [key: string]: string } = {
     'http:': '80',
@@ -377,11 +377,11 @@ const urlAnalysis = computed((): UrlAnalysis => {
     'ftp:': '21',
     'ws:': '80',
     'wss:': '443'
-  }
-  const defaultPort = defaultPorts[url.protocol] || '未知'
+  };
+  const defaultPort = defaultPorts[url.protocol] || '未知';
 
-  const domainLevels = url.hostname.split('.').length
-  const pathDepth = url.pathname.split('/').filter((segment) => segment !== '').length
+  const domainLevels = url.hostname.split('.').length;
+  const pathDepth = url.pathname.split('/').filter((segment) => segment !== '').length;
 
   return {
     isSecure,
@@ -390,8 +390,8 @@ const urlAnalysis = computed((): UrlAnalysis => {
     defaultPort,
     domainLevels,
     pathDepth
-  }
-})
+  };
+});
 
 const urlVariants = computed((): UrlVariants => {
   if (!parsedUrl.value) {
@@ -400,127 +400,127 @@ const urlVariants = computed((): UrlVariants => {
       withoutHash: '',
       domainOnly: '',
       relativePath: ''
-    }
+    };
   }
 
-  const url = parsedUrl.value
+  const url = parsedUrl.value;
 
   return {
     withoutQuery: `${url.protocol}//${url.host}${url.pathname}${url.hash}`,
     withoutHash: `${url.protocol}//${url.host}${url.pathname}${url.search}`,
     domainOnly: `${url.protocol}//${url.host}`,
     relativePath: `${url.pathname}${url.search}${url.hash}`
-  }
-})
+  };
+});
 
 const builtUrl = computed((): string => {
   try {
-    let url = `${builder.value.protocol}//${builder.value.hostname}`
+    let url = `${builder.value.protocol}//${builder.value.hostname}`;
 
     if (builder.value.port) {
-      url += `:${builder.value.port}`
+      url += `:${builder.value.port}`;
     }
 
     if (builder.value.pathname) {
       if (!builder.value.pathname.startsWith('/')) {
-        url += '/'
+        url += '/';
       }
-      url += builder.value.pathname
+      url += builder.value.pathname;
     }
 
-    const validParams = builder.value.searchParams.filter((p) => p.key.trim() !== '')
+    const validParams = builder.value.searchParams.filter((p) => p.key.trim() !== '');
     if (validParams.length > 0) {
-      const searchParams = new URLSearchParams()
+      const searchParams = new URLSearchParams();
       validParams.forEach((param) => {
-        searchParams.append(param.key, param.value)
-      })
-      url += `?${searchParams.toString()}`
+        searchParams.append(param.key, param.value);
+      });
+      url += `?${searchParams.toString()}`;
     }
 
     if (builder.value.hash) {
-      url += `#${builder.value.hash}`
+      url += `#${builder.value.hash}`;
     }
 
-    return url
+    return url;
   } catch (error) {
-    return '无效的URL配置'
+    return '无效的URL配置';
   }
-})
+});
 
 function parseUrl() {
-  parseError.value = ''
-  parsedUrl.value = null
+  parseError.value = '';
+  parsedUrl.value = null;
 
   if (!urlInput.value.trim()) {
-    return
+    return;
   }
 
   try {
     // 尝试解析URL
-    let urlToParse = urlInput.value.trim()
+    let urlToParse = urlInput.value.trim();
 
     // 如果没有协议，添加默认协议
     if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(urlToParse)) {
-      urlToParse = 'https://' + urlToParse
+      urlToParse = 'https://' + urlToParse;
     }
 
-    parsedUrl.value = new URL(urlToParse)
+    parsedUrl.value = new URL(urlToParse);
   } catch (error) {
-    parseError.value = 'URL格式无效'
+    parseError.value = 'URL格式无效';
   }
 }
 
 function loadSampleUrl() {
-  urlInput.value = 'https://example.com:8080/api/v1/users?page=1&limit=10&sort=name&filter=active#results'
-  parseUrl()
+  urlInput.value = 'https://example.com:8080/api/v1/users?page=1&limit=10&sort=name&filter=active#results';
+  parseUrl();
 }
 
 function clearUrl() {
-  urlInput.value = ''
-  parsedUrl.value = null
-  parseError.value = ''
+  urlInput.value = '';
+  parsedUrl.value = null;
+  parseError.value = '';
 }
 
 function getCurrentUrl() {
   if (typeof window !== 'undefined') {
-    urlInput.value = window.location.href
-    parseUrl()
+    urlInput.value = window.location.href;
+    parseUrl();
   }
 }
 
 function addParam() {
-  builder.value.searchParams.push({ key: '', value: '' })
+  builder.value.searchParams.push({ key: '', value: '' });
 }
 
 function removeParam(index: number) {
-  builder.value.searchParams.splice(index, 1)
+  builder.value.searchParams.splice(index, 1);
 }
 
 function useBuiltUrl() {
-  urlInput.value = builtUrl.value
-  parseUrl()
+  urlInput.value = builtUrl.value;
+  parseUrl();
 }
 
 async function copyBuiltUrl() {
   try {
-    await navigator.clipboard.writeText(builtUrl.value)
+    await navigator.clipboard.writeText(builtUrl.value);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 async function copyParam(param: QueryParam) {
   try {
-    await navigator.clipboard.writeText(`${param.key}=${param.value}`)
+    await navigator.clipboard.writeText(`${param.key}=${param.value}`);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 async function copyAnalysis() {
-  if (!parsedUrl.value) return
+  if (!parsedUrl.value) return;
 
   const analysis = `URL 解析结果
 完整URL: ${parsedUrl.value.href}
@@ -540,18 +540,18 @@ async function copyAnalysis() {
 
 查询参数详情:
 ${queryParams.value.map((p) => `- ${p.key} = ${p.value}`).join('\n') || '无查询参数'}
-`
+`;
 
   try {
-    await navigator.clipboard.writeText(analysis)
+    await navigator.clipboard.writeText(analysis);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function exportAnalysis() {
-  if (!parsedUrl.value) return
+  if (!parsedUrl.value) return;
 
   const report = `URL 解析报告
 生成时间: ${new Date().toLocaleString('zh-CN')}
@@ -584,14 +584,14 @@ ${queryParams.value.length > 0 ? queryParams.value.map((p, i) => `${i + 1}. ${p.
 相对路径: ${urlVariants.value.relativePath}
 
 报告生成时间: ${new Date().toLocaleString('zh-CN')}
-`
+`;
 
-  const blob = new Blob([report], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `url-analysis-${new Date().toISOString().slice(0, 10)}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([report], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `url-analysis-${new Date().toISOString().slice(0, 10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

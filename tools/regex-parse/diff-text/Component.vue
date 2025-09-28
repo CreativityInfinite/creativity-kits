@@ -196,276 +196,276 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 interface DiffLine {
-  type: 'added' | 'removed' | 'modified' | 'unchanged' | 'context'
-  content: string
-  lineNumber?: number
-  prefix?: string
+  type: 'added' | 'removed' | 'modified' | 'unchanged' | 'context';
+  content: string;
+  lineNumber?: number;
+  prefix?: string;
 }
 
 interface DiffResult {
-  left: DiffLine[]
-  right: DiffLine[]
-  unified: DiffLine[]
+  left: DiffLine[];
+  right: DiffLine[];
+  unified: DiffLine[];
 }
 
 interface DiffStats {
-  additions: number
-  deletions: number
-  modifications: number
-  similarity: number
+  additions: number;
+  deletions: number;
+  modifications: number;
+  similarity: number;
 }
 
 interface CompareOptions {
-  ignoreWhitespace: boolean
-  ignoreCase: boolean
-  ignoreEmptyLines: boolean
-  showLineNumbers: boolean
+  ignoreWhitespace: boolean;
+  ignoreCase: boolean;
+  ignoreEmptyLines: boolean;
+  showLineNumbers: boolean;
 }
 
-const textA = ref('')
-const textB = ref('')
-const compareMode = ref<'line' | 'word' | 'char'>('line')
-const displayMode = ref<'side-by-side' | 'unified' | 'inline'>('side-by-side')
-const contextLines = ref(3)
-const diffResult = ref<DiffResult | null>(null)
-const diffStats = ref<DiffStats | null>(null)
-const fileInputA = ref<HTMLInputElement>()
-const fileInputB = ref<HTMLInputElement>()
+const textA = ref('');
+const textB = ref('');
+const compareMode = ref<'line' | 'word' | 'char'>('line');
+const displayMode = ref<'side-by-side' | 'unified' | 'inline'>('side-by-side');
+const contextLines = ref(3);
+const diffResult = ref<DiffResult | null>(null);
+const diffStats = ref<DiffStats | null>(null);
+const fileInputA = ref<HTMLInputElement>();
+const fileInputB = ref<HTMLInputElement>();
 
 const options = ref<CompareOptions>({
   ignoreWhitespace: false,
   ignoreCase: false,
   ignoreEmptyLines: false,
   showLineNumbers: true
-})
+});
 
 // 主要对比函数
 const compare = () => {
-  if (!textA.value.trim() || !textB.value.trim()) return
+  if (!textA.value.trim() || !textB.value.trim()) return;
 
-  const linesA = preprocessText(textA.value)
-  const linesB = preprocessText(textB.value)
+  const linesA = preprocessText(textA.value);
+  const linesB = preprocessText(textB.value);
 
-  const diff = computeDiff(linesA, linesB)
-  const stats = computeStats(diff)
+  const diff = computeDiff(linesA, linesB);
+  const stats = computeStats(diff);
 
-  diffResult.value = formatDiffResult(diff, linesA, linesB)
-  diffStats.value = stats
-}
+  diffResult.value = formatDiffResult(diff, linesA, linesB);
+  diffStats.value = stats;
+};
 
 // 预处理文本
 const preprocessText = (text: string): string[] => {
-  let lines = text.split('\n')
+  let lines = text.split('\n');
 
   if (options.value.ignoreEmptyLines) {
-    lines = lines.filter((line) => line.trim() !== '')
+    lines = lines.filter((line) => line.trim() !== '');
   }
 
   if (options.value.ignoreWhitespace) {
-    lines = lines.map((line) => line.trim())
+    lines = lines.map((line) => line.trim());
   }
 
   if (options.value.ignoreCase) {
-    lines = lines.map((line) => line.toLowerCase())
+    lines = lines.map((line) => line.toLowerCase());
   }
 
-  return lines
-}
+  return lines;
+};
 
 // 计算差异（简化的 LCS 算法）
 const computeDiff = (linesA: string[], linesB: string[]): Array<{ type: string; lineA?: number; lineB?: number; content?: string }> => {
-  const m = linesA.length
-  const n = linesB.length
+  const m = linesA.length;
+  const n = linesB.length;
   const dp: number[][] = Array(m + 1)
     .fill(null)
-    .map(() => Array(n + 1).fill(0))
+    .map(() => Array(n + 1).fill(0));
 
   // 构建 LCS 表
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
       if (linesA[i - 1] === linesB[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1] + 1
+        dp[i][j] = dp[i - 1][j - 1] + 1;
       } else {
-        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1])
+        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
       }
     }
   }
 
   // 回溯构建差异
-  const diff: Array<{ type: string; lineA?: number; lineB?: number; content?: string }> = []
+  const diff: Array<{ type: string; lineA?: number; lineB?: number; content?: string }> = [];
   let i = m,
-    j = n
+    j = n;
 
   while (i > 0 || j > 0) {
     if (i > 0 && j > 0 && linesA[i - 1] === linesB[j - 1]) {
-      diff.unshift({ type: 'unchanged', lineA: i - 1, lineB: j - 1, content: linesA[i - 1] })
-      i--
-      j--
+      diff.unshift({ type: 'unchanged', lineA: i - 1, lineB: j - 1, content: linesA[i - 1] });
+      i--;
+      j--;
     } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
-      diff.unshift({ type: 'added', lineB: j - 1, content: linesB[j - 1] })
-      j--
+      diff.unshift({ type: 'added', lineB: j - 1, content: linesB[j - 1] });
+      j--;
     } else if (i > 0) {
-      diff.unshift({ type: 'removed', lineA: i - 1, content: linesA[i - 1] })
-      i--
+      diff.unshift({ type: 'removed', lineA: i - 1, content: linesA[i - 1] });
+      i--;
     }
   }
 
-  return diff
-}
+  return diff;
+};
 
 // 计算统计信息
 const computeStats = (diff: Array<{ type: string }>): DiffStats => {
-  const additions = diff.filter((d) => d.type === 'added').length
-  const deletions = diff.filter((d) => d.type === 'removed').length
-  const modifications = Math.min(additions, deletions)
-  const unchanged = diff.filter((d) => d.type === 'unchanged').length
-  const total = diff.length
-  const similarity = total > 0 ? Math.round((unchanged / total) * 100) : 0
+  const additions = diff.filter((d) => d.type === 'added').length;
+  const deletions = diff.filter((d) => d.type === 'removed').length;
+  const modifications = Math.min(additions, deletions);
+  const unchanged = diff.filter((d) => d.type === 'unchanged').length;
+  const total = diff.length;
+  const similarity = total > 0 ? Math.round((unchanged / total) * 100) : 0;
 
   return {
     additions: additions - modifications,
     deletions: deletions - modifications,
     modifications,
     similarity
-  }
-}
+  };
+};
 
 // 格式化差异结果
 const formatDiffResult = (diff: Array<{ type: string; lineA?: number; lineB?: number; content?: string }>, linesA: string[], linesB: string[]): DiffResult => {
-  const left: DiffLine[] = []
-  const right: DiffLine[] = []
-  const unified: DiffLine[] = []
+  const left: DiffLine[] = [];
+  const right: DiffLine[] = [];
+  const unified: DiffLine[] = [];
 
-  let lineNumA = 1
-  let lineNumB = 1
+  let lineNumA = 1;
+  let lineNumB = 1;
 
   diff.forEach((item) => {
-    const content = escapeHtml(item.content || '')
+    const content = escapeHtml(item.content || '');
 
     switch (item.type) {
       case 'unchanged':
-        left.push({ type: 'unchanged', content, lineNumber: lineNumA })
-        right.push({ type: 'unchanged', content, lineNumber: lineNumB })
-        unified.push({ type: 'unchanged', content, lineNumber: lineNumA, prefix: ' ' })
-        lineNumA++
-        lineNumB++
-        break
+        left.push({ type: 'unchanged', content, lineNumber: lineNumA });
+        right.push({ type: 'unchanged', content, lineNumber: lineNumB });
+        unified.push({ type: 'unchanged', content, lineNumber: lineNumA, prefix: ' ' });
+        lineNumA++;
+        lineNumB++;
+        break;
 
       case 'removed':
-        left.push({ type: 'removed', content, lineNumber: lineNumA })
-        right.push({ type: 'context', content: '', lineNumber: undefined })
-        unified.push({ type: 'removed', content, lineNumber: lineNumA, prefix: '-' })
-        lineNumA++
-        break
+        left.push({ type: 'removed', content, lineNumber: lineNumA });
+        right.push({ type: 'context', content: '', lineNumber: undefined });
+        unified.push({ type: 'removed', content, lineNumber: lineNumA, prefix: '-' });
+        lineNumA++;
+        break;
 
       case 'added':
-        left.push({ type: 'context', content: '', lineNumber: undefined })
-        right.push({ type: 'added', content, lineNumber: lineNumB })
-        unified.push({ type: 'added', content, lineNumber: lineNumB, prefix: '+' })
-        lineNumB++
-        break
+        left.push({ type: 'context', content: '', lineNumber: undefined });
+        right.push({ type: 'added', content, lineNumber: lineNumB });
+        unified.push({ type: 'added', content, lineNumber: lineNumB, prefix: '+' });
+        lineNumB++;
+        break;
     }
-  })
+  });
 
-  return { left, right, unified }
-}
+  return { left, right, unified };
+};
 
 // HTML 转义
 const escapeHtml = (text: string): string => {
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
-}
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+};
 
 // 文件处理
 const loadFileA = () => {
-  fileInputA.value?.click()
-}
+  fileInputA.value?.click();
+};
 
 const loadFileB = () => {
-  fileInputB.value?.click()
-}
+  fileInputB.value?.click();
+};
 
 const handleFileA = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0]
+  const file = (event.target as HTMLInputElement).files?.[0];
   if (file) {
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
-      textA.value = e.target?.result as string
-    }
-    reader.readAsText(file)
+      textA.value = e.target?.result as string;
+    };
+    reader.readAsText(file);
   }
-}
+};
 
 const handleFileB = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0]
+  const file = (event.target as HTMLInputElement).files?.[0];
   if (file) {
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
-      textB.value = e.target?.result as string
-    }
-    reader.readAsText(file)
+      textB.value = e.target?.result as string;
+    };
+    reader.readAsText(file);
   }
-}
+};
 
 // 剪贴板操作
 const pasteA = async () => {
   try {
-    const text = await navigator.clipboard.readText()
-    textA.value = text
+    const text = await navigator.clipboard.readText();
+    textA.value = text;
   } catch (error) {
-    console.error('无法从剪贴板读取:', error)
+    console.error('无法从剪贴板读取:', error);
   }
-}
+};
 
 const pasteB = async () => {
   try {
-    const text = await navigator.clipboard.readText()
-    textB.value = text
+    const text = await navigator.clipboard.readText();
+    textB.value = text;
   } catch (error) {
-    console.error('无法从剪贴板读取:', error)
+    console.error('无法从剪贴板读取:', error);
   }
-}
+};
 
 const copyDiff = () => {
-  if (!diffResult.value) return
+  if (!diffResult.value) return;
 
   const diffText = diffResult.value.unified
     .map((line) => {
-      return `${line.prefix || ' '}${line.content}`
+      return `${line.prefix || ' '}${line.content}`;
     })
-    .join('\n')
+    .join('\n');
 
-  navigator.clipboard.writeText(diffText)
-}
+  navigator.clipboard.writeText(diffText);
+};
 
 const exportDiff = () => {
-  if (!diffResult.value) return
+  if (!diffResult.value) return;
 
   const diffText = diffResult.value.unified
     .map((line) => {
-      return `${line.prefix || ' '}${line.content}`
+      return `${line.prefix || ' '}${line.content}`;
     })
-    .join('\n')
+    .join('\n');
 
-  const blob = new Blob([diffText], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'diff-result.txt'
-  a.click()
-  URL.revokeObjectURL(url)
-}
+  const blob = new Blob([diffText], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'diff-result.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 const clear = () => {
-  textA.value = ''
-  textB.value = ''
-  diffResult.value = null
-  diffStats.value = null
-}
+  textA.value = '';
+  textB.value = '';
+  diffResult.value = null;
+  diffStats.value = null;
+};
 </script>
 
 <style scoped>

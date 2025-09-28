@@ -57,51 +57,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const subject = ref('')
-const greeting = ref('')
-const bodyLines = ref('')
-const closing = ref('此致')
-const signature = ref('')
-const output = ref('')
+const subject = ref('');
+const greeting = ref('');
+const bodyLines = ref('');
+const closing = ref('此致');
+const signature = ref('');
+const output = ref('');
 
 function build() {
   const lines = (bodyLines.value || '')
     .split(/\r?\n/)
     .map((s) => s.trim())
-    .filter(Boolean)
-  const parts = [subject.value ? `Subject: ${subject.value}` : '', greeting.value || '', '', ...lines, '', closing.value || '', signature.value || ''].join('\n').replace(/\n{3,}/g, '\n\n')
-  output.value = parts.trim()
+    .filter(Boolean);
+  const parts = [subject.value ? `Subject: ${subject.value}` : '', greeting.value || '', '', ...lines, '', closing.value || '', signature.value || ''].join('\n').replace(/\n{3,}/g, '\n\n');
+  output.value = parts.trim();
 }
 
 function clearAll() {
-  subject.value = ''
-  greeting.value = ''
-  bodyLines.value = ''
-  closing.value = '此致'
-  signature.value = ''
-  output.value = ''
+  subject.value = '';
+  greeting.value = '';
+  bodyLines.value = '';
+  closing.value = '此致';
+  signature.value = '';
+  output.value = '';
 }
 
 async function copy() {
-  if (!output.value) return
+  if (!output.value) return;
   try {
-    await navigator.clipboard.writeText(output.value)
-    alert('已复制')
+    await navigator.clipboard.writeText(output.value);
+    alert('已复制');
   } catch {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 
 function downloadTxt() {
-  if (!output.value) return
-  const blob = new Blob([output.value], { type: 'text/plain;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'email-template.txt'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!output.value) return;
+  const blob = new Blob([output.value], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'email-template.txt';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

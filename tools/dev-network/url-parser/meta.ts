@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'url-parser',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#0ea5e9,#8b5cf6)',
   icon: 'tabler:link',
   i18nKey: 'tools.url-parser',
-  entry: 'tools/dev-network/url-parser/Component.vue',
-}
-export default meta
+  entry: 'tools/dev-network/url-parser/Component.vue'
+};
+export default meta;

@@ -67,79 +67,79 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-type HistoryItem = { kind: string; summary: string; result: string; timestamp: number }
+import { ref, onMounted } from 'vue';
+type HistoryItem = { kind: string; summary: string; result: string; timestamp: number };
 
-const kind = ref<'json' | 'compute' | 'fetch'>('json')
-const url = ref('https://jsonplaceholder.typicode.com/todos/1')
+const kind = ref<'json' | 'compute' | 'fetch'>('json');
+const url = ref('https://jsonplaceholder.typicode.com/todos/1');
 
-const result = ref('')
-const error = ref('')
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
+  result.value = '';
+  error.value = '';
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'perf.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'perf.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('perf-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('perf-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function measureJson() {
-  const size = 50000
-  const arr = Array.from({ length: size }, (_, i) => ({ id: i, txt: 'x'.repeat(20) }))
-  const payload = JSON.stringify(arr)
-  const t0 = performance.now()
-  const parsed = JSON.parse(payload)
-  const t1 = performance.now()
-  return { type: 'json', payloadBytes: payload.length, items: parsed.length, ms: Math.round(t1 - t0) }
+  const size = 50000;
+  const arr = Array.from({ length: size }, (_, i) => ({ id: i, txt: 'x'.repeat(20) }));
+  const payload = JSON.stringify(arr);
+  const t0 = performance.now();
+  const parsed = JSON.parse(payload);
+  const t1 = performance.now();
+  return { type: 'json', payloadBytes: payload.length, items: parsed.length, ms: Math.round(t1 - t0) };
 }
 function measureCompute() {
-  const size = 100000
-  const arr = Array.from({ length: size }, () => Math.random())
-  const t0 = performance.now()
-  arr.sort((a, b) => a - b)
-  const t1 = performance.now()
-  return { type: 'compute', items: size, ms: Math.round(t1 - t0), min: arr[0], max: arr[arr.length - 1] }
+  const size = 100000;
+  const arr = Array.from({ length: size }, () => Math.random());
+  const t0 = performance.now();
+  arr.sort((a, b) => a - b);
+  const t1 = performance.now();
+  return { type: 'compute', items: size, ms: Math.round(t1 - t0), min: arr[0], max: arr[arr.length - 1] };
 }
 async function measureFetch() {
-  const t0 = performance.now()
-  const res = await fetch(url.value, { cache: 'no-store' })
-  const t1 = performance.now()
-  const text = await res.text()
-  const t2 = performance.now()
-  return { type: 'fetch', url: url.value, status: res.status, bytes: text.length, ms_network: Math.round(t1 - t0), ms_read: Math.round(t2 - t1), ms_total: Math.round(t2 - t0) }
+  const t0 = performance.now();
+  const res = await fetch(url.value, { cache: 'no-store' });
+  const t1 = performance.now();
+  const text = await res.text();
+  const t2 = performance.now();
+  return { type: 'fetch', url: url.value, status: res.status, bytes: text.length, ms_network: Math.round(t1 - t0), ms_read: Math.round(t2 - t1), ms_total: Math.round(t2 - t0) };
 }
 
 async function process() {
-  error.value = ''
-  result.value = ''
+  error.value = '';
+  result.value = '';
   try {
-    let out: any
-    if (kind.value === 'json') out = measureJson()
-    else if (kind.value === 'compute') out = measureCompute()
-    else out = await measureFetch()
-    result.value = JSON.stringify(out, null, 2)
+    let out: any;
+    if (kind.value === 'json') out = measureJson();
+    else if (kind.value === 'compute') out = measureCompute();
+    else out = await measureFetch();
+    result.value = JSON.stringify(out, null, 2);
     history.value.unshift({
       kind: kind.value,
       summary: Object.entries(out)
@@ -148,20 +148,20 @@ async function process() {
         .join(', '),
       result: result.value,
       timestamp: Date.now()
-    })
-    if (history.value.length > 10) history.value = history.value.slice(0, 10)
-    localStorage.setItem('perf-history', JSON.stringify(history.value))
+    });
+    if (history.value.length > 10) history.value = history.value.slice(0, 10);
+    localStorage.setItem('perf-history', JSON.stringify(history.value));
   } catch (e: any) {
-    error.value = e?.message || '测量失败'
+    error.value = e?.message || '测量失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('perf-history')
+  const saved = localStorage.getItem('perf-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

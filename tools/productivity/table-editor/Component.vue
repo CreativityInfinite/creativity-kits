@@ -51,53 +51,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const csv = ref('name,age\nAlice,30\nBob,22')
-const sep = ref(',')
-const headers = ref<string[]>([])
-const rows = ref<Record<string, string>[]>([])
+const csv = ref('name,age\nAlice,30\nBob,22');
+const sep = ref(',');
+const headers = ref<string[]>([]);
+const rows = ref<Record<string, string>[]>([]);
 
 function parse() {
-  const s = sep.value === '\\t' ? '\t' : sep.value
-  const lines = (csv.value || '').split(/\r?\n/).filter(Boolean)
+  const s = sep.value === '\\t' ? '\t' : sep.value;
+  const lines = (csv.value || '').split(/\r?\n/).filter(Boolean);
   if (!lines.length) {
-    headers.value = []
-    rows.value = []
-    return
+    headers.value = [];
+    rows.value = [];
+    return;
   }
-  headers.value = split(lines[0], s)
+  headers.value = split(lines[0], s);
   rows.value = lines.slice(1).map((l) => {
-    const cells = split(l, s)
-    const obj: Record<string, string> = {}
-    headers.value.forEach((h, i) => (obj[h] = cells[i] ?? ''))
-    return obj
-  })
+    const cells = split(l, s);
+    const obj: Record<string, string> = {};
+    headers.value.forEach((h, i) => (obj[h] = cells[i] ?? ''));
+    return obj;
+  });
 }
 
 function split(line: string, s: string) {
   // 简单 split：不处理引号转义的复杂情况（适合轻量编辑）
-  return line.split(s)
+  return line.split(s);
 }
 
 function addRow() {
-  const obj: Record<string, string> = {}
-  headers.value.forEach((h) => (obj[h] = ''))
-  rows.value.push(obj)
+  const obj: Record<string, string> = {};
+  headers.value.forEach((h) => (obj[h] = ''));
+  rows.value.push(obj);
 }
 
 function downloadCsv() {
-  if (!rows.value.length) return
-  const s = sep.value === '\\t' ? '\t' : sep.value
-  const header = headers.value.join(s)
-  const body = rows.value.map((r) => headers.value.map((h) => r[h] ?? '').join(s)).join('\n')
-  const out = `${header}\n${body}`
-  const blob = new Blob([out], { type: 'text/csv;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'table.csv'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!rows.value.length) return;
+  const s = sep.value === '\\t' ? '\t' : sep.value;
+  const header = headers.value.join(s);
+  const body = rows.value.map((r) => headers.value.map((h) => r[h] ?? '').join(s)).join('\n');
+  const out = `${header}\n${body}`;
+  const blob = new Blob([out], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'table.csv';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

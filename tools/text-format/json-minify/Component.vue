@@ -318,34 +318,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue';
 
 interface Analysis {
-  type: string
-  removedItems: number
-  suggestion: string
+  type: string;
+  removedItems: number;
+  suggestion: string;
   statistics?: {
-    whitespaceRemoved: number
-    newlinesRemoved: number
-    commentsRemoved: number
-    emptyValuesRemoved: number
-  }
+    whitespaceRemoved: number;
+    newlinesRemoved: number;
+    commentsRemoved: number;
+    emptyValuesRemoved: number;
+  };
 }
 
 interface CompressionHistory {
-  input: string
-  output: string
-  operation: string
-  ratio: number
-  timestamp: string
-  preview: string
+  input: string;
+  output: string;
+  operation: string;
+  ratio: number;
+  timestamp: string;
+  preview: string;
 }
 
-const inputText = ref('')
-const outputText = ref('')
-const error = ref('')
-const isValidJson = ref<boolean | null>(null)
-const showComparison = ref(false)
+const inputText = ref('');
+const outputText = ref('');
+const error = ref('');
+const isValidJson = ref<boolean | null>(null);
+const showComparison = ref(false);
 
 const options = ref({
   removeWhitespace: true,
@@ -355,150 +355,150 @@ const options = ref({
   removeEmptyValues: false,
   autoMinify: true,
   compressionLevel: 'standard' as 'minimal' | 'standard' | 'aggressive'
-})
+});
 
-const analysis = ref<Analysis | null>(null)
-const compressionHistory = ref<CompressionHistory[]>([])
+const analysis = ref<Analysis | null>(null);
+const compressionHistory = ref<CompressionHistory[]>([]);
 
 const compressionRatio = computed(() => {
-  if (!inputText.value || !outputText.value) return null
-  const originalSize = new Blob([inputText.value]).size
-  const compressedSize = new Blob([outputText.value]).size
-  if (originalSize === 0) return null
-  return Math.round(((originalSize - compressedSize) / originalSize) * 100)
-})
+  if (!inputText.value || !outputText.value) return null;
+  const originalSize = new Blob([inputText.value]).size;
+  const compressedSize = new Blob([outputText.value]).size;
+  if (originalSize === 0) return null;
+  return Math.round(((originalSize - compressedSize) / originalSize) * 100);
+});
 
 const originalSize = computed(() => {
-  return inputText.value ? new Blob([inputText.value]).size : 0
-})
+  return inputText.value ? new Blob([inputText.value]).size : 0;
+});
 
 const compressedSize = computed(() => {
-  return outputText.value ? new Blob([outputText.value]).size : 0
-})
+  return outputText.value ? new Blob([outputText.value]).size : 0;
+});
 
 watch(
   [() => options.value],
   () => {
     if (inputText.value && outputText.value && options.value.autoMinify) {
-      minifyJson()
+      minifyJson();
     }
   },
   { deep: true }
-)
+);
 
 function autoMinify() {
   if (!options.value.autoMinify || !inputText.value.trim()) {
-    outputText.value = ''
-    analysis.value = null
-    isValidJson.value = null
-    return
+    outputText.value = '';
+    analysis.value = null;
+    isValidJson.value = null;
+    return;
   }
 
-  minifyJson()
+  minifyJson();
 }
 
 function minifyJson() {
-  error.value = ''
+  error.value = '';
 
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 JSON 内容'
-      return
+      error.value = '请输入 JSON 内容';
+      return;
     }
 
     // 应用压缩级别预设
-    applyCompressionLevel()
+    applyCompressionLevel();
 
     // 移除注释（如果启用）
-    let processedInput = input
+    let processedInput = input;
     if (options.value.removeComments) {
-      processedInput = removeJsonComments(input)
+      processedInput = removeJsonComments(input);
     }
 
-    const parsed = JSON.parse(processedInput)
+    const parsed = JSON.parse(processedInput);
 
-    let result = parsed
+    let result = parsed;
 
     // 移除空值
     if (options.value.removeEmptyValues) {
-      result = removeEmptyValues(result)
+      result = removeEmptyValues(result);
     }
 
     // 排序键名
     if (options.value.sortKeys) {
-      result = sortObjectKeys(result)
+      result = sortObjectKeys(result);
     }
 
     // 生成压缩的 JSON
-    let jsonString = JSON.stringify(result)
+    let jsonString = JSON.stringify(result);
 
     // 根据选项进一步处理
     if (!options.value.removeWhitespace) {
-      jsonString = JSON.stringify(result, null, 2)
+      jsonString = JSON.stringify(result, null, 2);
     }
 
-    outputText.value = jsonString
-    isValidJson.value = true
-    analyzeCompression(input, jsonString)
-    addToHistory(input, jsonString, '压缩', compressionRatio.value || 0)
+    outputText.value = jsonString;
+    isValidJson.value = true;
+    analyzeCompression(input, jsonString);
+    addToHistory(input, jsonString, '压缩', compressionRatio.value || 0);
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'JSON 解析失败'
-    isValidJson.value = false
-    analysis.value = null
+    error.value = err instanceof Error ? err.message : 'JSON 解析失败';
+    isValidJson.value = false;
+    analysis.value = null;
   }
 }
 
 function beautifyJson() {
-  error.value = ''
+  error.value = '';
 
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 JSON 内容'
-      return
+      error.value = '请输入 JSON 内容';
+      return;
     }
 
-    const parsed = JSON.parse(input)
+    const parsed = JSON.parse(input);
 
-    let result = parsed
+    let result = parsed;
     if (options.value.sortKeys) {
-      result = sortObjectKeys(parsed)
+      result = sortObjectKeys(parsed);
     }
 
-    const jsonString = JSON.stringify(result, null, 2)
+    const jsonString = JSON.stringify(result, null, 2);
 
-    outputText.value = jsonString
-    isValidJson.value = true
-    analyzeCompression(input, jsonString)
-    addToHistory(input, jsonString, '美化', compressionRatio.value || 0)
+    outputText.value = jsonString;
+    isValidJson.value = true;
+    analyzeCompression(input, jsonString);
+    addToHistory(input, jsonString, '美化', compressionRatio.value || 0);
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'JSON 解析失败'
-    isValidJson.value = false
-    analysis.value = null
+    error.value = err instanceof Error ? err.message : 'JSON 解析失败';
+    isValidJson.value = false;
+    analysis.value = null;
   }
 }
 
 function applyCompressionLevel() {
   switch (options.value.compressionLevel) {
     case 'minimal':
-      options.value.removeWhitespace = true
-      options.value.removeNewlines = false
-      options.value.removeComments = false
-      options.value.removeEmptyValues = false
-      break
+      options.value.removeWhitespace = true;
+      options.value.removeNewlines = false;
+      options.value.removeComments = false;
+      options.value.removeEmptyValues = false;
+      break;
     case 'standard':
-      options.value.removeWhitespace = true
-      options.value.removeNewlines = true
-      options.value.removeComments = true
-      options.value.removeEmptyValues = false
-      break
+      options.value.removeWhitespace = true;
+      options.value.removeNewlines = true;
+      options.value.removeComments = true;
+      options.value.removeEmptyValues = false;
+      break;
     case 'aggressive':
-      options.value.removeWhitespace = true
-      options.value.removeNewlines = true
-      options.value.removeComments = true
-      options.value.removeEmptyValues = true
-      break
+      options.value.removeWhitespace = true;
+      options.value.removeNewlines = true;
+      options.value.removeComments = true;
+      options.value.removeEmptyValues = true;
+      break;
   }
 }
 
@@ -506,58 +506,58 @@ function removeJsonComments(jsonString: string): string {
   // 简单的注释移除（不处理字符串内的注释）
   return jsonString
     .replace(/\/\*[\s\S]*?\*\//g, '') // 移除 /* */ 注释
-    .replace(/\/\/.*$/gm, '') // 移除 // 注释
+    .replace(/\/\/.*$/gm, ''); // 移除 // 注释
 }
 
 function removeEmptyValues(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map(removeEmptyValues).filter((item) => item !== null && item !== undefined && item !== '')
+    return obj.map(removeEmptyValues).filter((item) => item !== null && item !== undefined && item !== '');
   } else if (obj !== null && typeof obj === 'object') {
-    const cleaned: any = {}
+    const cleaned: any = {};
     Object.keys(obj).forEach((key) => {
-      const value = removeEmptyValues(obj[key])
+      const value = removeEmptyValues(obj[key]);
       if (value !== null && value !== undefined && value !== '') {
-        cleaned[key] = value
+        cleaned[key] = value;
       }
-    })
-    return cleaned
+    });
+    return cleaned;
   }
-  return obj
+  return obj;
 }
 
 function sortObjectKeys(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map(sortObjectKeys)
+    return obj.map(sortObjectKeys);
   } else if (obj !== null && typeof obj === 'object') {
-    const sorted: any = {}
+    const sorted: any = {};
     Object.keys(obj)
       .sort()
       .forEach((key) => {
-        sorted[key] = sortObjectKeys(obj[key])
-      })
-    return sorted
+        sorted[key] = sortObjectKeys(obj[key]);
+      });
+    return sorted;
   }
-  return obj
+  return obj;
 }
 
 function analyzeCompression(original: string, compressed: string) {
-  const originalLines = original.split('\n')
-  const compressedLines = compressed.split('\n')
+  const originalLines = original.split('\n');
+  const compressedLines = compressed.split('\n');
 
   const statistics = {
     whitespaceRemoved: (original.match(/\s/g) || []).length - (compressed.match(/\s/g) || []).length,
     newlinesRemoved: originalLines.length - compressedLines.length,
     commentsRemoved: (original.match(/\/\*[\s\S]*?\*\/|\/\/.*$/gm) || []).length,
     emptyValuesRemoved: 0 // 这个需要更复杂的分析
-  }
+  };
 
-  const removedItems = statistics.whitespaceRemoved + statistics.newlinesRemoved + statistics.commentsRemoved
+  const removedItems = statistics.whitespaceRemoved + statistics.newlinesRemoved + statistics.commentsRemoved;
 
-  let suggestion = '已达到最佳压缩'
+  let suggestion = '已达到最佳压缩';
   if (compressionRatio.value && compressionRatio.value < 10) {
-    suggestion = '可尝试移除空值进一步压缩'
+    suggestion = '可尝试移除空值进一步压缩';
   } else if (compressionRatio.value && compressionRatio.value < 30) {
-    suggestion = '压缩效果良好'
+    suggestion = '压缩效果良好';
   }
 
   analysis.value = {
@@ -565,70 +565,70 @@ function analyzeCompression(original: string, compressed: string) {
     removedItems,
     suggestion,
     statistics
-  }
+  };
 }
 
 function getCompressionLevelText(level: string): string {
   switch (level) {
     case 'minimal':
-      return '最小压缩'
+      return '最小压缩';
     case 'standard':
-      return '标准压缩'
+      return '标准压缩';
     case 'aggressive':
-      return '激进压缩'
+      return '激进压缩';
     default:
-      return '自定义'
+      return '自定义';
   }
 }
 
 function optimizeForSize() {
-  options.value.compressionLevel = 'aggressive'
-  options.value.removeWhitespace = true
-  options.value.removeNewlines = true
-  options.value.removeComments = true
-  options.value.removeEmptyValues = true
-  options.value.sortKeys = true
-  minifyJson()
+  options.value.compressionLevel = 'aggressive';
+  options.value.removeWhitespace = true;
+  options.value.removeNewlines = true;
+  options.value.removeComments = true;
+  options.value.removeEmptyValues = true;
+  options.value.sortKeys = true;
+  minifyJson();
 }
 
 function optimizeForSpeed() {
-  options.value.compressionLevel = 'minimal'
-  options.value.removeWhitespace = true
-  options.value.removeNewlines = false
-  options.value.removeComments = false
-  options.value.removeEmptyValues = false
-  options.value.sortKeys = false
-  minifyJson()
+  options.value.compressionLevel = 'minimal';
+  options.value.removeWhitespace = true;
+  options.value.removeNewlines = false;
+  options.value.removeComments = false;
+  options.value.removeEmptyValues = false;
+  options.value.sortKeys = false;
+  minifyJson();
 }
 
 function validateJson() {
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      outputText.value = '❌ 请输入 JSON 内容'
-      return
+      outputText.value = '❌ 请输入 JSON 内容';
+      return;
     }
 
-    JSON.parse(input)
-    outputText.value = '✅ JSON 格式有效'
-    isValidJson.value = true
+    JSON.parse(input);
+    outputText.value = '✅ JSON 格式有效';
+    isValidJson.value = true;
   } catch (err) {
-    outputText.value = `❌ JSON 格式无效: ${err instanceof Error ? err.message : '未知错误'}`
-    isValidJson.value = false
+    outputText.value = `❌ JSON 格式无效: ${err instanceof Error ? err.message : '未知错误'}`;
+    isValidJson.value = false;
   }
 }
 
 function compareWithOriginal() {
-  if (!inputText.value || !outputText.value) return
-  showComparison.value = true
+  if (!inputText.value || !outputText.value) return;
+  showComparison.value = true;
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 function loadSampleJson() {
@@ -666,83 +666,83 @@ function loadSampleJson() {
       "notes": null
     }
   ]
-}`
+}`;
 
   if (options.value.autoMinify) {
-    minifyJson()
+    minifyJson();
   }
 }
 
 function clearAll() {
-  inputText.value = ''
-  outputText.value = ''
-  error.value = ''
-  analysis.value = null
-  isValidJson.value = null
-  showComparison.value = false
+  inputText.value = '';
+  outputText.value = '';
+  error.value = '';
+  analysis.value = null;
+  isValidJson.value = null;
+  showComparison.value = false;
 }
 
 async function copyOutput() {
-  if (!outputText.value) return
+  if (!outputText.value) return;
 
   try {
-    await navigator.clipboard.writeText(outputText.value)
+    await navigator.clipboard.writeText(outputText.value);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function downloadResult() {
-  if (!outputText.value) return
+  if (!outputText.value) return;
 
-  const filename = 'minified.json'
-  const mimeType = 'application/json'
+  const filename = 'minified.json';
+  const mimeType = 'application/json';
 
-  const blob = new Blob([outputText.value], { type: mimeType })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([outputText.value], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function handleFileUpload(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    inputText.value = content
+    const content = e.target?.result as string;
+    inputText.value = content;
 
     if (options.value.autoMinify) {
-      minifyJson()
+      minifyJson();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
+  event.preventDefault();
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
 
-  const file = files[0]
-  const reader = new FileReader()
+  const file = files[0];
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    inputText.value = content
+    const content = e.target?.result as string;
+    inputText.value = content;
 
     if (options.value.autoMinify) {
-      minifyJson()
+      minifyJson();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function addToHistory(input: string, output: string, operation: string, ratio: number) {
@@ -753,46 +753,46 @@ function addToHistory(input: string, output: string, operation: string, ratio: n
     ratio,
     timestamp: new Date().toLocaleString(),
     preview: input.slice(0, 50) + (input.length > 50 ? '...' : '')
-  }
+  };
 
-  compressionHistory.value.unshift(historyItem)
-  compressionHistory.value = compressionHistory.value.slice(0, 10)
-  saveCompressionHistory()
+  compressionHistory.value.unshift(historyItem);
+  compressionHistory.value = compressionHistory.value.slice(0, 10);
+  saveCompressionHistory();
 }
 
 function loadFromHistory(history: CompressionHistory) {
-  inputText.value = history.input
-  outputText.value = history.output
+  inputText.value = history.input;
+  outputText.value = history.output;
 }
 
 function clearHistory() {
-  compressionHistory.value = []
-  saveCompressionHistory()
+  compressionHistory.value = [];
+  saveCompressionHistory();
 }
 
 function saveCompressionHistory() {
   try {
-    localStorage.setItem('json-compression-history', JSON.stringify(compressionHistory.value))
+    localStorage.setItem('json-compression-history', JSON.stringify(compressionHistory.value));
   } catch (error) {
-    console.error('保存压缩历史失败:', error)
+    console.error('保存压缩历史失败:', error);
   }
 }
 
 function loadCompressionHistory() {
   try {
-    const saved = localStorage.getItem('json-compression-history')
+    const saved = localStorage.getItem('json-compression-history');
     if (saved) {
-      compressionHistory.value = JSON.parse(saved)
+      compressionHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载压缩历史失败:', error)
+    console.error('加载压缩历史失败:', error);
   }
 }
 
 // 组件挂载时加载历史记录
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
-  loadCompressionHistory()
-})
+  loadCompressionHistory();
+});
 </script>

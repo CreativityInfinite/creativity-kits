@@ -30,41 +30,41 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 
 interface Option {
-  value: string
-  label: string
+  value: string;
+  label: string;
 }
 
 const props = defineProps<{
-  modelValue: string
-  options: Option[]
-}>()
-const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>()
+  modelValue: string;
+  options: Option[];
+}>();
+const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>();
 
-const root = ref<HTMLElement | null>(null)
-const open = ref(false)
-const selectedLabel = computed(() => props.options.find((o) => o.value === props.modelValue)?.label ?? '')
+const root = ref<HTMLElement | null>(null);
+const open = ref(false);
+const selectedLabel = computed(() => props.options.find((o) => o.value === props.modelValue)?.label ?? '');
 
 function onClickAway(e: MouseEvent) {
-  const target = e.target as Node | null
-  const el = root.value
-  if (!el || !target) return
+  const target = e.target as Node | null;
+  const el = root.value;
+  if (!el || !target) return;
   if (!el.contains(target)) {
-    open.value = false
+    open.value = false;
   }
 }
 
 function choose(v: string) {
-  emit('update:modelValue', v)
-  open.value = false
+  emit('update:modelValue', v);
+  open.value = false;
 }
 
 onMounted(() => {
-  document.addEventListener('click', onClickAway)
-})
+  document.addEventListener('click', onClickAway);
+});
 onBeforeUnmount(() => {
-  document.removeEventListener('click', onClickAway)
-})
+  document.removeEventListener('click', onClickAway);
+});
 </script>

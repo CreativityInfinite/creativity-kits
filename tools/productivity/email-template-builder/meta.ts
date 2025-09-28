@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'email-template-builder',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.email-template-builder',
   entry: 'tools/productivity/email-template-builder/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

@@ -55,75 +55,73 @@
 </template>
 
 <script setup lang="ts">
-import Tabs from '~/components/Tabs.vue'
-import ToolCard from '~/components/ToolCard.vue'
-import ThemeStyleSwitch from '~/components/ThemeStyleSwitch.vue'
-import ColorModeSwitch from '~/components/ColorModeSwitch.vue'
-import LangSwitch from '~/components/LangSwitch.vue'
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
-import BackToTop from '~/components/BackToTop.vue'
-import { useTools } from '~/composables/useTools'
-import { isMatchFactory, sortByMatch } from '~/composables/useToolFilters'
-import type { ToolMetaRuntime } from '~/types/tool'
-import { useState } from 'nuxt/app'
-import { useI18n } from 'vue-i18n'
+import Tabs from '~/components/Tabs.vue';
+import ToolCard from '~/components/ToolCard.vue';
+import ThemeStyleSwitch from '~/components/ThemeStyleSwitch.vue';
+import ColorModeSwitch from '~/components/ColorModeSwitch.vue';
+import LangSwitch from '~/components/LangSwitch.vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
+import BackToTop from '~/components/BackToTop.vue';
+import { useTools } from '~/composables/useTools';
+import { isMatchFactory, sortByMatch } from '~/composables/useToolFilters';
+import type { ToolMetaRuntime } from '~/types/tool';
+import { useState } from 'nuxt/app';
+import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 // 直接顶层获取，避免 Ref 嵌套导致 tool 为 true/false/undefined
-const { tools, categories, popularTag } = await useTools()
+const { tools, categories, popularTag } = await useTools();
 
 const tabs = computed(() => [
   { id: 'all', label: t('tabs.all') },
   { id: 'hot', label: t('tabs.hot') },
   { id: 'new', label: t('tabs.new') },
   ...categories.value.map((c: string) => ({ id: c, label: t(`categories.${c}`, c) }))
-])
+]);
 
-const activeTab = ref('all')
+const activeTab = ref('all');
 
-const sentinel = ref<HTMLElement | null>(null)
-let io: IntersectionObserver | null = null
+const sentinel = ref<HTMLElement | null>(null);
+let io: IntersectionObserver | null = null;
 // 用于与 app.vue 顶部开关联动隐藏：Tabs 一旦吸顶则隐藏右上角开关
-const headerSwitchesHidden = useState('headerSwitchesHidden', () => false)
-const tabsSticky = computed(() => headerSwitchesHidden.value)
+const headerSwitchesHidden = useState('headerSwitchesHidden', () => false);
+const tabsSticky = computed(() => headerSwitchesHidden.value);
 
 onMounted(() => {
-  if (!sentinel.value) return
+  if (!sentinel.value) return;
   io = new IntersectionObserver(
     (entries) => {
-      const e = entries[0]
+      const e = entries[0];
       // 当 sentinel 不可见 => Tabs 已吸顶（卡在顶部），隐藏右上角
-      headerSwitchesHidden.value = !e.isIntersecting
+      headerSwitchesHidden.value = !e.isIntersecting;
     },
     { root: null, threshold: 0 }
-  )
-  io.observe(sentinel.value)
-})
+  );
+  io.observe(sentinel.value);
+});
 onBeforeUnmount(() => {
-  if (io && sentinel.value) io.unobserve(sentinel.value)
-  io = null
+  if (io && sentinel.value) io.unobserve(sentinel.value);
+  io = null;
   // 页面离开时恢复显示
-  headerSwitchesHidden.value = false
-})
+  headerSwitchesHidden.value = false;
+});
 
-const isMatch = isMatchFactory(activeTab, popularTag)
+const isMatch = isMatchFactory(activeTab, popularTag);
 const sortedTools = computed(() => {
-  const list = tools.value || []
-  return [...list].sort(sortByMatch(isMatch as (t: ToolMetaRuntime) => boolean))
-})
+  const list = tools.value || [];
+  return [...list].sort(sortByMatch(isMatch as (t: ToolMetaRuntime) => boolean));
+});
 
 function onTabChange(id: string) {
-  activeTab.value = id
+  activeTab.value = id;
 }
 </script>
 
 <style scoped>
 .grid-enter-active,
 .grid-leave-active {
-  transition:
-    opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .grid-enter-from {
   opacity: 0;
@@ -149,9 +147,7 @@ function onTabChange(id: string) {
 /* Tabs 吸顶遮罩的淡入淡出 - 更长更明显的过渡 */
 .tabmask-enter-active,
 .tabmask-leave-active {
-  transition:
-    opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .tabmask-enter-from,
 .tabmask-leave-to {

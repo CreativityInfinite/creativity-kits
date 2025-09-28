@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'pomodoro-timer',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'productivity',
   tags: ['时间管理', '专注', '效率', '番茄工作法', '计时器'],
   i18nKey: 'tools.pomodoro-timer',
-  entry: 'tools/productivity/pomodoro-timer/Component.vue',
-}
-export default meta
+  entry: 'tools/productivity/pomodoro-timer/Component.vue'
+};
+export default meta;

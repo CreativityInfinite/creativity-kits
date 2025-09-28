@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'ics-calendar-generator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:calendar-export',
   i18nKey: 'tools.ics-calendar-generator',
-  entry: 'tools/time-date/ics-calendar-generator/Component.vue',
-}
-export default meta
+  entry: 'tools/time-date/ics-calendar-generator/Component.vue'
+};
+export default meta;

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'http-requester',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#3b82f6,#22c55e)',
   icon: 'tabler:http-get',
   i18nKey: 'tools.http-requester',
-  entry: 'tools/dev-network/http-requester/Component.vue',
-}
-export default meta
+  entry: 'tools/dev-network/http-requester/Component.vue'
+};
+export default meta;

@@ -78,110 +78,110 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref, nextTick } from 'vue';
 
-const fileInput = ref<HTMLInputElement>()
-const originalImage = ref('')
-const originalWidth = ref(0)
-const originalHeight = ref(0)
-const previewImage = ref('')
-const previewWidth = ref(0)
-const previewHeight = ref(0)
+const fileInput = ref<HTMLInputElement>();
+const originalImage = ref('');
+const originalWidth = ref(0);
+const originalHeight = ref(0);
+const previewImage = ref('');
+const previewWidth = ref(0);
+const previewHeight = ref(0);
 
-const resizeMode = ref('fit')
-const targetWidth = ref(800)
-const targetHeight = ref(600)
-const percentage = ref(100)
-const quality = ref(0.9)
+const resizeMode = ref('fit');
+const targetWidth = ref(800);
+const targetHeight = ref(600);
+const percentage = ref(100);
+const quality = ref(0.9);
 
 function handleFileSelect(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0]
-  if (!file) return
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const img = new Image()
+    const img = new Image();
     img.onload = () => {
-      originalImage.value = e.target?.result as string
-      originalWidth.value = img.width
-      originalHeight.value = img.height
-      targetWidth.value = img.width
-      targetHeight.value = img.height
-      nextTick(() => updatePreview())
-    }
-    img.src = e.target?.result as string
-  }
-  reader.readAsDataURL(file)
+      originalImage.value = e.target?.result as string;
+      originalWidth.value = img.width;
+      originalHeight.value = img.height;
+      targetWidth.value = img.width;
+      targetHeight.value = img.height;
+      nextTick(() => updatePreview());
+    };
+    img.src = e.target?.result as string;
+  };
+  reader.readAsDataURL(file);
 }
 
 function resetImage() {
-  originalImage.value = ''
-  previewImage.value = ''
+  originalImage.value = '';
+  previewImage.value = '';
   if (fileInput.value) {
-    fileInput.value.value = ''
+    fileInput.value.value = '';
   }
 }
 
 function updatePreview() {
-  if (!originalImage.value) return
+  if (!originalImage.value) return;
 
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
-  const img = new Image()
+  const img = new Image();
   img.onload = () => {
-    let newWidth = targetWidth.value
-    let newHeight = targetHeight.value
+    let newWidth = targetWidth.value;
+    let newHeight = targetHeight.value;
 
     switch (resizeMode.value) {
       case 'width':
-        newHeight = (img.height * newWidth) / img.width
-        break
+        newHeight = (img.height * newWidth) / img.width;
+        break;
       case 'height':
-        newWidth = (img.width * newHeight) / img.height
-        break
+        newWidth = (img.width * newHeight) / img.height;
+        break;
       case 'fit':
-        const ratio = Math.min(newWidth / img.width, newHeight / img.height)
-        newWidth = img.width * ratio
-        newHeight = img.height * ratio
-        break
+        const ratio = Math.min(newWidth / img.width, newHeight / img.height);
+        newWidth = img.width * ratio;
+        newHeight = img.height * ratio;
+        break;
       case 'percentage':
-        newWidth = img.width * (percentage.value / 100)
-        newHeight = img.height * (percentage.value / 100)
-        break
+        newWidth = img.width * (percentage.value / 100);
+        newHeight = img.height * (percentage.value / 100);
+        break;
     }
 
-    canvas.width = newWidth
-    canvas.height = newHeight
+    canvas.width = newWidth;
+    canvas.height = newHeight;
 
-    ctx.drawImage(img, 0, 0, newWidth, newHeight)
+    ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
-    previewImage.value = canvas.toDataURL('image/jpeg', quality.value)
-    previewWidth.value = Math.round(newWidth)
-    previewHeight.value = Math.round(newHeight)
-  }
-  img.src = originalImage.value
+    previewImage.value = canvas.toDataURL('image/jpeg', quality.value);
+    previewWidth.value = Math.round(newWidth);
+    previewHeight.value = Math.round(newHeight);
+  };
+  img.src = originalImage.value;
 }
 
 function downloadImage() {
-  if (!previewImage.value) return
+  if (!previewImage.value) return;
 
-  const link = document.createElement('a')
-  link.download = `resized-image-${previewWidth.value}x${previewHeight.value}.jpg`
-  link.href = previewImage.value
-  link.click()
+  const link = document.createElement('a');
+  link.download = `resized-image-${previewWidth.value}x${previewHeight.value}.jpg`;
+  link.href = previewImage.value;
+  link.click();
 }
 
 async function copyToClipboard() {
-  if (!previewImage.value) return
+  if (!previewImage.value) return;
 
   try {
-    const response = await fetch(previewImage.value)
-    const blob = await response.blob()
-    await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
+    const response = await fetch(previewImage.value);
+    const blob = await response.blob();
+    await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
   } catch (err) {
-    console.error('复制失败:', err)
+    console.error('复制失败:', err);
   }
 }
 </script>

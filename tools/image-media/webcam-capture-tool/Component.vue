@@ -161,44 +161,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue';
 
 interface CapturedPhoto {
-  dataUrl: string
-  thumbnail: string
-  width: number
-  height: number
-  size: number
-  format: string
-  timestamp: number
+  dataUrl: string;
+  thumbnail: string;
+  width: number;
+  height: number;
+  size: number;
+  format: string;
+  timestamp: number;
 }
 
 interface Camera {
-  deviceId: string
-  label: string
+  deviceId: string;
+  label: string;
 }
 
 interface Resolution {
-  label: string
-  width: number
-  height: number
+  label: string;
+  width: number;
+  height: number;
 }
 
-const videoElement = ref<HTMLVideoElement>()
-const canvasElement = ref<HTMLCanvasElement>()
-const isStreaming = ref(false)
-const isLoading = ref(false)
-const countdown = ref(0)
-const capturedPhoto = ref<CapturedPhoto | null>(null)
-const photoHistory = ref<CapturedPhoto[]>([])
-const cameras = ref<Camera[]>([])
-const selectedCamera = ref('')
-let currentStream: MediaStream | null = null
+const videoElement = ref<HTMLVideoElement>();
+const canvasElement = ref<HTMLCanvasElement>();
+const isStreaming = ref(false);
+const isLoading = ref(false);
+const countdown = ref(0);
+const capturedPhoto = ref<CapturedPhoto | null>(null);
+const photoHistory = ref<CapturedPhoto[]>([]);
+const cameras = ref<Camera[]>([]);
+const selectedCamera = ref('');
+let currentStream: MediaStream | null = null;
 
 const settings = ref({
   mirror: true,
   flash: true
-})
+});
 
 const resolutions: Resolution[] = [
   { label: '640×480', width: 640, height: 480 },
@@ -206,34 +206,34 @@ const resolutions: Resolution[] = [
   { label: '1920×1080 (Full HD)', width: 1920, height: 1080 },
   { label: '2560×1440 (2K)', width: 2560, height: 1440 },
   { label: '3840×2160 (4K)', width: 3840, height: 2160 }
-]
+];
 
-const selectedResolution = ref(resolutions[1]) // 默认720p
+const selectedResolution = ref(resolutions[1]); // 默认720p
 
 // 获取可用摄像头列表
 const getCameras = async () => {
   try {
-    const devices = await navigator.mediaDevices.enumerateDevices()
+    const devices = await navigator.mediaDevices.enumerateDevices();
     cameras.value = devices
       .filter((device) => device.kind === 'videoinput')
       .map((device) => ({
         deviceId: device.deviceId,
         label: device.label
-      }))
+      }));
 
     if (cameras.value.length > 0 && !selectedCamera.value) {
-      selectedCamera.value = cameras.value[0].deviceId
+      selectedCamera.value = cameras.value[0].deviceId;
     }
   } catch (error) {
-    console.error('获取摄像头列表失败:', error)
+    console.error('获取摄像头列表失败:', error);
   }
-}
+};
 
 // 开启摄像头
 const startCamera = async () => {
-  if (isStreaming.value) return
+  if (isStreaming.value) return;
 
-  isLoading.value = true
+  isLoading.value = true;
 
   try {
     const constraints: MediaStreamConstraints = {
@@ -243,85 +243,85 @@ const startCamera = async () => {
         height: { ideal: selectedResolution.value.height }
       },
       audio: false
-    }
+    };
 
-    currentStream = await navigator.mediaDevices.getUserMedia(constraints)
+    currentStream = await navigator.mediaDevices.getUserMedia(constraints);
 
     if (videoElement.value) {
-      videoElement.value.srcObject = currentStream
-      videoElement.value.style.transform = settings.value.mirror ? 'scaleX(-1)' : 'scaleX(1)'
-      isStreaming.value = true
+      videoElement.value.srcObject = currentStream;
+      videoElement.value.style.transform = settings.value.mirror ? 'scaleX(-1)' : 'scaleX(1)';
+      isStreaming.value = true;
     }
   } catch (error) {
-    console.error('启动摄像头失败:', error)
-    alert('无法启动摄像头，请检查权限设置')
+    console.error('启动摄像头失败:', error);
+    alert('无法启动摄像头，请检查权限设置');
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 // 关闭摄像头
 const stopCamera = () => {
   if (currentStream) {
-    currentStream.getTracks().forEach((track) => track.stop())
-    currentStream = null
+    currentStream.getTracks().forEach((track) => track.stop());
+    currentStream = null;
   }
 
   if (videoElement.value) {
-    videoElement.value.srcObject = null
+    videoElement.value.srcObject = null;
   }
 
-  isStreaming.value = false
-}
+  isStreaming.value = false;
+};
 
 // 切换摄像头
 const switchCamera = async () => {
   if (isStreaming.value) {
-    stopCamera()
-    await startCamera()
+    stopCamera();
+    await startCamera();
   }
-}
+};
 
 // 改变分辨率
 const changeResolution = async () => {
   if (isStreaming.value) {
-    stopCamera()
-    await startCamera()
+    stopCamera();
+    await startCamera();
   }
-}
+};
 
 // 拍照
 const takePhoto = () => {
-  if (!videoElement.value || !isStreaming.value) return
+  if (!videoElement.value || !isStreaming.value) return;
 
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
-  const video = videoElement.value
-  canvas.width = video.videoWidth
-  canvas.height = video.videoHeight
+  const video = videoElement.value;
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
 
   // 应用镜像效果
   if (settings.value.mirror) {
-    ctx.scale(-1, 1)
-    ctx.translate(-canvas.width, 0)
+    ctx.scale(-1, 1);
+    ctx.translate(-canvas.width, 0);
   }
 
   // 闪光效果
   if (settings.value.flash) {
-    showFlash()
+    showFlash();
   }
 
-  ctx.drawImage(video, 0, 0)
+  ctx.drawImage(video, 0, 0);
 
   // 生成照片数据
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
-  const thumbnail = generateThumbnail(canvas)
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  const thumbnail = generateThumbnail(canvas);
 
   // 计算文件大小（估算）
-  const base64Length = dataUrl.split(',')[1].length
-  const size = Math.round(base64Length * 0.75)
+  const base64Length = dataUrl.split(',')[1].length;
+  const size = Math.round(base64Length * 0.75);
 
   const photo: CapturedPhoto = {
     dataUrl,
@@ -331,57 +331,57 @@ const takePhoto = () => {
     size,
     format: 'jpeg',
     timestamp: Date.now()
-  }
+  };
 
-  capturedPhoto.value = photo
-  addToHistory(photo)
-}
+  capturedPhoto.value = photo;
+  addToHistory(photo);
+};
 
 // 定时拍照
 const takePhotoWithTimer = () => {
-  if (!isStreaming.value || countdown.value > 0) return
+  if (!isStreaming.value || countdown.value > 0) return;
 
-  countdown.value = 3
+  countdown.value = 3;
   const timer = setInterval(() => {
-    countdown.value--
+    countdown.value--;
     if (countdown.value <= 0) {
-      clearInterval(timer)
-      takePhoto()
+      clearInterval(timer);
+      takePhoto();
     }
-  }, 1000)
-}
+  }, 1000);
+};
 
 // 生成缩略图
 const generateThumbnail = (canvas: HTMLCanvasElement): string => {
-  const thumbnailCanvas = document.createElement('canvas')
-  const ctx = thumbnailCanvas.getContext('2d')
-  if (!ctx) return ''
+  const thumbnailCanvas = document.createElement('canvas');
+  const ctx = thumbnailCanvas.getContext('2d');
+  if (!ctx) return '';
 
-  const size = 150
-  thumbnailCanvas.width = size
-  thumbnailCanvas.height = size
+  const size = 150;
+  thumbnailCanvas.width = size;
+  thumbnailCanvas.height = size;
 
-  const aspectRatio = canvas.width / canvas.height
-  let drawWidth = size
-  let drawHeight = size
-  let offsetX = 0
-  let offsetY = 0
+  const aspectRatio = canvas.width / canvas.height;
+  let drawWidth = size;
+  let drawHeight = size;
+  let offsetX = 0;
+  let offsetY = 0;
 
   if (aspectRatio > 1) {
-    drawHeight = size / aspectRatio
-    offsetY = (size - drawHeight) / 2
+    drawHeight = size / aspectRatio;
+    offsetY = (size - drawHeight) / 2;
   } else {
-    drawWidth = size * aspectRatio
-    offsetX = (size - drawWidth) / 2
+    drawWidth = size * aspectRatio;
+    offsetX = (size - drawWidth) / 2;
   }
 
-  ctx.drawImage(canvas, offsetX, offsetY, drawWidth, drawHeight)
-  return thumbnailCanvas.toDataURL('image/jpeg', 0.7)
-}
+  ctx.drawImage(canvas, offsetX, offsetY, drawWidth, drawHeight);
+  return thumbnailCanvas.toDataURL('image/jpeg', 0.7);
+};
 
 // 闪光效果
 const showFlash = () => {
-  const flash = document.createElement('div')
+  const flash = document.createElement('div');
   flash.style.cssText = `
     position: fixed;
     top: 0;
@@ -392,112 +392,112 @@ const showFlash = () => {
     z-index: 9999;
     pointer-events: none;
     opacity: 0.8;
-  `
+  `;
 
-  document.body.appendChild(flash)
+  document.body.appendChild(flash);
 
   setTimeout(() => {
-    flash.style.opacity = '0'
-    flash.style.transition = 'opacity 0.2s'
+    flash.style.opacity = '0';
+    flash.style.transition = 'opacity 0.2s';
     setTimeout(() => {
-      document.body.removeChild(flash)
-    }, 200)
-  }, 100)
-}
+      document.body.removeChild(flash);
+    }, 200);
+  }, 100);
+};
 
 // 下载照片
 const downloadPhoto = () => {
-  if (!capturedPhoto.value) return
+  if (!capturedPhoto.value) return;
 
-  const link = document.createElement('a')
-  link.download = `photo-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.jpg`
-  link.href = capturedPhoto.value.dataUrl
-  link.click()
-}
+  const link = document.createElement('a');
+  link.download = `photo-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.jpg`;
+  link.href = capturedPhoto.value.dataUrl;
+  link.click();
+};
 
 // 复制到剪贴板
 const copyToClipboard = async () => {
-  if (!capturedPhoto.value) return
+  if (!capturedPhoto.value) return;
 
   try {
     // 将base64转换为blob
-    const response = await fetch(capturedPhoto.value.dataUrl)
-    const blob = await response.blob()
+    const response = await fetch(capturedPhoto.value.dataUrl);
+    const blob = await response.blob();
 
-    await navigator.clipboard.write([new ClipboardItem({ 'image/jpeg': blob })])
+    await navigator.clipboard.write([new ClipboardItem({ 'image/jpeg': blob })]);
 
-    alert('图片已复制到剪贴板')
+    alert('图片已复制到剪贴板');
   } catch (error) {
-    console.error('复制失败:', error)
-    alert('复制失败，请尝试下载功能')
+    console.error('复制失败:', error);
+    alert('复制失败，请尝试下载功能');
   }
-}
+};
 
 // 重新拍照
 const retakePhoto = () => {
-  capturedPhoto.value = null
-}
+  capturedPhoto.value = null;
+};
 
 // 查看历史照片
 const viewPhoto = (photo: CapturedPhoto) => {
-  capturedPhoto.value = photo
-}
+  capturedPhoto.value = photo;
+};
 
 // 删除历史照片
 const deletePhoto = (index: number) => {
-  photoHistory.value.splice(index, 1)
-  saveHistory()
-}
+  photoHistory.value.splice(index, 1);
+  saveHistory();
+};
 
 // 添加到历史记录
 const addToHistory = (photo: CapturedPhoto) => {
-  photoHistory.value.unshift(photo)
+  photoHistory.value.unshift(photo);
 
   // 限制历史记录数量
   if (photoHistory.value.length > 20) {
-    photoHistory.value = photoHistory.value.slice(0, 20)
+    photoHistory.value = photoHistory.value.slice(0, 20);
   }
 
-  saveHistory()
-}
+  saveHistory();
+};
 
 // 清空历史记录
 const clearHistory = () => {
-  photoHistory.value = []
-  localStorage.removeItem('webcam-photo-history')
-}
+  photoHistory.value = [];
+  localStorage.removeItem('webcam-photo-history');
+};
 
 // 保存历史记录
 const saveHistory = () => {
   try {
-    localStorage.setItem('webcam-photo-history', JSON.stringify(photoHistory.value))
+    localStorage.setItem('webcam-photo-history', JSON.stringify(photoHistory.value));
   } catch (error) {
-    console.error('保存历史记录失败:', error)
+    console.error('保存历史记录失败:', error);
   }
-}
+};
 
 // 加载历史记录
 const loadHistory = () => {
   try {
-    const saved = localStorage.getItem('webcam-photo-history')
+    const saved = localStorage.getItem('webcam-photo-history');
     if (saved) {
-      photoHistory.value = JSON.parse(saved)
+      photoHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载历史记录失败:', error)
+    console.error('加载历史记录失败:', error);
   }
-}
+};
 
 // 格式化文件大小
 const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 B'
+  if (bytes === 0) return '0 B';
 
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
-}
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+};
 
 // 格式化时间
 const formatTime = (timestamp: number): string => {
@@ -506,15 +506,15 @@ const formatTime = (timestamp: number): string => {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  })
-}
+  });
+};
 
 onMounted(async () => {
-  await getCameras()
-  loadHistory()
-})
+  await getCameras();
+  loadHistory();
+});
 
 onUnmounted(() => {
-  stopCamera()
-})
+  stopCamera();
+});
 </script>

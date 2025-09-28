@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'macaddress-vendor-lookup',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.macaddress-vendor-lookup',
   entry: 'tools/dev-network/macaddress-vendor-lookup/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

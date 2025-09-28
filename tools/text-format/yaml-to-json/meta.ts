@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'yaml-to-json',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'text-format',
   tags: ['YAML', 'JSON', '格式转换', '数据交换', '配置文件', '结构化数据'],
   i18nKey: 'tools.yaml-to-json',
-  entry: 'tools/text-format/yaml-to-json/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/yaml-to-json/Component.vue'
+};
+export default meta;

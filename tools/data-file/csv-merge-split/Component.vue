@@ -88,212 +88,212 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-type HistoryItem = { mode: string; files: number; summary: string; result: string; timestamp: number }
+import { computed, onMounted, ref } from 'vue';
+type HistoryItem = { mode: string; files: number; summary: string; result: string; timestamp: number };
 
-const mode = ref<'merge' | 'split'>('merge')
-const chunkSize = ref(1000)
-const hasHeader = ref(true)
-const sep = ref(',')
+const mode = ref<'merge' | 'split'>('merge');
+const chunkSize = ref(1000);
+const hasHeader = ref(true);
+const sep = ref(',');
 
-const files = ref<File[]>([])
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const files = ref<File[]>([]);
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => files.value.length > 0)
+const canProcess = computed(() => files.value.length > 0);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
-  files.value = []
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
+  files.value = [];
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = mode.value === 'merge' ? 'merged.csv' : 'split.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = mode.value === 'merge' ? 'merged.csv' : 'split.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const summary = result.value.slice(0, 200).replace(/\s+/g, ' ')
-  history.value.unshift({ mode: mode.value, files: files.value.length, summary, result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('csvms-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const summary = result.value.slice(0, 200).replace(/\s+/g, ' ');
+  history.value.unshift({ mode: mode.value, files: files.value.length, summary, result: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('csvms-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('csvms-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('csvms-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function onFiles(e: Event) {
-  files.value = Array.from((e.target as HTMLInputElement).files || [])
+  files.value = Array.from((e.target as HTMLInputElement).files || []);
 }
 
 function parseCSV(text: string, sepChar: string): string[][] {
-  const q = '"'
-  const rows: string[][] = []
-  let cell = ''
-  let row: string[] = []
-  let inQ = false
+  const q = '"';
+  const rows: string[][] = [];
+  let cell = '';
+  let row: string[] = [];
+  let inQ = false;
   const pushCell = () => {
-    row.push(cell)
-    cell = ''
-  }
+    row.push(cell);
+    cell = '';
+  };
   const pushRow = () => {
-    rows.push(row)
-    row = []
-  }
+    rows.push(row);
+    row = [];
+  };
   for (let i = 0; i < text.length; i++) {
-    const ch = text[i]
+    const ch = text[i];
     if (inQ) {
       if (ch === q) {
         if (text[i + 1] === q) {
-          cell += q
-          i++
-        } else inQ = false
-      } else cell += ch
+          cell += q;
+          i++;
+        } else inQ = false;
+      } else cell += ch;
     } else {
-      if (ch === q) inQ = true
-      else if (ch === sepChar) pushCell()
+      if (ch === q) inQ = true;
+      else if (ch === sepChar) pushCell();
       else if (ch === '\n') {
-        pushCell()
-        pushRow()
+        pushCell();
+        pushRow();
       } else if (ch === '\r') {
         /* ignore */
-      } else cell += ch
+      } else cell += ch;
     }
   }
-  pushCell()
-  pushRow()
-  if (rows.length && rows[rows.length - 1].length === 1 && rows[rows.length - 1][0] === '') rows.pop()
-  return rows
+  pushCell();
+  pushRow();
+  if (rows.length && rows[rows.length - 1].length === 1 && rows[rows.length - 1][0] === '') rows.pop();
+  return rows;
 }
 function toCSV(rows: string[][], sepChar: string): string {
-  const q = '"'
-  const needs = (s: string) => s.includes(sepChar) || s.includes('\n') || s.includes('\r') || s.includes(q)
+  const q = '"';
+  const needs = (s: string) => s.includes(sepChar) || s.includes('\n') || s.includes('\r') || s.includes(q);
   return rows
     .map((r) =>
       r
         .map((c) => {
-          c = c ?? ''
-          if (needs(c)) return q + c.replaceAll(q, q + q) + q
-          return c
+          c = c ?? '';
+          if (needs(c)) return q + c.replaceAll(q, q + q) + q;
+          return c;
         })
         .join(sepChar)
     )
-    .join('\n')
+    .join('\n');
 }
 async function readFileText(f: File) {
-  return await f.text()
+  return await f.text();
 }
 
 async function doMerge() {
-  const tables: string[][][] = []
+  const tables: string[][][] = [];
   for (const f of files.value) {
-    const txt = await readFileText(f)
-    const rows = parseCSV(txt, sep.value === '\\t' ? '\t' : sep.value)
-    if (rows.length) tables.push(rows)
+    const txt = await readFileText(f);
+    const rows = parseCSV(txt, sep.value === '\\t' ? '\t' : sep.value);
+    if (rows.length) tables.push(rows);
   }
-  if (!tables.length) throw new Error('无有效数据')
-  const headersSet = new Set<string>()
+  if (!tables.length) throw new Error('无有效数据');
+  const headersSet = new Set<string>();
   if (hasHeader.value) {
     for (const t of tables) {
-      for (const h of t[0] || []) headersSet.add(h)
+      for (const h of t[0] || []) headersSet.add(h);
     }
   } else {
     // 生成列名 col1,col2,...
-    const maxCols = Math.max(...tables.map((t) => Math.max(...t.map((r) => r.length))))
-    for (let i = 1; i <= maxCols; i++) headersSet.add(`col${i}`)
+    const maxCols = Math.max(...tables.map((t) => Math.max(...t.map((r) => r.length))));
+    for (let i = 1; i <= maxCols; i++) headersSet.add(`col${i}`);
   }
-  const headers = Array.from(headersSet)
-  const out: string[][] = [headers]
+  const headers = Array.from(headersSet);
+  const out: string[][] = [headers];
   for (const t of tables) {
-    const start = hasHeader.value ? 1 : 0
+    const start = hasHeader.value ? 1 : 0;
     for (let i = start; i < t.length; i++) {
-      const row = t[i]
-      const map: Record<string, string> = {}
+      const row = t[i];
+      const map: Record<string, string> = {};
       if (hasHeader.value) {
-        const hs = t[0] || []
-        for (let c = 0; c < hs.length; c++) map[hs[c]] = row[c] ?? ''
+        const hs = t[0] || [];
+        for (let c = 0; c < hs.length; c++) map[hs[c]] = row[c] ?? '';
       } else {
-        for (let c = 0; c < row.length; c++) map[`col${c + 1}`] = row[c] ?? ''
+        for (let c = 0; c < row.length; c++) map[`col${c + 1}`] = row[c] ?? '';
       }
-      out.push(headers.map((h) => map[h] ?? ''))
+      out.push(headers.map((h) => map[h] ?? ''));
     }
   }
-  result.value = toCSV(out, sep.value === '\\t' ? '\t' : sep.value)
+  result.value = toCSV(out, sep.value === '\\t' ? '\t' : sep.value);
 }
 
 async function doSplit() {
   // 将所有文件顺序拼接为单表（若首行有表头，仅取第一个文件的表头）
-  let merged: string[][] = []
-  let header: string[] = []
+  let merged: string[][] = [];
+  let header: string[] = [];
   for (let idx = 0; idx < files.value.length; idx++) {
-    const txt = await readFileText(files.value[idx])
-    const rows = parseCSV(txt, sep.value === '\\t' ? '\t' : sep.value)
-    if (!rows.length) continue
+    const txt = await readFileText(files.value[idx]);
+    const rows = parseCSV(txt, sep.value === '\\t' ? '\t' : sep.value);
+    if (!rows.length) continue;
     if (idx === 0 && hasHeader.value) {
-      header = rows[0]
-      merged = rows.slice(1)
+      header = rows[0];
+      merged = rows.slice(1);
     } else {
-      merged.push(...(hasHeader.value ? rows.slice(1) : rows))
+      merged.push(...(hasHeader.value ? rows.slice(1) : rows));
     }
   }
-  const chunks: { index: number; csv: string }[] = []
-  const sepChar = sep.value === '\\t' ? '\t' : sep.value
+  const chunks: { index: number; csv: string }[] = [];
+  const sepChar = sep.value === '\\t' ? '\t' : sep.value;
   for (let i = 0; i < merged.length; i += chunkSize.value || 1000) {
-    const part = merged.slice(i, i + (chunkSize.value || 1000))
-    const data = hasHeader.value ? [header, ...part] : part
-    chunks.push({ index: chunks.length + 1, csv: toCSV(data, sepChar) })
+    const part = merged.slice(i, i + (chunkSize.value || 1000));
+    const data = hasHeader.value ? [header, ...part] : part;
+    chunks.push({ index: chunks.length + 1, csv: toCSV(data, sepChar) });
   }
   result.value = JSON.stringify(
     { count: chunks.length, note: '逐个保存以下 CSV 字符串即可', files: chunks.map((c) => ({ index: c.index, size: c.csv.split('\n').length })), first: chunks[0]?.csv || '' },
     null,
     2
-  )
+  );
 }
 
 async function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const t0 = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const t0 = performance.now();
   try {
-    if (mode.value === 'merge') await doMerge()
-    else await doSplit()
-    processingTime.value = Math.round(performance.now() - t0)
+    if (mode.value === 'merge') await doMerge();
+    else await doSplit();
+    processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '处理失败'
+    error.value = e?.message || '处理失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('csvms-history')
+  const saved = localStorage.getItem('csvms-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

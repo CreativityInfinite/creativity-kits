@@ -83,102 +83,102 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-type HistoryItem = { srcEnc: string; dstEnc: string; summary: string; result: string; timestamp: number }
+import { computed, onMounted, ref } from 'vue';
+type HistoryItem = { srcEnc: string; dstEnc: string; summary: string; result: string; timestamp: number };
 
-const inputText = ref('')
-const srcEnc = ref<'utf-8' | 'utf-16le' | 'utf-16be' | 'latin1'>('utf-8')
-const dstEnc = ref<'utf-8'>('utf-8')
-const asBase64 = ref(false)
+const inputText = ref('');
+const srcEnc = ref<'utf-8' | 'utf-16le' | 'utf-16be' | 'latin1'>('utf-8');
+const dstEnc = ref<'utf-8'>('utf-8');
+const asBase64 = ref(false);
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => inputText.value.length > 0)
+const canProcess = computed(() => inputText.value.length > 0);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const a = document.createElement('a')
-  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(result.value)
-  a.download = asBase64.value ? 'converted.b64.txt' : 'converted.txt'
-  a.click()
+  if (!result.value) return;
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(result.value);
+  a.download = asBase64.value ? 'converted.b64.txt' : 'converted.txt';
+  a.click();
 }
 function saveToHistory() {
-  if (!result.value) return
-  const summary = (result.value.length > 120 ? result.value.slice(0, 120) + '...' : result.value).replace(/\s+/g, ' ')
-  history.value.unshift({ srcEnc: srcEnc.value, dstEnc: dstEnc.value, summary, result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('encoding-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const summary = (result.value.length > 120 ? result.value.slice(0, 120) + '...' : result.value).replace(/\s+/g, ' ');
+  history.value.unshift({ srcEnc: srcEnc.value, dstEnc: dstEnc.value, summary, result: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('encoding-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('encoding-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('encoding-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function onFile(e: Event) {
-  const f = (e.target as HTMLInputElement).files?.[0]
-  if (!f) return
-  const reader = new FileReader()
+  const f = (e.target as HTMLInputElement).files?.[0];
+  if (!f) return;
+  const reader = new FileReader();
   reader.onload = () => {
-    const buf = reader.result as ArrayBuffer
+    const buf = reader.result as ArrayBuffer;
     try {
-      const txt = new TextDecoder(srcEnc.value as string).decode(buf)
-      inputText.value = txt
+      const txt = new TextDecoder(srcEnc.value as string).decode(buf);
+      inputText.value = txt;
     } catch {
-      alert('此浏览器不支持所选源编码解码')
+      alert('此浏览器不支持所选源编码解码');
     }
-  }
-  reader.readAsArrayBuffer(f)
+  };
+  reader.readAsArrayBuffer(f);
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const t0 = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const t0 = performance.now();
   try {
     // 统一编码为 utf-8 输出
-    const bytes = new TextEncoder().encode(inputText.value)
+    const bytes = new TextEncoder().encode(inputText.value);
     if (asBase64.value) {
-      let s = ''
-      for (const b of bytes) s += String.fromCharCode(b)
-      result.value = btoa(s)
+      let s = '';
+      for (const b of bytes) s += String.fromCharCode(b);
+      result.value = btoa(s);
     } else {
-      result.value = inputText.value
+      result.value = inputText.value;
     }
-    processingTime.value = Math.round(performance.now() - t0)
+    processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '转换失败'
+    error.value = e?.message || '转换失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('encoding-history')
+  const saved = localStorage.getItem('encoding-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

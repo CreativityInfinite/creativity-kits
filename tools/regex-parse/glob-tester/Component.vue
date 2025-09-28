@@ -338,56 +338,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue';
 
 interface GlobOptions {
-  caseSensitive: boolean
-  dot: boolean
-  matchBase: boolean
-  nocase: boolean
-  nobrace: boolean
-  noglobstar: boolean
-  noext: boolean
-  nonegate: boolean
-  separator: string
+  caseSensitive: boolean;
+  dot: boolean;
+  matchBase: boolean;
+  nocase: boolean;
+  nobrace: boolean;
+  noglobstar: boolean;
+  noext: boolean;
+  nonegate: boolean;
+  separator: string;
 }
 
 interface PathResult {
-  path: string
-  matched: boolean
+  path: string;
+  matched: boolean;
 }
 
 interface TestResult {
-  matched: number
-  unmatched: number
-  total: number
-  paths: PathResult[]
+  matched: number;
+  unmatched: number;
+  total: number;
+  paths: PathResult[];
 }
 
 interface TestHistory {
-  pattern: string
-  paths: string[]
-  timestamp: string
-  matched: number
-  total: number
+  pattern: string;
+  paths: string[];
+  timestamp: string;
+  matched: number;
+  total: number;
 }
 
 interface GlobExplanation {
-  pattern: string
-  description: string
+  pattern: string;
+  description: string;
 }
 
 interface CommonGlob {
-  glob: string
-  description: string
-  sample: string[]
+  glob: string;
+  description: string;
+  sample: string[];
 }
 
-const globPattern = ref('')
-const pathsText = ref('')
-const viewMode = ref<'all' | 'matched'>('all')
-const globExplanation = ref<GlobExplanation[]>([])
-const generatedRegex = ref('')
+const globPattern = ref('');
+const pathsText = ref('');
+const viewMode = ref<'all' | 'matched'>('all');
+const globExplanation = ref<GlobExplanation[]>([]);
+const generatedRegex = ref('');
 
 const options = ref<GlobOptions>({
   caseSensitive: true,
@@ -399,47 +399,47 @@ const options = ref<GlobOptions>({
   noext: false,
   nonegate: false,
   separator: '/'
-})
+});
 
-const testHistory = ref<TestHistory[]>([])
-const testResult = ref<TestResult | null>(null)
+const testHistory = ref<TestHistory[]>([]);
+const testResult = ref<TestResult | null>(null);
 
 const pathsList = computed(() => {
   return pathsText.value
     .split('\n')
     .map((path) => path.trim())
-    .filter((path) => path.length > 0)
-})
+    .filter((path) => path.length > 0);
+});
 
 const matchedPaths = computed(() => {
-  return testResult.value?.paths.filter((p) => p.matched) || []
-})
+  return testResult.value?.paths.filter((p) => p.matched) || [];
+});
 
 const matchRate = computed(() => {
-  if (!testResult.value || testResult.value.total === 0) return 0
-  return Math.round((testResult.value.matched / testResult.value.total) * 100)
-})
+  if (!testResult.value || testResult.value.total === 0) return 0;
+  return Math.round((testResult.value.matched / testResult.value.total) * 100);
+});
 
 const averagePathLength = computed(() => {
-  if (pathsList.value.length === 0) return 0
-  const totalLength = pathsList.value.reduce((sum, path) => sum + path.length, 0)
-  return Math.round(totalLength / pathsList.value.length)
-})
+  if (pathsList.value.length === 0) return 0;
+  const totalLength = pathsList.value.reduce((sum, path) => sum + path.length, 0);
+  return Math.round(totalLength / pathsList.value.length);
+});
 
 const maxPathLength = computed(() => {
-  if (pathsList.value.length === 0) return 0
-  return Math.max(...pathsList.value.map((path) => path.length))
-})
+  if (pathsList.value.length === 0) return 0;
+  return Math.max(...pathsList.value.map((path) => path.length));
+});
 
 const displayPaths = computed(() => {
-  if (!testResult.value) return []
+  if (!testResult.value) return [];
 
   if (viewMode.value === 'matched') {
-    return testResult.value.paths.filter((p) => p.matched)
+    return testResult.value.paths.filter((p) => p.matched);
   }
 
-  return testResult.value.paths
-})
+  return testResult.value.paths;
+});
 
 const commonGlobs: Record<string, CommonGlob> = {
   'JavaScript 文件': {
@@ -492,47 +492,47 @@ const commonGlobs: Record<string, CommonGlob> = {
     description: '匹配隐藏文件（需启用 dot 选项）',
     sample: ['.gitignore', '.env', '.eslintrc.js']
   }
-}
+};
 
 watch(
   [globPattern, pathsText, () => options.value],
   () => {
     if (globPattern.value && pathsList.value.length > 0) {
-      testGlob()
+      testGlob();
     }
   },
   { deep: true }
-)
+);
 
 function testGlob() {
   if (!globPattern.value || pathsList.value.length === 0) {
-    testResult.value = null
-    return
+    testResult.value = null;
+    return;
   }
 
   try {
-    const results: PathResult[] = []
+    const results: PathResult[] = [];
 
     for (const path of pathsList.value) {
-      const matched = matchGlob(globPattern.value, path)
-      results.push({ path, matched })
+      const matched = matchGlob(globPattern.value, path);
+      results.push({ path, matched });
     }
 
-    const matched = results.filter((r) => r.matched).length
-    const total = results.length
+    const matched = results.filter((r) => r.matched).length;
+    const total = results.length;
 
     testResult.value = {
       matched,
       unmatched: total - matched,
       total,
       paths: results
-    }
+    };
 
     // 添加到历史记录
-    addToHistory(globPattern.value, pathsList.value, matched, total)
+    addToHistory(globPattern.value, pathsList.value, matched, total);
   } catch (error) {
-    console.error('Glob 测试失败:', error)
-    testResult.value = null
+    console.error('Glob 测试失败:', error);
+    testResult.value = null;
   }
 }
 
@@ -540,91 +540,91 @@ function matchGlob(pattern: string, path: string): boolean {
   // 简化的 Glob 匹配实现
   // 在实际项目中，建议使用专门的 glob 库如 minimatch
 
-  let regex = globToRegex(pattern)
+  let regex = globToRegex(pattern);
 
   // 应用选项
-  let flags = ''
+  let flags = '';
   if (!options.value.caseSensitive || options.value.nocase) {
-    flags += 'i'
+    flags += 'i';
   }
 
   try {
-    const regexObj = new RegExp(regex, flags)
-    return regexObj.test(path)
+    const regexObj = new RegExp(regex, flags);
+    return regexObj.test(path);
   } catch (error) {
-    console.error('正则表达式错误:', error)
-    return false
+    console.error('正则表达式错误:', error);
+    return false;
   }
 }
 
 function globToRegex(glob: string): string {
   // 简化的 Glob 转正则表达式实现
-  let regex = glob
+  let regex = glob;
 
   // 处理否定模式
   if (glob.startsWith('!') && !options.value.nonegate) {
     // 这里简化处理，实际应该在外层处理否定逻辑
-    regex = glob.slice(1)
+    regex = glob.slice(1);
   }
 
   // 处理花括号展开
   if (!options.value.nobrace) {
-    regex = expandBraces(regex)
+    regex = expandBraces(regex);
   }
 
   // 转义特殊字符
-  regex = regex.replace(/[.+^${}()|[\]\\]/g, '\\$&')
+  regex = regex.replace(/[.+^${}()|[\]\\]/g, '\\$&');
 
   // 处理通配符
-  regex = regex.replace(/\\\*/g, '___STAR___')
-  regex = regex.replace(/\\\?/g, '___QUESTION___')
+  regex = regex.replace(/\\\*/g, '___STAR___');
+  regex = regex.replace(/\\\?/g, '___QUESTION___');
 
   // ** 匹配任意层级
   if (!options.value.noglobstar) {
-    regex = regex.replace(/___STAR______STAR___/g, '.*')
+    regex = regex.replace(/___STAR______STAR___/g, '.*');
   }
 
   // * 匹配除路径分隔符外的任意字符
-  regex = regex.replace(/___STAR___/g, '[^/]*')
+  regex = regex.replace(/___STAR___/g, '[^/]*');
 
   // ? 匹配单个字符
-  regex = regex.replace(/___QUESTION___/g, '[^/]')
+  regex = regex.replace(/___QUESTION___/g, '[^/]');
 
   // 处理字符类 [abc] 和 [!abc]
   regex = regex.replace(/\\\[([^\]]*)\\\]/g, (match, chars) => {
     if (chars.startsWith('!')) {
-      return `[^${chars.slice(1)}]`
+      return `[^${chars.slice(1)}]`;
     }
-    return `[${chars}]`
-  })
+    return `[${chars}]`;
+  });
 
   // 如果启用了 matchBase，允许匹配路径的任意部分
   if (options.value.matchBase) {
-    regex = `(^|/)${regex}$`
+    regex = `(^|/)${regex}$`;
   } else {
-    regex = `^${regex}$`
+    regex = `^${regex}$`;
   }
 
-  return regex
+  return regex;
 }
 
 function expandBraces(str: string): string {
   // 简化的花括号展开实现
-  const braceRegex = /\{([^}]+)\}/g
+  const braceRegex = /\{([^}]+)\}/g;
   return str.replace(braceRegex, (match, content) => {
-    const options = content.split(',')
-    return `(${options.join('|')})`
-  })
+    const options = content.split(',');
+    return `(${options.join('|')})`;
+  });
 }
 
 function explainGlob() {
   if (!globPattern.value) {
-    globExplanation.value = []
-    return
+    globExplanation.value = [];
+    return;
   }
 
-  const explanations: GlobExplanation[] = []
-  const pattern = globPattern.value
+  const explanations: GlobExplanation[] = [];
+  const pattern = globPattern.value;
 
   // 分析 Glob 模式的各个部分
   const explanationMap: Record<string, string> = {
@@ -635,78 +635,78 @@ function explainGlob() {
     '[!abc]': '匹配不在字符集中的字符',
     '{js,ts}': '花括号展开，匹配多个选项',
     '!': '否定模式，排除匹配的文件'
-  }
+  };
 
   // 检查特殊模式
   if (pattern.includes('**')) {
-    explanations.push({ pattern: '**', description: '匹配任意层级目录' })
+    explanations.push({ pattern: '**', description: '匹配任意层级目录' });
   }
 
   if (pattern.includes('*') && !pattern.includes('**')) {
-    explanations.push({ pattern: '*', description: '匹配任意字符（不包括路径分隔符）' })
+    explanations.push({ pattern: '*', description: '匹配任意字符（不包括路径分隔符）' });
   }
 
   if (pattern.includes('?')) {
-    explanations.push({ pattern: '?', description: '匹配单个字符' })
+    explanations.push({ pattern: '?', description: '匹配单个字符' });
   }
 
   if (pattern.startsWith('!')) {
-    explanations.push({ pattern: '!', description: '否定模式，排除匹配的文件' })
+    explanations.push({ pattern: '!', description: '否定模式，排除匹配的文件' });
   }
 
   // 查找字符类
-  const charClassRegex = /\[([^\]]+)\]/g
-  let match: RegExpExecArray | null
+  const charClassRegex = /\[([^\]]+)\]/g;
+  let match: RegExpExecArray | null;
   while ((match = charClassRegex.exec(pattern)) !== null) {
-    const chars = match[1]
+    const chars = match[1];
     if (chars.startsWith('!')) {
       explanations.push({
         pattern: match[0],
         description: `排除字符类：不匹配 ${chars.slice(1)} 中的字符`
-      })
+      });
     } else {
       explanations.push({
         pattern: match[0],
         description: `字符类：匹配 ${chars} 中的任意字符`
-      })
+      });
     }
   }
 
   // 查找花括号展开
-  const braceRegex = /\{([^}]+)\}/g
+  const braceRegex = /\{([^}]+)\}/g;
   while ((match = braceRegex.exec(pattern)) !== null) {
     explanations.push({
       pattern: match[0],
       description: `花括号展开：匹配 ${match[1].split(',').join(' 或 ')}`
-    })
+    });
   }
 
-  globExplanation.value = explanations
+  globExplanation.value = explanations;
 }
 
 function generateRegex() {
   if (!globPattern.value) {
-    generatedRegex.value = ''
-    return
+    generatedRegex.value = '';
+    return;
   }
 
   try {
-    const regex = globToRegex(globPattern.value)
-    generatedRegex.value = regex
+    const regex = globToRegex(globPattern.value);
+    generatedRegex.value = regex;
   } catch (error) {
-    generatedRegex.value = '生成失败：' + (error instanceof Error ? error.message : '未知错误')
+    generatedRegex.value = '生成失败：' + (error instanceof Error ? error.message : '未知错误');
   }
 }
 
 function loadGlobPattern(pattern: CommonGlob, name: string) {
-  globPattern.value = pattern.glob
-  pathsText.value = pattern.sample.join('\n')
+  globPattern.value = pattern.glob;
+  pathsText.value = pattern.sample.join('\n');
 
-  testGlob()
+  testGlob();
 }
 
 function loadSampleGlob() {
-  globPattern.value = '**/*.{js,ts,vue}'
+  globPattern.value = '**/*.{js,ts,vue}';
   pathsText.value = `src/main.js
 src/components/App.vue
 src/utils/helper.ts
@@ -716,80 +716,80 @@ node_modules/lodash/index.js
 tests/app.test.js
 assets/style.css
 src/pages/Home.vue
-lib/utils.ts`
+lib/utils.ts`;
 
-  testGlob()
+  testGlob();
 }
 
 function testManually() {
-  testGlob()
+  testGlob();
 }
 
 function toggleView() {
-  viewMode.value = viewMode.value === 'all' ? 'matched' : 'all'
+  viewMode.value = viewMode.value === 'all' ? 'matched' : 'all';
 }
 
 function addPath() {
-  const newPath = prompt('输入新的文件路径:')
+  const newPath = prompt('输入新的文件路径:');
   if (newPath && newPath.trim()) {
-    pathsText.value += (pathsText.value ? '\n' : '') + newPath.trim()
-    testGlob()
+    pathsText.value += (pathsText.value ? '\n' : '') + newPath.trim();
+    testGlob();
   }
 }
 
 function clearPattern() {
-  globPattern.value = ''
-  testResult.value = null
-  globExplanation.value = []
-  generatedRegex.value = ''
+  globPattern.value = '';
+  testResult.value = null;
+  globExplanation.value = [];
+  generatedRegex.value = '';
 }
 
 function clearPaths() {
-  pathsText.value = ''
-  testResult.value = null
+  pathsText.value = '';
+  testResult.value = null;
 }
 
 async function copyResults() {
-  if (!testResult.value) return
+  if (!testResult.value) return;
 
-  let content = `Glob 模式: ${globPattern.value}\n`
-  content += `匹配结果: ${testResult.value.matched}/${testResult.value.total} (${matchRate.value}%)\n\n`
+  let content = `Glob 模式: ${globPattern.value}\n`;
+  content += `匹配结果: ${testResult.value.matched}/${testResult.value.total} (${matchRate.value}%)\n\n`;
 
-  content += '匹配的路径:\n'
+  content += '匹配的路径:\n';
   testResult.value.paths
     .filter((p) => p.matched)
     .forEach((path) => {
-      content += `✓ ${path.path}\n`
-    })
+      content += `✓ ${path.path}\n`;
+    });
 
-  content += '\n不匹配的路径:\n'
+  content += '\n不匹配的路径:\n';
   testResult.value.paths
     .filter((p) => !p.matched)
     .forEach((path) => {
-      content += `✗ ${path.path}\n`
-    })
+      content += `✗ ${path.path}\n`;
+    });
 
   try {
-    await navigator.clipboard.writeText(content)
+    await navigator.clipboard.writeText(content);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 async function copyRegex() {
-  if (!generatedRegex.value) return
+  if (!generatedRegex.value) return;
 
   try {
-    await navigator.clipboard.writeText(generatedRegex.value)
+    await navigator.clipboard.writeText(generatedRegex.value);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function downloadResults() {
-  if (!testResult.value) return
+  if (!testResult.value) return;
 
   const content = `Glob 模式测试结果
 
@@ -824,52 +824,52 @@ ${
 ${generatedRegex.value}`
     : ''
 }
-`
+`;
 
-  const blob = new Blob([content], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'glob-test-results.txt'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'glob-test-results.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function handleFileUpload(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    pathsText.value = content
+    const content = e.target?.result as string;
+    pathsText.value = content;
 
     if (globPattern.value) {
-      testGlob()
+      testGlob();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
+  event.preventDefault();
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
 
-  const file = files[0]
-  const reader = new FileReader()
+  const file = files[0];
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    pathsText.value = content
+    const content = e.target?.result as string;
+    pathsText.value = content;
 
     if (globPattern.value) {
-      testGlob()
+      testGlob();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function addToHistory(pattern: string, paths: string[], matched: number, total: number) {
@@ -879,48 +879,48 @@ function addToHistory(pattern: string, paths: string[], matched: number, total: 
     timestamp: new Date().toLocaleString(),
     matched,
     total
-  }
+  };
 
-  testHistory.value.unshift(historyItem)
-  testHistory.value = testHistory.value.slice(0, 10)
-  saveTestHistory()
+  testHistory.value.unshift(historyItem);
+  testHistory.value = testHistory.value.slice(0, 10);
+  saveTestHistory();
 }
 
 function loadFromHistory(history: TestHistory) {
-  globPattern.value = history.pattern
-  pathsText.value = history.paths.join('\n')
+  globPattern.value = history.pattern;
+  pathsText.value = history.paths.join('\n');
 
-  testGlob()
+  testGlob();
 }
 
 function clearHistory() {
-  testHistory.value = []
-  saveTestHistory()
+  testHistory.value = [];
+  saveTestHistory();
 }
 
 function saveTestHistory() {
   try {
-    localStorage.setItem('glob-test-history', JSON.stringify(testHistory.value))
+    localStorage.setItem('glob-test-history', JSON.stringify(testHistory.value));
   } catch (error) {
-    console.error('保存测试历史失败:', error)
+    console.error('保存测试历史失败:', error);
   }
 }
 
 function loadTestHistory() {
   try {
-    const saved = localStorage.getItem('glob-test-history')
+    const saved = localStorage.getItem('glob-test-history');
     if (saved) {
-      testHistory.value = JSON.parse(saved)
+      testHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载测试历史失败:', error)
+    console.error('加载测试历史失败:', error);
   }
 }
 
 // 组件挂载时加载历史记录
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
-  loadTestHistory()
-})
+  loadTestHistory();
+});
 </script>

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'json-to-yaml',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:swap-horizontal-variant',
   i18nKey: 'tools.json-to-yaml',
-  entry: 'tools/text-format/json-to-yaml/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/json-to-yaml/Component.vue'
+};
+export default meta;

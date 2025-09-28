@@ -95,67 +95,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
-type HistoryItem = { title: string; result: string; timestamp: number }
+type HistoryItem = { title: string; result: string; timestamp: number };
 
-const schemaText = ref('')
-const dataText = ref('')
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const schemaText = ref('');
+const dataText = ref('');
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => schemaText.value.trim().length > 0 && dataText.value.trim().length > 0)
+const canProcess = computed(() => schemaText.value.trim().length > 0 && dataText.value.trim().length > 0);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function swapView() {
-  if (result.value) copyResult()
+  if (result.value) copyResult();
 }
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const filename = `json_schema_${new Date().toISOString().slice(0, 10)}.json`
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `json_schema_${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const item: HistoryItem = { title: '校验结果', result: result.value, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('json-schema-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const item: HistoryItem = { title: '校验结果', result: result.value, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('json-schema-history', JSON.stringify(history.value));
 }
 function loadFromHistory(item: HistoryItem) {
-  result.value = item.result
-  error.value = ''
-  processingTime.value = null
+  result.value = item.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('json-schema-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('json-schema-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function validate(schema: any, data: any, path = '$'): string[] {
-  const errs: string[] = []
-  const t = schema.type
+  const errs: string[] = [];
+  const t = schema.type;
   if (t) {
     const ok =
       (t === 'object' && typeof data === 'object' && data !== null && !Array.isArray(data)) ||
@@ -164,113 +164,113 @@ function validate(schema: any, data: any, path = '$'): string[] {
       (t === 'number' && typeof data === 'number') ||
       (t === 'integer' && Number.isInteger(data)) ||
       (t === 'boolean' && typeof data === 'boolean') ||
-      (t === 'null' && data === null)
-    if (!ok) errs.push(`${path}: type 期望 ${t}`)
+      (t === 'null' && data === null);
+    if (!ok) errs.push(`${path}: type 期望 ${t}`);
   }
   if (schema.enum && Array.isArray(schema.enum)) {
-    if (!schema.enum.some((v: any) => JSON.stringify(v) === JSON.stringify(data))) errs.push(`${path}: 不在 enum 列表中`)
+    if (!schema.enum.some((v: any) => JSON.stringify(v) === JSON.stringify(data))) errs.push(`${path}: 不在 enum 列表中`);
   }
   if (schema.const !== undefined) {
-    if (JSON.stringify(schema.const) !== JSON.stringify(data)) errs.push(`${path}: 不等于 const 指定值`)
+    if (JSON.stringify(schema.const) !== JSON.stringify(data)) errs.push(`${path}: 不等于 const 指定值`);
   }
   if (schema.type === 'object') {
-    const props = schema.properties || {}
-    const required: string[] = schema.required || []
+    const props = schema.properties || {};
+    const required: string[] = schema.required || [];
     for (const key of required) {
-      if (!(key in (data || {}))) errs.push(`${path}: 缺少必需属性 '${key}'`)
+      if (!(key in (data || {}))) errs.push(`${path}: 缺少必需属性 '${key}'`);
     }
     for (const key of Object.keys(props)) {
-      if (key in (data || {})) errs.push(...validate(props[key], data[key], `${path}.${key}`))
+      if (key in (data || {})) errs.push(...validate(props[key], data[key], `${path}.${key}`));
     }
     if (schema.additionalProperties === false) {
       for (const key of Object.keys(data || {})) {
-        if (!props[key]) errs.push(`${path}: 额外属性 '${key}' 不允许`)
+        if (!props[key]) errs.push(`${path}: 额外属性 '${key}' 不允许`);
       }
     }
   }
   if (schema.type === 'array') {
     if (Array.isArray(data)) {
-      const items = schema.items
-      if (items) data.forEach((v, i) => errs.push(...validate(items, v, `${path}[${i}]`)))
-      if (schema.minItems != null && data.length < schema.minItems) errs.push(`${path}: 长度小于 minItems`)
-      if (schema.maxItems != null && data.length > schema.maxItems) errs.push(`${path}: 长度大于 maxItems`)
+      const items = schema.items;
+      if (items) data.forEach((v, i) => errs.push(...validate(items, v, `${path}[${i}]`)));
+      if (schema.minItems != null && data.length < schema.minItems) errs.push(`${path}: 长度小于 minItems`);
+      if (schema.maxItems != null && data.length > schema.maxItems) errs.push(`${path}: 长度大于 maxItems`);
       if (schema.uniqueItems) {
-        const set = new Set(data.map((x) => JSON.stringify(x)))
-        if (set.size !== data.length) errs.push(`${path}: uniqueItems 违反`)
+        const set = new Set(data.map((x) => JSON.stringify(x)));
+        if (set.size !== data.length) errs.push(`${path}: uniqueItems 违反`);
       }
     }
   }
   if (schema.type === 'string') {
     if (typeof data === 'string') {
-      if (schema.minLength != null && data.length < schema.minLength) errs.push(`${path}: 长度小于 minLength`)
-      if (schema.maxLength != null && data.length > schema.maxLength) errs.push(`${path}: 长度大于 maxLength`)
+      if (schema.minLength != null && data.length < schema.minLength) errs.push(`${path}: 长度小于 minLength`);
+      if (schema.maxLength != null && data.length > schema.maxLength) errs.push(`${path}: 长度大于 maxLength`);
       if (schema.pattern) {
         try {
-          const re = new RegExp(schema.pattern)
-          if (!re.test(data)) errs.push(`${path}: 不匹配 pattern`)
+          const re = new RegExp(schema.pattern);
+          if (!re.test(data)) errs.push(`${path}: 不匹配 pattern`);
         } catch {}
       }
       if (schema.format) {
         if (schema.format === 'email') {
-          const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-          if (!re.test(data)) errs.push(`${path}: 非 email 格式`)
+          const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!re.test(data)) errs.push(`${path}: 非 email 格式`);
         }
         if (schema.format === 'uri') {
           try {
-            new URL(data)
+            new URL(data);
           } catch {
-            errs.push(`${path}: 非 uri 格式`)
+            errs.push(`${path}: 非 uri 格式`);
           }
         }
         if (schema.format === 'date-time') {
-          const d = new Date(data)
-          if (Number.isNaN(d.getTime())) errs.push(`${path}: 非 date-time 格式`)
+          const d = new Date(data);
+          if (Number.isNaN(d.getTime())) errs.push(`${path}: 非 date-time 格式`);
         }
       }
     }
   }
   if (schema.type === 'number' || schema.type === 'integer') {
     if (typeof data === 'number') {
-      if (schema.minimum != null && data < schema.minimum) errs.push(`${path}: 小于 minimum`)
-      if (schema.maximum != null && data > schema.maximum) errs.push(`${path}: 大于 maximum`)
-      if (schema.exclusiveMinimum != null && data <= schema.exclusiveMinimum) errs.push(`${path}: 小于等于 exclusiveMinimum`)
-      if (schema.exclusiveMaximum != null && data >= schema.exclusiveMaximum) errs.push(`${path}: 大于等于 exclusiveMaximum`)
-      if (schema.multipleOf != null && data % schema.multipleOf !== 0) errs.push(`${path}: 非 multipleOf`)
+      if (schema.minimum != null && data < schema.minimum) errs.push(`${path}: 小于 minimum`);
+      if (schema.maximum != null && data > schema.maximum) errs.push(`${path}: 大于 maximum`);
+      if (schema.exclusiveMinimum != null && data <= schema.exclusiveMinimum) errs.push(`${path}: 小于等于 exclusiveMinimum`);
+      if (schema.exclusiveMaximum != null && data >= schema.exclusiveMaximum) errs.push(`${path}: 大于等于 exclusiveMaximum`);
+      if (schema.multipleOf != null && data % schema.multipleOf !== 0) errs.push(`${path}: 非 multipleOf`);
     }
   }
-  return errs
+  return errs;
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
   try {
-    const schema = JSON.parse(schemaText.value)
-    const lines = dataText.value.split(/\r?\n/).filter((l) => l.trim().length > 0)
+    const schema = JSON.parse(schemaText.value);
+    const lines = dataText.value.split(/\r?\n/).filter((l) => l.trim().length > 0);
     const items = lines.map((line) => {
       try {
-        const data = JSON.parse(line)
-        const errors = validate(schema, data, '$')
-        return { ok: errors.length === 0, errors, data }
+        const data = JSON.parse(line);
+        const errors = validate(schema, data, '$');
+        return { ok: errors.length === 0, errors, data };
       } catch (e: any) {
-        return { ok: false, errors: ['JSON 解析失败: ' + (e?.message || String(e))], data: null }
+        return { ok: false, errors: ['JSON 解析失败: ' + (e?.message || String(e))], data: null };
       }
-    })
-    result.value = JSON.stringify({ items }, null, 2)
-    processingTime.value = Math.round(performance.now() - start)
+    });
+    result.value = JSON.stringify({ items }, null, 2);
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '校验失败'
+    error.value = e?.message || '校验失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('json-schema-history')
+  const saved = localStorage.getItem('json-schema-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

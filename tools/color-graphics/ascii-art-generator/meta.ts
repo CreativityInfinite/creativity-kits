@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'ascii-art-generator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:format-text-variant',
   i18nKey: 'tools.ascii-art-generator',
-  entry: 'tools/color-graphics/ascii-art-generator/Component.vue',
-}
-export default meta
+  entry: 'tools/color-graphics/ascii-art-generator/Component.vue'
+};
+export default meta;

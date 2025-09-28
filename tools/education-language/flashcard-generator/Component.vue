@@ -212,89 +212,89 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface FlashCard {
-  id: string
-  front: string
-  back: string
-  category?: string
-  difficulty: 'easy' | 'medium' | 'hard'
-  tags?: string[]
-  createdAt: number
-  lastStudied?: number
-  studyCount: number
-  correctCount: number
+  id: string;
+  front: string;
+  back: string;
+  category?: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  tags?: string[];
+  createdAt: number;
+  lastStudied?: number;
+  studyCount: number;
+  correctCount: number;
 }
 
 interface StudyStats {
-  totalStudied: number
-  accuracy: number
+  totalStudied: number;
+  accuracy: number;
 }
 
-const cards = ref<FlashCard[]>([])
+const cards = ref<FlashCard[]>([]);
 const newCard = ref({
   front: '',
   back: '',
   category: '',
   difficulty: 'medium' as const,
   tags: ''
-})
-const customCategory = ref('')
-const bulkInput = ref('')
-const filterCategory = ref('')
-const filterDifficulty = ref('')
-const studyMode = ref<'sequential' | 'random' | 'spaced' | null>(null)
-const studyCards = ref<FlashCard[]>([])
-const currentCardIndex = ref(0)
-const showAnswer = ref(false)
+});
+const customCategory = ref('');
+const bulkInput = ref('');
+const filterCategory = ref('');
+const filterDifficulty = ref('');
+const studyMode = ref<'sequential' | 'random' | 'spaced' | null>(null);
+const studyCards = ref<FlashCard[]>([]);
+const currentCardIndex = ref(0);
+const showAnswer = ref(false);
 
-const categories = ['英语', '数学', '历史', '地理', '科学', '编程', '医学', '法律', '艺术', '音乐', 'custom']
+const categories = ['英语', '数学', '历史', '地理', '科学', '编程', '医学', '法律', '艺术', '音乐', 'custom'];
 
 const canAddCard = computed(() => {
-  return newCard.value.front.trim() && newCard.value.back.trim()
-})
+  return newCard.value.front.trim() && newCard.value.back.trim();
+});
 
 const finalCategory = computed(() => {
-  return newCard.value.category === 'custom' ? customCategory.value : newCard.value.category
-})
+  return newCard.value.category === 'custom' ? customCategory.value : newCard.value.category;
+});
 
 const usedCategories = computed(() => {
-  const cats = new Set(cards.value.map((c) => c.category).filter(Boolean))
-  return Array.from(cats).sort()
-})
+  const cats = new Set(cards.value.map((c) => c.category).filter(Boolean));
+  return Array.from(cats).sort();
+});
 
 const filteredCards = computed(() => {
-  let filtered = cards.value
+  let filtered = cards.value;
 
   if (filterCategory.value) {
-    filtered = filtered.filter((c) => c.category === filterCategory.value)
+    filtered = filtered.filter((c) => c.category === filterCategory.value);
   }
 
   if (filterDifficulty.value) {
-    filtered = filtered.filter((c) => c.difficulty === filterDifficulty.value)
+    filtered = filtered.filter((c) => c.difficulty === filterDifficulty.value);
   }
 
-  return filtered
-})
+  return filtered;
+});
 
 const currentStudyCard = computed(() => {
-  return studyCards.value[currentCardIndex.value]
-})
+  return studyCards.value[currentCardIndex.value];
+});
 
 const studyStats = computed((): StudyStats => {
-  const totalStudied = cards.value.reduce((sum, card) => sum + card.studyCount, 0)
-  const totalCorrect = cards.value.reduce((sum, card) => sum + card.correctCount, 0)
-  const accuracy = totalStudied > 0 ? (totalCorrect / totalStudied) * 100 : 0
+  const totalStudied = cards.value.reduce((sum, card) => sum + card.studyCount, 0);
+  const totalCorrect = cards.value.reduce((sum, card) => sum + card.correctCount, 0);
+  const accuracy = totalStudied > 0 ? (totalCorrect / totalStudied) * 100 : 0;
 
   return {
     totalStudied,
     accuracy
-  }
-})
+  };
+});
 
 function addCard() {
-  if (!canAddCard.value) return
+  if (!canAddCard.value) return;
 
   const card: FlashCard = {
     id: Date.now().toString(),
@@ -311,11 +311,11 @@ function addCard() {
     createdAt: Date.now(),
     studyCount: 0,
     correctCount: 0
-  }
+  };
 
-  cards.value.push(card)
-  clearForm()
-  saveCards()
+  cards.value.push(card);
+  clearForm();
+  saveCards();
 }
 
 function clearForm() {
@@ -325,16 +325,16 @@ function clearForm() {
     category: '',
     difficulty: 'medium',
     tags: ''
-  }
-  customCategory.value = ''
+  };
+  customCategory.value = '';
 }
 
 function processBulkInput() {
-  const lines = bulkInput.value.trim().split('\n')
-  let addedCount = 0
+  const lines = bulkInput.value.trim().split('\n');
+  let addedCount = 0;
 
   for (const line of lines) {
-    const parts = line.split('|').map((p) => p.trim())
+    const parts = line.split('|').map((p) => p.trim());
     if (parts.length >= 2) {
       const card: FlashCard = {
         id: Date.now().toString() + Math.random(),
@@ -345,192 +345,192 @@ function processBulkInput() {
         createdAt: Date.now(),
         studyCount: 0,
         correctCount: 0
-      }
-      cards.value.push(card)
-      addedCount++
+      };
+      cards.value.push(card);
+      addedCount++;
     }
   }
 
   if (addedCount > 0) {
-    bulkInput.value = ''
-    saveCards()
-    alert(`成功添加 ${addedCount} 张卡片`)
+    bulkInput.value = '';
+    saveCards();
+    alert(`成功添加 ${addedCount} 张卡片`);
   }
 }
 
 function editCard(index: number) {
-  const card = filteredCards.value[index]
-  const originalIndex = cards.value.findIndex((c) => c.id === card.id)
+  const card = filteredCards.value[index];
+  const originalIndex = cards.value.findIndex((c) => c.id === card.id);
 
-  const front = prompt('编辑正面内容:', card.front)
+  const front = prompt('编辑正面内容:', card.front);
   if (front !== null) {
-    const back = prompt('编辑背面内容:', card.back)
+    const back = prompt('编辑背面内容:', card.back);
     if (back !== null) {
-      cards.value[originalIndex].front = front.trim()
-      cards.value[originalIndex].back = back.trim()
-      saveCards()
+      cards.value[originalIndex].front = front.trim();
+      cards.value[originalIndex].back = back.trim();
+      saveCards();
     }
   }
 }
 
 function deleteCard(index: number) {
-  const card = filteredCards.value[index]
-  const originalIndex = cards.value.findIndex((c) => c.id === card.id)
+  const card = filteredCards.value[index];
+  const originalIndex = cards.value.findIndex((c) => c.id === card.id);
 
   if (confirm('确定要删除这张卡片吗？')) {
-    cards.value.splice(originalIndex, 1)
-    saveCards()
+    cards.value.splice(originalIndex, 1);
+    saveCards();
   }
 }
 
 function getDifficultyClass(difficulty: string): string {
   switch (difficulty) {
     case 'easy':
-      return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200'
+      return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200';
     case 'medium':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200'
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200';
     case 'hard':
-      return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200'
+      return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200';
     default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
   }
 }
 
 function getDifficultyLabel(difficulty: string): string {
   switch (difficulty) {
     case 'easy':
-      return '简单'
+      return '简单';
     case 'medium':
-      return '中等'
+      return '中等';
     case 'hard':
-      return '困难'
+      return '困难';
     default:
-      return '未知'
+      return '未知';
   }
 }
 
 function startStudy(mode: 'sequential' | 'random' | 'spaced') {
   if (filteredCards.value.length === 0) {
-    alert('没有可学习的卡片')
-    return
+    alert('没有可学习的卡片');
+    return;
   }
 
-  studyMode.value = mode
-  studyCards.value = [...filteredCards.value]
+  studyMode.value = mode;
+  studyCards.value = [...filteredCards.value];
 
   if (mode === 'random') {
     // 随机打乱
     for (let i = studyCards.value.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[studyCards.value[i], studyCards.value[j]] = [studyCards.value[j], studyCards.value[i]]
+      const j = Math.floor(Math.random() * (i + 1));
+      [studyCards.value[i], studyCards.value[j]] = [studyCards.value[j], studyCards.value[i]];
     }
   } else if (mode === 'spaced') {
     // 间隔重复：优先显示学习次数少或错误率高的卡片
     studyCards.value.sort((a, b) => {
-      const aScore = a.studyCount === 0 ? 0 : a.correctCount / a.studyCount
-      const bScore = b.studyCount === 0 ? 0 : b.correctCount / b.studyCount
-      return aScore - bScore
-    })
+      const aScore = a.studyCount === 0 ? 0 : a.correctCount / a.studyCount;
+      const bScore = b.studyCount === 0 ? 0 : b.correctCount / b.studyCount;
+      return aScore - bScore;
+    });
   }
 
-  currentCardIndex.value = 0
-  showAnswer.value = false
+  currentCardIndex.value = 0;
+  showAnswer.value = false;
 }
 
 function exitStudy() {
-  studyMode.value = null
-  studyCards.value = []
-  currentCardIndex.value = 0
-  showAnswer.value = false
+  studyMode.value = null;
+  studyCards.value = [];
+  currentCardIndex.value = 0;
+  showAnswer.value = false;
 }
 
 function toggleAnswer() {
-  showAnswer.value = !showAnswer.value
+  showAnswer.value = !showAnswer.value;
 }
 
 function markCard(performance: 'easy' | 'medium' | 'hard') {
-  const card = currentStudyCard.value
-  if (!card) return
+  const card = currentStudyCard.value;
+  if (!card) return;
 
   // 更新统计
-  const originalCard = cards.value.find((c) => c.id === card.id)
+  const originalCard = cards.value.find((c) => c.id === card.id);
   if (originalCard) {
-    originalCard.studyCount++
-    originalCard.lastStudied = Date.now()
+    originalCard.studyCount++;
+    originalCard.lastStudied = Date.now();
 
     if (performance === 'easy' || performance === 'medium') {
-      originalCard.correctCount++
+      originalCard.correctCount++;
     }
   }
 
   // 下一张卡片
   if (currentCardIndex.value < studyCards.value.length - 1) {
-    currentCardIndex.value++
-    showAnswer.value = false
+    currentCardIndex.value++;
+    showAnswer.value = false;
   } else {
     // 学习完成
-    alert('恭喜！你已经完成了所有卡片的学习')
-    exitStudy()
+    alert('恭喜！你已经完成了所有卡片的学习');
+    exitStudy();
   }
 
-  saveCards()
+  saveCards();
 }
 
 function importCards() {
-  const input = document.createElement('input')
-  input.type = 'file'
-  input.accept = '.json'
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
   input.onchange = (e) => {
-    const file = (e.target as HTMLInputElement).files?.[0]
+    const file = (e.target as HTMLInputElement).files?.[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const imported = JSON.parse(e.target?.result as string)
+          const imported = JSON.parse(e.target?.result as string);
           if (Array.isArray(imported)) {
-            cards.value.push(...imported)
-            saveCards()
-            alert(`成功导入 ${imported.length} 张卡片`)
+            cards.value.push(...imported);
+            saveCards();
+            alert(`成功导入 ${imported.length} 张卡片`);
           }
         } catch (error) {
-          alert('导入失败：文件格式错误')
+          alert('导入失败：文件格式错误');
         }
-      }
-      reader.readAsText(file)
+      };
+      reader.readAsText(file);
     }
-  }
-  input.click()
+  };
+  input.click();
 }
 
 function exportCards() {
-  const data = JSON.stringify(cards.value, null, 2)
-  const blob = new Blob([data], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `flashcards-${Date.now()}.json`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const data = JSON.stringify(cards.value, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `flashcards-${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function saveCards() {
-  localStorage.setItem('flashcards', JSON.stringify(cards.value))
+  localStorage.setItem('flashcards', JSON.stringify(cards.value));
 }
 
 function loadCards() {
-  const saved = localStorage.getItem('flashcards')
+  const saved = localStorage.getItem('flashcards');
   if (saved) {
     try {
-      cards.value = JSON.parse(saved)
+      cards.value = JSON.parse(saved);
     } catch (error) {
-      console.error('加载卡片失败:', error)
+      console.error('加载卡片失败:', error);
     }
   }
 }
 
 onMounted(() => {
-  loadCards()
-})
+  loadCards();
+});
 </script>

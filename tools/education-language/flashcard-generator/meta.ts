@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'flashcard-generator',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'education-language',
   tags: ['闪卡', '学习', '记忆', '间隔重复', '教育'],
   i18nKey: 'tools.flashcard-generator',
-  entry: 'tools/education-language/flashcard-generator/Component.vue',
-}
-export default meta
+  entry: 'tools/education-language/flashcard-generator/Component.vue'
+};
+export default meta;

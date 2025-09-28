@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'gradient-generator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:gradient-horizontal',
   i18nKey: 'tools.gradient-generator',
-  entry: 'tools/color-graphics/gradient-generator/Component.vue',
-}
-export default meta
+  entry: 'tools/color-graphics/gradient-generator/Component.vue'
+};
+export default meta;

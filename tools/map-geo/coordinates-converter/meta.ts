@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'coordinates-converter',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'map-geo',
   tags: ['坐标转换', '地理', 'GPS', 'DMS', '经纬度'],
   i18nKey: 'tools.coordinates-converter',
-  entry: 'tools/map-geo/coordinates-converter/Component.vue',
-}
-export default meta
+  entry: 'tools/map-geo/coordinates-converter/Component.vue'
+};
+export default meta;

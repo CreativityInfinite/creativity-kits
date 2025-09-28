@@ -103,122 +103,122 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue';
 
-const isRunning = ref(false)
-const timeLeft = ref(25 * 60) // 25分钟，以秒为单位
-const currentPhase = ref('工作时间')
-const pomodoroCount = ref(0)
-let timer: NodeJS.Timeout | null = null
+const isRunning = ref(false);
+const timeLeft = ref(25 * 60); // 25分钟，以秒为单位
+const currentPhase = ref('工作时间');
+const pomodoroCount = ref(0);
+let timer: NodeJS.Timeout | null = null;
 
 const settings = ref({
   workMinutes: 25,
   shortBreakMinutes: 5,
   longBreakMinutes: 15
-})
+});
 
 const stats = ref({
   completedPomodoros: 0,
   totalWorkTime: 0,
   totalBreakTime: 0,
   currentStreak: 0
-})
+});
 
 function formatTime(seconds: number): string {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
 function startTimer() {
-  if (isRunning.value) return
+  if (isRunning.value) return;
 
-  isRunning.value = true
+  isRunning.value = true;
   timer = setInterval(() => {
-    timeLeft.value--
+    timeLeft.value--;
 
     if (timeLeft.value <= 0) {
-      completePhase()
+      completePhase();
     }
-  }, 1000)
+  }, 1000);
 }
 
 function pauseTimer() {
-  isRunning.value = false
+  isRunning.value = false;
   if (timer) {
-    clearInterval(timer)
-    timer = null
+    clearInterval(timer);
+    timer = null;
   }
 }
 
 function resetTimer() {
-  pauseTimer()
-  timeLeft.value = settings.value.workMinutes * 60
-  currentPhase.value = '工作时间'
-  pomodoroCount.value = 0
+  pauseTimer();
+  timeLeft.value = settings.value.workMinutes * 60;
+  currentPhase.value = '工作时间';
+  pomodoroCount.value = 0;
 }
 
 function skipPhase() {
-  completePhase()
+  completePhase();
 }
 
 function completePhase() {
-  pauseTimer()
+  pauseTimer();
 
   // 播放提示音（简化版本）
-  playNotificationSound()
+  playNotificationSound();
 
   if (currentPhase.value === '工作时间') {
     // 完成一个番茄
-    pomodoroCount.value++
-    stats.value.completedPomodoros++
-    stats.value.totalWorkTime += settings.value.workMinutes
-    stats.value.currentStreak++
+    pomodoroCount.value++;
+    stats.value.completedPomodoros++;
+    stats.value.totalWorkTime += settings.value.workMinutes;
+    stats.value.currentStreak++;
 
     // 决定下一个阶段
     if (pomodoroCount.value % 4 === 0) {
       // 长休息
-      currentPhase.value = '长休息'
-      timeLeft.value = settings.value.longBreakMinutes * 60
+      currentPhase.value = '长休息';
+      timeLeft.value = settings.value.longBreakMinutes * 60;
     } else {
       // 短休息
-      currentPhase.value = '短休息'
-      timeLeft.value = settings.value.shortBreakMinutes * 60
+      currentPhase.value = '短休息';
+      timeLeft.value = settings.value.shortBreakMinutes * 60;
     }
   } else {
     // 休息结束，开始工作
     if (currentPhase.value === '长休息') {
-      stats.value.totalBreakTime += settings.value.longBreakMinutes
+      stats.value.totalBreakTime += settings.value.longBreakMinutes;
     } else {
-      stats.value.totalBreakTime += settings.value.shortBreakMinutes
+      stats.value.totalBreakTime += settings.value.shortBreakMinutes;
     }
 
-    currentPhase.value = '工作时间'
-    timeLeft.value = settings.value.workMinutes * 60
+    currentPhase.value = '工作时间';
+    timeLeft.value = settings.value.workMinutes * 60;
   }
 
   // 发送浏览器通知
-  sendNotification()
+  sendNotification();
 }
 
 function playNotificationSound() {
   // 使用 Web Audio API 生成简单的提示音
   try {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-    const oscillator = audioContext.createOscillator()
-    const gainNode = audioContext.createGain()
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
 
-    oscillator.connect(gainNode)
-    gainNode.connect(audioContext.destination)
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
 
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime)
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
 
-    oscillator.start(audioContext.currentTime)
-    oscillator.stop(audioContext.currentTime + 0.5)
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
   } catch (error) {
-    console.log('无法播放提示音')
+    console.log('无法播放提示音');
   }
 }
 
@@ -227,15 +227,15 @@ function sendNotification() {
     new Notification('番茄工作法提醒', {
       body: `${currentPhase.value}时间到！`,
       icon: '🍅'
-    })
+    });
   }
 }
 
 function updateSettings() {
   if (!isRunning.value && currentPhase.value === '工作时间') {
-    timeLeft.value = settings.value.workMinutes * 60
+    timeLeft.value = settings.value.workMinutes * 60;
   }
-  saveSettings()
+  saveSettings();
 }
 
 function resetStats() {
@@ -244,50 +244,50 @@ function resetStats() {
     totalWorkTime: 0,
     totalBreakTime: 0,
     currentStreak: 0
-  }
-  saveStats()
+  };
+  saveStats();
 }
 
 function saveSettings() {
-  localStorage.setItem('pomodoro-settings', JSON.stringify(settings.value))
+  localStorage.setItem('pomodoro-settings', JSON.stringify(settings.value));
 }
 
 function loadSettings() {
-  const saved = localStorage.getItem('pomodoro-settings')
+  const saved = localStorage.getItem('pomodoro-settings');
   if (saved) {
-    settings.value = { ...settings.value, ...JSON.parse(saved) }
+    settings.value = { ...settings.value, ...JSON.parse(saved) };
   }
 }
 
 function saveStats() {
-  localStorage.setItem('pomodoro-stats', JSON.stringify(stats.value))
+  localStorage.setItem('pomodoro-stats', JSON.stringify(stats.value));
 }
 
 function loadStats() {
-  const saved = localStorage.getItem('pomodoro-stats')
+  const saved = localStorage.getItem('pomodoro-stats');
   if (saved) {
-    stats.value = { ...stats.value, ...JSON.parse(saved) }
+    stats.value = { ...stats.value, ...JSON.parse(saved) };
   }
 }
 
 // 请求通知权限
 function requestNotificationPermission() {
   if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission()
+    Notification.requestPermission();
   }
 }
 
 onMounted(() => {
-  loadSettings()
-  loadStats()
-  requestNotificationPermission()
-  timeLeft.value = settings.value.workMinutes * 60
-})
+  loadSettings();
+  loadStats();
+  requestNotificationPermission();
+  timeLeft.value = settings.value.workMinutes * 60;
+});
 
 onUnmounted(() => {
   if (timer) {
-    clearInterval(timer)
+    clearInterval(timer);
   }
-  saveStats()
-})
+  saveStats();
+});
 </script>

@@ -37,67 +37,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const file = ref<File | null>(null)
-const imageUrl = ref('')
-const previewUrl = ref('')
-const cleanDataUrl = ref('')
-const error = ref('')
+const file = ref<File | null>(null);
+const imageUrl = ref('');
+const previewUrl = ref('');
+const cleanDataUrl = ref('');
+const error = ref('');
 
 function onFile(e: Event) {
-  const t = e.target as HTMLInputElement
-  const f = t.files?.[0] || null
-  file.value = f
-  error.value = ''
-  cleanDataUrl.value = ''
+  const t = e.target as HTMLInputElement;
+  const f = t.files?.[0] || null;
+  file.value = f;
+  error.value = '';
+  cleanDataUrl.value = '';
   if (f) {
-    previewUrl.value = URL.createObjectURL(f)
+    previewUrl.value = URL.createObjectURL(f);
   }
 }
 
 async function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error('图片加载失败（可能受跨域限制）'))
-    img.src = src
-  })
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('图片加载失败（可能受跨域限制）'));
+    img.src = src;
+  });
 }
 
 async function sanitize() {
-  error.value = ''
-  cleanDataUrl.value = ''
-  let src = ''
+  error.value = '';
+  cleanDataUrl.value = '';
+  let src = '';
   if (file.value) {
-    src = previewUrl.value
+    src = previewUrl.value;
   } else if (imageUrl.value.trim()) {
-    src = imageUrl.value.trim()
+    src = imageUrl.value.trim();
   } else {
-    error.value = '请先选择图片或输入图片 URL'
-    return
+    error.value = '请先选择图片或输入图片 URL';
+    return;
   }
 
   try {
-    const img = await loadImage(src)
-    const canvas = document.createElement('canvas')
-    canvas.width = img.naturalWidth
-    canvas.height = img.naturalHeight
-    const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('Canvas 不可用')
-    ctx.drawImage(img, 0, 0)
-    cleanDataUrl.value = canvas.toDataURL('image/png')
+    const img = await loadImage(src);
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas 不可用');
+    ctx.drawImage(img, 0, 0);
+    cleanDataUrl.value = canvas.toDataURL('image/png');
   } catch (e: any) {
-    error.value = e?.message || String(e)
+    error.value = e?.message || String(e);
   }
 }
 
 function download() {
-  if (!cleanDataUrl.value) return
-  const a = document.createElement('a')
-  a.href = cleanDataUrl.value
-  a.download = 'sanitized.png'
-  a.click()
+  if (!cleanDataUrl.value) return;
+  const a = document.createElement('a');
+  a.href = cleanDataUrl.value;
+  a.download = 'sanitized.png';
+  a.click();
 }
 </script>

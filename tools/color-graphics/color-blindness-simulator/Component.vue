@@ -42,54 +42,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const file = ref<File | null>(null)
-const previewUrl = ref('')
-const outUrl = ref('')
-const mode = ref<'protanopia' | 'deuteranopia' | 'tritanopia'>('protanopia')
-const intensity = ref(1)
+const file = ref<File | null>(null);
+const previewUrl = ref('');
+const outUrl = ref('');
+const mode = ref<'protanopia' | 'deuteranopia' | 'tritanopia'>('protanopia');
+const intensity = ref(1);
 
 function onFile(e: Event) {
-  const t = e.target as HTMLInputElement
-  const f = t.files?.[0] || null
-  file.value = f
-  outUrl.value = ''
-  if (f) previewUrl.value = URL.createObjectURL(f)
+  const t = e.target as HTMLInputElement;
+  const f = t.files?.[0] || null;
+  file.value = f;
+  outUrl.value = '';
+  if (f) previewUrl.value = URL.createObjectURL(f);
 }
 
 async function simulate() {
-  outUrl.value = ''
+  outUrl.value = '';
   if (!previewUrl.value) {
-    alert('请先选择图片')
-    return
+    alert('请先选择图片');
+    return;
   }
-  const img = await loadImage(previewUrl.value)
-  const canvas = document.createElement('canvas')
-  canvas.width = img.naturalWidth
-  canvas.height = img.naturalHeight
-  const ctx = canvas.getContext('2d')!
-  ctx.drawImage(img, 0, 0)
-  const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  const data = image.data
+  const img = await loadImage(previewUrl.value);
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d')!;
+  ctx.drawImage(img, 0, 0);
+  const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = image.data;
 
-  const m = getMatrix(mode.value)
-  const a = Math.max(0, Math.min(1, intensity.value || 1))
+  const m = getMatrix(mode.value);
+  const a = Math.max(0, Math.min(1, intensity.value || 1));
 
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i],
       g = data[i + 1],
-      b = data[i + 2]
-    const nr = m[0][0] * r + m[0][1] * g + m[0][2] * b
-    const ng = m[1][0] * r + m[1][1] * g + m[1][2] * b
-    const nb = m[2][0] * r + m[2][1] * g + m[2][2] * b
-    data[i] = Math.round(r * (1 - a) + nr * a)
-    data[i + 1] = Math.round(g * (1 - a) + ng * a)
-    data[i + 2] = Math.round(b * (1 - a) + nb * a)
+      b = data[i + 2];
+    const nr = m[0][0] * r + m[0][1] * g + m[0][2] * b;
+    const ng = m[1][0] * r + m[1][1] * g + m[1][2] * b;
+    const nb = m[2][0] * r + m[2][1] * g + m[2][2] * b;
+    data[i] = Math.round(r * (1 - a) + nr * a);
+    data[i + 1] = Math.round(g * (1 - a) + ng * a);
+    data[i + 2] = Math.round(b * (1 - a) + nb * a);
   }
 
-  ctx.putImageData(image, 0, 0)
-  outUrl.value = canvas.toDataURL('image/png')
+  ctx.putImageData(image, 0, 0);
+  outUrl.value = canvas.toDataURL('image/png');
 }
 
 function getMatrix(type: 'protanopia' | 'deuteranopia' | 'tritanopia'): number[][] {
@@ -99,29 +99,29 @@ function getMatrix(type: 'protanopia' | 'deuteranopia' | 'tritanopia'): number[]
         [0.56667, 0.43333, 0.0],
         [0.55833, 0.44167, 0.0],
         [0.0, 0.24167, 0.75833]
-      ]
+      ];
     case 'deuteranopia':
       return [
         [0.625, 0.375, 0.0],
         [0.7, 0.3, 0.0],
         [0.0, 0.3, 0.7]
-      ]
+      ];
     case 'tritanopia':
       return [
         [0.95, 0.05, 0.0],
         [0.0, 0.433, 0.567],
         [0.0, 0.475, 0.525]
-      ]
+      ];
   }
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error('图片加载失败'))
-    img.src = src
-  })
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('图片加载失败'));
+    img.src = src;
+  });
 }
 </script>

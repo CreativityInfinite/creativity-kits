@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'keyword-density-analyzer',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.keyword-density-analyzer',
   entry: 'tools/social-marketing/keyword-density-analyzer/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

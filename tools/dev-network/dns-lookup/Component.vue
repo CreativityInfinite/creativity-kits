@@ -93,94 +93,94 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
-type HistoryItem = { host: string; rtype: string; result: string; timestamp: number }
+type HistoryItem = { host: string; rtype: string; result: string; timestamp: number };
 
-const host = ref('')
-const rtype = ref<'A' | 'AAAA' | 'CNAME' | 'TXT' | 'MX' | 'NS'>('A')
+const host = ref('');
+const rtype = ref<'A' | 'AAAA' | 'CNAME' | 'TXT' | 'MX' | 'NS'>('A');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => !!host.value.trim())
+const canProcess = computed(() => !!host.value.trim());
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function swapView() {
-  if (result.value) copyResult()
+  if (result.value) copyResult();
 }
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const filename = `dns_${host.value}_${new Date().toISOString().slice(0, 10)}.json`
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `dns_${host.value}_${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const item: HistoryItem = { host: host.value, rtype: rtype.value, result: result.value, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('dns-lookup-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const item: HistoryItem = { host: host.value, rtype: rtype.value, result: result.value, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('dns-lookup-history', JSON.stringify(history.value));
 }
 function loadFromHistory(item: HistoryItem) {
-  host.value = item.host
-  rtype.value = item.rtype as any
-  result.value = item.result
-  error.value = ''
-  processingTime.value = null
+  host.value = item.host;
+  rtype.value = item.rtype as any;
+  result.value = item.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('dns-lookup-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('dns-lookup-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 async function dohQuery(name: string, type: string) {
-  const url = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${encodeURIComponent(type)}`
-  const res = await fetch(url, { headers: { accept: 'application/dns-json' } })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return res.json()
+  const url = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${encodeURIComponent(type)}`;
+  const res = await fetch(url, { headers: { accept: 'application/dns-json' } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }
 
 async function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
   try {
-    const data = await dohQuery(host.value.trim(), rtype.value)
-    result.value = JSON.stringify(data, null, 2)
-    processingTime.value = Math.round(performance.now() - start)
+    const data = await dohQuery(host.value.trim(), rtype.value);
+    result.value = JSON.stringify(data, null, 2);
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '查询失败'
+    error.value = e?.message || '查询失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('dns-lookup-history')
+  const saved = localStorage.getItem('dns-lookup-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

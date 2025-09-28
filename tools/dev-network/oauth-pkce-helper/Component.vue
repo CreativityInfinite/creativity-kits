@@ -91,113 +91,113 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
-type HistoryItem = { verifier: string; challenge: string; authUrl?: string; result: string; timestamp: number }
+type HistoryItem = { verifier: string; challenge: string; authUrl?: string; result: string; timestamp: number };
 
-const length = ref(64)
-const charset = ref<'unreserved' | 'alnum'>('unreserved')
+const length = ref(64);
+const charset = ref<'unreserved' | 'alnum'>('unreserved');
 
-const clientId = ref('')
-const redirectUri = ref('')
-const scope = ref('')
-const authorizeEndpoint = ref('')
+const clientId = ref('');
+const redirectUri = ref('');
+const scope = ref('');
+const authorizeEndpoint = ref('');
 
-const result = ref('')
-const error = ref('')
-const history = ref<HistoryItem[]>([])
-const processingTime = ref<number | null>(null)
+const result = ref('');
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
+const processingTime = ref<number | null>(null);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyResult() {
-  if (result.value) navigator.clipboard.writeText(result.value).then(() => alert('已复制'))
+  if (result.value) navigator.clipboard.writeText(result.value).then(() => alert('已复制'));
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'pkce.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'pkce.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const parsed = JSON.parse(result.value)
-  history.value.unshift({ verifier: parsed.code_verifier, challenge: parsed.code_challenge, authUrl: parsed.authorize_url, result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('pkce-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const parsed = JSON.parse(result.value);
+  history.value.unshift({ verifier: parsed.code_verifier, challenge: parsed.code_challenge, authUrl: parsed.authorize_url, result: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('pkce-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  result.value = h.result
-  error.value = ''
+  result.value = h.result;
+  error.value = '';
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('pkce-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('pkce-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function randomString(n: number, kind: 'unreserved' | 'alnum') {
-  const unreserved = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~'
-  const alnum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  const chars = kind === 'unreserved' ? unreserved : alnum
-  const out: string[] = []
-  const arr = new Uint8Array(n)
-  crypto.getRandomValues(arr)
+  const unreserved = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+  const alnum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars = kind === 'unreserved' ? unreserved : alnum;
+  const out: string[] = [];
+  const arr = new Uint8Array(n);
+  crypto.getRandomValues(arr);
   for (let i = 0; i < n; i++) {
-    out.push(chars[arr[i] % chars.length])
+    out.push(chars[arr[i] % chars.length]);
   }
-  return out.join('')
+  return out.join('');
 }
 function b64url(ab: ArrayBuffer) {
-  let s = btoa(String.fromCharCode(...new Uint8Array(ab)))
-  return s.replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '')
+  let s = btoa(String.fromCharCode(...new Uint8Array(ab)));
+  return s.replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
 }
 async function sha256(str: string) {
-  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str))
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
 }
 
 async function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
   try {
-    const len = Math.min(128, Math.max(43, length.value || 64))
-    const verifier = randomString(len, charset.value)
-    const challenge = b64url(await sha256(verifier))
-    let authorize_url = ''
+    const len = Math.min(128, Math.max(43, length.value || 64));
+    const verifier = randomString(len, charset.value);
+    const challenge = b64url(await sha256(verifier));
+    let authorize_url = '';
     if (authorizeEndpoint.value && clientId.value) {
-      const u = new URL(authorizeEndpoint.value)
-      u.searchParams.set('response_type', 'code')
-      u.searchParams.set('client_id', clientId.value)
-      if (redirectUri.value) u.searchParams.set('redirect_uri', redirectUri.value)
-      if (scope.value) u.searchParams.set('scope', scope.value)
-      u.searchParams.set('code_challenge', challenge)
-      u.searchParams.set('code_challenge_method', 'S256')
-      authorize_url = u.toString()
+      const u = new URL(authorizeEndpoint.value);
+      u.searchParams.set('response_type', 'code');
+      u.searchParams.set('client_id', clientId.value);
+      if (redirectUri.value) u.searchParams.set('redirect_uri', redirectUri.value);
+      if (scope.value) u.searchParams.set('scope', scope.value);
+      u.searchParams.set('code_challenge', challenge);
+      u.searchParams.set('code_challenge_method', 'S256');
+      authorize_url = u.toString();
     }
-    result.value = JSON.stringify({ code_verifier: verifier, code_challenge: challenge, code_challenge_method: 'S256', authorize_url }, null, 2)
-    processingTime.value = Math.round(performance.now() - start)
+    result.value = JSON.stringify({ code_verifier: verifier, code_challenge: challenge, code_challenge_method: 'S256', authorize_url }, null, 2);
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '生成失败'
+    error.value = e?.message || '生成失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('pkce-history')
+  const saved = localStorage.getItem('pkce-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

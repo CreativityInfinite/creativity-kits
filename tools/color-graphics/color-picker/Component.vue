@@ -434,51 +434,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue';
 
 interface HSL {
-  h: number
-  s: number
-  l: number
+  h: number;
+  s: number;
+  l: number;
 }
 
 interface RGB {
-  r: number
-  g: number
-  b: number
+  r: number;
+  g: number;
+  b: number;
 }
 
 interface HSV {
-  h: number
-  s: number
-  v: number
+  h: number;
+  s: number;
+  v: number;
 }
 
 interface CMYK {
-  c: number
-  m: number
-  y: number
-  k: number
+  c: number;
+  m: number;
+  y: number;
+  k: number;
 }
 
 interface Color {
-  hex: string
-  rgb: RGB
-  hsl: HSL
-  hsv: HSV
-  cmyk: CMYK
-  alpha: number
+  hex: string;
+  rgb: RGB;
+  hsl: HSL;
+  hsv: HSV;
+  cmyk: CMYK;
+  alpha: number;
 }
 
 interface ColorAnalysis {
-  brightness: number
-  contrastWhite: number
-  contrastBlack: number
-  temperature: string
+  brightness: number;
+  contrastWhite: number;
+  contrastBlack: number;
+  temperature: string;
   wcag: {
-    aa: { normal: boolean; large: boolean }
-    aaa: { normal: boolean; large: boolean }
-  }
+    aa: { normal: boolean; large: boolean };
+    aaa: { normal: boolean; large: boolean };
+  };
 }
 
 const currentColor = ref<Color>({
@@ -488,7 +488,7 @@ const currentColor = ref<Color>({
   hsv: { h: 217, s: 76, v: 96 },
   cmyk: { c: 76, m: 47, y: 0, k: 4 },
   alpha: 1
-})
+});
 
 const colorInputs = ref<Color>({
   hex: '#3B82F6',
@@ -497,13 +497,13 @@ const colorInputs = ref<Color>({
   hsv: { h: 217, s: 76, v: 96 },
   cmyk: { c: 76, m: 47, y: 0, k: 4 },
   alpha: 1
-})
+});
 
-const htmlColorInput = ref('#3B82F6')
-const showColorPicker = ref(false)
-const generatedPalette = ref<string[]>([])
-const paletteType = ref('')
-const colorHistory = ref<string[]>([])
+const htmlColorInput = ref('#3B82F6');
+const showColorPicker = ref(false);
+const generatedPalette = ref<string[]>([]);
+const paletteType = ref('');
+const colorHistory = ref<string[]>([]);
 
 const presetColors = [
   '#FF0000',
@@ -538,57 +538,57 @@ const presetColors = [
   '#FFE0E0',
   '#E0FFE0',
   '#E0E0FF'
-]
+];
 
 // 计算属性
 const hueGradient = computed(() => {
-  return 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)'
-})
+  return 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)';
+});
 
 const saturationGradient = computed(() => {
-  const baseColor = hslToHex(currentColor.value.hsl.h, 0, currentColor.value.hsl.l)
-  const fullColor = hslToHex(currentColor.value.hsl.h, 100, currentColor.value.hsl.l)
-  return `linear-gradient(to right, ${baseColor}, ${fullColor})`
-})
+  const baseColor = hslToHex(currentColor.value.hsl.h, 0, currentColor.value.hsl.l);
+  const fullColor = hslToHex(currentColor.value.hsl.h, 100, currentColor.value.hsl.l);
+  return `linear-gradient(to right, ${baseColor}, ${fullColor})`;
+});
 
 const lightnessGradient = computed(() => {
-  const darkColor = hslToHex(currentColor.value.hsl.h, currentColor.value.hsl.s, 0)
-  const midColor = hslToHex(currentColor.value.hsl.h, currentColor.value.hsl.s, 50)
-  const lightColor = hslToHex(currentColor.value.hsl.h, currentColor.value.hsl.s, 100)
-  return `linear-gradient(to right, ${darkColor}, ${midColor}, ${lightColor})`
-})
+  const darkColor = hslToHex(currentColor.value.hsl.h, currentColor.value.hsl.s, 0);
+  const midColor = hslToHex(currentColor.value.hsl.h, currentColor.value.hsl.s, 50);
+  const lightColor = hslToHex(currentColor.value.hsl.h, currentColor.value.hsl.s, 100);
+  return `linear-gradient(to right, ${darkColor}, ${midColor}, ${lightColor})`;
+});
 
 const alphaGradient = computed(() => {
-  const transparentColor = `rgba(${currentColor.value.rgb.r}, ${currentColor.value.rgb.g}, ${currentColor.value.rgb.b}, 0)`
-  const opaqueColor = `rgba(${currentColor.value.rgb.r}, ${currentColor.value.rgb.g}, ${currentColor.value.rgb.b}, 1)`
-  return `linear-gradient(to right, ${transparentColor}, ${opaqueColor})`
-})
+  const transparentColor = `rgba(${currentColor.value.rgb.r}, ${currentColor.value.rgb.g}, ${currentColor.value.rgb.b}, 0)`;
+  const opaqueColor = `rgba(${currentColor.value.rgb.r}, ${currentColor.value.rgb.g}, ${currentColor.value.rgb.b}, 1)`;
+  return `linear-gradient(to right, ${transparentColor}, ${opaqueColor})`;
+});
 
 const cssFormats = computed(() => {
-  const { rgb, hsl, alpha } = currentColor.value
+  const { rgb, hsl, alpha } = currentColor.value;
   return {
     hex: currentColor.value.hex,
     rgb: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
     rgba: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`,
     hsl: `hsl(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%)`,
     hsla: `hsla(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%, ${alpha})`
-  }
-})
+  };
+});
 
 const colorAnalysis = computed((): ColorAnalysis => {
-  const { rgb } = currentColor.value
+  const { rgb } = currentColor.value;
 
   // 计算相对亮度
-  const brightness = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255
+  const brightness = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
 
   // 计算对比度
-  const contrastWhite = (brightness + 0.05) / (1 + 0.05)
-  const contrastBlack = (1 + 0.05) / (brightness + 0.05)
+  const contrastWhite = (brightness + 0.05) / (1 + 0.05);
+  const contrastBlack = (1 + 0.05) / (brightness + 0.05);
 
   // 估算色温
-  let temperature = '中性'
-  if (rgb.r > rgb.b + 30) temperature = '暖色'
-  else if (rgb.b > rgb.r + 30) temperature = '冷色'
+  let temperature = '中性';
+  if (rgb.r > rgb.b + 30) temperature = '暖色';
+  else if (rgb.b > rgb.r + 30) temperature = '冷色';
 
   // WCAG 可访问性检查
   const wcag = {
@@ -600,7 +600,7 @@ const colorAnalysis = computed((): ColorAnalysis => {
       normal: contrastBlack >= 7 || contrastWhite >= 7,
       large: contrastBlack >= 4.5 || contrastWhite >= 4.5
     }
-  }
+  };
 
   return {
     brightness,
@@ -608,42 +608,42 @@ const colorAnalysis = computed((): ColorAnalysis => {
     contrastBlack,
     temperature,
     wcag
-  }
-})
+  };
+});
 
 const colorShades = computed(() => {
-  const shades: string[] = []
+  const shades: string[] = [];
   for (let i = 1; i <= 9; i++) {
-    const lightness = i * 10
-    shades.push(hslToHex(currentColor.value.hsl.h, currentColor.value.hsl.s, lightness))
+    const lightness = i * 10;
+    shades.push(hslToHex(currentColor.value.hsl.h, currentColor.value.hsl.s, lightness));
   }
-  return shades
-})
+  return shades;
+});
 
 const colorTints = computed(() => {
-  const tints: string[] = []
+  const tints: string[] = [];
   for (let i = 1; i <= 9; i++) {
-    const saturation = i * 10
-    tints.push(hslToHex(currentColor.value.hsl.h, saturation, currentColor.value.hsl.l))
+    const saturation = i * 10;
+    tints.push(hslToHex(currentColor.value.hsl.h, saturation, currentColor.value.hsl.l));
   }
-  return tints
-})
+  return tints;
+});
 
 onMounted(() => {
-  loadColorHistory()
-  updateColorInputs()
-})
+  loadColorHistory();
+  updateColorInputs();
+});
 
 // 颜色转换函数
 function hexToRgb(hex: string): RGB {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
       }
-    : { r: 0, g: 0, b: 0 }
+    : { r: 0, g: 0, b: 0 };
 }
 
 function rgbToHex(r: number, g: number, b: number): string {
@@ -651,219 +651,219 @@ function rgbToHex(r: number, g: number, b: number): string {
     '#' +
     [r, g, b]
       .map((x) => {
-        const hex = Math.round(x).toString(16)
-        return hex.length === 1 ? '0' + hex : hex
+        const hex = Math.round(x).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
       })
       .join('')
-  )
+  );
 }
 
 function rgbToHsl(r: number, g: number, b: number): HSL {
-  r /= 255
-  g /= 255
-  b /= 255
+  r /= 255;
+  g /= 255;
+  b /= 255;
 
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  let h = 0
-  let s = 0
-  const l = (max + min) / 2
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
 
   if (max !== min) {
-    const d = max - min
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
     switch (max) {
       case r:
-        h = (g - b) / d + (g < b ? 6 : 0)
-        break
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
       case g:
-        h = (b - r) / d + 2
-        break
+        h = (b - r) / d + 2;
+        break;
       case b:
-        h = (r - g) / d + 4
-        break
+        h = (r - g) / d + 4;
+        break;
     }
-    h /= 6
+    h /= 6;
   }
 
   return {
     h: Math.round(h * 360),
     s: Math.round(s * 100),
     l: Math.round(l * 100)
-  }
+  };
 }
 
 function hslToRgb(h: number, s: number, l: number): RGB {
-  h /= 360
-  s /= 100
-  l /= 100
+  h /= 360;
+  s /= 100;
+  l /= 100;
 
   const hue2rgb = (p: number, q: number, t: number) => {
-    if (t < 0) t += 1
-    if (t > 1) t -= 1
-    if (t < 1 / 6) return p + (q - p) * 6 * t
-    if (t < 1 / 2) return q
-    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
-    return p
-  }
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+  };
 
-  let r, g, b
+  let r, g, b;
 
   if (s === 0) {
-    r = g = b = l
+    r = g = b = l;
   } else {
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s
-    const p = 2 * l - q
-    r = hue2rgb(p, q, h + 1 / 3)
-    g = hue2rgb(p, q, h)
-    b = hue2rgb(p, q, h - 1 / 3)
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
   }
 
   return {
     r: Math.round(r * 255),
     g: Math.round(g * 255),
     b: Math.round(b * 255)
-  }
+  };
 }
 
 function hslToHex(h: number, s: number, l: number): string {
-  const rgb = hslToRgb(h, s, l)
-  return rgbToHex(rgb.r, rgb.g, rgb.b)
+  const rgb = hslToRgb(h, s, l);
+  return rgbToHex(rgb.r, rgb.g, rgb.b);
 }
 
 function rgbToHsv(r: number, g: number, b: number): HSV {
-  r /= 255
-  g /= 255
-  b /= 255
+  r /= 255;
+  g /= 255;
+  b /= 255;
 
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  const diff = max - min
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const diff = max - min;
 
-  let h = 0
-  const s = max === 0 ? 0 : diff / max
-  const v = max
+  let h = 0;
+  const s = max === 0 ? 0 : diff / max;
+  const v = max;
 
   if (diff !== 0) {
     switch (max) {
       case r:
-        h = (g - b) / diff + (g < b ? 6 : 0)
-        break
+        h = (g - b) / diff + (g < b ? 6 : 0);
+        break;
       case g:
-        h = (b - r) / diff + 2
-        break
+        h = (b - r) / diff + 2;
+        break;
       case b:
-        h = (r - g) / diff + 4
-        break
+        h = (r - g) / diff + 4;
+        break;
     }
-    h /= 6
+    h /= 6;
   }
 
   return {
     h: Math.round(h * 360),
     s: Math.round(s * 100),
     v: Math.round(v * 100)
-  }
+  };
 }
 
 function rgbToCmyk(r: number, g: number, b: number): CMYK {
-  r /= 255
-  g /= 255
-  b /= 255
+  r /= 255;
+  g /= 255;
+  b /= 255;
 
-  const k = 1 - Math.max(r, g, b)
-  const c = k === 1 ? 0 : (1 - r - k) / (1 - k)
-  const m = k === 1 ? 0 : (1 - g - k) / (1 - k)
-  const y = k === 1 ? 0 : (1 - b - k) / (1 - k)
+  const k = 1 - Math.max(r, g, b);
+  const c = k === 1 ? 0 : (1 - r - k) / (1 - k);
+  const m = k === 1 ? 0 : (1 - g - k) / (1 - k);
+  const y = k === 1 ? 0 : (1 - b - k) / (1 - k);
 
   return {
     c: Math.round(c * 100),
     m: Math.round(m * 100),
     y: Math.round(y * 100),
     k: Math.round(k * 100)
-  }
+  };
 }
 
 function cmykToRgb(c: number, m: number, y: number, k: number): RGB {
-  c /= 100
-  m /= 100
-  y /= 100
-  k /= 100
+  c /= 100;
+  m /= 100;
+  y /= 100;
+  k /= 100;
 
-  const r = 255 * (1 - c) * (1 - k)
-  const g = 255 * (1 - m) * (1 - k)
-  const b = 255 * (1 - y) * (1 - k)
+  const r = 255 * (1 - c) * (1 - k);
+  const g = 255 * (1 - m) * (1 - k);
+  const b = 255 * (1 - y) * (1 - k);
 
   return {
     r: Math.round(r),
     g: Math.round(g),
     b: Math.round(b)
-  }
+  };
 }
 
 // 更新颜色
 function updateColor(newColor: Partial<Color>) {
-  let rgb: RGB
+  let rgb: RGB;
 
   if (newColor.hex) {
-    rgb = hexToRgb(newColor.hex)
+    rgb = hexToRgb(newColor.hex);
   } else if (newColor.rgb) {
-    rgb = newColor.rgb
+    rgb = newColor.rgb;
   } else if (newColor.hsl) {
-    rgb = hslToRgb(newColor.hsl.h, newColor.hsl.s, newColor.hsl.l)
+    rgb = hslToRgb(newColor.hsl.h, newColor.hsl.s, newColor.hsl.l);
   } else if (newColor.hsv) {
     // HSV to RGB conversion
-    const { h, s, v } = newColor.hsv
-    const c = (v * s) / 10000
-    const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
-    const m = v / 100 - c
+    const { h, s, v } = newColor.hsv;
+    const c = (v * s) / 10000;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = v / 100 - c;
 
     let r1 = 0,
       g1 = 0,
-      b1 = 0
+      b1 = 0;
 
     if (h >= 0 && h < 60) {
-      r1 = c
-      g1 = x
-      b1 = 0
+      r1 = c;
+      g1 = x;
+      b1 = 0;
     } else if (h >= 60 && h < 120) {
-      r1 = x
-      g1 = c
-      b1 = 0
+      r1 = x;
+      g1 = c;
+      b1 = 0;
     } else if (h >= 120 && h < 180) {
-      r1 = 0
-      g1 = c
-      b1 = x
+      r1 = 0;
+      g1 = c;
+      b1 = x;
     } else if (h >= 180 && h < 240) {
-      r1 = 0
-      g1 = x
-      b1 = c
+      r1 = 0;
+      g1 = x;
+      b1 = c;
     } else if (h >= 240 && h < 300) {
-      r1 = x
-      g1 = 0
-      b1 = c
+      r1 = x;
+      g1 = 0;
+      b1 = c;
     } else if (h >= 300 && h < 360) {
-      r1 = c
-      g1 = 0
-      b1 = x
+      r1 = c;
+      g1 = 0;
+      b1 = x;
     }
 
     rgb = {
       r: Math.round((r1 + m) * 255),
       g: Math.round((g1 + m) * 255),
       b: Math.round((b1 + m) * 255)
-    }
+    };
   } else if (newColor.cmyk) {
-    rgb = cmykToRgb(newColor.cmyk.c, newColor.cmyk.m, newColor.cmyk.y, newColor.cmyk.k)
+    rgb = cmykToRgb(newColor.cmyk.c, newColor.cmyk.m, newColor.cmyk.y, newColor.cmyk.k);
   } else {
-    return
+    return;
   }
 
-  const hex = rgbToHex(rgb.r, rgb.g, rgb.b)
-  const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b)
-  const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b)
-  const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b)
+  const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+  const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+  const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+  const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
 
   currentColor.value = {
     hex,
@@ -872,46 +872,46 @@ function updateColor(newColor: Partial<Color>) {
     hsv,
     cmyk,
     alpha: newColor.alpha ?? currentColor.value.alpha
-  }
+  };
 
-  updateColorInputs()
-  htmlColorInput.value = hex
-  addToHistory(hex)
+  updateColorInputs();
+  htmlColorInput.value = hex;
+  addToHistory(hex);
 }
 
 function updateColorInputs() {
-  colorInputs.value = { ...currentColor.value }
+  colorInputs.value = { ...currentColor.value };
 }
 
 function updateFromHSL() {
-  updateColor({ hsl: currentColor.value.hsl })
+  updateColor({ hsl: currentColor.value.hsl });
 }
 
 function updateFromAlpha() {
-  updateColorInputs()
+  updateColorInputs();
 }
 
 function updateFromHtmlColor() {
-  updateColor({ hex: htmlColorInput.value })
+  updateColor({ hex: htmlColorInput.value });
 }
 
 function updateFromInput(type: string) {
   setTimeout(() => {
-    updateColor({ [type]: colorInputs.value[type as keyof Color] })
-  }, 100)
+    updateColor({ [type]: colorInputs.value[type as keyof Color] });
+  }, 100);
 }
 
 function validateInput(type: string) {
   if (type === 'hex') {
-    const hex = colorInputs.value.hex
+    const hex = colorInputs.value.hex;
     if (!/^#[0-9A-F]{6}$/i.test(hex)) {
-      colorInputs.value.hex = currentColor.value.hex
+      colorInputs.value.hex = currentColor.value.hex;
     }
   }
 }
 
 function setColor(hex: string) {
-  updateColor({ hex })
+  updateColor({ hex });
 }
 
 function randomColor() {
@@ -919,97 +919,97 @@ function randomColor() {
     '#' +
     Math.floor(Math.random() * 16777215)
       .toString(16)
-      .padStart(6, '0')
-  updateColor({ hex })
+      .padStart(6, '0');
+  updateColor({ hex });
 }
 
 function resetColor() {
-  updateColor({ hex: '#3B82F6' })
+  updateColor({ hex: '#3B82F6' });
 }
 
 function generatePalette(type: string) {
-  paletteType.value = type
-  const palette: string[] = []
-  const baseHue = currentColor.value.hsl.h
+  paletteType.value = type;
+  const palette: string[] = [];
+  const baseHue = currentColor.value.hsl.h;
 
   switch (type) {
     case 'monochromatic':
-      paletteType.value = '单色'
+      paletteType.value = '单色';
       for (let i = 0; i < 5; i++) {
-        const lightness = 20 + i * 15
-        palette.push(hslToHex(baseHue, currentColor.value.hsl.s, lightness))
+        const lightness = 20 + i * 15;
+        palette.push(hslToHex(baseHue, currentColor.value.hsl.s, lightness));
       }
-      break
+      break;
 
     case 'analogous':
-      paletteType.value = '类似色'
+      paletteType.value = '类似色';
       for (let i = -2; i <= 2; i++) {
-        const hue = (baseHue + i * 30 + 360) % 360
-        palette.push(hslToHex(hue, currentColor.value.hsl.s, currentColor.value.hsl.l))
+        const hue = (baseHue + i * 30 + 360) % 360;
+        palette.push(hslToHex(hue, currentColor.value.hsl.s, currentColor.value.hsl.l));
       }
-      break
+      break;
 
     case 'complementary':
-      paletteType.value = '互补色'
-      palette.push(currentColor.value.hex)
-      palette.push(hslToHex((baseHue + 180) % 360, currentColor.value.hsl.s, currentColor.value.hsl.l))
-      palette.push(hslToHex(baseHue, currentColor.value.hsl.s, Math.max(20, currentColor.value.hsl.l - 20)))
-      palette.push(hslToHex((baseHue + 180) % 360, currentColor.value.hsl.s, Math.max(20, currentColor.value.hsl.l - 20)))
-      palette.push(hslToHex(baseHue, Math.max(20, currentColor.value.hsl.s - 30), currentColor.value.hsl.l))
-      break
+      paletteType.value = '互补色';
+      palette.push(currentColor.value.hex);
+      palette.push(hslToHex((baseHue + 180) % 360, currentColor.value.hsl.s, currentColor.value.hsl.l));
+      palette.push(hslToHex(baseHue, currentColor.value.hsl.s, Math.max(20, currentColor.value.hsl.l - 20)));
+      palette.push(hslToHex((baseHue + 180) % 360, currentColor.value.hsl.s, Math.max(20, currentColor.value.hsl.l - 20)));
+      palette.push(hslToHex(baseHue, Math.max(20, currentColor.value.hsl.s - 30), currentColor.value.hsl.l));
+      break;
 
     case 'triadic':
-      paletteType.value = '三角色'
+      paletteType.value = '三角色';
       for (let i = 0; i < 3; i++) {
-        const hue = (baseHue + i * 120) % 360
-        palette.push(hslToHex(hue, currentColor.value.hsl.s, currentColor.value.hsl.l))
+        const hue = (baseHue + i * 120) % 360;
+        palette.push(hslToHex(hue, currentColor.value.hsl.s, currentColor.value.hsl.l));
       }
-      palette.push(hslToHex(baseHue, Math.max(20, currentColor.value.hsl.s - 20), Math.min(80, currentColor.value.hsl.l + 20)))
-      palette.push(hslToHex((baseHue + 120) % 360, Math.max(20, currentColor.value.hsl.s - 20), Math.min(80, currentColor.value.hsl.l + 20)))
-      break
+      palette.push(hslToHex(baseHue, Math.max(20, currentColor.value.hsl.s - 20), Math.min(80, currentColor.value.hsl.l + 20)));
+      palette.push(hslToHex((baseHue + 120) % 360, Math.max(20, currentColor.value.hsl.s - 20), Math.min(80, currentColor.value.hsl.l + 20)));
+      break;
   }
 
-  generatedPalette.value = palette
+  generatedPalette.value = palette;
 }
 
 async function copyText(text: string) {
   try {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(text);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function addToHistory(hex: string) {
   if (!colorHistory.value.includes(hex)) {
-    colorHistory.value.unshift(hex)
-    colorHistory.value = colorHistory.value.slice(0, 32) // 限制历史记录数量
-    saveColorHistory()
+    colorHistory.value.unshift(hex);
+    colorHistory.value = colorHistory.value.slice(0, 32); // 限制历史记录数量
+    saveColorHistory();
   }
 }
 
 function clearHistory() {
-  colorHistory.value = []
-  saveColorHistory()
+  colorHistory.value = [];
+  saveColorHistory();
 }
 
 function loadColorHistory() {
   try {
-    const saved = localStorage.getItem('color-picker-history')
+    const saved = localStorage.getItem('color-picker-history');
     if (saved) {
-      colorHistory.value = JSON.parse(saved)
+      colorHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载颜色历史失败:', error)
+    console.error('加载颜色历史失败:', error);
   }
 }
 
 function saveColorHistory() {
   try {
-    localStorage.setItem('color-picker-history', JSON.stringify(colorHistory.value))
+    localStorage.setItem('color-picker-history', JSON.stringify(colorHistory.value));
   } catch (error) {
-    console.error('保存颜色历史失败:', error)
+    console.error('保存颜色历史失败:', error);
   }
 }
 </script>

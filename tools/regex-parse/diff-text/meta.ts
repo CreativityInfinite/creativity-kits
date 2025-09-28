@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'diff-text',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: '#8b5cf6',
   icon: 'tabler:file-diff',
   i18nKey: 'tools.diff-text',
-  entry: 'tools/regex-parse/diff-text/Component.vue',
-}
-export default meta
+  entry: 'tools/regex-parse/diff-text/Component.vue'
+};
+export default meta;

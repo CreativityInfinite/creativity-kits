@@ -78,111 +78,111 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-type HistoryItem = { action: string; detail: string; result: string; timestamp: number }
+import { ref, onMounted } from 'vue';
+type HistoryItem = { action: string; detail: string; result: string; timestamp: number };
 
-const name = ref('')
-const value = ref('')
-const maxAge = ref<number | null>(null)
-const secure = ref(true)
-const sameSiteLax = ref(true)
+const name = ref('');
+const value = ref('');
+const maxAge = ref<number | null>(null);
+const secure = ref(true);
+const sameSiteLax = ref(true);
 
-const result = ref('')
-const error = ref('')
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
 
 function clearError() {
-  error.value = ''
+  error.value = '';
 }
 function record(action: string, detail: string) {
-  history.value.unshift({ action, detail, result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('cookie-history', JSON.stringify(history.value))
+  history.value.unshift({ action, detail, result: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('cookie-history', JSON.stringify(history.value));
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('cookie-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('cookie-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function parseCookies() {
-  const map: Record<string, string> = {}
-  const raw = document.cookie || ''
+  const map: Record<string, string> = {};
+  const raw = document.cookie || '';
   raw
     .split(';')
     .map((s) => s.trim())
     .filter(Boolean)
     .forEach((kv) => {
-      const idx = kv.indexOf('=')
+      const idx = kv.indexOf('=');
       if (idx >= 0) {
-        const k = decodeURIComponent(kv.slice(0, idx).trim())
-        const v = decodeURIComponent(kv.slice(idx + 1))
-        map[k] = v
+        const k = decodeURIComponent(kv.slice(0, idx).trim());
+        const v = decodeURIComponent(kv.slice(idx + 1));
+        map[k] = v;
       }
-    })
-  return map
+    });
+  return map;
 }
 function refresh() {
-  clearError()
+  clearError();
   try {
-    const data = parseCookies()
-    result.value = JSON.stringify(data, null, 2)
-    record('refresh', '刷新 cookies')
+    const data = parseCookies();
+    result.value = JSON.stringify(data, null, 2);
+    record('refresh', '刷新 cookies');
   } catch (e: any) {
-    error.value = e?.message || '读取失败'
+    error.value = e?.message || '读取失败';
   }
 }
 function setCookie() {
-  clearError()
+  clearError();
   try {
-    let parts = [`${encodeURIComponent(name.value)}=${encodeURIComponent(value.value)}`, `path=/`]
-    if (maxAge.value != null && Number.isFinite(maxAge.value) && maxAge.value > 0) parts.push(`Max-Age=${Math.floor(maxAge.value)}`)
-    if (secure.value) parts.push('Secure')
-    parts.push(`SameSite=${sameSiteLax.value ? 'Lax' : 'None'}`)
-    document.cookie = parts.join('; ')
-    refresh()
-    record('set', `${name.value}=${value.value}; Max-Age=${maxAge.value || ''}`)
+    let parts = [`${encodeURIComponent(name.value)}=${encodeURIComponent(value.value)}`, `path=/`];
+    if (maxAge.value != null && Number.isFinite(maxAge.value) && maxAge.value > 0) parts.push(`Max-Age=${Math.floor(maxAge.value)}`);
+    if (secure.value) parts.push('Secure');
+    parts.push(`SameSite=${sameSiteLax.value ? 'Lax' : 'None'}`);
+    document.cookie = parts.join('; ');
+    refresh();
+    record('set', `${name.value}=${value.value}; Max-Age=${maxAge.value || ''}`);
   } catch (e: any) {
-    error.value = e?.message || '设置失败'
+    error.value = e?.message || '设置失败';
   }
 }
 function removeCookie() {
-  clearError()
+  clearError();
   try {
-    document.cookie = `${encodeURIComponent(name.value)}=; Max-Age=0; path=/`
-    refresh()
-    record('remove', name.value)
+    document.cookie = `${encodeURIComponent(name.value)}=; Max-Age=0; path=/`;
+    refresh();
+    record('remove', name.value);
   } catch (e: any) {
-    error.value = e?.message || '删除失败'
+    error.value = e?.message || '删除失败';
   }
 }
 
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'cookies.json'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cookies.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('cookie-history')
+  const saved = localStorage.getItem('cookie-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-  refresh()
-})
+  refresh();
+});
 </script>

@@ -38,65 +38,65 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 type Item = {
-  name: string
-  size: number
-  type: string
-  lastModified: number
-  headHex: string
-  previewUrl: string | null
-  width: number | null
-  height: number | null
-}
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+  headHex: string;
+  previewUrl: string | null;
+  width: number | null;
+  height: number | null;
+};
 
-const items = ref<Item[]>([])
-const error = ref('')
+const items = ref<Item[]>([]);
+const error = ref('');
 
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 async function readHeadHex(f: File) {
-  const buf = await f.slice(0, 64).arrayBuffer()
-  const bytes = new Uint8Array(buf)
+  const buf = await f.slice(0, 64).arrayBuffer();
+  const bytes = new Uint8Array(buf);
   return Array.from(bytes)
     .map((b) => b.toString(16).padStart(2, '0'))
-    .join(' ')
+    .join(' ');
 }
 
 function tryImagePreview(f: File): Promise<{ url: string | null; width: number | null; height: number | null }> {
   return new Promise((resolve) => {
-    if (!f.type.startsWith('image/')) return resolve({ url: null, width: null, height: null })
-    const url = URL.createObjectURL(f)
-    const img = new Image()
-    img.onload = () => resolve({ url, width: img.naturalWidth, height: img.naturalHeight })
-    img.onerror = () => resolve({ url: null, width: null, height: null })
-    img.src = url
-  })
+    if (!f.type.startsWith('image/')) return resolve({ url: null, width: null, height: null });
+    const url = URL.createObjectURL(f);
+    const img = new Image();
+    img.onload = () => resolve({ url, width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve({ url: null, width: null, height: null });
+    img.src = url;
+  });
 }
 
 async function handleFiles(fl: FileList | null) {
-  if (!fl) return
-  error.value = ''
-  const list: Item[] = []
+  if (!fl) return;
+  error.value = '';
+  const list: Item[] = [];
   for (const f of Array.from(fl)) {
     try {
-      const headHex = await readHeadHex(f)
-      const prev = await tryImagePreview(f)
-      list.push({ name: f.name, size: f.size, type: f.type, lastModified: f.lastModified, headHex, previewUrl: prev.url, width: prev.width, height: prev.height })
+      const headHex = await readHeadHex(f);
+      const prev = await tryImagePreview(f);
+      list.push({ name: f.name, size: f.size, type: f.type, lastModified: f.lastModified, headHex, previewUrl: prev.url, width: prev.width, height: prev.height });
     } catch (e: any) {
-      error.value = e?.message || '解析失败'
+      error.value = e?.message || '解析失败';
     }
   }
-  items.value = list
+  items.value = list;
 }
 
 function onDrop(e: DragEvent) {
-  handleFiles(e.dataTransfer?.files || null)
+  handleFiles(e.dataTransfer?.files || null);
 }
 function onChoose(e: Event) {
-  handleFiles((e.target as HTMLInputElement).files)
+  handleFiles((e.target as HTMLInputElement).files);
 }
 </script>

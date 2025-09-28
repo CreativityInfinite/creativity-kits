@@ -195,112 +195,112 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface SecureNote {
-  id: string
-  title: string
-  content: string
-  tags: string[]
-  createdAt: number
-  updatedAt: number
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  createdAt: number;
+  updatedAt: number;
 }
 
-const isUnlocked = ref(false)
-const password = ref('')
-const confirmPassword = ref('')
-const errorMessage = ref('')
-const notes = ref<SecureNote[]>([])
-const selectedNote = ref<SecureNote | null>(null)
-const newTag = ref('')
+const isUnlocked = ref(false);
+const password = ref('');
+const confirmPassword = ref('');
+const errorMessage = ref('');
+const notes = ref<SecureNote[]>([]);
+const selectedNote = ref<SecureNote | null>(null);
+const newTag = ref('');
 
 const hasNotes = computed(() => {
-  return localStorage.getItem('secure-notes-encrypted') !== null
-})
+  return localStorage.getItem('secure-notes-encrypted') !== null;
+});
 
 const canUnlock = computed(() => {
   if (hasNotes.value) {
-    return password.value.length > 0
+    return password.value.length > 0;
   } else {
-    return password.value.length >= 6 && password.value === confirmPassword.value
+    return password.value.length >= 6 && password.value === confirmPassword.value;
   }
-})
+});
 
 // 简单的加密/解密函数（实际应用中应使用更强的加密）
 const encrypt = (text: string, key: string): string => {
-  let result = ''
+  let result = '';
   for (let i = 0; i < text.length; i++) {
-    const char = text.charCodeAt(i)
-    const keyChar = key.charCodeAt(i % key.length)
-    result += String.fromCharCode(char ^ keyChar)
+    const char = text.charCodeAt(i);
+    const keyChar = key.charCodeAt(i % key.length);
+    result += String.fromCharCode(char ^ keyChar);
   }
-  return btoa(result)
-}
+  return btoa(result);
+};
 
 const decrypt = (encryptedText: string, key: string): string => {
   try {
-    const text = atob(encryptedText)
-    let result = ''
+    const text = atob(encryptedText);
+    let result = '';
     for (let i = 0; i < text.length; i++) {
-      const char = text.charCodeAt(i)
-      const keyChar = key.charCodeAt(i % key.length)
-      result += String.fromCharCode(char ^ keyChar)
+      const char = text.charCodeAt(i);
+      const keyChar = key.charCodeAt(i % key.length);
+      result += String.fromCharCode(char ^ keyChar);
     }
-    return result
+    return result;
   } catch {
-    throw new Error('解密失败')
+    throw new Error('解密失败');
   }
-}
+};
 
 // 解锁笔记
 const unlock = async () => {
-  errorMessage.value = ''
+  errorMessage.value = '';
 
   if (!canUnlock.value) {
-    errorMessage.value = hasNotes.value ? '请输入密码' : '密码长度至少6位且两次输入必须一致'
-    return
+    errorMessage.value = hasNotes.value ? '请输入密码' : '密码长度至少6位且两次输入必须一致';
+    return;
   }
 
   try {
     if (hasNotes.value) {
       // 解密现有笔记
-      const encrypted = localStorage.getItem('secure-notes-encrypted')
+      const encrypted = localStorage.getItem('secure-notes-encrypted');
       if (encrypted) {
-        const decrypted = decrypt(encrypted, password.value)
-        notes.value = JSON.parse(decrypted)
-        isUnlocked.value = true
+        const decrypted = decrypt(encrypted, password.value);
+        notes.value = JSON.parse(decrypted);
+        isUnlocked.value = true;
       }
     } else {
       // 创建新的安全笔记系统
-      notes.value = []
-      isUnlocked.value = true
-      saveNotes()
+      notes.value = [];
+      isUnlocked.value = true;
+      saveNotes();
     }
   } catch (error) {
-    errorMessage.value = '密码错误或数据损坏'
+    errorMessage.value = '密码错误或数据损坏';
   }
-}
+};
 
 // 锁定笔记
 const lock = () => {
-  isUnlocked.value = false
-  password.value = ''
-  confirmPassword.value = ''
-  selectedNote.value = null
-  notes.value = []
-}
+  isUnlocked.value = false;
+  password.value = '';
+  confirmPassword.value = '';
+  selectedNote.value = null;
+  notes.value = [];
+};
 
 // 保存笔记到加密存储
 const saveNotes = () => {
-  if (!isUnlocked.value) return
+  if (!isUnlocked.value) return;
 
   try {
-    const encrypted = encrypt(JSON.stringify(notes.value), password.value)
-    localStorage.setItem('secure-notes-encrypted', encrypted)
+    const encrypted = encrypt(JSON.stringify(notes.value), password.value);
+    localStorage.setItem('secure-notes-encrypted', encrypted);
   } catch (error) {
-    console.error('保存笔记失败:', error)
+    console.error('保存笔记失败:', error);
   }
-}
+};
 
 // 创建新笔记
 const createNote = () => {
@@ -311,39 +311,39 @@ const createNote = () => {
     tags: [],
     createdAt: Date.now(),
     updatedAt: Date.now()
-  }
+  };
 
-  notes.value.unshift(newNote)
-  selectedNote.value = newNote
-  saveNotes()
-}
+  notes.value.unshift(newNote);
+  selectedNote.value = newNote;
+  saveNotes();
+};
 
 // 选择笔记
 const selectNote = (note: SecureNote) => {
-  selectedNote.value = note
-}
+  selectedNote.value = note;
+};
 
 // 保存当前笔记
 const saveNote = () => {
-  if (!selectedNote.value) return
+  if (!selectedNote.value) return;
 
-  selectedNote.value.updatedAt = Date.now()
-  saveNotes()
-}
+  selectedNote.value.updatedAt = Date.now();
+  saveNotes();
+};
 
 // 删除笔记
 const deleteNote = (index: number) => {
   if (confirm('确定要删除这个笔记吗？此操作不可恢复。')) {
-    const deletedNote = notes.value[index]
-    notes.value.splice(index, 1)
+    const deletedNote = notes.value[index];
+    notes.value.splice(index, 1);
 
     if (selectedNote.value?.id === deletedNote.id) {
-      selectedNote.value = null
+      selectedNote.value = null;
     }
 
-    saveNotes()
+    saveNotes();
   }
-}
+};
 
 // 复制笔记
 const duplicateNote = (note: SecureNote) => {
@@ -353,55 +353,57 @@ const duplicateNote = (note: SecureNote) => {
     title: `${note.title} (副本)`,
     createdAt: Date.now(),
     updatedAt: Date.now()
-  }
+  };
 
-  notes.value.unshift(duplicated)
-  selectedNote.value = duplicated
-  saveNotes()
-}
+  notes.value.unshift(duplicated);
+  selectedNote.value = duplicated;
+  saveNotes();
+};
 
 // 添加标签
 const addTag = () => {
-  if (!selectedNote.value || !newTag.value.trim()) return
+  if (!selectedNote.value || !newTag.value.trim()) return;
 
-  const tag = newTag.value.trim()
+  const tag = newTag.value.trim();
   if (!selectedNote.value.tags.includes(tag)) {
-    selectedNote.value.tags.push(tag)
-    saveNote()
+    selectedNote.value.tags.push(tag);
+    saveNote();
   }
 
-  newTag.value = ''
-}
+  newTag.value = '';
+};
 
 // 移除标签
 const removeTag = (index: number) => {
-  if (!selectedNote.value) return
+  if (!selectedNote.value) return;
 
-  selectedNote.value.tags.splice(index, 1)
-  saveNote()
-}
+  selectedNote.value.tags.splice(index, 1);
+  saveNote();
+};
 
 // 导出笔记
 const exportNote = () => {
-  if (!selectedNote.value) return
+  if (!selectedNote.value) return;
 
-  const content = `# ${selectedNote.value.title}\n\n${selectedNote.value.content}\n\n---\n标签: ${selectedNote.value.tags.join(', ')}\n创建时间: ${formatDate(selectedNote.value.createdAt)}\n更新时间: ${formatDate(selectedNote.value.updatedAt)}`
+  const content = `# ${selectedNote.value.title}\n\n${selectedNote.value.content}\n\n---\n标签: ${selectedNote.value.tags.join(', ')}\n创建时间: ${formatDate(
+    selectedNote.value.createdAt
+  )}\n更新时间: ${formatDate(selectedNote.value.updatedAt)}`;
 
-  const blob = new Blob([content], { type: 'text/markdown' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `${selectedNote.value.title || '无标题'}.md`
-  a.click()
-  URL.revokeObjectURL(url)
-}
+  const blob = new Blob([content], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${selectedNote.value.title || '无标题'}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 // 打印笔记
 const printNote = () => {
-  if (!selectedNote.value) return
+  if (!selectedNote.value) return;
 
-  const printWindow = window.open('', '_blank')
-  if (!printWindow) return
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) return;
 
   printWindow.document.write(`
     <html>
@@ -435,18 +437,18 @@ const printNote = () => {
         }
       </body>
     </html>
-  `)
+  `);
 
-  printWindow.document.close()
-  printWindow.print()
-}
+  printWindow.document.close();
+  printWindow.print();
+};
 
 // 格式化日期
 const formatDate = (timestamp: number): string => {
-  return new Date(timestamp).toLocaleString('zh-CN')
-}
+  return new Date(timestamp).toLocaleString('zh-CN');
+};
 
 onMounted(() => {
   // 检查是否有保存的笔记
-})
+});
 </script>

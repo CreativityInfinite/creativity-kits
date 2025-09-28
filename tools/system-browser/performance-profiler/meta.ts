@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'performance-profiler',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.performance-profiler',
   entry: 'tools/system-browser/performance-profiler/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

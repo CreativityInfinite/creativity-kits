@@ -52,61 +52,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
-type Habit = { id: string; name: string; week: boolean[]; lastHistory: string[] }
+type Habit = { id: string; name: string; week: boolean[]; lastHistory: string[] };
 
-const habits = ref<Habit[]>([])
-const newHabit = ref('')
+const habits = ref<Habit[]>([]);
+const newHabit = ref('');
 
-const days = ['一','二','三','四','五','六','日'].map(d => `周${d}`)
+const days = ['一', '二', '三', '四', '五', '六', '日'].map((d) => `周${d}`);
 const weekStart = computed(() => {
-  const d = new Date()
-  const day = d.getDay() || 7
-  d.setHours(0,0,0,0)
-  d.setDate(d.getDate() - (day - 1))
-  return d
-})
-const weekStartStr = computed(() => weekStart.value.toISOString().split('T')[0])
+  const d = new Date();
+  const day = d.getDay() || 7;
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - (day - 1));
+  return d;
+});
+const weekStartStr = computed(() => weekStart.value.toISOString().split('T')[0]);
 
 function addHabit() {
-  const name = newHabit.value.trim()
-  if (!name) return
-  habits.value.push({ id: crypto.randomUUID(), name, week: Array(7).fill(false), lastHistory: [] })
-  newHabit.value = ''
-  persist()
+  const name = newHabit.value.trim();
+  if (!name) return;
+  habits.value.push({ id: crypto.randomUUID(), name, week: Array(7).fill(false), lastHistory: [] });
+  newHabit.value = '';
+  persist();
 }
 
 function removeHabit(i: number) {
-  habits.value.splice(i, 1)
-  persist()
+  habits.value.splice(i, 1);
+  persist();
 }
 
 function streak(h: Habit): number {
   // 简单：从当前周向后，连续为 true 的天数（仅本周）
-  let s = 0
-  for (let i = 6; i >= 0; i--) if (h.week[i]) s++; else break
-  return s
+  let s = 0;
+  for (let i = 6; i >= 0; i--)
+    if (h.week[i]) s++;
+    else break;
+  return s;
 }
 
 function persist() {
-  const save = { weekStart: weekStartStr.value, habits: habits.value }
-  localStorage.setItem('habit-tracker', JSON.stringify(save))
+  const save = { weekStart: weekStartStr.value, habits: habits.value };
+  localStorage.setItem('habit-tracker', JSON.stringify(save));
 }
 
 function load() {
-  const raw = localStorage.getItem('habit-tracker')
-  if (!raw) return
+  const raw = localStorage.getItem('habit-tracker');
+  if (!raw) return;
   try {
-    const obj = JSON.parse(raw)
+    const obj = JSON.parse(raw);
     if (obj.weekStart === weekStartStr.value && Array.isArray(obj.habits)) {
-      habits.value = obj.habits
+      habits.value = obj.habits;
     } else {
       // 新的一周，清空周勾选但保留名称
-      habits.value = (obj.habits || []).map((h: any) => ({ id: h.id || crypto.randomUUID(), name: h.name, week: Array(7).fill(false), lastHistory: h.lastHistory || [] }))
+      habits.value = (obj.habits || []).map((h: any) => ({ id: h.id || crypto.randomUUID(), name: h.name, week: Array(7).fill(false), lastHistory: h.lastHistory || [] }));
     }
   } catch {}
 }
 
-onMounted(load)
+onMounted(load);
 </script>

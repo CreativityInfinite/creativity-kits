@@ -18,32 +18,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n()
-const visible = ref(false)
+const { t } = useI18n();
+const visible = ref(false);
 // 提前出现阈值：滚动超过一定像素即显示
-const SHOW_OFFSET = 120 // px - 更早显示，提升用户体验
+const SHOW_OFFSET = 120; // px - 更早显示，提升用户体验
 
 function onScroll() {
-  const scrollY = window.scrollY || window.pageYOffset
+  const scrollY = window.scrollY || window.pageYOffset;
   // 尽快展示：滚动超过小阈值即可显示，不必到最底部
-  visible.value = scrollY > SHOW_OFFSET
+  visible.value = scrollY > SHOW_OFFSET;
 }
 
 function toTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', onScroll, { passive: true })
-  onScroll()
-})
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', onScroll)
-})
+  window.removeEventListener('scroll', onScroll);
+});
 </script>
 
 <style scoped>

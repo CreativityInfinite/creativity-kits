@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'oauth-pkce-helper',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.oauth-pkce-helper',
   entry: 'tools/dev-network/oauth-pkce-helper/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

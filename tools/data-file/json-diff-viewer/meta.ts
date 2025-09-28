@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'json-diff-viewer',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'data-file',
   tags: ['JSON', '差异', '对比', 'diff', '数据分析'],
   i18nKey: 'tools.json-diff-viewer',
-  entry: 'tools/data-file/json-diff-viewer/Component.vue',
-}
-export default meta
+  entry: 'tools/data-file/json-diff-viewer/Component.vue'
+};
+export default meta;

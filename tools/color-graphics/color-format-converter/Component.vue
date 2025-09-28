@@ -5,14 +5,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-const hex = ref('#7c3aed')
+import { computed, ref } from 'vue';
+const hex = ref('#7c3aed');
 const rgb = computed(() => {
-  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.value)
-  if (!m) return 'Invalid'
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.value);
+  if (!m) return 'Invalid';
   const r = parseInt(m[1], 16),
     g = parseInt(m[2], 16),
-    b = parseInt(m[3], 16)
-  return `${r}, ${g}, ${b}`
-})
+    b = parseInt(m[3], 16);
+  return `${r}, ${g}, ${b}`;
+});
 </script>

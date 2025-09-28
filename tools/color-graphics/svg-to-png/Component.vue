@@ -131,73 +131,73 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 type HistoryItem = {
-  width: number
-  height: number
-  scale: number
-  background: string
-  inputKind: 'svg' | 'url'
-  result: string
-  outputLength: number
-  timestamp: number
-}
+  width: number;
+  height: number;
+  scale: number;
+  background: string;
+  inputKind: 'svg' | 'url';
+  result: string;
+  outputLength: number;
+  timestamp: number;
+};
 
-const width = ref<number | null>(null)
-const height = ref<number | null>(null)
-const scale = ref(1)
-const background = ref('transparent')
-const inputText = ref('')
+const width = ref<number | null>(null);
+const height = ref<number | null>(null);
+const scale = ref(1);
+const background = ref('transparent');
+const inputText = ref('');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
-const lastInfo = ref({ width: 0, height: 0 })
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
+const lastInfo = ref({ width: 0, height: 0 });
 
-const canProcess = computed(() => inputText.value.trim().length > 0)
+const canProcess = computed(() => inputText.value.trim().length > 0);
 
 function clearAll() {
-  inputText.value = ''
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
-  lastInfo.value = { width: 0, height: 0 }
+  inputText.value = '';
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
+  lastInfo.value = { width: 0, height: 0 };
 }
 
 function swapView() {
-  if (!result.value) return
+  if (!result.value) return;
   // 本工具仅一种结果类型，这里做一个便捷复制动作
-  copyResult()
+  copyResult();
 }
 
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
 }
 
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 
 function downloadResult() {
-  if (!result.value) return
-  const filename = `svg2png_${new Date().toISOString().slice(0, 10)}.png`
+  if (!result.value) return;
+  const filename = `svg2png_${new Date().toISOString().slice(0, 10)}.png`;
   // 将 dataURL 转为 Blob 下载
   fetch(result.value)
     .then((r) => r.blob())
     .then((blob) => {
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = filename
-      a.click()
-      URL.revokeObjectURL(url)
-    })
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
 }
 
 function saveToHistory() {
-  if (!result.value) return
+  if (!result.value) return;
   const item: HistoryItem = {
     width: lastInfo.value.width,
     height: lastInfo.value.height,
@@ -207,120 +207,120 @@ function saveToHistory() {
     result: result.value,
     outputLength: result.value.length,
     timestamp: Date.now()
-  }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('svg2png-history', JSON.stringify(history.value))
+  };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('svg2png-history', JSON.stringify(history.value));
 }
 
 function loadFromHistory(item: HistoryItem) {
-  width.value = item.width
-  height.value = item.height
-  scale.value = item.scale
-  background.value = item.background
-  result.value = item.result
-  error.value = ''
-  processingTime.value = null
-  lastInfo.value = { width: item.width, height: item.height }
+  width.value = item.width;
+  height.value = item.height;
+  scale.value = item.scale;
+  background.value = item.background;
+  result.value = item.result;
+  error.value = '';
+  processingTime.value = null;
+  lastInfo.value = { width: item.width, height: item.height };
 }
 
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  localStorage.setItem('svg2png-history', JSON.stringify(history.value))
+  history.value.splice(index, 1);
+  localStorage.setItem('svg2png-history', JSON.stringify(history.value));
 }
 
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function isProbablyUrl(s: string) {
-  return /^https?:\/\//i.test(s.trim())
+  return /^https?:\/\//i.test(s.trim());
 }
 
 async function fetchText(url: string) {
-  const res = await fetch(url, { cache: 'no-store' })
-  if (!res.ok) throw new Error(`请求失败: ${res.status}`)
-  return await res.text()
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`请求失败: ${res.status}`);
+  return await res.text();
 }
 
 function parseViewBox(svg: string) {
-  const m = svg.match(/viewBox\s*=\s*"([^"]+)"/i) || svg.match(/viewBox\s*=\s*'([^']+)'/i)
-  if (!m) return null
-  const parts = m[1].trim().split(/\s+/).map(Number)
+  const m = svg.match(/viewBox\s*=\s*"([^"]+)"/i) || svg.match(/viewBox\s*=\s*'([^']+)'/i);
+  if (!m) return null;
+  const parts = m[1].trim().split(/\s+/).map(Number);
   if (parts.length === 4) {
-    return { minX: parts[0], minY: parts[1], w: parts[2], h: parts[3] }
+    return { minX: parts[0], minY: parts[1], w: parts[2], h: parts[3] };
   }
-  return null
+  return null;
 }
 
 async function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
 
   try {
-    let svgText = inputText.value.trim()
+    let svgText = inputText.value.trim();
     if (isProbablyUrl(svgText)) {
-      svgText = await fetchText(svgText)
+      svgText = await fetchText(svgText);
     }
-    if (!svgText) throw new Error('未获取到 SVG 内容')
+    if (!svgText) throw new Error('未获取到 SVG 内容');
 
     // 创建 Image 使用 dataURL 加载 SVG
-    const svgBlob = new Blob([svgText], { type: 'image/svg+xml' })
-    const svgUrl = URL.createObjectURL(svgBlob)
+    const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+    const svgUrl = URL.createObjectURL(svgBlob);
 
     const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const im = new Image()
-      im.onload = () => resolve(im)
-      im.onerror = reject
-      im.src = svgUrl
-    })
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = reject;
+      im.src = svgUrl;
+    });
 
     // 自动尺寸：优先 viewBox，否则取 natural 尺寸
-    let targetW = width.value || 0
-    let targetH = height.value || 0
+    let targetW = width.value || 0;
+    let targetH = height.value || 0;
     if (!targetW || !targetH) {
-      const vb = parseViewBox(svgText)
+      const vb = parseViewBox(svgText);
       if (vb) {
-        targetW = Math.round((width.value || vb.w) * (scale.value || 1))
-        targetH = Math.round((height.value || vb.h) * (scale.value || 1))
+        targetW = Math.round((width.value || vb.w) * (scale.value || 1));
+        targetH = Math.round((height.value || vb.h) * (scale.value || 1));
       } else {
-        targetW = Math.round((width.value || img.naturalWidth || 512) * (scale.value || 1))
-        targetH = Math.round((height.value || img.naturalHeight || 512) * (scale.value || 1))
+        targetW = Math.round((width.value || img.naturalWidth || 512) * (scale.value || 1));
+        targetH = Math.round((height.value || img.naturalHeight || 512) * (scale.value || 1));
       }
     } else {
-      targetW = Math.round(targetW * (scale.value || 1))
-      targetH = Math.round(targetH * (scale.value || 1))
+      targetW = Math.round(targetW * (scale.value || 1));
+      targetH = Math.round(targetH * (scale.value || 1));
     }
 
-    const canvas = document.createElement('canvas')
-    canvas.width = targetW
-    canvas.height = targetH
-    const ctx = canvas.getContext('2d')!
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d')!;
     if (background.value && background.value.toLowerCase() !== 'transparent') {
-      ctx.fillStyle = background.value
-      ctx.fillRect(0, 0, targetW, targetH)
+      ctx.fillStyle = background.value;
+      ctx.fillRect(0, 0, targetW, targetH);
     }
-    ctx.drawImage(img, 0, 0, targetW, targetH)
+    ctx.drawImage(img, 0, 0, targetW, targetH);
 
-    const dataURL = canvas.toDataURL('image/png')
-    result.value = dataURL
-    lastInfo.value = { width: targetW, height: targetH }
-    processingTime.value = Math.round(performance.now() - start)
+    const dataURL = canvas.toDataURL('image/png');
+    result.value = dataURL;
+    lastInfo.value = { width: targetW, height: targetH };
+    processingTime.value = Math.round(performance.now() - start);
 
-    URL.revokeObjectURL(svgUrl)
+    URL.revokeObjectURL(svgUrl);
   } catch (e: any) {
-    error.value = e?.message || '转换失败'
+    error.value = e?.message || '转换失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('svg2png-history')
+  const saved = localStorage.getItem('svg2png-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

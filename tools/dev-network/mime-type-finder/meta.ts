@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'mime-type-finder',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.mime-type-finder',
   entry: 'tools/dev-network/mime-type-finder/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

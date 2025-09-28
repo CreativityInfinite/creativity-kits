@@ -287,36 +287,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue';
 
 interface Analysis {
-  inputFormat: string
-  outputFormat: string
-  dataType: string
-  depth: number
-  keys?: string[]
+  inputFormat: string;
+  outputFormat: string;
+  dataType: string;
+  depth: number;
+  keys?: string[];
   statistics?: {
-    objects: number
-    arrays: number
-    strings: number
-    numbers: number
-  }
+    objects: number;
+    arrays: number;
+    strings: number;
+    numbers: number;
+  };
 }
 
 interface ConversionHistory {
-  input: string
-  output: string
-  conversion: string
-  timestamp: string
-  preview: string
+  input: string;
+  output: string;
+  conversion: string;
+  timestamp: string;
+  preview: string;
 }
 
-const inputFormat = ref<'yaml' | 'json' | 'auto'>('auto')
-const inputText = ref('')
-const outputText = ref('')
-const outputFormat = ref<'yaml' | 'json'>('json')
-const error = ref('')
-const detectedFormat = ref<'yaml' | 'json' | null>(null)
+const inputFormat = ref<'yaml' | 'json' | 'auto'>('auto');
+const inputText = ref('');
+const outputText = ref('');
+const outputFormat = ref<'yaml' | 'json'>('json');
+const error = ref('');
+const detectedFormat = ref<'yaml' | 'json' | null>(null);
 
 const options = ref({
   prettyPrint: true,
@@ -325,60 +325,60 @@ const options = ref({
   autoConvert: true,
   jsonIndent: 2,
   yamlIndent: 2
-})
+});
 
-const analysis = ref<Analysis | null>(null)
-const conversionHistory = ref<ConversionHistory[]>([])
+const analysis = ref<Analysis | null>(null);
+const conversionHistory = ref<ConversionHistory[]>([]);
 
 const compressionRatio = computed(() => {
-  if (!inputText.value || !outputText.value) return null
-  const originalSize = new Blob([inputText.value]).size
-  const convertedSize = new Blob([outputText.value]).size
-  if (originalSize === 0) return null
-  return Math.round(((convertedSize - originalSize) / originalSize) * 100)
-})
+  if (!inputText.value || !outputText.value) return null;
+  const originalSize = new Blob([inputText.value]).size;
+  const convertedSize = new Blob([outputText.value]).size;
+  if (originalSize === 0) return null;
+  return Math.round(((convertedSize - originalSize) / originalSize) * 100);
+});
 
 watch([() => options.value.prettyPrint, () => options.value.sortKeys, () => options.value.jsonIndent, () => options.value.yamlIndent], () => {
   if (inputText.value && outputText.value) {
-    autoConvert()
+    autoConvert();
   }
-})
+});
 
 function handleFormatChange() {
   if (inputText.value) {
-    autoConvert()
+    autoConvert();
   }
 }
 
 function autoConvert() {
   if (!options.value.autoConvert || !inputText.value.trim()) {
-    outputText.value = ''
-    analysis.value = null
-    return
+    outputText.value = '';
+    analysis.value = null;
+    return;
   }
 
-  const format = detectFormat()
+  const format = detectFormat();
   if (format === 'yaml') {
-    convertToJson()
+    convertToJson();
   } else if (format === 'json') {
-    convertToYaml()
+    convertToYaml();
   }
 }
 
 function detectFormat(): 'yaml' | 'json' | null {
   if (inputFormat.value !== 'auto') {
-    detectedFormat.value = inputFormat.value
-    return inputFormat.value
+    detectedFormat.value = inputFormat.value;
+    return inputFormat.value;
   }
 
-  const text = inputText.value.trim()
-  if (!text) return null
+  const text = inputText.value.trim();
+  if (!text) return null;
 
   // 尝试解析为 JSON
   try {
-    JSON.parse(text)
-    detectedFormat.value = 'json'
-    return 'json'
+    JSON.parse(text);
+    detectedFormat.value = 'json';
+    return 'json';
   } catch {
     // JSON 解析失败，可能是 YAML
   }
@@ -391,179 +391,179 @@ function detectFormat(): 'yaml' | 'json' | null {
     /^\s*---\s*$/m, // document separator
     /:\s*\|/m, // literal block scalar
     /:\s*>/m // folded block scalar
-  ]
+  ];
 
-  const hasYamlFeatures = yamlPatterns.some((pattern) => pattern.test(text))
+  const hasYamlFeatures = yamlPatterns.some((pattern) => pattern.test(text));
 
   if (hasYamlFeatures) {
-    detectedFormat.value = 'yaml'
-    return 'yaml'
+    detectedFormat.value = 'yaml';
+    return 'yaml';
   }
 
   // 默认尝试 YAML
-  detectedFormat.value = 'yaml'
-  return 'yaml'
+  detectedFormat.value = 'yaml';
+  return 'yaml';
 }
 
 function convertToJson() {
-  error.value = ''
+  error.value = '';
 
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 YAML 内容'
-      return
+      error.value = '请输入 YAML 内容';
+      return;
     }
 
     // 简单的 YAML 解析器（基础实现）
-    const parsed = parseYaml(input)
+    const parsed = parseYaml(input);
 
-    let jsonString = ''
+    let jsonString = '';
     if (options.value.prettyPrint) {
-      jsonString = JSON.stringify(parsed, null, options.value.jsonIndent)
+      jsonString = JSON.stringify(parsed, null, options.value.jsonIndent);
     } else {
-      jsonString = JSON.stringify(parsed)
+      jsonString = JSON.stringify(parsed);
     }
 
     if (options.value.sortKeys) {
-      const sortedParsed = sortObjectKeys(parsed)
-      jsonString = options.value.prettyPrint ? JSON.stringify(sortedParsed, null, options.value.jsonIndent) : JSON.stringify(sortedParsed)
+      const sortedParsed = sortObjectKeys(parsed);
+      jsonString = options.value.prettyPrint ? JSON.stringify(sortedParsed, null, options.value.jsonIndent) : JSON.stringify(sortedParsed);
     }
 
-    outputText.value = jsonString
-    outputFormat.value = 'json'
-    analyzeContent(parsed, 'yaml', 'json')
-    addToHistory(input, jsonString, 'YAML → JSON')
+    outputText.value = jsonString;
+    outputFormat.value = 'json';
+    analyzeContent(parsed, 'yaml', 'json');
+    addToHistory(input, jsonString, 'YAML → JSON');
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'YAML 解析失败'
+    error.value = err instanceof Error ? err.message : 'YAML 解析失败';
   }
 }
 
 function convertToYaml() {
-  error.value = ''
+  error.value = '';
 
   try {
-    const input = inputText.value.trim()
+    const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 JSON 内容'
-      return
+      error.value = '请输入 JSON 内容';
+      return;
     }
 
-    let parsed = JSON.parse(input)
+    let parsed = JSON.parse(input);
 
     if (options.value.sortKeys) {
-      parsed = sortObjectKeys(parsed)
+      parsed = sortObjectKeys(parsed);
     }
 
-    const yamlString = stringifyYaml(parsed, options.value.yamlIndent)
+    const yamlString = stringifyYaml(parsed, options.value.yamlIndent);
 
-    outputText.value = yamlString
-    outputFormat.value = 'yaml'
-    analyzeContent(parsed, 'json', 'yaml')
-    addToHistory(input, yamlString, 'JSON → YAML')
+    outputText.value = yamlString;
+    outputFormat.value = 'yaml';
+    analyzeContent(parsed, 'json', 'yaml');
+    addToHistory(input, yamlString, 'JSON → YAML');
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'JSON 解析失败'
+    error.value = err instanceof Error ? err.message : 'JSON 解析失败';
   }
 }
 
 // 简单的 YAML 解析器（基础实现）
 function parseYaml(yamlString: string): any {
-  const lines = yamlString.split('\n')
-  const result: any = {}
-  const stack: any[] = [result]
-  let currentIndent = 0
+  const lines = yamlString.split('\n');
+  const result: any = {};
+  const stack: any[] = [result];
+  let currentIndent = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    const trimmedLine = line.trim()
+    const line = lines[i];
+    const trimmedLine = line.trim();
 
     // 跳过空行和注释
-    if (!trimmedLine || trimmedLine.startsWith('#')) continue
+    if (!trimmedLine || trimmedLine.startsWith('#')) continue;
 
     // 跳过文档分隔符
-    if (trimmedLine === '---' || trimmedLine === '...') continue
+    if (trimmedLine === '---' || trimmedLine === '...') continue;
 
-    const indent = line.length - line.trimStart().length
-    const current = stack[stack.length - 1]
+    const indent = line.length - line.trimStart().length;
+    const current = stack[stack.length - 1];
 
     // 处理列表项
     if (trimmedLine.startsWith('- ')) {
-      const value = trimmedLine.substring(2).trim()
+      const value = trimmedLine.substring(2).trim();
       if (!Array.isArray(current)) {
         // 转换为数组
-        const keys = Object.keys(current)
+        const keys = Object.keys(current);
         if (keys.length === 0) {
-          stack[stack.length - 1] = []
+          stack[stack.length - 1] = [];
         }
       }
 
       if (Array.isArray(stack[stack.length - 1])) {
         if (value.includes(':')) {
           // 对象项
-          const obj = {}
-          stack[stack.length - 1].push(obj)
-          parseKeyValue(value, obj)
+          const obj = {};
+          stack[stack.length - 1].push(obj);
+          parseKeyValue(value, obj);
         } else {
           // 简单值
-          stack[stack.length - 1].push(parseValue(value))
+          stack[stack.length - 1].push(parseValue(value));
         }
       }
-      continue
+      continue;
     }
 
     // 处理键值对
     if (trimmedLine.includes(':')) {
-      parseKeyValue(trimmedLine, current)
+      parseKeyValue(trimmedLine, current);
     }
   }
 
-  return result
+  return result;
 }
 
 function parseKeyValue(line: string, target: any) {
-  const colonIndex = line.indexOf(':')
-  if (colonIndex === -1) return
+  const colonIndex = line.indexOf(':');
+  if (colonIndex === -1) return;
 
-  const key = line.substring(0, colonIndex).trim()
-  const value = line.substring(colonIndex + 1).trim()
+  const key = line.substring(0, colonIndex).trim();
+  const value = line.substring(colonIndex + 1).trim();
 
   if (!value) {
-    target[key] = {}
+    target[key] = {};
   } else {
-    target[key] = parseValue(value)
+    target[key] = parseValue(value);
   }
 }
 
 function parseValue(value: string): any {
   // 布尔值
-  if (value === 'true') return true
-  if (value === 'false') return false
+  if (value === 'true') return true;
+  if (value === 'false') return false;
 
   // null
-  if (value === 'null' || value === '~') return null
+  if (value === 'null' || value === '~') return null;
 
   // 数字
-  if (/^-?\d+$/.test(value)) return parseInt(value, 10)
-  if (/^-?\d*\.\d+$/.test(value)) return parseFloat(value)
+  if (/^-?\d+$/.test(value)) return parseInt(value, 10);
+  if (/^-?\d*\.\d+$/.test(value)) return parseFloat(value);
 
   // 字符串（移除引号）
   if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-    return value.slice(1, -1)
+    return value.slice(1, -1);
   }
 
-  return value
+  return value;
 }
 
 // 简单的 YAML 字符串化器
 function stringifyYaml(obj: any, indent: number = 2, currentIndent: number = 0): string {
-  const spaces = ' '.repeat(currentIndent)
+  const spaces = ' '.repeat(currentIndent);
 
   if (obj === null || obj === undefined) {
-    return 'null'
+    return 'null';
   }
 
   if (typeof obj === 'boolean' || typeof obj === 'number') {
-    return String(obj)
+    return String(obj);
   }
 
   if (typeof obj === 'string') {
@@ -577,92 +577,92 @@ function stringifyYaml(obj: any, indent: number = 2, currentIndent: number = 0):
       ['true', 'false', 'null', '~'].includes(obj.toLowerCase()) ||
       /^-?\d+(\.\d+)?$/.test(obj)
     ) {
-      return `"${obj.replace(/"/g, '\\"')}"`
+      return `"${obj.replace(/"/g, '\\"')}"`;
     }
-    return obj
+    return obj;
   }
 
   if (Array.isArray(obj)) {
-    if (obj.length === 0) return '[]'
+    if (obj.length === 0) return '[]';
 
     return obj
       .map((item) => {
-        const itemYaml = stringifyYaml(item, indent, currentIndent + indent)
+        const itemYaml = stringifyYaml(item, indent, currentIndent + indent);
         if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
-          return `${spaces}- ${itemYaml.replace(/\n/g, `\n${spaces}  `)}`
+          return `${spaces}- ${itemYaml.replace(/\n/g, `\n${spaces}  `)}`;
         }
-        return `${spaces}- ${itemYaml}`
+        return `${spaces}- ${itemYaml}`;
       })
-      .join('\n')
+      .join('\n');
   }
 
   if (typeof obj === 'object') {
-    const keys = Object.keys(obj)
-    if (keys.length === 0) return '{}'
+    const keys = Object.keys(obj);
+    if (keys.length === 0) return '{}';
 
     return keys
       .map((key) => {
-        const value = obj[key]
-        const valueYaml = stringifyYaml(value, indent, currentIndent + indent)
+        const value = obj[key];
+        const valueYaml = stringifyYaml(value, indent, currentIndent + indent);
 
         if (typeof value === 'object' && value !== null) {
           if (Array.isArray(value) && value.length > 0) {
-            return `${spaces}${key}:\n${valueYaml}`
+            return `${spaces}${key}:\n${valueYaml}`;
           } else if (!Array.isArray(value) && Object.keys(value).length > 0) {
-            return `${spaces}${key}:\n${valueYaml}`
+            return `${spaces}${key}:\n${valueYaml}`;
           } else {
-            return `${spaces}${key}: ${valueYaml}`
+            return `${spaces}${key}: ${valueYaml}`;
           }
         } else {
-          return `${spaces}${key}: ${valueYaml}`
+          return `${spaces}${key}: ${valueYaml}`;
         }
       })
-      .join('\n')
+      .join('\n');
   }
 
-  return String(obj)
+  return String(obj);
 }
 
 function sortObjectKeys(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map(sortObjectKeys)
+    return obj.map(sortObjectKeys);
   } else if (obj !== null && typeof obj === 'object') {
-    const sorted: any = {}
+    const sorted: any = {};
     Object.keys(obj)
       .sort()
       .forEach((key) => {
-        sorted[key] = sortObjectKeys(obj[key])
-      })
-    return sorted
+        sorted[key] = sortObjectKeys(obj[key]);
+      });
+    return sorted;
   }
-  return obj
+  return obj;
 }
 
 function analyzeContent(data: any, inputFormat: string, outputFormat: string) {
-  const keys = typeof data === 'object' && data !== null && !Array.isArray(data) ? Object.keys(data) : []
+  const keys = typeof data === 'object' && data !== null && !Array.isArray(data) ? Object.keys(data) : [];
 
   const statistics = {
     objects: 0,
     arrays: 0,
     strings: 0,
     numbers: 0
-  }
+  };
 
   function countTypes(obj: any) {
     if (Array.isArray(obj)) {
-      statistics.arrays++
-      obj.forEach(countTypes)
+      statistics.arrays++;
+      obj.forEach(countTypes);
     } else if (obj !== null && typeof obj === 'object') {
-      statistics.objects++
-      Object.values(obj).forEach(countTypes)
+      statistics.objects++;
+      Object.values(obj).forEach(countTypes);
     } else if (typeof obj === 'string') {
-      statistics.strings++
+      statistics.strings++;
     } else if (typeof obj === 'number') {
-      statistics.numbers++
+      statistics.numbers++;
     }
   }
 
-  countTypes(data)
+  countTypes(data);
 
   analysis.value = {
     inputFormat: inputFormat.toUpperCase(),
@@ -671,48 +671,48 @@ function analyzeContent(data: any, inputFormat: string, outputFormat: string) {
     depth: getMaxDepth(data),
     keys,
     statistics
-  }
+  };
 }
 
 function getMaxDepth(obj: any, currentDepth: number = 0): number {
   if (obj === null || typeof obj !== 'object') {
-    return currentDepth
+    return currentDepth;
   }
 
-  let maxDepth = currentDepth
+  let maxDepth = currentDepth;
 
   if (Array.isArray(obj)) {
     for (const item of obj) {
-      maxDepth = Math.max(maxDepth, getMaxDepth(item, currentDepth + 1))
+      maxDepth = Math.max(maxDepth, getMaxDepth(item, currentDepth + 1));
     }
   } else {
     for (const value of Object.values(obj)) {
-      maxDepth = Math.max(maxDepth, getMaxDepth(value, currentDepth + 1))
+      maxDepth = Math.max(maxDepth, getMaxDepth(value, currentDepth + 1));
     }
   }
 
-  return maxDepth
+  return maxDepth;
 }
 
 function validateInput() {
-  const format = detectFormat()
+  const format = detectFormat();
 
   if (format === 'json') {
     try {
-      JSON.parse(inputText.value)
-      outputText.value = '✅ JSON 格式有效'
+      JSON.parse(inputText.value);
+      outputText.value = '✅ JSON 格式有效';
     } catch (err) {
-      outputText.value = `❌ JSON 格式无效: ${err instanceof Error ? err.message : '未知错误'}`
+      outputText.value = `❌ JSON 格式无效: ${err instanceof Error ? err.message : '未知错误'}`;
     }
   } else if (format === 'yaml') {
     try {
-      parseYaml(inputText.value)
-      outputText.value = '✅ YAML 格式有效'
+      parseYaml(inputText.value);
+      outputText.value = '✅ YAML 格式有效';
     } catch (err) {
-      outputText.value = `❌ YAML 格式无效: ${err instanceof Error ? err.message : '未知错误'}`
+      outputText.value = `❌ YAML 格式无效: ${err instanceof Error ? err.message : '未知错误'}`;
     }
   } else {
-    outputText.value = '❌ 无法识别输入格式'
+    outputText.value = '❌ 无法识别输入格式';
   }
 }
 
@@ -739,10 +739,10 @@ features:
 settings:
   debug: true
   timeout: 30
-  retries: 3`
+  retries: 3`;
 
-  inputFormat.value = 'yaml'
-  autoConvert()
+  inputFormat.value = 'yaml';
+  autoConvert();
 }
 
 function loadSampleJson() {
@@ -768,62 +768,62 @@ function loadSampleJson() {
     "timeout": 30,
     "retries": 3
   }
-}`
+}`;
 
-  inputFormat.value = 'json'
-  autoConvert()
+  inputFormat.value = 'json';
+  autoConvert();
 }
 
 function swapInputOutput() {
-  const temp = inputText.value
-  inputText.value = outputText.value
-  outputText.value = temp
+  const temp = inputText.value;
+  inputText.value = outputText.value;
+  outputText.value = temp;
 
   // 交换格式
   if (outputFormat.value === 'json') {
-    inputFormat.value = 'json'
+    inputFormat.value = 'json';
   } else {
-    inputFormat.value = 'yaml'
+    inputFormat.value = 'yaml';
   }
 
-  autoConvert()
+  autoConvert();
 }
 
 function clearAll() {
-  inputText.value = ''
-  outputText.value = ''
-  error.value = ''
-  analysis.value = null
-  detectedFormat.value = null
+  inputText.value = '';
+  outputText.value = '';
+  error.value = '';
+  analysis.value = null;
+  detectedFormat.value = null;
 }
 
 async function copyOutput() {
-  if (!outputText.value) return
+  if (!outputText.value) return;
 
   try {
-    await navigator.clipboard.writeText(outputText.value)
+    await navigator.clipboard.writeText(outputText.value);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function downloadResult() {
-  if (!outputText.value) return
+  if (!outputText.value) return;
 
-  const extension = outputFormat.value === 'json' ? 'json' : 'yaml'
-  const filename = `converted-data.${extension}`
-  const mimeType = outputFormat.value === 'json' ? 'application/json' : 'text/yaml'
+  const extension = outputFormat.value === 'json' ? 'json' : 'yaml';
+  const filename = `converted-data.${extension}`;
+  const mimeType = outputFormat.value === 'json' ? 'application/json' : 'text/yaml';
 
-  const blob = new Blob([outputText.value], { type: mimeType })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([outputText.value], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function addToHistory(input: string, output: string, conversion: string) {
@@ -833,55 +833,55 @@ function addToHistory(input: string, output: string, conversion: string) {
     conversion,
     timestamp: new Date().toLocaleString(),
     preview: input.slice(0, 50) + (input.length > 50 ? '...' : '')
-  }
+  };
 
-  conversionHistory.value.unshift(historyItem)
-  conversionHistory.value = conversionHistory.value.slice(0, 10)
-  saveConversionHistory()
+  conversionHistory.value.unshift(historyItem);
+  conversionHistory.value = conversionHistory.value.slice(0, 10);
+  saveConversionHistory();
 }
 
 function loadFromHistory(history: ConversionHistory) {
-  inputText.value = history.input
-  outputText.value = history.output
+  inputText.value = history.input;
+  outputText.value = history.output;
 
   // 根据转换类型设置格式
   if (history.conversion.includes('YAML → JSON')) {
-    inputFormat.value = 'yaml'
-    outputFormat.value = 'json'
+    inputFormat.value = 'yaml';
+    outputFormat.value = 'json';
   } else {
-    inputFormat.value = 'json'
-    outputFormat.value = 'yaml'
+    inputFormat.value = 'json';
+    outputFormat.value = 'yaml';
   }
 }
 
 function clearHistory() {
-  conversionHistory.value = []
-  saveConversionHistory()
+  conversionHistory.value = [];
+  saveConversionHistory();
 }
 
 function saveConversionHistory() {
   try {
-    localStorage.setItem('yaml-json-conversion-history', JSON.stringify(conversionHistory.value))
+    localStorage.setItem('yaml-json-conversion-history', JSON.stringify(conversionHistory.value));
   } catch (error) {
-    console.error('保存转换历史失败:', error)
+    console.error('保存转换历史失败:', error);
   }
 }
 
 function loadConversionHistory() {
   try {
-    const saved = localStorage.getItem('yaml-json-conversion-history')
+    const saved = localStorage.getItem('yaml-json-conversion-history');
     if (saved) {
-      conversionHistory.value = JSON.parse(saved)
+      conversionHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载转换历史失败:', error)
+    console.error('加载转换历史失败:', error);
   }
 }
 
 // 组件挂载时加载历史记录
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
-  loadConversionHistory()
-})
+  loadConversionHistory();
+});
 </script>

@@ -89,113 +89,113 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
-type IconItem = { size: number; dataUrl: string }
-type HistoryItem = { text: string; color: string; bg: string; sizes: number[]; timestamp: number; items: IconItem[] }
+type IconItem = { size: number; dataUrl: string };
+type HistoryItem = { text: string; color: string; bg: string; sizes: number[]; timestamp: number; items: IconItem[] };
 
-const text = ref('😀')
-const color = ref('#000000')
-const bg = ref('#ffffff00')
-const fontSize = ref(64)
-const sizesInput = ref('16,32,48,64,180')
+const text = ref('😀');
+const color = ref('#000000');
+const bg = ref('#ffffff00');
+const fontSize = ref(64);
+const sizesInput = ref('16,32,48,64,180');
 
-const items = ref<IconItem[]>([])
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const items = ref<IconItem[]>([]);
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => !!(text.value || '').trim())
+const canProcess = computed(() => !!(text.value || '').trim());
 
 function clearAll() {
-  items.value = []
-  error.value = ''
-  processingTime.value = null
+  items.value = [];
+  error.value = '';
+  processingTime.value = null;
 }
 function copyDataUrl(u: string) {
-  navigator.clipboard.writeText(u).then(() => alert('已复制 DataURL'))
+  navigator.clipboard.writeText(u).then(() => alert('已复制 DataURL'));
 }
 function download(it: IconItem) {
-  const name = `favicon-${it.size}.png`
-  const a = document.createElement('a')
-  a.href = it.dataUrl
-  a.download = name
-  a.click()
+  const name = `favicon-${it.size}.png`;
+  const a = document.createElement('a');
+  a.href = it.dataUrl;
+  a.download = name;
+  a.click();
 }
 function saveToHistory() {
-  if (!items.value.length) return
-  const sizes = items.value.map((x) => x.size)
-  history.value.unshift({ text: text.value, color: color.value, bg: bg.value, sizes, timestamp: Date.now(), items: items.value.slice(0, 3) })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('favicon-history', JSON.stringify(history.value))
+  if (!items.value.length) return;
+  const sizes = items.value.map((x) => x.size);
+  history.value.unshift({ text: text.value, color: color.value, bg: bg.value, sizes, timestamp: Date.now(), items: items.value.slice(0, 3) });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('favicon-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  text.value = h.text
-  color.value = h.color
-  bg.value = h.bg
-  sizesInput.value = h.sizes.join(',')
-  items.value = h.items // 仅预览前几张
+  text.value = h.text;
+  color.value = h.color;
+  bg.value = h.bg;
+  sizesInput.value = h.sizes.join(',');
+  items.value = h.items; // 仅预览前几张
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('favicon-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('favicon-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function drawIcon(size: number): string {
-  const canvas = document.createElement('canvas')
-  canvas.width = size
-  canvas.height = size
-  const ctx = canvas.getContext('2d')!
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
   // 背景
   if (bg.value && bg.value !== 'transparent' && bg.value !== '#ffffff00') {
-    ctx.fillStyle = bg.value
-    ctx.fillRect(0, 0, size, size)
+    ctx.fillStyle = bg.value;
+    ctx.fillRect(0, 0, size, size);
   } else {
     // 透明背景，绘制网格以便预览对比（导出仍透明）
     // 跳过网格，直接透明导出即可
   }
   // 文本
-  ctx.textBaseline = 'middle'
-  ctx.textAlign = 'center'
-  ctx.fillStyle = color.value || '#000'
-  ctx.font = `bold ${Math.min(fontSize.value, size * 0.8)}px system-ui, Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif`
-  ctx.fillText(text.value || '', size / 2, size / 2)
-  return canvas.toDataURL('image/png')
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = color.value || '#000';
+  ctx.font = `bold ${Math.min(fontSize.value, size * 0.8)}px system-ui, Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif`;
+  ctx.fillText(text.value || '', size / 2, size / 2);
+  return canvas.toDataURL('image/png');
 }
 
 function parseSizes(): number[] {
   const arr = sizesInput.value
     .split(',')
     .map((s) => parseInt(s.trim(), 10))
-    .filter((n) => Number.isFinite(n) && n > 0 && n <= 1024)
-  const uniq = Array.from(new Set(arr))
-  return uniq.sort((a, b) => a - b)
+    .filter((n) => Number.isFinite(n) && n > 0 && n <= 1024);
+  const uniq = Array.from(new Set(arr));
+  return uniq.sort((a, b) => a - b);
 }
 
 function process() {
-  error.value = ''
-  items.value = []
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  items.value = [];
+  processingTime.value = null;
+  const start = performance.now();
   try {
-    const sizes = parseSizes()
-    if (!sizes.length) throw new Error('请提供有效尺寸，例如 16,32,48')
-    items.value = sizes.map((sz) => ({ size: sz, dataUrl: drawIcon(sz) }))
-    processingTime.value = Math.round(performance.now() - start)
+    const sizes = parseSizes();
+    if (!sizes.length) throw new Error('请提供有效尺寸，例如 16,32,48');
+    items.value = sizes.map((sz) => ({ size: sz, dataUrl: drawIcon(sz) }));
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '生成失败'
+    error.value = e?.message || '生成失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('favicon-history')
+  const saved = localStorage.getItem('favicon-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

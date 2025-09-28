@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'text-encoding-converter',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.text-encoding-converter',
   entry: 'tools/data-file/text-encoding-converter/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

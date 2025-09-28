@@ -20,6 +20,6 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ tabs: { id: string; label: string }[]; active: string; center?: boolean }>()
-defineEmits<{ change: [id: string] }>()
+defineProps<{ tabs: { id: string; label: string }[]; active: string; center?: boolean }>();
+defineEmits<{ change: [id: string] }>();
 </script>

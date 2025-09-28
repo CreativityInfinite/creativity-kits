@@ -99,161 +99,161 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 
-type HistoryItem = { code: string; label: string; timestamp: number }
+type HistoryItem = { code: string; label: string; timestamp: number };
 
-const secretInput = ref('')
-const digits = ref(6)
-const period = ref(30)
-const algo = ref<'SHA-1'>('SHA-1')
+const secretInput = ref('');
+const digits = ref(6);
+const period = ref(30);
+const algo = ref<'SHA-1'>('SHA-1');
 
-const code = ref('')
-const remaining = ref(0)
-const metaText = ref('')
-const error = ref('')
-const history = ref<HistoryItem[]>([])
+const code = ref('');
+const remaining = ref(0);
+const metaText = ref('');
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
 
-let timer: number | null = null
+let timer: number | null = null;
 
-const canProcess = computed(() => secretInput.value.trim().length > 0)
+const canProcess = computed(() => secretInput.value.trim().length > 0);
 
 function clearAll() {
-  code.value = ''
-  error.value = ''
-  metaText.value = ''
-  stopTimer()
+  code.value = '';
+  error.value = '';
+  metaText.value = '';
+  stopTimer();
 }
 function swapView() {
-  if (code.value) copyCode()
+  if (code.value) copyCode();
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制'));
 }
 function copyCode() {
-  if (code.value) copyText(code.value)
+  if (code.value) copyText(code.value);
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 function saveToHistory() {
-  if (!code.value) return
-  history.value.unshift({ code: code.value, label: metaText.value.slice(0, 80), timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('totp-history', JSON.stringify(history.value))
+  if (!code.value) return;
+  history.value.unshift({ code: code.value, label: metaText.value.slice(0, 80), timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('totp-history', JSON.stringify(history.value));
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('totp-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('totp-history', JSON.stringify(history.value));
 }
 
 function base32Decode(b32: string): Uint8Array {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
-  const cleaned = b32.toUpperCase().replace(/[^A-Z2-7]/g, '')
-  let bits = ''
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const cleaned = b32.toUpperCase().replace(/[^A-Z2-7]/g, '');
+  let bits = '';
   for (const ch of cleaned) {
-    const idx = alphabet.indexOf(ch)
-    if (idx === -1) continue
-    bits += idx.toString(2).padStart(5, '0')
+    const idx = alphabet.indexOf(ch);
+    if (idx === -1) continue;
+    bits += idx.toString(2).padStart(5, '0');
   }
-  const bytes: number[] = []
-  for (let i = 0; i + 8 <= bits.length; i += 8) bytes.push(parseInt(bits.slice(i, i + 8), 2))
-  return new Uint8Array(bytes)
+  const bytes: number[] = [];
+  for (let i = 0; i + 8 <= bits.length; i += 8) bytes.push(parseInt(bits.slice(i, i + 8), 2));
+  return new Uint8Array(bytes);
 }
 function parseOtpauth(uri: string) {
   try {
-    const u = new URL(uri)
-    if (u.protocol !== 'otpauth:') return null
-    const type = u.hostname // totp
-    const label = decodeURIComponent(u.pathname.slice(1))
-    const params = Object.fromEntries(u.searchParams.entries())
-    return { type, label, params }
+    const u = new URL(uri);
+    if (u.protocol !== 'otpauth:') return null;
+    const type = u.hostname; // totp
+    const label = decodeURIComponent(u.pathname.slice(1));
+    const params = Object.fromEntries(u.searchParams.entries());
+    return { type, label, params };
   } catch {
-    return null
+    return null;
   }
 }
 async function hmacSha1(key: ArrayBuffer, data: ArrayBuffer) {
-  const cryptoKey = await crypto.subtle.importKey('raw', key, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign'])
-  return crypto.subtle.sign('HMAC', cryptoKey, data)
+  const cryptoKey = await crypto.subtle.importKey('raw', key, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+  return crypto.subtle.sign('HMAC', cryptoKey, data);
 }
 function intToBytes(num: number | bigint) {
-  let x = BigInt(num)
-  const arr = new Uint8Array(8)
+  let x = BigInt(num);
+  const arr = new Uint8Array(8);
   for (let i = 7; i >= 0; i--) {
-    arr[i] = Number(x & 0xffn)
-    x >>= 8n
+    arr[i] = Number(x & 0xffn);
+    x >>= 8n;
   }
-  return arr
+  return arr;
 }
 function hotpTruncate(hmac: Uint8Array) {
-  const offset = hmac[hmac.length - 1] & 0x0f
-  const bin = ((hmac[offset] & 0x7f) << 24) | (hmac[offset + 1] << 16) | (hmac[offset + 2] << 8) | hmac[offset + 3]
-  return bin >>> 0
+  const offset = hmac[hmac.length - 1] & 0x0f;
+  const bin = ((hmac[offset] & 0x7f) << 24) | (hmac[offset + 1] << 16) | (hmac[offset + 2] << 8) | hmac[offset + 3];
+  return bin >>> 0;
 }
 async function computeTOTP(secret: Uint8Array, step: number, d: number) {
-  const counter = Math.floor(d / step)
-  const msg = intToBytes(counter)
-  const sig = new Uint8Array(await hmacSha1(secret.buffer, msg.buffer))
-  const bin = hotpTruncate(sig)
-  const mod = 10 ** digits.value
-  return String(bin % mod).padStart(digits.value, '0')
+  const counter = Math.floor(d / step);
+  const msg = intToBytes(counter);
+  const sig = new Uint8Array(await hmacSha1(secret.buffer, msg.buffer));
+  const bin = hotpTruncate(sig);
+  const mod = 10 ** digits.value;
+  return String(bin % mod).padStart(digits.value, '0');
 }
 
 function stopTimer() {
   if (timer != null) {
-    window.clearInterval(timer)
-    timer = null
+    window.clearInterval(timer);
+    timer = null;
   }
 }
 function startTimer(secret: Uint8Array) {
-  stopTimer()
-  const step = Math.max(5, period.value || 30)
+  stopTimer();
+  const step = Math.max(5, period.value || 30);
   const tick = async () => {
-    const now = Math.floor(Date.now() / 1000)
-    const rem = step - (now % step)
-    remaining.value = rem
+    const now = Math.floor(Date.now() / 1000);
+    const rem = step - (now % step);
+    remaining.value = rem;
     try {
-      const c = await computeTOTP(secret, step, now)
-      code.value = c
+      const c = await computeTOTP(secret, step, now);
+      code.value = c;
     } catch (e: any) {
-      error.value = e?.message || '计算失败'
-      stopTimer()
+      error.value = e?.message || '计算失败';
+      stopTimer();
     }
-  }
-  tick()
-  timer = window.setInterval(tick, 1000)
+  };
+  tick();
+  timer = window.setInterval(tick, 1000);
 }
 
 function process() {
-  error.value = ''
-  code.value = ''
-  metaText.value = ''
+  error.value = '';
+  code.value = '';
+  metaText.value = '';
   try {
-    let sec = secretInput.value.trim()
-    let label = ''
-    const parsed = parseOtpauth(sec)
+    let sec = secretInput.value.trim();
+    let label = '';
+    const parsed = parseOtpauth(sec);
     if (parsed && parsed.type === 'totp') {
-      sec = parsed.params['secret'] || ''
-      if (parsed.params['digits']) digits.value = parseInt(parsed.params['digits'])
-      if (parsed.params['period']) period.value = parseInt(parsed.params['period'])
-      label = parsed.label || ''
+      sec = parsed.params['secret'] || '';
+      if (parsed.params['digits']) digits.value = parseInt(parsed.params['digits']);
+      if (parsed.params['period']) period.value = parseInt(parsed.params['period']);
+      label = parsed.label || '';
     }
-    const secretBytes = base32Decode(sec)
-    if (!secretBytes.length) throw new Error('无效的 Base32 密钥')
-    metaText.value = JSON.stringify({ digits: digits.value, period: period.value, algo: algo.value, label }, null, 2)
-    startTimer(secretBytes)
+    const secretBytes = base32Decode(sec);
+    if (!secretBytes.length) throw new Error('无效的 Base32 密钥');
+    metaText.value = JSON.stringify({ digits: digits.value, period: period.value, algo: algo.value, label }, null, 2);
+    startTimer(secretBytes);
   } catch (e: any) {
-    error.value = e?.message || '解析失败'
+    error.value = e?.message || '解析失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('totp-history')
+  const saved = localStorage.getItem('totp-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
-onUnmounted(() => stopTimer())
+});
+onUnmounted(() => stopTimer());
 </script>

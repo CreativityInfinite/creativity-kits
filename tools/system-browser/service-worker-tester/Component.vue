@@ -120,174 +120,174 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 type HistoryItem = {
-  count: number
-  result: string
-  outputLength: number
-  timestamp: number
-}
+  count: number;
+  result: string;
+  outputLength: number;
+  timestamp: number;
+};
 
-const inputText = ref('')
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const inputText = ref('');
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const supported = 'serviceWorker' in navigator
-const currentScope = ref('')
-const hasController = ref(false)
+const supported = 'serviceWorker' in navigator;
+const currentScope = ref('');
+const hasController = ref(false);
 
-const canProcess = computed(() => inputText.value.trim().length > 0)
+const canProcess = computed(() => inputText.value.trim().length > 0);
 
 function clearAll() {
-  inputText.value = ''
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  inputText.value = '';
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 
 function swapView() {
-  if (!result.value) return
-  copyResult()
+  if (!result.value) return;
+  copyResult();
 }
 
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
 }
 
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 
 function downloadResult() {
-  if (!result.value) return
-  const filename = `sw_test_${new Date().toISOString().slice(0, 10)}.json`
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `sw_test_${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function saveToHistory() {
-  if (!result.value) return
-  const item: HistoryItem = { count: JSON.parse(result.value).results?.length || 0, result: result.value, outputLength: result.value.length, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('sw-tester-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const item: HistoryItem = { count: JSON.parse(result.value).results?.length || 0, result: result.value, outputLength: result.value.length, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('sw-tester-history', JSON.stringify(history.value));
 }
 
 function loadFromHistory(item: HistoryItem) {
-  result.value = item.result
-  error.value = ''
-  processingTime.value = null
+  result.value = item.result;
+  error.value = '';
+  processingTime.value = null;
 }
 
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  localStorage.setItem('sw-tester-history', JSON.stringify(history.value))
+  history.value.splice(index, 1);
+  localStorage.setItem('sw-tester-history', JSON.stringify(history.value));
 }
 
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 async function execLines(lines: string[]) {
-  const outputs: any[] = []
+  const outputs: any[] = [];
   for (const line of lines) {
     try {
-      const m = line.match(/^(\w+)(?:\s*=\s*(.+))?$/)
-      if (!m) throw new Error('无效命令')
-      const cmd = m[1].toLowerCase()
-      const val = m[2]
+      const m = line.match(/^(\w+)(?:\s*=\s*(.+))?$/);
+      if (!m) throw new Error('无效命令');
+      const cmd = m[1].toLowerCase();
+      const val = m[2];
 
       if (cmd === 'register') {
-        if (!val) throw new Error('register 需要路径，如 /sw.js')
-        const reg = await navigator.serviceWorker.register(val)
-        outputs.push({ cmd: line, scope: reg.scope, installing: !!reg.installing, waiting: !!reg.waiting, active: !!reg.active })
+        if (!val) throw new Error('register 需要路径，如 /sw.js');
+        const reg = await navigator.serviceWorker.register(val);
+        outputs.push({ cmd: line, scope: reg.scope, installing: !!reg.installing, waiting: !!reg.waiting, active: !!reg.active });
       } else if (cmd === 'unregister') {
-        const regs = await navigator.serviceWorker.getRegistrations()
-        const oks = await Promise.all(regs.map((r) => r.unregister()))
-        outputs.push({ cmd: line, unregistered: oks.filter(Boolean).length, total: regs.length })
+        const regs = await navigator.serviceWorker.getRegistrations();
+        const oks = await Promise.all(regs.map((r) => r.unregister()));
+        outputs.push({ cmd: line, unregistered: oks.filter(Boolean).length, total: regs.length });
       } else if (cmd === 'state') {
-        const reg = await navigator.serviceWorker.getRegistration()
+        const reg = await navigator.serviceWorker.getRegistration();
         outputs.push({
           cmd: line,
           scope: reg?.scope || null,
           controller: !!navigator.serviceWorker.controller,
           state: navigator.serviceWorker.controller?.state || null
-        })
+        });
       } else if (cmd === 'message') {
-        const reg = await navigator.serviceWorker.getRegistration()
-        if (!reg?.active) throw new Error('未找到激活的 SW')
-        const chan = new MessageChannel()
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (!reg?.active) throw new Error('未找到激活的 SW');
+        const chan = new MessageChannel();
         const reply = await new Promise<any>((resolve, reject) => {
-          const timer = setTimeout(() => reject(new Error('超时未响应')), 5000)
+          const timer = setTimeout(() => reject(new Error('超时未响应')), 5000);
           chan.port1.onmessage = (ev) => {
-            clearTimeout(timer)
-            resolve(ev.data)
-          }
-          reg.active!.postMessage(val || '', [chan.port2])
-        })
-        outputs.push({ cmd: line, reply })
+            clearTimeout(timer);
+            resolve(ev.data);
+          };
+          reg.active!.postMessage(val || '', [chan.port2]);
+        });
+        outputs.push({ cmd: line, reply });
       } else {
-        throw new Error(`未知命令：${cmd}`)
+        throw new Error(`未知命令：${cmd}`);
       }
     } catch (e: any) {
-      outputs.push({ cmd: line, error: e?.message || String(e) })
+      outputs.push({ cmd: line, error: e?.message || String(e) });
     }
   }
-  return outputs
+  return outputs;
 }
 
 async function refreshState() {
   try {
-    const reg = await navigator.serviceWorker.getRegistration()
-    currentScope.value = reg?.scope || ''
-    hasController.value = !!navigator.serviceWorker.controller
+    const reg = await navigator.serviceWorker.getRegistration();
+    currentScope.value = reg?.scope || '';
+    hasController.value = !!navigator.serviceWorker.controller;
   } catch {
-    currentScope.value = ''
-    hasController.value = false
+    currentScope.value = '';
+    hasController.value = false;
   }
 }
 
 async function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
 
   if (!supported) {
-    error.value = '当前环境不支持 Service Worker'
-    return
+    error.value = '当前环境不支持 Service Worker';
+    return;
   }
 
-  const start = performance.now()
+  const start = performance.now();
   try {
     const lines = inputText.value
       .split(/\r?\n/)
       .map((s) => s.trim())
-      .filter(Boolean)
-    if (!lines.length) throw new Error('请输入至少一条命令')
-    const outputs = await execLines(lines)
-    await refreshState()
-    result.value = JSON.stringify({ count: outputs.length, results: outputs }, null, 2)
-    processingTime.value = Math.round(performance.now() - start)
+      .filter(Boolean);
+    if (!lines.length) throw new Error('请输入至少一条命令');
+    const outputs = await execLines(lines);
+    await refreshState();
+    result.value = JSON.stringify({ count: outputs.length, results: outputs }, null, 2);
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '执行失败'
+    error.value = e?.message || '执行失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('sw-tester-history')
+  const saved = localStorage.getItem('sw-tester-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-  refreshState()
-})
+  refreshState();
+});
 </script>

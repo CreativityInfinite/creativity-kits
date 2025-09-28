@@ -45,63 +45,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const input = ref('')
-const output = ref('')
-const stats = ref<{ orig: number; min: number; ratio: number } | null>(null)
+const input = ref('');
+const output = ref('');
+const stats = ref<{ orig: number; min: number; ratio: number } | null>(null);
 
 function minifySvg(svg: string) {
-  let s = svg
+  let s = svg;
   // 去掉 XML 声明、注释
-  s = s.replace(/<!--[\s\S]*?-->|<!--[\s\S]*?-->/g, '')
-  s = s.replace(/<\?xml[\s\S]*?\?>/gi, '')
+  s = s.replace(/<!--[\s\S]*?-->|<!--[\s\S]*?-->/g, '');
+  s = s.replace(/<\?xml[\s\S]*?\?>/gi, '');
   // 移除常见的编辑器元数据标签
-  s = s.replace(/<\/?(?:metadata|defs)\b[^>]*>/gi, '')
+  s = s.replace(/<\/?(?:metadata|defs)\b[^>]*>/gi, '');
   // 合并多余空白
-  s = s.replace(/\s{2,}/g, ' ')
-  s = s.replace(/>\s+</g, '><')
+  s = s.replace(/\s{2,}/g, ' ');
+  s = s.replace(/>\s+</g, '><');
   // 去掉不必要的空属性和空 style
-  s = s.replace(/\s(?:id|class|style|data-[\w:-]+)=(["'])\s*\1/g, '')
+  s = s.replace(/\s(?:id|class|style|data-[\w:-]+)=(["'])\s*\1/g, '');
   // 去掉行首尾空白
-  s = s.trim()
-  return s
+  s = s.trim();
+  return s;
 }
 
 function process() {
-  const raw = (input.value || '').trim()
+  const raw = (input.value || '').trim();
   if (!raw) {
-    output.value = ''
-    stats.value = null
-    return
+    output.value = '';
+    stats.value = null;
+    return;
   }
-  const origLen = new Blob([raw]).size
-  const min = minifySvg(raw)
-  const minLen = new Blob([min]).size
-  output.value = min
-  const ratio = origLen ? Math.round((100 * (origLen - minLen)) / origLen) : 0
-  stats.value = { orig: origLen, min: minLen, ratio }
+  const origLen = new Blob([raw]).size;
+  const min = minifySvg(raw);
+  const minLen = new Blob([min]).size;
+  output.value = min;
+  const ratio = origLen ? Math.round((100 * (origLen - minLen)) / origLen) : 0;
+  stats.value = { orig: origLen, min: minLen, ratio };
 }
 
 async function copyToClipboard() {
-  if (!output.value) return
+  if (!output.value) return;
   try {
-    await navigator.clipboard.writeText(output.value)
-    alert('已复制到剪贴板')
+    await navigator.clipboard.writeText(output.value);
+    alert('已复制到剪贴板');
   } catch (err) {
-    console.error('复制失败:', err)
-    alert('复制失败，请手动复制')
+    console.error('复制失败:', err);
+    alert('复制失败，请手动复制');
   }
 }
 
 function downloadSVG() {
-  if (!output.value) return
-  const blob = new Blob([output.value], { type: 'image/svg+xml' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'optimized.svg'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!output.value) return;
+  const blob = new Blob([output.value], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'optimized.svg';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>

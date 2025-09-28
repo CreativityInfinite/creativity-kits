@@ -154,42 +154,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface Unit {
-  id: string
-  name: string
-  symbol: string
-  toBase: number // 转换到基础单位的倍数
-  offset?: number // 温度转换的偏移量
+  id: string;
+  name: string;
+  symbol: string;
+  toBase: number; // 转换到基础单位的倍数
+  offset?: number; // 温度转换的偏移量
 }
 
 interface Category {
-  id: string
-  name: string
-  baseUnit: string
-  units: Unit[]
+  id: string;
+  name: string;
+  baseUnit: string;
+  units: Unit[];
 }
 
 interface HistoryItem {
-  categoryId: string
-  categoryName: string
-  inputValue: number
-  fromUnit: string
-  toUnit: string
-  fromSymbol: string
-  toSymbol: string
-  result: number
-  timestamp: number
+  categoryId: string;
+  categoryName: string;
+  inputValue: number;
+  fromUnit: string;
+  toUnit: string;
+  fromSymbol: string;
+  toSymbol: string;
+  result: number;
+  timestamp: number;
 }
 
-const selectedCategory = ref('length')
-const inputValue = ref('')
-const fromUnit = ref('')
-const toUnit = ref('')
-const result = ref<number | null>(null)
-const showAllConversions = ref(false)
-const history = ref<HistoryItem[]>([])
+const selectedCategory = ref('length');
+const inputValue = ref('');
+const fromUnit = ref('');
+const toUnit = ref('');
+const result = ref<number | null>(null);
+const showAllConversions = ref(false);
+const history = ref<HistoryItem[]>([]);
 
 const categories: Category[] = [
   {
@@ -276,139 +276,139 @@ const categories: Category[] = [
       { id: 'knot', name: '节', symbol: 'kn', toBase: 0.514444 }
     ]
   }
-]
+];
 
 const currentCategory = computed(() => {
-  return categories.find((c) => c.id === selectedCategory.value)
-})
+  return categories.find((c) => c.id === selectedCategory.value);
+});
 
 const currentUnits = computed(() => {
-  return currentCategory.value?.units || []
-})
+  return currentCategory.value?.units || [];
+});
 
 function resetValues() {
-  inputValue.value = ''
-  fromUnit.value = ''
-  toUnit.value = ''
-  result.value = null
+  inputValue.value = '';
+  fromUnit.value = '';
+  toUnit.value = '';
+  result.value = null;
 
   // 设置默认单位
   if (currentUnits.value.length > 0) {
-    fromUnit.value = currentUnits.value[0].id
-    toUnit.value = currentUnits.value.length > 1 ? currentUnits.value[1].id : currentUnits.value[0].id
+    fromUnit.value = currentUnits.value[0].id;
+    toUnit.value = currentUnits.value.length > 1 ? currentUnits.value[1].id : currentUnits.value[0].id;
   }
 }
 
 function convert() {
   if (!inputValue.value || !fromUnit.value || !toUnit.value) {
-    result.value = null
-    return
+    result.value = null;
+    return;
   }
 
-  const input = parseFloat(inputValue.value)
+  const input = parseFloat(inputValue.value);
   if (isNaN(input)) {
-    result.value = null
-    return
+    result.value = null;
+    return;
   }
 
   if (selectedCategory.value === 'temperature') {
-    result.value = convertTemperature(input, fromUnit.value, toUnit.value)
+    result.value = convertTemperature(input, fromUnit.value, toUnit.value);
   } else {
-    const fromUnitInfo = getUnitInfo(fromUnit.value)
-    const toUnitInfo = getUnitInfo(toUnit.value)
+    const fromUnitInfo = getUnitInfo(fromUnit.value);
+    const toUnitInfo = getUnitInfo(toUnit.value);
 
     if (!fromUnitInfo || !toUnitInfo) {
-      result.value = null
-      return
+      result.value = null;
+      return;
     }
 
     // 转换到基础单位，再转换到目标单位
-    const baseValue = input * fromUnitInfo.toBase
-    result.value = baseValue / toUnitInfo.toBase
+    const baseValue = input * fromUnitInfo.toBase;
+    result.value = baseValue / toUnitInfo.toBase;
   }
 }
 
 function convertTemperature(value: number, from: string, to: string): number {
   // 先转换到摄氏度
-  let celsius: number
+  let celsius: number;
 
   switch (from) {
     case 'celsius':
-      celsius = value
-      break
+      celsius = value;
+      break;
     case 'fahrenheit':
-      celsius = ((value - 32) * 5) / 9
-      break
+      celsius = ((value - 32) * 5) / 9;
+      break;
     case 'kelvin':
-      celsius = value - 273.15
-      break
+      celsius = value - 273.15;
+      break;
     case 'rankine':
-      celsius = ((value - 459.67) * 5) / 9
-      break
+      celsius = ((value - 459.67) * 5) / 9;
+      break;
     default:
-      celsius = value
+      celsius = value;
   }
 
   // 从摄氏度转换到目标单位
   switch (to) {
     case 'celsius':
-      return celsius
+      return celsius;
     case 'fahrenheit':
-      return (celsius * 9) / 5 + 32
+      return (celsius * 9) / 5 + 32;
     case 'kelvin':
-      return celsius + 273.15
+      return celsius + 273.15;
     case 'rankine':
-      return (celsius * 9) / 5 + 459.67
+      return (celsius * 9) / 5 + 459.67;
     default:
-      return celsius
+      return celsius;
   }
 }
 
 function convertToUnit(unitId: string): number {
-  if (!inputValue.value || !fromUnit.value) return 0
+  if (!inputValue.value || !fromUnit.value) return 0;
 
-  const input = parseFloat(inputValue.value)
-  if (isNaN(input)) return 0
+  const input = parseFloat(inputValue.value);
+  if (isNaN(input)) return 0;
 
   if (selectedCategory.value === 'temperature') {
-    return convertTemperature(input, fromUnit.value, unitId)
+    return convertTemperature(input, fromUnit.value, unitId);
   } else {
-    const fromUnitInfo = getUnitInfo(fromUnit.value)
-    const toUnitInfo = getUnitInfo(unitId)
+    const fromUnitInfo = getUnitInfo(fromUnit.value);
+    const toUnitInfo = getUnitInfo(unitId);
 
-    if (!fromUnitInfo || !toUnitInfo) return 0
+    if (!fromUnitInfo || !toUnitInfo) return 0;
 
-    const baseValue = input * fromUnitInfo.toBase
-    return baseValue / toUnitInfo.toBase
+    const baseValue = input * fromUnitInfo.toBase;
+    return baseValue / toUnitInfo.toBase;
   }
 }
 
 function getTemperatureValue(unitId: string): number {
-  if (!inputValue.value || !fromUnit.value) return 0
+  if (!inputValue.value || !fromUnit.value) return 0;
 
-  const input = parseFloat(inputValue.value)
-  if (isNaN(input)) return 0
+  const input = parseFloat(inputValue.value);
+  if (isNaN(input)) return 0;
 
-  return convertTemperature(input, fromUnit.value, unitId)
+  return convertTemperature(input, fromUnit.value, unitId);
 }
 
 function getUnitInfo(unitId: string): Unit | undefined {
-  return currentUnits.value.find((u) => u.id === unitId)
+  return currentUnits.value.find((u) => u.id === unitId);
 }
 
 function getConversionFormula(): string {
-  if (!fromUnit.value || !toUnit.value) return ''
+  if (!fromUnit.value || !toUnit.value) return '';
 
-  const fromUnitInfo = getUnitInfo(fromUnit.value)
-  const toUnitInfo = getUnitInfo(toUnit.value)
+  const fromUnitInfo = getUnitInfo(fromUnit.value);
+  const toUnitInfo = getUnitInfo(toUnit.value);
 
-  if (!fromUnitInfo || !toUnitInfo) return ''
+  if (!fromUnitInfo || !toUnitInfo) return '';
 
   if (selectedCategory.value === 'temperature') {
-    return getTemperatureFormula(fromUnit.value, toUnit.value)
+    return getTemperatureFormula(fromUnit.value, toUnit.value);
   } else {
-    const factor = fromUnitInfo.toBase / toUnitInfo.toBase
-    return `1 ${fromUnitInfo.symbol} = ${formatNumber(factor)} ${toUnitInfo.symbol}`
+    const factor = fromUnitInfo.toBase / toUnitInfo.toBase;
+    return `1 ${fromUnitInfo.symbol} = ${formatNumber(factor)} ${toUnitInfo.symbol}`;
   }
 }
 
@@ -434,54 +434,54 @@ function getTemperatureFormula(from: string, to: string): string {
       fahrenheit: '°F = °R - 459.67',
       kelvin: 'K = °R × 5/9'
     }
-  }
+  };
 
-  return formulas[from]?.[to] || `${from} → ${to}`
+  return formulas[from]?.[to] || `${from} → ${to}`;
 }
 
 function formatNumber(num: number): string {
   if (Math.abs(num) >= 1e6 || (Math.abs(num) < 0.001 && num !== 0)) {
-    return num.toExponential(6)
+    return num.toExponential(6);
   } else if (Math.abs(num) < 1) {
-    return num.toFixed(8).replace(/\.?0+$/, '')
+    return num.toFixed(8).replace(/\.?0+$/, '');
   } else {
-    return num.toFixed(6).replace(/\.?0+$/, '')
+    return num.toFixed(6).replace(/\.?0+$/, '');
   }
 }
 
 function swapUnits() {
-  const temp = fromUnit.value
-  fromUnit.value = toUnit.value
-  toUnit.value = temp
-  convert()
+  const temp = fromUnit.value;
+  fromUnit.value = toUnit.value;
+  toUnit.value = temp;
+  convert();
 }
 
 function clearAll() {
-  inputValue.value = ''
-  result.value = null
+  inputValue.value = '';
+  result.value = null;
 }
 
 function copyResult() {
   if (result.value !== null) {
-    const toUnitInfo = getUnitInfo(toUnit.value)
-    const text = `${formatNumber(result.value)} ${toUnitInfo?.symbol || ''}`
-    copyToClipboard(text)
+    const toUnitInfo = getUnitInfo(toUnit.value);
+    const text = `${formatNumber(result.value)} ${toUnitInfo?.symbol || ''}`;
+    copyToClipboard(text);
   }
 }
 
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text).then(() => {
-    alert('已复制到剪贴板')
-  })
+    alert('已复制到剪贴板');
+  });
 }
 
 function saveToHistory() {
-  if (result.value === null || !inputValue.value || !fromUnit.value || !toUnit.value) return
+  if (result.value === null || !inputValue.value || !fromUnit.value || !toUnit.value) return;
 
-  const fromUnitInfo = getUnitInfo(fromUnit.value)
-  const toUnitInfo = getUnitInfo(toUnit.value)
+  const fromUnitInfo = getUnitInfo(fromUnit.value);
+  const toUnitInfo = getUnitInfo(toUnit.value);
 
-  if (!fromUnitInfo || !toUnitInfo || !currentCategory.value) return
+  if (!fromUnitInfo || !toUnitInfo || !currentCategory.value) return;
 
   const item: HistoryItem = {
     categoryId: selectedCategory.value,
@@ -493,29 +493,29 @@ function saveToHistory() {
     toSymbol: toUnitInfo.symbol,
     result: result.value,
     timestamp: Date.now()
-  }
+  };
 
-  history.value.unshift(item)
+  history.value.unshift(item);
 
   // 只保留最近20条
   if (history.value.length > 20) {
-    history.value = history.value.slice(0, 20)
+    history.value = history.value.slice(0, 20);
   }
 
-  saveHistoryToStorage()
+  saveHistoryToStorage();
 }
 
 function loadFromHistory(item: HistoryItem) {
-  selectedCategory.value = item.categoryId
-  inputValue.value = item.inputValue.toString()
-  fromUnit.value = item.fromUnit
-  toUnit.value = item.toUnit
-  convert()
+  selectedCategory.value = item.categoryId;
+  inputValue.value = item.inputValue.toString();
+  fromUnit.value = item.fromUnit;
+  toUnit.value = item.toUnit;
+  convert();
 }
 
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  saveHistoryToStorage()
+  history.value.splice(index, 1);
+  saveHistoryToStorage();
 }
 
 function formatDate(timestamp: number): string {
@@ -524,26 +524,26 @@ function formatDate(timestamp: number): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  })
+  });
 }
 
 function saveHistoryToStorage() {
-  localStorage.setItem('unit-converter-history', JSON.stringify(history.value))
+  localStorage.setItem('unit-converter-history', JSON.stringify(history.value));
 }
 
 function loadHistoryFromStorage() {
-  const saved = localStorage.getItem('unit-converter-history')
+  const saved = localStorage.getItem('unit-converter-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch (error) {
-      console.error('加载历史记录失败:', error)
+      console.error('加载历史记录失败:', error);
     }
   }
 }
 
 onMounted(() => {
-  resetValues()
-  loadHistoryFromStorage()
-})
+  resetValues();
+  loadHistoryFromStorage();
+});
 </script>

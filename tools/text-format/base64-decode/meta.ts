@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'base64-decode',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'text-format',
   tags: ['Base64', '解码', '数据转换', '文件处理', '编码格式', '二进制'],
   i18nKey: 'tools.base64-decode',
-  entry: 'tools/text-format/base64-decode/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/base64-decode/Component.vue'
+};
+export default meta;

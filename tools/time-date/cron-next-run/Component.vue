@@ -79,153 +79,153 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-type HistoryItem = { expr: string; startAt: number; count: number; result: string; timestamp: number }
+import { ref, computed, onMounted } from 'vue';
+type HistoryItem = { expr: string; startAt: number; count: number; result: string; timestamp: number };
 
-const expr = ref('*/5 * * * *')
-const startAt = ref('')
-const count = ref(5)
+const expr = ref('*/5 * * * *');
+const startAt = ref('');
+const count = ref(5);
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
-const parsed = ref<{ count: number } & Record<string, any>>({ count: 0 })
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
+const parsed = ref<{ count: number } & Record<string, any>>({ count: 0 });
 
-const canProcess = computed(() => !!expr.value.trim())
+const canProcess = computed(() => !!expr.value.trim());
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const filename = `cron_${new Date().toISOString().slice(0, 10)}.json`
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `cron_${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  const item: HistoryItem = { expr: expr.value, startAt: getStartTime(), count: count.value || 5, result: result.value, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('cron-next-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  const item: HistoryItem = { expr: expr.value, startAt: getStartTime(), count: count.value || 5, result: result.value, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('cron-next-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  expr.value = h.expr
-  startAt.value = new Date(h.startAt).toISOString().slice(0, 16)
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  expr.value = h.expr;
+  startAt.value = new Date(h.startAt).toISOString().slice(0, 16);
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('cron-next-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('cron-next-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function parseField(f: string, min: number, max: number): Set<number> {
-  const out = new Set<number>()
-  const parts = f.split(',')
+  const out = new Set<number>();
+  const parts = f.split(',');
   for (const p of parts) {
     if (p.includes('/')) {
-      const [lhs, stepStr] = p.split('/')
-      const step = Math.max(1, parseInt(stepStr || '1', 10) || 1)
+      const [lhs, stepStr] = p.split('/');
+      const step = Math.max(1, parseInt(stepStr || '1', 10) || 1);
       if (lhs === '*' || lhs === '') {
-        for (let v = min; v <= max; v += step) out.add(v)
+        for (let v = min; v <= max; v += step) out.add(v);
       } else if (lhs.includes('-')) {
-        const [a, b] = lhs.split('-').map((x) => parseInt(x, 10))
-        const lo = Math.max(min, Math.min(a, b))
-        const hi = Math.min(max, Math.max(a, b))
-        for (let v = lo; v <= hi; v += step) out.add(v)
+        const [a, b] = lhs.split('-').map((x) => parseInt(x, 10));
+        const lo = Math.max(min, Math.min(a, b));
+        const hi = Math.min(max, Math.max(a, b));
+        for (let v = lo; v <= hi; v += step) out.add(v);
       } else {
-        const v = parseInt(lhs, 10)
-        if (Number.isFinite(v)) for (let x = v; x <= max; x += step) if (x >= min) out.add(x)
+        const v = parseInt(lhs, 10);
+        if (Number.isFinite(v)) for (let x = v; x <= max; x += step) if (x >= min) out.add(x);
       }
     } else if (p.includes('-')) {
-      const [a, b] = p.split('-').map((x) => parseInt(x, 10))
-      const lo = Math.max(min, Math.min(a, b))
-      const hi = Math.min(max, Math.max(a, b))
-      for (let v = lo; v <= hi; v++) out.add(v)
+      const [a, b] = p.split('-').map((x) => parseInt(x, 10));
+      const lo = Math.max(min, Math.min(a, b));
+      const hi = Math.min(max, Math.max(a, b));
+      for (let v = lo; v <= hi; v++) out.add(v);
     } else if (p === '*' || p === '') {
-      for (let v = min; v <= max; v++) out.add(v)
+      for (let v = min; v <= max; v++) out.add(v);
     } else {
-      const v = parseInt(p, 10)
-      if (Number.isFinite(v) && v >= min && v <= max) out.add(v)
+      const v = parseInt(p, 10);
+      if (Number.isFinite(v) && v >= min && v <= max) out.add(v);
     }
   }
-  return out
+  return out;
 }
 function parseCron(exp: string) {
-  const [m, h, dom, mon, dow] = exp.trim().split(/\s+/)
-  if ([m, h, dom, mon, dow].some((x) => !x)) throw new Error('需要 5 个域：分 时 日 月 周')
+  const [m, h, dom, mon, dow] = exp.trim().split(/\s+/);
+  if ([m, h, dom, mon, dow].some((x) => !x)) throw new Error('需要 5 个域：分 时 日 月 周');
   return {
     minutes: parseField(m, 0, 59),
     hours: parseField(h, 0, 23),
     days: parseField(dom, 1, 31),
     months: parseField(mon, 1, 12),
     dows: parseField(dow, 0, 6)
-  }
+  };
 }
 function matches(dt: Date, cron: any) {
-  return cron.minutes.has(dt.getMinutes()) && cron.hours.has(dt.getHours()) && cron.days.has(dt.getDate()) && cron.months.has(dt.getMonth() + 1) && cron.dows.has(dt.getDay())
+  return cron.minutes.has(dt.getMinutes()) && cron.hours.has(dt.getHours()) && cron.days.has(dt.getDate()) && cron.months.has(dt.getMonth() + 1) && cron.dows.has(dt.getDay());
 }
 function getStartTime() {
   if (startAt.value) {
-    const t = new Date(startAt.value).getTime()
-    if (!Number.isNaN(t)) return t
+    const t = new Date(startAt.value).getTime();
+    if (!Number.isNaN(t)) return t;
   }
-  return Date.now()
+  return Date.now();
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
   try {
-    const cron = parseCron(expr.value)
-    const begin = new Date(getStartTime())
-    begin.setSeconds(0, 0)
-    const next: string[] = []
-    const maxScan = 365 * 24 * 60 // 365天
-    let cur = new Date(begin.getTime())
-    let scanned = 0
+    const cron = parseCron(expr.value);
+    const begin = new Date(getStartTime());
+    begin.setSeconds(0, 0);
+    const next: string[] = [];
+    const maxScan = 365 * 24 * 60; // 365天
+    let cur = new Date(begin.getTime());
+    let scanned = 0;
     while (next.length < (count.value || 5) && scanned < maxScan) {
-      if (matches(cur, cron)) next.push(cur.toLocaleString('zh-CN', { hour12: false }))
-      cur = new Date(cur.getTime() + 60 * 1000)
-      scanned++
+      if (matches(cur, cron)) next.push(cur.toLocaleString('zh-CN', { hour12: false }));
+      cur = new Date(cur.getTime() + 60 * 1000);
+      scanned++;
     }
-    if (!next.length) throw new Error('未找到匹配时间（范围内）')
-    const out = { expr: expr.value, start: begin.toISOString(), count: count.value || 5, next }
-    parsed.value = { count: out.count }
-    result.value = JSON.stringify(out, null, 2)
-    processingTime.value = Math.round(performance.now() - start)
+    if (!next.length) throw new Error('未找到匹配时间（范围内）');
+    const out = { expr: expr.value, start: begin.toISOString(), count: count.value || 5, next };
+    parsed.value = { count: out.count };
+    result.value = JSON.stringify(out, null, 2);
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '计算失败'
+    error.value = e?.message || '计算失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('cron-next-history')
+  const saved = localStorage.getItem('cron-next-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

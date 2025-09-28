@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'quiz-maker',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.quiz-maker',
   entry: 'tools/education-language/quiz-maker/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

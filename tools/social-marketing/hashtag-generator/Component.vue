@@ -36,20 +36,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const text = ref('')
-const maxCount = ref(15)
-const minLen = ref(3)
-const tags = ref<string[]>([])
+const text = ref('');
+const maxCount = ref(15);
+const minLen = ref(3);
+const tags = ref<string[]>([]);
 
 function generate() {
-  const t = (text.value || '').toLowerCase()
+  const t = (text.value || '').toLowerCase();
   const words = t
     .replace(/[^\p{L}\p{N}\s_-]+/gu, ' ')
     .split(/[\s_-]+/g)
     .map((w) => w.trim())
-    .filter((w) => w && w.length >= (minLen.value || 3))
+    .filter((w) => w && w.length >= (minLen.value || 3));
 
   const stop = new Set([
     'the',
@@ -80,25 +80,25 @@ function generate() {
     'they',
     'them',
     'i'
-  ])
-  const freq = new Map<string, number>()
+  ]);
+  const freq = new Map<string, number>();
   for (const w of words) {
-    if (stop.has(w)) continue
-    freq.set(w, (freq.get(w) || 0) + 1)
+    if (stop.has(w)) continue;
+    freq.set(w, (freq.get(w) || 0) + 1);
   }
   tags.value = Array.from(freq.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, Math.max(1, Math.min(50, maxCount.value || 15)))
-    .map(([w]) => w)
+    .map(([w]) => w);
 }
 
 async function copy() {
-  if (!tags.value.length) return
+  if (!tags.value.length) return;
   try {
-    await navigator.clipboard.writeText(tags.value.map((w) => `#${w}`).join(' '))
-    alert('已复制')
+    await navigator.clipboard.writeText(tags.value.map((w) => `#${w}`).join(' '));
+    alert('已复制');
   } catch {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 </script>

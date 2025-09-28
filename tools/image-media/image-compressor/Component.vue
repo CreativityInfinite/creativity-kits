@@ -84,113 +84,113 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-type HistoryItem = { quality: number; inMeta: string; outMeta: string; url: string; timestamp: number }
+import { onMounted, ref } from 'vue';
+type HistoryItem = { quality: number; inMeta: string; outMeta: string; url: string; timestamp: number };
 
-const file = ref<File | null>(null)
-const imgEl = ref<HTMLImageElement | null>(null)
-const cv = ref<HTMLCanvasElement | null>(null)
+const file = ref<File | null>(null);
+const imgEl = ref<HTMLImageElement | null>(null);
+const cv = ref<HTMLCanvasElement | null>(null);
 
-const quality = ref(0.8)
-const maxW = ref<number | null>(null)
-const maxH = ref<number | null>(null)
+const quality = ref(0.8);
+const maxW = ref<number | null>(null);
+const maxH = ref<number | null>(null);
 
-const inMeta = ref('')
-const outMeta = ref('')
-const outUrl = ref('')
-const error = ref('')
-const history = ref<HistoryItem[]>([])
+const inMeta = ref('');
+const outMeta = ref('');
+const outUrl = ref('');
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
-  file.value = null
-  imgEl.value = null
-  outUrl.value = ''
-  inMeta.value = ''
-  outMeta.value = ''
-  error.value = ''
+  file.value = null;
+  imgEl.value = null;
+  outUrl.value = '';
+  inMeta.value = '';
+  outMeta.value = '';
+  error.value = '';
 }
 function copyUrl() {
-  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'))
+  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'));
 }
 function downloadResult() {
-  if (!outUrl.value) return
-  const a = document.createElement('a')
-  a.href = outUrl.value
-  a.download = 'compressed.jpg'
-  a.click()
+  if (!outUrl.value) return;
+  const a = document.createElement('a');
+  a.href = outUrl.value;
+  a.download = 'compressed.jpg';
+  a.click();
 }
 function saveToHistory() {
-  if (!outUrl.value) return
-  history.value.unshift({ quality: quality.value, inMeta: inMeta.value, outMeta: outMeta.value, url: outUrl.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('imgcomp-history', JSON.stringify(history.value))
+  if (!outUrl.value) return;
+  history.value.unshift({ quality: quality.value, inMeta: inMeta.value, outMeta: outMeta.value, url: outUrl.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('imgcomp-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  outUrl.value = h.url
-  inMeta.value = h.inMeta
-  outMeta.value = h.outMeta
+  outUrl.value = h.url;
+  inMeta.value = h.inMeta;
+  outMeta.value = h.outMeta;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('imgcomp-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('imgcomp-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function onFile(e: Event) {
-  file.value = (e.target as HTMLInputElement).files?.[0] || null
-  if (!file.value) return
-  const img = new Image()
+  file.value = (e.target as HTMLInputElement).files?.[0] || null;
+  if (!file.value) return;
+  const img = new Image();
   img.onload = () => {
-    imgEl.value = img
-    inMeta.value = `${img.naturalWidth}x${img.naturalHeight}`
-  }
-  img.onerror = () => (error.value = '图片加载失败')
-  img.src = URL.createObjectURL(file.value)
+    imgEl.value = img;
+    inMeta.value = `${img.naturalWidth}x${img.naturalHeight}`;
+  };
+  img.onerror = () => (error.value = '图片加载失败');
+  img.src = URL.createObjectURL(file.value);
 }
 
 function hasAlpha(img: HTMLImageElement) {
   // 简化：不做逐像素检测，按文件类型判断不可靠；统一导出 JPEG，若需透明可改写为 image/png
-  return false
+  return false;
 }
 
 function resizeDraw(img: HTMLImageElement) {
-  const canvas = cv.value!
+  const canvas = cv.value!;
   let w = img.naturalWidth,
-    h = img.naturalHeight
+    h = img.naturalHeight;
   const mw = maxW.value || w,
-    mh = maxH.value || h
-  const scale = Math.min(1, mw / w, mh / h)
-  w = Math.max(1, Math.round(w * scale))
-  h = Math.max(1, Math.round(h * scale))
-  canvas.width = w
-  canvas.height = h
-  const ctx = canvas.getContext('2d')!
-  ctx.clearRect(0, 0, w, h)
-  ctx.drawImage(img, 0, 0, w, h)
-  return { w, h }
+    mh = maxH.value || h;
+  const scale = Math.min(1, mw / w, mh / h);
+  w = Math.max(1, Math.round(w * scale));
+  h = Math.max(1, Math.round(h * scale));
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d')!;
+  ctx.clearRect(0, 0, w, h);
+  ctx.drawImage(img, 0, 0, w, h);
+  return { w, h };
 }
 
 function process() {
-  error.value = ''
+  error.value = '';
   try {
-    if (!imgEl.value) throw new Error('请先选择图片')
-    const { w, h } = resizeDraw(imgEl.value)
-    const mime = hasAlpha(imgEl.value) ? 'image/png' : 'image/jpeg'
-    outUrl.value = (cv.value as HTMLCanvasElement).toDataURL(mime, Math.min(1, Math.max(0.1, quality.value || 0.8)))
-    outMeta.value = `${w}x${h}`
+    if (!imgEl.value) throw new Error('请先选择图片');
+    const { w, h } = resizeDraw(imgEl.value);
+    const mime = hasAlpha(imgEl.value) ? 'image/png' : 'image/jpeg';
+    outUrl.value = (cv.value as HTMLCanvasElement).toDataURL(mime, Math.min(1, Math.max(0.1, quality.value || 0.8)));
+    outMeta.value = `${w}x${h}`;
   } catch (e: any) {
-    error.value = e?.message || '压缩失败'
+    error.value = e?.message || '压缩失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('imgcomp-history')
+  const saved = localStorage.getItem('imgcomp-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

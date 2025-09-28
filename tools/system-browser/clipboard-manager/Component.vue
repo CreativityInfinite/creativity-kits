@@ -90,53 +90,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 
 interface ClipboardItem {
-  content: string
-  type: string
-  timestamp: number
+  content: string;
+  type: string;
+  timestamp: number;
 }
 
-const clipboardHistory = ref<ClipboardItem[]>([])
-const currentClipboard = ref<ClipboardItem | null>(null)
-const autoSave = ref(true)
-const searchQuery = ref('')
-const filterType = ref('all')
-let checkInterval: number | null = null
+const clipboardHistory = ref<ClipboardItem[]>([]);
+const currentClipboard = ref<ClipboardItem | null>(null);
+const autoSave = ref(true);
+const searchQuery = ref('');
+const filterType = ref('all');
+let checkInterval: number | null = null;
 
 const filteredHistory = computed(() => {
-  let filtered = clipboardHistory.value
+  let filtered = clipboardHistory.value;
 
   if (filterType.value !== 'all') {
-    filtered = filtered.filter((item) => item.type === filterType.value)
+    filtered = filtered.filter((item) => item.type === filterType.value);
   }
 
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter((item) => item.content.toLowerCase().includes(query))
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter((item) => item.content.toLowerCase().includes(query));
   }
 
-  return filtered
-})
+  return filtered;
+});
 
 function detectContentType(content: string): string {
   // URL 检测
   if (/^https?:\/\//.test(content)) {
-    return 'url'
+    return 'url';
   }
 
   // 邮箱检测
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(content.trim())) {
-    return 'email'
+    return 'email';
   }
 
   // 数字检测
   if (/^\d+(\.\d+)?$/.test(content.trim())) {
-    return 'number'
+    return 'number';
   }
 
-  return 'text'
+  return 'text';
 }
 
 function getTypeColor(type: string): string {
@@ -145,160 +145,160 @@ function getTypeColor(type: string): string {
     url: 'bg-blue-400',
     email: 'bg-green-400',
     number: 'bg-purple-400'
-  }
-  return colors[type as keyof typeof colors] || 'bg-gray-400'
+  };
+  return colors[type as keyof typeof colors] || 'bg-gray-400';
 }
 
 function formatTime(timestamp: number): string {
-  const date = new Date(timestamp)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
 
   if (diff < 60000) {
     // 1分钟内
-    return '刚刚'
+    return '刚刚';
   } else if (diff < 3600000) {
     // 1小时内
-    return `${Math.floor(diff / 60000)}分钟前`
+    return `${Math.floor(diff / 60000)}分钟前`;
   } else if (diff < 86400000) {
     // 24小时内
-    return `${Math.floor(diff / 3600000)}小时前`
+    return `${Math.floor(diff / 3600000)}小时前`;
   } else {
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   }
 }
 
 function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) {
-    return text
+    return text;
   }
-  return text.substring(0, maxLength) + '...'
+  return text.substring(0, maxLength) + '...';
 }
 
 async function checkClipboard() {
-  if (!autoSave.value) return
+  if (!autoSave.value) return;
 
   try {
-    const text = await navigator.clipboard.readText()
+    const text = await navigator.clipboard.readText();
 
     if (text && text !== currentClipboard.value?.content) {
       const newItem: ClipboardItem = {
         content: text,
         type: detectContentType(text),
         timestamp: Date.now()
-      }
+      };
 
-      currentClipboard.value = newItem
+      currentClipboard.value = newItem;
 
       // 检查是否已存在相同内容
-      const existingIndex = clipboardHistory.value.findIndex((item) => item.content === text)
+      const existingIndex = clipboardHistory.value.findIndex((item) => item.content === text);
       if (existingIndex !== -1) {
         // 移除旧记录，添加到最前面
-        clipboardHistory.value.splice(existingIndex, 1)
+        clipboardHistory.value.splice(existingIndex, 1);
       }
 
-      clipboardHistory.value.unshift(newItem)
+      clipboardHistory.value.unshift(newItem);
 
       // 限制历史记录数量
       if (clipboardHistory.value.length > 100) {
-        clipboardHistory.value = clipboardHistory.value.slice(0, 100)
+        clipboardHistory.value = clipboardHistory.value.slice(0, 100);
       }
 
-      saveHistory()
+      saveHistory();
     }
   } catch (error) {
-    console.log('无法读取剪贴板内容')
+    console.log('无法读取剪贴板内容');
   }
 }
 
 async function copyToClipboard(text: string) {
   try {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(text);
 
     // 更新当前剪贴板内容
     currentClipboard.value = {
       content: text,
       type: detectContentType(text),
       timestamp: Date.now()
-    }
+    };
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function removeItem(index: number) {
-  clipboardHistory.value.splice(index, 1)
-  saveHistory()
+  clipboardHistory.value.splice(index, 1);
+  saveHistory();
 }
 
 function clearHistory() {
-  clipboardHistory.value = []
-  saveHistory()
+  clipboardHistory.value = [];
+  saveHistory();
 }
 
 function toggleAutoSave() {
-  autoSave.value = !autoSave.value
-  localStorage.setItem('clipboard-auto-save', autoSave.value.toString())
+  autoSave.value = !autoSave.value;
+  localStorage.setItem('clipboard-auto-save', autoSave.value.toString());
 
   if (autoSave.value) {
-    startMonitoring()
+    startMonitoring();
   } else {
-    stopMonitoring()
+    stopMonitoring();
   }
 }
 
 function startMonitoring() {
-  if (checkInterval) return
+  if (checkInterval) return;
 
-  checkInterval = setInterval(checkClipboard, 1000) // 每秒检查一次
+  checkInterval = setInterval(checkClipboard, 1000); // 每秒检查一次
 }
 
 function stopMonitoring() {
   if (checkInterval) {
-    clearInterval(checkInterval)
-    checkInterval = null
+    clearInterval(checkInterval);
+    checkInterval = null;
   }
 }
 
 function saveHistory() {
-  localStorage.setItem('clipboard-history', JSON.stringify(clipboardHistory.value))
+  localStorage.setItem('clipboard-history', JSON.stringify(clipboardHistory.value));
 }
 
 function loadHistory() {
-  const saved = localStorage.getItem('clipboard-history')
+  const saved = localStorage.getItem('clipboard-history');
   if (saved) {
-    clipboardHistory.value = JSON.parse(saved)
+    clipboardHistory.value = JSON.parse(saved);
   }
 
-  const savedAutoSave = localStorage.getItem('clipboard-auto-save')
+  const savedAutoSave = localStorage.getItem('clipboard-auto-save');
   if (savedAutoSave !== null) {
-    autoSave.value = savedAutoSave === 'true'
+    autoSave.value = savedAutoSave === 'true';
   }
 }
 
 // 请求剪贴板权限
 async function requestClipboardPermission() {
   try {
-    await navigator.permissions.query({ name: 'clipboard-read' as PermissionName })
+    await navigator.permissions.query({ name: 'clipboard-read' as PermissionName });
   } catch (error) {
-    console.log('剪贴板权限检查失败')
+    console.log('剪贴板权限检查失败');
   }
 }
 
 onMounted(async () => {
-  loadHistory()
-  await requestClipboardPermission()
+  loadHistory();
+  await requestClipboardPermission();
 
   if (autoSave.value) {
-    startMonitoring()
+    startMonitoring();
   }
 
   // 初始检查当前剪贴板内容
-  checkClipboard()
-})
+  checkClipboard();
+});
 
 onUnmounted(() => {
-  stopMonitoring()
-  saveHistory()
-})
+  stopMonitoring();
+  saveHistory();
+});
 </script>

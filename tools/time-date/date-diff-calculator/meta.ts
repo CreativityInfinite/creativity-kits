@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'date-diff-calculator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:calendar-minus',
   i18nKey: 'tools.date-diff-calculator',
-  entry: 'tools/time-date/date-diff-calculator/Component.vue',
-}
-export default meta
+  entry: 'tools/time-date/date-diff-calculator/Component.vue'
+};
+export default meta;

@@ -187,168 +187,168 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 interface CalculationResult {
-  value: string
-  executionTime?: number
+  value: string;
+  executionTime?: number;
   formatted?: {
-    withCommas: string
-    scientific?: string
-    binary?: string
-    hex?: string
-  }
+    withCommas: string;
+    scientific?: string;
+    binary?: string;
+    hex?: string;
+  };
   properties?: {
-    isEven: boolean
-    isPositive: boolean
-    isNegative: boolean
-    isPrime?: boolean
-    digitCount: number
-  }
+    isEven: boolean;
+    isPositive: boolean;
+    isNegative: boolean;
+    isPrime?: boolean;
+    digitCount: number;
+  };
 }
 
 interface HistoryItem {
-  expression: string
-  result: string
-  timestamp: number
+  expression: string;
+  result: string;
+  timestamp: number;
 }
 
-const numberA = ref('')
-const numberB = ref('')
-const operator = ref('+')
-const result = ref<CalculationResult | null>(null)
-const error = ref('')
-const history = ref<HistoryItem[]>([])
+const numberA = ref('');
+const numberB = ref('');
+const operator = ref('+');
+const result = ref<CalculationResult | null>(null);
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
 
 const needsSecondNumber = computed(() => {
-  return !['factorial', 'isPrime', 'fibonacci', 'digitSum'].includes(operator.value)
-})
+  return !['factorial', 'isPrime', 'fibonacci', 'digitSum'].includes(operator.value);
+});
 
 const canCalculate = computed(() => {
-  if (!numberA.value.trim()) return false
-  if (needsSecondNumber.value && !numberB.value.trim()) return false
-  return isValidNumber(numberA.value) && (!needsSecondNumber.value || isValidNumber(numberB.value))
-})
+  if (!numberA.value.trim()) return false;
+  if (needsSecondNumber.value && !numberB.value.trim()) return false;
+  return isValidNumber(numberA.value) && (!needsSecondNumber.value || isValidNumber(numberB.value));
+});
 
 const isValidForFactorial = computed(() => {
-  if (!numberA.value) return false
-  const num = BigInt(numberA.value.replace(/[^\d-]/g, ''))
-  return num >= 0n && num <= 1000n // 限制阶乘范围
-})
+  if (!numberA.value) return false;
+  const num = BigInt(numberA.value.replace(/[^\d-]/g, ''));
+  return num >= 0n && num <= 1000n; // 限制阶乘范围
+});
 
 const isValidForFibonacci = computed(() => {
-  if (!numberA.value) return false
-  const num = BigInt(numberA.value.replace(/[^\d-]/g, ''))
-  return num >= 0n && num <= 10000n // 限制斐波那契范围
-})
+  if (!numberA.value) return false;
+  const num = BigInt(numberA.value.replace(/[^\d-]/g, ''));
+  return num >= 0n && num <= 10000n; // 限制斐波那契范围
+});
 
 // 验证数字格式
 const isValidNumber = (str: string): boolean => {
-  if (!str.trim()) return false
-  const cleaned = str.replace(/[,\s]/g, '')
-  return /^-?\d+$/.test(cleaned)
-}
+  if (!str.trim()) return false;
+  const cleaned = str.replace(/[,\s]/g, '');
+  return /^-?\d+$/.test(cleaned);
+};
 
 // 清理数字字符串
 const cleanNumber = (str: string): string => {
-  return str.replace(/[,\s]/g, '')
-}
+  return str.replace(/[,\s]/g, '');
+};
 
 // 大数运算函数
 const calculate = () => {
-  error.value = ''
-  result.value = null
+  error.value = '';
+  result.value = null;
 
   try {
-    const startTime = performance.now()
-    let resultValue: bigint
+    const startTime = performance.now();
+    let resultValue: bigint;
 
-    const a = BigInt(cleanNumber(numberA.value))
-    const b = needsSecondNumber.value ? BigInt(cleanNumber(numberB.value)) : 0n
+    const a = BigInt(cleanNumber(numberA.value));
+    const b = needsSecondNumber.value ? BigInt(cleanNumber(numberB.value)) : 0n;
 
     switch (operator.value) {
       case '+':
-        resultValue = a + b
-        break
+        resultValue = a + b;
+        break;
       case '-':
-        resultValue = a - b
-        break
+        resultValue = a - b;
+        break;
       case '*':
-        resultValue = a * b
-        break
+        resultValue = a * b;
+        break;
       case '/':
-        if (b === 0n) throw new Error('除数不能为零')
-        resultValue = a / b
-        break
+        if (b === 0n) throw new Error('除数不能为零');
+        resultValue = a / b;
+        break;
       case '%':
-        if (b === 0n) throw new Error('除数不能为零')
-        resultValue = a % b
-        break
+        if (b === 0n) throw new Error('除数不能为零');
+        resultValue = a % b;
+        break;
       case '**':
-        if (b < 0n) throw new Error('不支持负数幂运算')
-        if (b > 1000n) throw new Error('指数过大')
-        resultValue = a ** b
-        break
+        if (b < 0n) throw new Error('不支持负数幂运算');
+        if (b > 1000n) throw new Error('指数过大');
+        resultValue = a ** b;
+        break;
       case 'gcd':
-        resultValue = gcd(a, b)
-        break
+        resultValue = gcd(a, b);
+        break;
       case 'lcm':
-        resultValue = lcm(a, b)
-        break
+        resultValue = lcm(a, b);
+        break;
       default:
-        throw new Error('不支持的运算符')
+        throw new Error('不支持的运算符');
     }
 
-    const endTime = performance.now()
-    const executionTime = Math.round(endTime - startTime)
+    const endTime = performance.now();
+    const executionTime = Math.round(endTime - startTime);
 
     result.value = {
       value: resultValue.toString(),
       executionTime,
       formatted: formatNumber(resultValue),
       properties: analyzeNumber(resultValue)
-    }
+    };
 
     // 添加到历史记录
-    const expression = needsSecondNumber.value ? `${numberA.value} ${operator.value} ${numberB.value}` : `${operator.value}(${numberA.value})`
+    const expression = needsSecondNumber.value ? `${numberA.value} ${operator.value} ${numberB.value}` : `${operator.value}(${numberA.value})`;
 
-    addToHistory(expression, resultValue.toString())
+    addToHistory(expression, resultValue.toString());
   } catch (err: any) {
-    error.value = err.message || '计算错误'
+    error.value = err.message || '计算错误';
   }
-}
+};
 
 // 单数运算
 const factorial = () => {
   try {
-    const n = BigInt(cleanNumber(numberA.value))
-    if (n < 0n) throw new Error('阶乘不支持负数')
-    if (n > 1000n) throw new Error('数字过大，无法计算阶乘')
+    const n = BigInt(cleanNumber(numberA.value));
+    if (n < 0n) throw new Error('阶乘不支持负数');
+    if (n > 1000n) throw new Error('数字过大，无法计算阶乘');
 
-    const startTime = performance.now()
-    let result = 1n
+    const startTime = performance.now();
+    let result = 1n;
     for (let i = 2n; i <= n; i++) {
-      result *= i
+      result *= i;
     }
-    const endTime = performance.now()
+    const endTime = performance.now();
 
-    setResult(result, endTime - startTime, `${numberA.value}!`)
+    setResult(result, endTime - startTime, `${numberA.value}!`);
   } catch (err: any) {
-    error.value = err.message
+    error.value = err.message;
   }
-}
+};
 
 const isPrime = () => {
   try {
-    const n = BigInt(cleanNumber(numberA.value))
+    const n = BigInt(cleanNumber(numberA.value));
     if (n < 2n) {
-      error.value = '质数检测需要大于等于2的数'
-      return
+      error.value = '质数检测需要大于等于2的数';
+      return;
     }
 
-    const startTime = performance.now()
-    const prime = isPrimeNumber(n)
-    const endTime = performance.now()
+    const startTime = performance.now();
+    const prime = isPrimeNumber(n);
+    const endTime = performance.now();
 
     result.value = {
       value: prime ? '是质数' : '不是质数',
@@ -357,109 +357,109 @@ const isPrime = () => {
         ...analyzeNumber(n),
         isPrime: prime
       }
-    }
+    };
 
-    addToHistory(`isPrime(${numberA.value})`, prime ? '是质数' : '不是质数')
+    addToHistory(`isPrime(${numberA.value})`, prime ? '是质数' : '不是质数');
   } catch (err: any) {
-    error.value = err.message
+    error.value = err.message;
   }
-}
+};
 
 const fibonacci = () => {
   try {
-    const n = BigInt(cleanNumber(numberA.value))
-    if (n < 0n) throw new Error('斐波那契数列不支持负数')
-    if (n > 10000n) throw new Error('数字过大')
+    const n = BigInt(cleanNumber(numberA.value));
+    if (n < 0n) throw new Error('斐波那契数列不支持负数');
+    if (n > 10000n) throw new Error('数字过大');
 
-    const startTime = performance.now()
-    const fib = fibonacciNumber(n)
-    const endTime = performance.now()
+    const startTime = performance.now();
+    const fib = fibonacciNumber(n);
+    const endTime = performance.now();
 
-    setResult(fib, endTime - startTime, `fibonacci(${numberA.value})`)
+    setResult(fib, endTime - startTime, `fibonacci(${numberA.value})`);
   } catch (err: any) {
-    error.value = err.message
+    error.value = err.message;
   }
-}
+};
 
 const digitSum = () => {
   try {
-    const n = cleanNumber(numberA.value)
-    const sum = n.split('').reduce((acc, digit) => acc + parseInt(digit), 0)
+    const n = cleanNumber(numberA.value);
+    const sum = n.split('').reduce((acc, digit) => acc + parseInt(digit), 0);
 
     result.value = {
       value: sum.toString(),
       formatted: formatNumber(BigInt(sum)),
       properties: analyzeNumber(BigInt(sum))
-    }
+    };
 
-    addToHistory(`digitSum(${numberA.value})`, sum.toString())
+    addToHistory(`digitSum(${numberA.value})`, sum.toString());
   } catch (err: any) {
-    error.value = err.message
+    error.value = err.message;
   }
-}
+};
 
 // 辅助函数
 const gcd = (a: bigint, b: bigint): bigint => {
-  a = a < 0n ? -a : a
-  b = b < 0n ? -b : b
+  a = a < 0n ? -a : a;
+  b = b < 0n ? -b : b;
   while (b !== 0n) {
-    ;[a, b] = [b, a % b]
+    [a, b] = [b, a % b];
   }
-  return a
-}
+  return a;
+};
 
 const lcm = (a: bigint, b: bigint): bigint => {
-  return (a * b) / gcd(a, b)
-}
+  return (a * b) / gcd(a, b);
+};
 
 const isPrimeNumber = (n: bigint): boolean => {
-  if (n < 2n) return false
-  if (n === 2n) return true
-  if (n % 2n === 0n) return false
+  if (n < 2n) return false;
+  if (n === 2n) return true;
+  if (n % 2n === 0n) return false;
 
-  const sqrt = BigInt(Math.floor(Math.sqrt(Number(n))))
+  const sqrt = BigInt(Math.floor(Math.sqrt(Number(n))));
   for (let i = 3n; i <= sqrt; i += 2n) {
-    if (n % i === 0n) return false
+    if (n % i === 0n) return false;
   }
-  return true
-}
+  return true;
+};
 
 const fibonacciNumber = (n: bigint): bigint => {
-  if (n <= 1n) return n
+  if (n <= 1n) return n;
 
   let a = 0n,
-    b = 1n
+    b = 1n;
   for (let i = 2n; i <= n; i++) {
-    ;[a, b] = [b, a + b]
+    [a, b] = [b, a + b];
   }
-  return b
-}
+  return b;
+};
 
 const formatNumber = (num: bigint) => {
-  const str = num.toString()
-  const withCommas = str.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  const str = num.toString();
+  const withCommas = str.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-  const formatted: any = { withCommas }
+  const formatted: any = { withCommas };
 
   // 科学计数法（仅对大数）
   if (str.length > 10) {
-    const exp = str.length - 1
-    const mantissa = str[0] + '.' + str.slice(1, 6)
-    formatted.scientific = `${mantissa}e+${exp}`
+    const exp = str.length - 1;
+    const mantissa = str[0] + '.' + str.slice(1, 6);
+    formatted.scientific = `${mantissa}e+${exp}`;
   }
 
   // 二进制和十六进制（仅对较小的数）
   if (str.length <= 20 && num >= 0n) {
     try {
-      formatted.binary = num.toString(2)
-      formatted.hex = num.toString(16).toUpperCase()
+      formatted.binary = num.toString(2);
+      formatted.hex = num.toString(16).toUpperCase();
     } catch {
       // 忽略转换错误
     }
   }
 
-  return formatted
-}
+  return formatted;
+};
 
 const analyzeNumber = (num: bigint) => {
   return {
@@ -467,8 +467,8 @@ const analyzeNumber = (num: bigint) => {
     isPositive: num > 0n,
     isNegative: num < 0n,
     digitCount: num.toString().replace('-', '').length
-  }
-}
+  };
+};
 
 const setResult = (value: bigint, executionTime: number, expression: string) => {
   result.value = {
@@ -476,22 +476,22 @@ const setResult = (value: bigint, executionTime: number, expression: string) => 
     executionTime: Math.round(executionTime),
     formatted: formatNumber(value),
     properties: analyzeNumber(value)
-  }
+  };
 
-  addToHistory(expression, value.toString())
-}
+  addToHistory(expression, value.toString());
+};
 
 // 其他功能函数
 const clear = () => {
-  numberA.value = ''
-  numberB.value = ''
-  result.value = null
-  error.value = ''
-}
+  numberA.value = '';
+  numberB.value = '';
+  result.value = null;
+  error.value = '';
+};
 
 const swapNumbers = () => {
-  ;[numberA.value, numberB.value] = [numberB.value, numberA.value]
-}
+  [numberA.value, numberB.value] = [numberB.value, numberA.value];
+};
 
 const loadExample = () => {
   const examples = [
@@ -499,49 +499,49 @@ const loadExample = () => {
     { a: '2', b: '100', op: '**' },
     { a: '1000', b: '', op: 'factorial' },
     { a: '1234567890123456789', b: '9876543210987654321', op: 'gcd' }
-  ]
+  ];
 
-  const example = examples[Math.floor(Math.random() * examples.length)]
-  numberA.value = example.a
-  numberB.value = example.b
-  operator.value = example.op
-}
+  const example = examples[Math.floor(Math.random() * examples.length)];
+  numberA.value = example.a;
+  numberB.value = example.b;
+  operator.value = example.op;
+};
 
 const copyResult = (text?: string) => {
-  const textToCopy = text || result.value?.value
-  if (!textToCopy) return
+  const textToCopy = text || result.value?.value;
+  if (!textToCopy) return;
 
   navigator.clipboard.writeText(textToCopy).then(() => {
     // 可以添加成功提示
-  })
-}
+  });
+};
 
 const addToHistory = (expression: string, resultValue: string) => {
   history.value.unshift({
     expression,
     result: resultValue,
     timestamp: Date.now()
-  })
+  });
 
   // 限制历史记录数量
   if (history.value.length > 50) {
-    history.value = history.value.slice(0, 50)
+    history.value = history.value.slice(0, 50);
   }
-}
+};
 
 const loadFromHistory = (item: HistoryItem) => {
   // 简单解析历史记录
-  const parts = item.expression.split(' ')
+  const parts = item.expression.split(' ');
   if (parts.length >= 3) {
-    numberA.value = parts[0]
-    operator.value = parts[1]
-    numberB.value = parts[2]
+    numberA.value = parts[0];
+    operator.value = parts[1];
+    numberB.value = parts[2];
   }
-}
+};
 
 const clearHistory = () => {
-  history.value = []
-}
+  history.value = [];
+};
 
 const formatTime = (timestamp: number): string => {
   return new Date(timestamp).toLocaleString('zh-CN', {
@@ -549,6 +549,6 @@ const formatTime = (timestamp: number): string => {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  })
-}
+  });
+};
 </script>

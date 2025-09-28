@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'image-resizer',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#ec4899,#7c3aed)',
   icon: 'tabler:photo',
   i18nKey: 'tools.image-resizer',
-  entry: 'tools/image-media/image-resizer/Component.vue',
-}
-export default meta
+  entry: 'tools/image-media/image-resizer/Component.vue'
+};
+export default meta;

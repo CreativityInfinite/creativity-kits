@@ -341,40 +341,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue';
 
 interface Analysis {
-  totalChars: number
-  letters: number
-  numbers: number
-  spaces: number
-  words: number
-  sentences: number
-  paragraphs: number
-  specialChars: number
+  totalChars: number;
+  letters: number;
+  numbers: number;
+  spaces: number;
+  words: number;
+  sentences: number;
+  paragraphs: number;
+  specialChars: number;
 }
 
 interface ConversionHistory {
-  input: string
-  results: Record<string, string>
-  timestamp: string
-  preview: string
+  input: string;
+  results: Record<string, string>;
+  timestamp: string;
+  preview: string;
 }
 
 interface Results {
-  uppercase: string
-  lowercase: string
-  titleCase: string
-  sentenceCase: string
-  camelCase: string
-  pascalCase: string
-  snakeCase: string
-  kebabCase: string
-  constantCase: string
-  dotCase: string
+  uppercase: string;
+  lowercase: string;
+  titleCase: string;
+  sentenceCase: string;
+  camelCase: string;
+  pascalCase: string;
+  snakeCase: string;
+  kebabCase: string;
+  constantCase: string;
+  dotCase: string;
 }
 
-const inputText = ref('')
+const inputText = ref('');
 
 const options = ref({
   preserveNumbers: true,
@@ -382,7 +382,7 @@ const options = ref({
   preserveSpaces: true,
   autoConvert: true,
   camelCaseSeparator: 'space' as 'space' | 'underscore' | 'hyphen'
-})
+});
 
 const results = ref<Results>({
   uppercase: '',
@@ -395,27 +395,27 @@ const results = ref<Results>({
   kebabCase: '',
   constantCase: '',
   dotCase: ''
-})
+});
 
-const conversionHistory = ref<ConversionHistory[]>([])
+const conversionHistory = ref<ConversionHistory[]>([]);
 
 const wordCount = computed(() => {
-  if (!inputText.value.trim()) return 0
-  return inputText.value.trim().split(/\s+/).length
-})
+  if (!inputText.value.trim()) return 0;
+  return inputText.value.trim().split(/\s+/).length;
+});
 
 const analysis = computed((): Analysis | null => {
-  if (!inputText.value) return null
+  if (!inputText.value) return null;
 
-  const text = inputText.value
-  const totalChars = text.length
-  const letters = (text.match(/[a-zA-Z]/g) || []).length
-  const numbers = (text.match(/\d/g) || []).length
-  const spaces = (text.match(/\s/g) || []).length
-  const words = text.trim() ? text.trim().split(/\s+/).length : 0
-  const sentences = (text.match(/[.!?]+/g) || []).length
-  const paragraphs = text.split(/\n\s*\n/).filter((p) => p.trim()).length
-  const specialChars = totalChars - letters - numbers - spaces
+  const text = inputText.value;
+  const totalChars = text.length;
+  const letters = (text.match(/[a-zA-Z]/g) || []).length;
+  const numbers = (text.match(/\d/g) || []).length;
+  const spaces = (text.match(/\s/g) || []).length;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const sentences = (text.match(/[.!?]+/g) || []).length;
+  const paragraphs = text.split(/\n\s*\n/).filter((p) => p.trim()).length;
+  const specialChars = totalChars - letters - numbers - spaces;
 
   return {
     totalChars,
@@ -426,35 +426,35 @@ const analysis = computed((): Analysis | null => {
     sentences,
     paragraphs,
     specialChars
-  }
-})
+  };
+});
 
 watch(
   [() => options.value],
   () => {
     if (inputText.value && options.value.autoConvert) {
-      convertAllCases()
+      convertAllCases();
     }
   },
   { deep: true }
-)
+);
 
 function autoConvert() {
   if (!options.value.autoConvert || !inputText.value.trim()) {
-    clearResults()
-    return
+    clearResults();
+    return;
   }
 
-  convertAllCases()
+  convertAllCases();
 }
 
 function convertAllCases() {
   if (!inputText.value.trim()) {
-    clearResults()
-    return
+    clearResults();
+    return;
   }
 
-  const text = inputText.value
+  const text = inputText.value;
 
   results.value = {
     uppercase: convertToUppercase(text),
@@ -467,101 +467,101 @@ function convertAllCases() {
     kebabCase: convertToKebabCase(text),
     constantCase: convertToConstantCase(text),
     dotCase: convertToDotCase(text)
-  }
+  };
 
-  addToHistory(text, results.value)
+  addToHistory(text, results.value);
 }
 
 function convertToUppercase(text: string): string {
-  return text.toUpperCase()
+  return text.toUpperCase();
 }
 
 function convertToLowercase(text: string): string {
-  return text.toLowerCase()
+  return text.toLowerCase();
 }
 
 function convertToTitleCase(text: string): string {
   // 不需要大写的小词
-  const smallWords = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'if', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet']
+  const smallWords = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'if', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet'];
 
   return text.toLowerCase().replace(/\b\w+/g, (word, index) => {
     // 第一个单词总是大写，其他小词保持小写
     if (index === 0 || !smallWords.includes(word)) {
-      return word.charAt(0).toUpperCase() + word.slice(1)
+      return word.charAt(0).toUpperCase() + word.slice(1);
     }
-    return word
-  })
+    return word;
+  });
 }
 
 function convertToSentenceCase(text: string): string {
   return text.toLowerCase().replace(/(^\w|[.!?]\s*\w)/g, (match) => {
-    return match.toUpperCase()
-  })
+    return match.toUpperCase();
+  });
 }
 
 function convertToCamelCase(text: string): string {
-  const separator = getSeparator()
-  const words = splitIntoWords(text, separator)
+  const separator = getSeparator();
+  const words = splitIntoWords(text, separator);
 
   return words
     .map((word, index) => {
-      const cleanWord = cleanWord(word)
+      const cleanWord = cleanWord(word);
       if (index === 0) {
-        return cleanWord.toLowerCase()
+        return cleanWord.toLowerCase();
       }
-      return cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase()
+      return cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase();
     })
-    .join('')
+    .join('');
 }
 
 function convertToPascalCase(text: string): string {
-  const separator = getSeparator()
-  const words = splitIntoWords(text, separator)
+  const separator = getSeparator();
+  const words = splitIntoWords(text, separator);
 
   return words
     .map((word) => {
-      const cleanWord = cleanWord(word)
-      return cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase()
+      const cleanWord = cleanWord(word);
+      return cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase();
     })
-    .join('')
+    .join('');
 }
 
 function convertToSnakeCase(text: string): string {
-  const separator = getSeparator()
-  const words = splitIntoWords(text, separator)
+  const separator = getSeparator();
+  const words = splitIntoWords(text, separator);
 
-  return words.map((word) => cleanWord(word).toLowerCase()).join('_')
+  return words.map((word) => cleanWord(word).toLowerCase()).join('_');
 }
 
 function convertToKebabCase(text: string): string {
-  const separator = getSeparator()
-  const words = splitIntoWords(text, separator)
+  const separator = getSeparator();
+  const words = splitIntoWords(text, separator);
 
-  return words.map((word) => cleanWord(word).toLowerCase()).join('-')
+  return words.map((word) => cleanWord(word).toLowerCase()).join('-');
 }
 
 function convertToConstantCase(text: string): string {
-  const separator = getSeparator()
-  const words = splitIntoWords(text, separator)
+  const separator = getSeparator();
+  const words = splitIntoWords(text, separator);
 
-  return words.map((word) => cleanWord(word).toUpperCase()).join('_')
+  return words.map((word) => cleanWord(word).toUpperCase()).join('_');
 }
 
 function convertToDotCase(text: string): string {
-  const separator = getSeparator()
-  const words = splitIntoWords(text, separator)
+  const separator = getSeparator();
+  const words = splitIntoWords(text, separator);
 
-  return words.map((word) => cleanWord(word).toLowerCase()).join('.')
+  return words.map((word) => cleanWord(word).toLowerCase()).join('.');
 }
 
 function getSeparator(): string {
   switch (options.value.camelCaseSeparator) {
     case 'underscore':
-      return '_'
+      return '_';
     case 'hyphen':
-      return '-'
+      return '-';
     default:
-      return ' '
+      return ' ';
   }
 }
 
@@ -569,26 +569,26 @@ function splitIntoWords(text: string, separator: string): string[] {
   // 处理驼峰命名的拆分
   let processedText = text
     .replace(/([a-z])([A-Z])/g, '$1 $2') // 驼峰拆分
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2') // 连续大写字母拆分
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2'); // 连续大写字母拆分
 
   // 根据分隔符和其他常见分隔符拆分
-  const splitPattern = new RegExp(`[${separator}\\s\\-_\\.]+`, 'g')
+  const splitPattern = new RegExp(`[${separator}\\s\\-_\\.]+`, 'g');
 
-  return processedText.split(splitPattern).filter((word) => word.trim().length > 0)
+  return processedText.split(splitPattern).filter((word) => word.trim().length > 0);
 }
 
 function cleanWord(word: string): string {
-  let cleaned = word.trim()
+  let cleaned = word.trim();
 
   if (!options.value.preserveNumbers) {
-    cleaned = cleaned.replace(/\d/g, '')
+    cleaned = cleaned.replace(/\d/g, '');
   }
 
   if (!options.value.preserveSpecialChars) {
-    cleaned = cleaned.replace(/[^a-zA-Z0-9]/g, '')
+    cleaned = cleaned.replace(/[^a-zA-Z0-9]/g, '');
   }
 
-  return cleaned
+  return cleaned;
 }
 
 function clearResults() {
@@ -603,7 +603,7 @@ function clearResults() {
     kebabCase: '',
     constantCase: '',
     dotCase: ''
-  }
+  };
 }
 
 function loadSampleText() {
@@ -616,38 +616,38 @@ some.config.value
 Mixed CamelCase and snake_case text
 Multiple    spaces   and	tabs
 Special characters: @#$%^&*()
-Numbers: 123 and ABC123XYZ`
+Numbers: 123 and ABC123XYZ`;
 
   if (options.value.autoConvert) {
-    convertAllCases()
+    convertAllCases();
   }
 }
 
 function reverseText() {
-  if (!inputText.value) return
-  inputText.value = inputText.value.split('').reverse().join('')
+  if (!inputText.value) return;
+  inputText.value = inputText.value.split('').reverse().join('');
 
   if (options.value.autoConvert) {
-    convertAllCases()
+    convertAllCases();
   }
 }
 
 function removeExtraSpaces() {
-  if (!inputText.value) return
+  if (!inputText.value) return;
   inputText.value = inputText.value
     .replace(/\s+/g, ' ') // 多个空格替换为单个空格
-    .replace(/^\s+|\s+$/g, '') // 移除首尾空格
+    .replace(/^\s+|\s+$/g, ''); // 移除首尾空格
 
   if (options.value.autoConvert) {
-    convertAllCases()
+    convertAllCases();
   }
 }
 
 function countCharacters() {
-  if (!inputText.value) return
+  if (!inputText.value) return;
 
-  const stats = analysis.value
-  if (!stats) return
+  const stats = analysis.value;
+  if (!stats) return;
 
   const message = `文本统计:
 总字符数: ${stats.totalChars}
@@ -657,30 +657,30 @@ function countCharacters() {
 单词数: ${stats.words}
 句子数: ${stats.sentences}
 段落数: ${stats.paragraphs}
-特殊字符数: ${stats.specialChars}`
+特殊字符数: ${stats.specialChars}`;
 
-  alert(message)
+  alert(message);
 }
 
 function clearAll() {
-  inputText.value = ''
-  clearResults()
+  inputText.value = '';
+  clearResults();
 }
 
 async function copyResult(caseType: keyof Results) {
-  const text = results.value[caseType]
-  if (!text) return
+  const text = results.value[caseType];
+  if (!text) return;
 
   try {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(text);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function downloadAllResults() {
-  if (!inputText.value) return
+  if (!inputText.value) return;
 
   const content = `原文本:
 ${inputText.value}
@@ -719,55 +719,55 @@ ${results.value.constantCase}
 ${results.value.dotCase}
 
 生成时间: ${new Date().toLocaleString()}
-`
+`;
 
-  const filename = 'case-conversion-results.txt'
-  const mimeType = 'text/plain'
+  const filename = 'case-conversion-results.txt';
+  const mimeType = 'text/plain';
 
-  const blob = new Blob([content], { type: mimeType })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function handleFileUpload(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    inputText.value = content
+    const content = e.target?.result as string;
+    inputText.value = content;
 
     if (options.value.autoConvert) {
-      convertAllCases()
+      convertAllCases();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
+  event.preventDefault();
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
 
-  const file = files[0]
-  const reader = new FileReader()
+  const file = files[0];
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    inputText.value = content
+    const content = e.target?.result as string;
+    inputText.value = content;
 
     if (options.value.autoConvert) {
-      convertAllCases()
+      convertAllCases();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function addToHistory(input: string, conversionResults: Results) {
@@ -776,46 +776,46 @@ function addToHistory(input: string, conversionResults: Results) {
     results: conversionResults,
     timestamp: new Date().toLocaleString(),
     preview: input.slice(0, 50) + (input.length > 50 ? '...' : '')
-  }
+  };
 
-  conversionHistory.value.unshift(historyItem)
-  conversionHistory.value = conversionHistory.value.slice(0, 10)
-  saveConversionHistory()
+  conversionHistory.value.unshift(historyItem);
+  conversionHistory.value = conversionHistory.value.slice(0, 10);
+  saveConversionHistory();
 }
 
 function loadFromHistory(history: ConversionHistory) {
-  inputText.value = history.input
-  results.value = history.results
+  inputText.value = history.input;
+  results.value = history.results;
 }
 
 function clearHistory() {
-  conversionHistory.value = []
-  saveConversionHistory()
+  conversionHistory.value = [];
+  saveConversionHistory();
 }
 
 function saveConversionHistory() {
   try {
-    localStorage.setItem('text-case-conversion-history', JSON.stringify(conversionHistory.value))
+    localStorage.setItem('text-case-conversion-history', JSON.stringify(conversionHistory.value));
   } catch (error) {
-    console.error('保存转换历史失败:', error)
+    console.error('保存转换历史失败:', error);
   }
 }
 
 function loadConversionHistory() {
   try {
-    const saved = localStorage.getItem('text-case-conversion-history')
+    const saved = localStorage.getItem('text-case-conversion-history');
     if (saved) {
-      conversionHistory.value = JSON.parse(saved)
+      conversionHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载转换历史失败:', error)
+    console.error('加载转换历史失败:', error);
   }
 }
 
 // 组件挂载时加载历史记录
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
-  loadConversionHistory()
-})
+  loadConversionHistory();
+});
 </script>

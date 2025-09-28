@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'slug-generator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:link',
   i18nKey: 'tools.slug-generator',
-  entry: 'tools/regex-parse/slug-generator/Component.vue',
-}
-export default meta
+  entry: 'tools/regex-parse/slug-generator/Component.vue'
+};
+export default meta;

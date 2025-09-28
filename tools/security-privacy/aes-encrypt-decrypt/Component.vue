@@ -181,70 +181,70 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface HistoryItem {
-  mode: 'encrypt' | 'decrypt'
-  inputText: string
-  key: string
-  result: string
-  inputLength: number
-  outputLength: number
-  timestamp: number
+  mode: 'encrypt' | 'decrypt';
+  inputText: string;
+  key: string;
+  result: string;
+  inputLength: number;
+  outputLength: number;
+  timestamp: number;
 }
 
-const mode = ref<'encrypt' | 'decrypt'>('encrypt')
-const key = ref('')
-const inputText = ref('')
-const result = ref('')
-const error = ref('')
-const showKey = ref(false)
-const base64Output = ref(true)
-const includeIv = ref(true)
-const processingTime = ref<number | null>(null)
-const currentIv = ref('')
-const history = ref<HistoryItem[]>([])
+const mode = ref<'encrypt' | 'decrypt'>('encrypt');
+const key = ref('');
+const inputText = ref('');
+const result = ref('');
+const error = ref('');
+const showKey = ref(false);
+const base64Output = ref(true);
+const includeIv = ref(true);
+const processingTime = ref<number | null>(null);
+const currentIv = ref('');
+const history = ref<HistoryItem[]>([]);
 
 const canProcess = computed(() => {
-  return key.value.length > 0 && inputText.value.length > 0
-})
+  return key.value.length > 0 && inputText.value.length > 0;
+});
 
 const keyLength = computed(() => {
   // 使用 PBKDF2 从密码派生 256 位密钥
-  return 256
-})
+  return 256;
+});
 
 async function processText() {
-  if (!canProcess.value) return
+  if (!canProcess.value) return;
 
-  error.value = ''
-  result.value = ''
+  error.value = '';
+  result.value = '';
 
-  const startTime = performance.now()
+  const startTime = performance.now();
 
   try {
     if (mode.value === 'encrypt') {
-      result.value = await encryptText(inputText.value, key.value)
+      result.value = await encryptText(inputText.value, key.value);
     } else {
-      result.value = await decryptText(inputText.value, key.value)
+      result.value = await decryptText(inputText.value, key.value);
     }
 
-    processingTime.value = Math.round(performance.now() - startTime)
+    processingTime.value = Math.round(performance.now() - startTime);
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '处理失败'
-    console.error('AES processing error:', err)
+    error.value = err instanceof Error ? err.message : '处理失败';
+    console.error('AES processing error:', err);
   }
 }
 
 async function encryptText(text: string, password: string): Promise<string> {
   // 生成随机 IV
-  const iv = crypto.getRandomValues(new Uint8Array(12)) // GCM 推荐 12 字节 IV
-  currentIv.value = Array.from(iv, (byte) => byte.toString(16).padStart(2, '0')).join('')
+  const iv = crypto.getRandomValues(new Uint8Array(12)); // GCM 推荐 12 字节 IV
+  currentIv.value = Array.from(iv, (byte) => byte.toString(16).padStart(2, '0')).join('');
 
   // 从密码派生密钥
-  const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey'])
+  const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
 
-  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const salt = crypto.getRandomValues(new Uint8Array(16));
   const derivedKey = await crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
@@ -256,7 +256,7 @@ async function encryptText(text: string, password: string): Promise<string> {
     { name: 'AES-GCM', length: 256 },
     false,
     ['encrypt']
-  )
+  );
 
   // 加密
   const encrypted = await crypto.subtle.encrypt(
@@ -266,60 +266,60 @@ async function encryptText(text: string, password: string): Promise<string> {
     },
     derivedKey,
     new TextEncoder().encode(text)
-  )
+  );
 
   // 组合 salt + iv + encrypted data
-  const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength)
-  combined.set(salt, 0)
-  combined.set(iv, salt.length)
-  combined.set(new Uint8Array(encrypted), salt.length + iv.length)
+  const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+  combined.set(salt, 0);
+  combined.set(iv, salt.length);
+  combined.set(new Uint8Array(encrypted), salt.length + iv.length);
 
   if (base64Output.value) {
-    return btoa(String.fromCharCode(...combined))
+    return btoa(String.fromCharCode(...combined));
   } else {
-    return Array.from(combined, (byte) => byte.toString(16).padStart(2, '0')).join('')
+    return Array.from(combined, (byte) => byte.toString(16).padStart(2, '0')).join('');
   }
 }
 
 async function decryptText(encryptedText: string, password: string): Promise<string> {
-  let combined: Uint8Array
+  let combined: Uint8Array;
 
   try {
     if (base64Output.value) {
       // Base64 解码
-      const binaryString = atob(encryptedText)
-      combined = new Uint8Array(binaryString.length)
+      const binaryString = atob(encryptedText);
+      combined = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
-        combined[i] = binaryString.charCodeAt(i)
+        combined[i] = binaryString.charCodeAt(i);
       }
     } else {
       // 十六进制解码
       if (encryptedText.length % 2 !== 0) {
-        throw new Error('无效的十六进制字符串')
+        throw new Error('无效的十六进制字符串');
       }
-      combined = new Uint8Array(encryptedText.length / 2)
+      combined = new Uint8Array(encryptedText.length / 2);
       for (let i = 0; i < encryptedText.length; i += 2) {
-        combined[i / 2] = parseInt(encryptedText.substr(i, 2), 16)
+        combined[i / 2] = parseInt(encryptedText.substr(i, 2), 16);
       }
     }
   } catch (err) {
-    throw new Error('无效的加密数据格式')
+    throw new Error('无效的加密数据格式');
   }
 
   if (combined.length < 28) {
     // 16 (salt) + 12 (iv) + 至少一些数据
-    throw new Error('加密数据太短')
+    throw new Error('加密数据太短');
   }
 
   // 提取 salt, iv 和加密数据
-  const salt = combined.slice(0, 16)
-  const iv = combined.slice(16, 28)
-  const encryptedData = combined.slice(28)
+  const salt = combined.slice(0, 16);
+  const iv = combined.slice(16, 28);
+  const encryptedData = combined.slice(28);
 
-  currentIv.value = Array.from(iv, (byte) => byte.toString(16).padStart(2, '0')).join('')
+  currentIv.value = Array.from(iv, (byte) => byte.toString(16).padStart(2, '0')).join('');
 
   // 从密码派生密钥
-  const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey'])
+  const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
 
   const derivedKey = await crypto.subtle.deriveKey(
     {
@@ -332,7 +332,7 @@ async function decryptText(encryptedText: string, password: string): Promise<str
     { name: 'AES-GCM', length: 256 },
     false,
     ['decrypt']
-  )
+  );
 
   // 解密
   try {
@@ -343,71 +343,71 @@ async function decryptText(encryptedText: string, password: string): Promise<str
       },
       derivedKey,
       encryptedData
-    )
+    );
 
-    return new TextDecoder().decode(decrypted)
+    return new TextDecoder().decode(decrypted);
   } catch (err) {
-    throw new Error('解密失败，请检查密钥是否正确')
+    throw new Error('解密失败，请检查密钥是否正确');
   }
 }
 
 function generateKey() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'
-  let result = ''
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  let result = '';
   for (let i = 0; i < 32; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  key.value = result
+  key.value = result;
 }
 
 function clearAll() {
-  inputText.value = ''
-  result.value = ''
-  error.value = ''
-  currentIv.value = ''
-  processingTime.value = null
+  inputText.value = '';
+  result.value = '';
+  error.value = '';
+  currentIv.value = '';
+  processingTime.value = null;
 }
 
 function swapMode() {
-  if (!result.value) return
+  if (!result.value) return;
 
   // 交换模式和内容
-  const newMode = mode.value === 'encrypt' ? 'decrypt' : 'encrypt'
-  const newInput = result.value
+  const newMode = mode.value === 'encrypt' ? 'decrypt' : 'encrypt';
+  const newInput = result.value;
 
-  mode.value = newMode
-  inputText.value = newInput
-  result.value = ''
-  error.value = ''
+  mode.value = newMode;
+  inputText.value = newInput;
+  result.value = '';
+  error.value = '';
 }
 
 function copyResult() {
   if (result.value) {
-    copyToClipboard(result.value)
+    copyToClipboard(result.value);
   }
 }
 
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text).then(() => {
-    alert('已复制到剪贴板')
-  })
+    alert('已复制到剪贴板');
+  });
 }
 
 function downloadResult() {
-  if (!result.value) return
+  if (!result.value) return;
 
-  const filename = `aes_${mode.value}_${new Date().toISOString().slice(0, 10)}.txt`
-  const blob = new Blob([result.value], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  const filename = `aes_${mode.value}_${new Date().toISOString().slice(0, 10)}.txt`;
+  const blob = new Blob([result.value], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function saveToHistory() {
-  if (!result.value || !inputText.value || !key.value) return
+  if (!result.value || !inputText.value || !key.value) return;
 
   const item: HistoryItem = {
     mode: mode.value,
@@ -417,29 +417,29 @@ function saveToHistory() {
     inputLength: inputText.value.length,
     outputLength: result.value.length,
     timestamp: Date.now()
-  }
+  };
 
-  history.value.unshift(item)
+  history.value.unshift(item);
 
   // 只保留最近10条（考虑到安全性）
   if (history.value.length > 10) {
-    history.value = history.value.slice(0, 10)
+    history.value = history.value.slice(0, 10);
   }
 
-  saveHistoryToStorage()
+  saveHistoryToStorage();
 }
 
 function loadFromHistory(item: HistoryItem) {
-  mode.value = item.mode
-  inputText.value = item.inputText
-  key.value = item.key
-  result.value = item.result
-  error.value = ''
+  mode.value = item.mode;
+  inputText.value = item.inputText;
+  key.value = item.key;
+  result.value = item.result;
+  error.value = '';
 }
 
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  saveHistoryToStorage()
+  history.value.splice(index, 1);
+  saveHistoryToStorage();
 }
 
 function formatDate(timestamp: number): string {
@@ -448,26 +448,26 @@ function formatDate(timestamp: number): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  })
+  });
 }
 
 function saveHistoryToStorage() {
   // 注意：出于安全考虑，实际应用中可能不应该保存密钥到本地存储
-  localStorage.setItem('aes-history', JSON.stringify(history.value))
+  localStorage.setItem('aes-history', JSON.stringify(history.value));
 }
 
 function loadHistoryFromStorage() {
-  const saved = localStorage.getItem('aes-history')
+  const saved = localStorage.getItem('aes-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch (error) {
-      console.error('加载历史记录失败:', error)
+      console.error('加载历史记录失败:', error);
     }
   }
 }
 
 onMounted(() => {
-  loadHistoryFromStorage()
-})
+  loadHistoryFromStorage();
+});
 </script>

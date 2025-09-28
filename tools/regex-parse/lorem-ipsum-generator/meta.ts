@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'lorem-ipsum-generator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:text',
   i18nKey: 'tools.lorem-ipsum-generator',
-  entry: 'tools/regex-parse/lorem-ipsum-generator/Component.vue',
-}
-export default meta
+  entry: 'tools/regex-parse/lorem-ipsum-generator/Component.vue'
+};
+export default meta;

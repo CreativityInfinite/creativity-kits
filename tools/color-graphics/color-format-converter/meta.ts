@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'color-format-converter',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#f59e0b,#7c3aed)',
   icon: 'tabler:palette',
   i18nKey: 'tools.color-format-converter',
-  entry: 'tools/color-graphics/color-format-converter/Component.vue',
-}
-export default meta
+  entry: 'tools/color-graphics/color-format-converter/Component.vue'
+};
+export default meta;

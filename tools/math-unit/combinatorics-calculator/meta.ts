@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'combinatorics-calculator',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.combinatorics-calculator',
   entry: 'tools/math-unit/combinatorics-calculator/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

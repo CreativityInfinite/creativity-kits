@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'regex-tester',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: '#f59e0b',
   icon: 'tabler:regex',
   i18nKey: 'tools.regex-tester',
-  entry: 'tools/regex-parse/regex-tester/Component.vue',
-}
-export default meta
+  entry: 'tools/regex-parse/regex-tester/Component.vue'
+};
+export default meta;

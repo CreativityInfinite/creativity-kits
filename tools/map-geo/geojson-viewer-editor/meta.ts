@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'geojson-viewer-editor',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.geojson-viewer-editor',
   entry: 'tools/map-geo/geojson-viewer-editor/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

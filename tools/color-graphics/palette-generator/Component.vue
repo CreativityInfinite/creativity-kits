@@ -59,121 +59,121 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-type Color = { r: number; g: number; b: number; hex: string }
-const fileRef = ref<File | null>(null)
-const k = ref(6)
-const step = ref(3)
-const colors = ref<Color[]>([])
-const output = ref('')
+type Color = { r: number; g: number; b: number; hex: string };
+const fileRef = ref<File | null>(null);
+const k = ref(6);
+const step = ref(3);
+const colors = ref<Color[]>([]);
+const output = ref('');
 
 function onFile(e: Event) {
-  const f = (e.target as HTMLInputElement).files?.[0] || null
-  fileRef.value = f
-  colors.value = []
-  output.value = f ? `已选择：${f.name}` : ''
+  const f = (e.target as HTMLInputElement).files?.[0] || null;
+  fileRef.value = f;
+  colors.value = [];
+  output.value = f ? `已选择：${f.name}` : '';
 }
 
 function rgbToHex(r: number, g: number, b: number) {
-  return '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('')
+  return '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
 }
 
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 
 async function process() {
-  colors.value = []
-  output.value = ''
-  const f = fileRef.value
+  colors.value = [];
+  output.value = '';
+  const f = fileRef.value;
   if (!f) {
-    output.value = '请先选择图片'
-    return
+    output.value = '请先选择图片';
+    return;
   }
   try {
-    const url = URL.createObjectURL(f)
+    const url = URL.createObjectURL(f);
     const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const im = new Image()
-      im.onload = () => resolve(im)
-      im.onerror = reject
-      im.src = url
-    })
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('Canvas 不可用')
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = reject;
+      im.src = url;
+    });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas 不可用');
     // 缩放到较小尺寸以提速（最长边不超过 512）
-    const scale = Math.min(1, 512 / Math.max(img.width, img.height))
-    canvas.width = Math.max(1, Math.round(img.width * scale))
-    canvas.height = Math.max(1, Math.round(img.height * scale))
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-    URL.revokeObjectURL(url)
+    const scale = Math.min(1, 512 / Math.max(img.width, img.height));
+    canvas.width = Math.max(1, Math.round(img.width * scale));
+    canvas.height = Math.max(1, Math.round(img.height * scale));
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    URL.revokeObjectURL(url);
 
-    const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    const pts: number[][] = []
-    const s = Math.max(1, step.value || 1)
+    const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pts: number[][] = [];
+    const s = Math.max(1, step.value || 1);
     for (let y = 0; y < height; y += s) {
       for (let x = 0; x < width; x += s) {
-        const i = (y * width + x) * 4
-        const a = data[i + 3]
-        if (a < 10) continue
-        pts.push([data[i], data[i + 1], data[i + 2]])
+        const i = (y * width + x) * 4;
+        const a = data[i + 3];
+        if (a < 10) continue;
+        pts.push([data[i], data[i + 1], data[i + 2]]);
       }
     }
-    if (!pts.length) throw new Error('未采样到像素')
+    if (!pts.length) throw new Error('未采样到像素');
 
     // K-Means (简化，固定迭代)
-    const K = Math.max(2, Math.min(16, k.value || 6))
-    const centers: number[][] = []
-    const used = new Set<number>()
+    const K = Math.max(2, Math.min(16, k.value || 6));
+    const centers: number[][] = [];
+    const used = new Set<number>();
     while (centers.length < K && used.size < pts.length) {
-      const idx = Math.floor(Math.random() * pts.length)
+      const idx = Math.floor(Math.random() * pts.length);
       if (!used.has(idx)) {
-        used.add(idx)
-        centers.push([...pts[idx]])
+        used.add(idx);
+        centers.push([...pts[idx]]);
       }
     }
     for (let iter = 0; iter < 8; iter++) {
-      const sums = Array.from({ length: K }, () => [0, 0, 0, 0])
+      const sums = Array.from({ length: K }, () => [0, 0, 0, 0]);
       for (const p of pts) {
-        let bi = 0
-        let bd = Infinity
+        let bi = 0;
+        let bd = Infinity;
         for (let c = 0; c < K; c++) {
-          const cc = centers[c]
-          const d = (p[0] - cc[0]) ** 2 + (p[1] - cc[1]) ** 2 + (p[2] - cc[2]) ** 2
+          const cc = centers[c];
+          const d = (p[0] - cc[0]) ** 2 + (p[1] - cc[1]) ** 2 + (p[2] - cc[2]) ** 2;
           if (d < bd) {
-            bd = d
-            bi = c
+            bd = d;
+            bi = c;
           }
         }
-        sums[bi][0] += p[0]
-        sums[bi][1] += p[1]
-        sums[bi][2] += p[2]
-        sums[bi][3] += 1
+        sums[bi][0] += p[0];
+        sums[bi][1] += p[1];
+        sums[bi][2] += p[2];
+        sums[bi][3] += 1;
       }
       for (let c = 0; c < K; c++) {
-        const cnt = sums[c][3] || 1
-        centers[c][0] = Math.round(sums[c][0] / cnt)
-        centers[c][1] = Math.round(sums[c][1] / cnt)
-        centers[c][2] = Math.round(sums[c][2] / cnt)
+        const cnt = sums[c][3] || 1;
+        centers[c][0] = Math.round(sums[c][0] / cnt);
+        centers[c][1] = Math.round(sums[c][1] / cnt);
+        centers[c][2] = Math.round(sums[c][2] / cnt);
       }
     }
-    const list = centers.map(([r, g, b]) => ({ r, g, b, hex: rgbToHex(r, g, b) }))
-    colors.value = list
-    output.value = JSON.stringify(list, null, 2)
+    const list = centers.map(([r, g, b]) => ({ r, g, b, hex: rgbToHex(r, g, b) }));
+    colors.value = list;
+    output.value = JSON.stringify(list, null, 2);
   } catch (e: any) {
-    output.value = '提取失败：' + (e?.message || String(e))
+    output.value = '提取失败：' + (e?.message || String(e));
   }
 }
 
 async function copyToClipboard() {
-  if (!output.value) return
+  if (!output.value) return;
   try {
-    await navigator.clipboard.writeText(output.value)
-    alert('已复制到剪贴板')
+    await navigator.clipboard.writeText(output.value);
+    alert('已复制到剪贴板');
   } catch (err) {
-    console.error('复制失败:', err)
-    alert('复制失败，请手动复制')
+    console.error('复制失败:', err);
+    alert('复制失败，请手动复制');
   }
 }
 </script>

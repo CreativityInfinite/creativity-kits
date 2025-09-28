@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'svg-optimizer',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:vector-arrange-above',
   i18nKey: 'tools.svg-optimizer',
-  entry: 'tools/color-graphics/svg-optimizer/Component.vue',
-}
-export default meta
+  entry: 'tools/color-graphics/svg-optimizer/Component.vue'
+};
+export default meta;

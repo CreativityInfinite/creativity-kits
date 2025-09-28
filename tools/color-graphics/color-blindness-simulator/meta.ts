@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'color-blindness-simulator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:eye-off',
   i18nKey: 'tools.color-blindness-simulator',
-  entry: 'tools/color-graphics/color-blindness-simulator/Component.vue',
-}
-export default meta
+  entry: 'tools/color-graphics/color-blindness-simulator/Component.vue'
+};
+export default meta;

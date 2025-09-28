@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'json-minify',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'text-format',
   tags: ['JSON', '压缩', '优化', '文件大小', '传输效率', '数据处理'],
   i18nKey: 'tools.json-minify',
-  entry: 'tools/text-format/json-minify/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/json-minify/Component.vue'
+};
+export default meta;

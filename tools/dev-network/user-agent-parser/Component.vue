@@ -228,49 +228,49 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
 interface ParsedUA {
   browser: {
-    name: string
-    version: string
-    major: string
-  }
+    name: string;
+    version: string;
+    major: string;
+  };
   engine: {
-    name: string
-    version: string
-  }
+    name: string;
+    version: string;
+  };
   os: {
-    name: string
-    version: string
-  }
+    name: string;
+    version: string;
+  };
   device: {
-    type: string
-    vendor: string
-    model: string
-  }
+    type: string;
+    vendor: string;
+    model: string;
+  };
   cpu: {
-    architecture: string
-  }
+    architecture: string;
+  };
 }
 
 interface ParseHistory {
-  ua: string
-  browser: string
-  version: string
-  os: string
-  timestamp: string
+  ua: string;
+  browser: string;
+  version: string;
+  os: string;
+  timestamp: string;
 }
 
 interface BatchResult extends ParsedUA {
-  originalUA: string
+  originalUA: string;
 }
 
-const userAgent = ref('')
-const batchInput = ref('')
-const parsedResult = ref<ParsedUA | null>(null)
-const parseHistory = ref<ParseHistory[]>([])
-const batchResults = ref<BatchResult[]>([])
+const userAgent = ref('');
+const batchInput = ref('');
+const parsedResult = ref<ParsedUA | null>(null);
+const parseHistory = ref<ParseHistory[]>([]);
+const batchResults = ref<BatchResult[]>([]);
 
 const sampleUserAgents = [
   {
@@ -301,22 +301,22 @@ const sampleUserAgents = [
     name: 'Googlebot',
     ua: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
   }
-]
+];
 
 function parseUserAgent() {
   if (!userAgent.value.trim()) {
-    parsedResult.value = null
-    return
+    parsedResult.value = null;
+    return;
   }
 
-  const ua = userAgent.value
+  const ua = userAgent.value;
   const result: ParsedUA = {
     browser: { name: '', version: '', major: '' },
     engine: { name: '', version: '' },
     os: { name: '', version: '' },
     device: { type: '', vendor: '', model: '' },
     cpu: { architecture: '' }
-  }
+  };
 
   // 解析浏览器
   const browserPatterns = [
@@ -327,15 +327,15 @@ function parseUserAgent() {
     { name: 'Opera', pattern: /OPR\/([0-9.]+)/ },
     { name: 'Internet Explorer', pattern: /MSIE ([0-9.]+)/ },
     { name: 'Internet Explorer', pattern: /Trident.*rv:([0-9.]+)/ }
-  ]
+  ];
 
   for (const browser of browserPatterns) {
-    const match = ua.match(browser.pattern)
+    const match = ua.match(browser.pattern);
     if (match) {
-      result.browser.name = browser.name
-      result.browser.version = match[1]
-      result.browser.major = match[1].split('.')[0]
-      break
+      result.browser.name = browser.name;
+      result.browser.version = match[1];
+      result.browser.major = match[1].split('.')[0];
+      break;
     }
   }
 
@@ -345,14 +345,14 @@ function parseUserAgent() {
     { name: 'Gecko', pattern: /Gecko\/([0-9.]+)/ },
     { name: 'Trident', pattern: /Trident\/([0-9.]+)/ },
     { name: 'Presto', pattern: /Presto\/([0-9.]+)/ }
-  ]
+  ];
 
   for (const engine of enginePatterns) {
-    const match = ua.match(engine.pattern)
+    const match = ua.match(engine.pattern);
     if (match) {
-      result.engine.name = engine.name
-      result.engine.version = match[1]
-      break
+      result.engine.name = engine.name;
+      result.engine.version = match[1];
+      break;
     }
   }
 
@@ -368,28 +368,28 @@ function parseUserAgent() {
     { name: 'Android', pattern: /Android ([0-9.]+)/ },
     { name: 'Linux', pattern: /Linux/ },
     { name: 'Ubuntu', pattern: /Ubuntu/ }
-  ]
+  ];
 
   for (const os of osPatterns) {
-    const match = ua.match(os.pattern)
+    const match = ua.match(os.pattern);
     if (match) {
-      result.os.name = os.name
+      result.os.name = os.name;
       if (match[1]) {
-        result.os.version = match[1].replace(/_/g, '.')
+        result.os.version = match[1].replace(/_/g, '.');
       }
-      break
+      break;
     }
   }
 
   // 解析设备类型
   if (/Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(ua)) {
     if (/iPad|Tablet/i.test(ua)) {
-      result.device.type = 'tablet'
+      result.device.type = 'tablet';
     } else {
-      result.device.type = 'mobile'
+      result.device.type = 'mobile';
     }
   } else {
-    result.device.type = 'desktop'
+    result.device.type = 'desktop';
   }
 
   // 解析设备厂商和型号
@@ -399,28 +399,28 @@ function parseUserAgent() {
     { vendor: 'Huawei', pattern: /(HUAWEI|Honor)/ },
     { vendor: 'Xiaomi', pattern: /(MI|Redmi)/ },
     { vendor: 'OnePlus', pattern: /OnePlus/ }
-  ]
+  ];
 
   for (const device of devicePatterns) {
-    const match = ua.match(device.pattern)
+    const match = ua.match(device.pattern);
     if (match) {
-      result.device.vendor = device.vendor
-      result.device.model = match[0]
-      break
+      result.device.vendor = device.vendor;
+      result.device.model = match[0];
+      break;
     }
   }
 
   // 解析 CPU 架构
   if (/x86_64|Win64|WOW64|x64/i.test(ua)) {
-    result.cpu.architecture = 'x64'
+    result.cpu.architecture = 'x64';
   } else if (/ARM|aarch64/i.test(ua)) {
-    result.cpu.architecture = 'ARM'
+    result.cpu.architecture = 'ARM';
   } else if (/x86|i386|i686/i.test(ua)) {
-    result.cpu.architecture = 'x86'
+    result.cpu.architecture = 'x86';
   }
 
-  parsedResult.value = result
-  addToHistory(result)
+  parsedResult.value = result;
+  addToHistory(result);
 }
 
 function addToHistory(result: ParsedUA) {
@@ -430,73 +430,73 @@ function addToHistory(result: ParsedUA) {
     version: result.browser.version,
     os: result.os.name,
     timestamp: new Date().toLocaleString('zh-CN')
-  }
+  };
 
-  parseHistory.value.unshift(historyItem)
-  parseHistory.value = parseHistory.value.slice(0, 50)
-  saveHistory()
+  parseHistory.value.unshift(historyItem);
+  parseHistory.value = parseHistory.value.slice(0, 50);
+  saveHistory();
 }
 
 function loadFromHistory(history: ParseHistory) {
-  userAgent.value = history.ua
-  parseUserAgent()
+  userAgent.value = history.ua;
+  parseUserAgent();
 }
 
 function clearHistory() {
-  parseHistory.value = []
-  saveHistory()
+  parseHistory.value = [];
+  saveHistory();
 }
 
 function useCurrentUA() {
-  userAgent.value = navigator.userAgent
-  parseUserAgent()
+  userAgent.value = navigator.userAgent;
+  parseUserAgent();
 }
 
 function loadSample() {
-  const sample = sampleUserAgents[Math.floor(Math.random() * sampleUserAgents.length)]
-  userAgent.value = sample.ua
-  parseUserAgent()
+  const sample = sampleUserAgents[Math.floor(Math.random() * sampleUserAgents.length)];
+  userAgent.value = sample.ua;
+  parseUserAgent();
 }
 
 function loadSampleUA(ua: string) {
-  userAgent.value = ua
-  parseUserAgent()
+  userAgent.value = ua;
+  parseUserAgent();
 }
 
 function clearInput() {
-  userAgent.value = ''
-  parsedResult.value = null
+  userAgent.value = '';
+  parsedResult.value = null;
 }
 
 function parseBatch() {
-  if (!batchInput.value.trim()) return
+  if (!batchInput.value.trim()) return;
 
-  const lines = batchInput.value.split('\n').filter((line) => line.trim())
-  batchResults.value = []
+  const lines = batchInput.value.split('\n').filter((line) => line.trim());
+  batchResults.value = [];
 
   for (const line of lines) {
-    const originalUA = userAgent.value
-    userAgent.value = line.trim()
-    parseUserAgent()
+    const originalUA = userAgent.value;
+    userAgent.value = line.trim();
+    parseUserAgent();
 
     if (parsedResult.value) {
       batchResults.value.push({
         ...parsedResult.value,
         originalUA: line.trim()
-      })
+      });
     }
   }
 
-  userAgent.value = originalUA
-  parseUserAgent()
+  userAgent.value = originalUA;
+  parseUserAgent();
 }
 
 function clearBatchResults() {
-  batchResults.value = []
+  batchResults.value = [];
 }
 
 function exportBatchResults() {
-  if (batchResults.value.length === 0) return
+  if (batchResults.value.length === 0) return;
 
   const data = batchResults.value.map((result) => ({
     userAgent: result.originalUA,
@@ -505,28 +505,28 @@ function exportBatchResults() {
     device: result.device.type,
     vendor: result.device.vendor,
     model: result.device.model
-  }))
+  }));
 
-  const csv = ['User Agent,Browser,OS,Device Type,Vendor,Model', ...data.map((row) => `"${row.userAgent}","${row.browser}","${row.os}","${row.device}","${row.vendor}","${row.model}"`)].join('\n')
+  const csv = ['User Agent,Browser,OS,Device Type,Vendor,Model', ...data.map((row) => `"${row.userAgent}","${row.browser}","${row.os}","${row.device}","${row.vendor}","${row.model}"`)].join('\n');
 
-  const blob = new Blob([csv], { type: 'text/csv' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'user-agent-analysis.csv'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'user-agent-analysis.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 async function copyResult() {
-  if (!parsedResult.value) return
+  if (!parsedResult.value) return;
 
   try {
-    await navigator.clipboard.writeText(JSON.stringify(parsedResult.value, null, 2))
+    await navigator.clipboard.writeText(JSON.stringify(parsedResult.value, null, 2));
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
@@ -538,8 +538,8 @@ function getBrowserIcon(browserName: string): string {
     Edge: '🔷',
     Opera: '🎭',
     'Internet Explorer': '🌍'
-  }
-  return icons[browserName] || '🌐'
+  };
+  return icons[browserName] || '🌐';
 }
 
 function getOSIcon(osName: string): string {
@@ -554,8 +554,8 @@ function getOSIcon(osName: string): string {
     Android: '🤖',
     Linux: '🐧',
     Ubuntu: '🟠'
-  }
-  return icons[osName] || '💻'
+  };
+  return icons[osName] || '💻';
 }
 
 function getDeviceIcon(deviceType: string): string {
@@ -563,8 +563,8 @@ function getDeviceIcon(deviceType: string): string {
     mobile: '📱',
     tablet: '📱',
     desktop: '💻'
-  }
-  return icons[deviceType] || '💻'
+  };
+  return icons[deviceType] || '💻';
 }
 
 function isBot(ua: string): boolean {
@@ -583,34 +583,34 @@ function isBot(ua: string): boolean {
     /twitterbot/i,
     /linkedinbot/i,
     /whatsapp/i
-  ]
-  return botPatterns.some((pattern) => pattern.test(ua))
+  ];
+  return botPatterns.some((pattern) => pattern.test(ua));
 }
 
 function isWebView(ua: string): boolean {
-  return /wv|WebView|; wv\)|Version.*Chrome/i.test(ua) && !/Chrome\/[.0-9]* Mobile/i.test(ua)
+  return /wv|WebView|; wv\)|Version.*Chrome/i.test(ua) && !/Chrome\/[.0-9]* Mobile/i.test(ua);
 }
 
 function saveHistory() {
   try {
-    localStorage.setItem('ua-parse-history', JSON.stringify(parseHistory.value))
+    localStorage.setItem('ua-parse-history', JSON.stringify(parseHistory.value));
   } catch (error) {
-    console.error('保存历史记录失败:', error)
+    console.error('保存历史记录失败:', error);
   }
 }
 
 function loadHistory() {
   try {
-    const saved = localStorage.getItem('ua-parse-history')
+    const saved = localStorage.getItem('ua-parse-history');
     if (saved) {
-      parseHistory.value = JSON.parse(saved)
+      parseHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载历史记录失败:', error)
+    console.error('加载历史记录失败:', error);
   }
 }
 
 onMounted(() => {
-  loadHistory()
-})
+  loadHistory();
+});
 </script>

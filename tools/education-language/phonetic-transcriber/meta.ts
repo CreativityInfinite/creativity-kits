@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'phonetic-transcriber',
@@ -8,6 +8,6 @@ const meta: ToolMeta = {
   tags: ['音标', '发音', '语言学习', '批量处理'],
   icon: '🔤',
   i18nKey: 'tools.phonetic-transcriber',
-  entry: 'tools/education-language/phonetic-transcriber/Component.vue',
-}
-export default meta
+  entry: 'tools/education-language/phonetic-transcriber/Component.vue'
+};
+export default meta;

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'mortgage-loan-calculator',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.mortgage-loan-calculator',
   entry: 'tools/math-unit/mortgage-loan-calculator/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

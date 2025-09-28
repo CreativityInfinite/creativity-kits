@@ -1,32 +1,32 @@
 #!/usr/bin/env node
-import fs from 'node:fs'
-import path from 'node:path'
-import readline from 'node:readline'
+import fs from 'node:fs';
+import path from 'node:path';
+import readline from 'node:readline';
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
-const q = (s) => new Promise((res) => rl.question(s, res))
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+const q = (s) => new Promise((res) => rl.question(s, res));
 
-const root = process.cwd()
+const root = process.cwd();
 
-;(async () => {
-  const category = (await q('Category id (e.g. text-format): ')).trim()
-  const id = (await q('Tool id (kebab-case): ')).trim()
-  const name = (await q('Name (zh-CN): ')).trim()
-  const desc = (await q('Desc (zh-CN): ')).trim()
+(async () => {
+  const category = (await q('Category id (e.g. text-format): ')).trim();
+  const id = (await q('Tool id (kebab-case): ')).trim();
+  const name = (await q('Name (zh-CN): ')).trim();
+  const desc = (await q('Desc (zh-CN): ')).trim();
   const tags = (await q('Tags (comma separated): '))
     .trim()
     .split(',')
     .map((s) => s.trim())
-    .filter(Boolean)
-  rl.close()
+    .filter(Boolean);
+  rl.close();
 
   if (!category || !id) {
-    console.error('category and id are required.')
-    process.exit(1)
+    console.error('category and id are required.');
+    process.exit(1);
   }
 
-  const dir = path.join(root, 'tools', category, id)
-  fs.mkdirSync(dir, { recursive: true })
+  const dir = path.join(root, 'tools', category, id);
+  fs.mkdirSync(dir, { recursive: true });
 
   const meta = `import type { ToolMeta } from '~/types/tool'
 const meta: ToolMeta = {
@@ -40,8 +40,8 @@ const meta: ToolMeta = {
   entry: 'tools/${category}/${id}/Component.vue'
 }
 export default meta
-`
-  fs.writeFileSync(path.join(dir, 'meta.ts'), meta, 'utf8')
+`;
+  fs.writeFileSync(path.join(dir, 'meta.ts'), meta, 'utf8');
 
   const comp = `<template>
   <div class="space-y-2">
@@ -55,21 +55,21 @@ const input = ref('')
 const result = ref('')
 watch(input, (v) => { result.value = v })
 </script>
-`
-  fs.writeFileSync(path.join(dir, 'Component.vue'), comp, 'utf8')
+`;
+  fs.writeFileSync(path.join(dir, 'Component.vue'), comp, 'utf8');
 
   // locales templates
-  const localesDir = path.join(root, 'locales')
-  const files = ['zh-CN.json', 'zh-TW.json', 'en.json']
+  const localesDir = path.join(root, 'locales');
+  const files = ['zh-CN.json', 'zh-TW.json', 'en.json'];
   for (const f of files) {
-    const p = path.join(localesDir, f)
-    const json = JSON.parse(fs.readFileSync(p, 'utf8'))
-    json.tools = json.tools || {}
+    const p = path.join(localesDir, f);
+    const json = JSON.parse(fs.readFileSync(p, 'utf8'));
+    json.tools = json.tools || {};
     if (!json.tools[id]) {
-      json.tools[id] = { name, desc }
-      fs.writeFileSync(p, JSON.stringify(json, null, 2), 'utf8')
+      json.tools[id] = { name, desc };
+      fs.writeFileSync(p, JSON.stringify(json, null, 2), 'utf8');
     }
   }
 
-  console.log(`✔ Created tool at tools/${category}/${id}`)
-})()
+  console.log(`✔ Created tool at tools/${category}/${id}`);
+})();

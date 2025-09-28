@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'iban-validator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:bank',
   i18nKey: 'tools.iban-validator',
-  entry: 'tools/regex-parse/iban-validator/Component.vue',
-}
-export default meta
+  entry: 'tools/regex-parse/iban-validator/Component.vue'
+};
+export default meta;

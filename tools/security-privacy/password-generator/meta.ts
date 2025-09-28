@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'password-generator',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'security-privacy',
   tags: ['密码', '安全', '生成器', '加密', '强度分析', '隐私保护'],
   i18nKey: 'tools.password-generator',
-  entry: 'tools/security-privacy/password-generator/Component.vue',
-}
-export default meta
+  entry: 'tools/security-privacy/password-generator/Component.vue'
+};
+export default meta;

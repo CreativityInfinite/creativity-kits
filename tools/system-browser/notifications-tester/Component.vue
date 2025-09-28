@@ -74,76 +74,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-type HistoryItem = { title: string; body: string; timeoutSec: number; timestamp: number }
+import { ref, computed, onMounted } from 'vue';
+type HistoryItem = { title: string; body: string; timeoutSec: number; timestamp: number };
 
-const title = ref('Hello')
-const body = ref('这是一条通知')
-const timeoutSec = ref(5)
-const permission = ref(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported')
-const lastStatus = ref('')
-const error = ref('')
-const history = ref<HistoryItem[]>([])
+const title = ref('Hello');
+const body = ref('这是一条通知');
+const timeoutSec = ref(5);
+const permission = ref(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
+const lastStatus = ref('');
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => !!title.value.trim() && !!body.value.trim() && permission.value === 'granted')
+const canProcess = computed(() => !!title.value.trim() && !!body.value.trim() && permission.value === 'granted');
 
 function clearAll() {
-  lastStatus.value = ''
-  error.value = ''
+  lastStatus.value = '';
+  error.value = '';
 }
 async function requestPermission() {
   try {
     if (typeof Notification === 'undefined') {
-      error.value = '当前环境不支持 Notification'
-      return
+      error.value = '当前环境不支持 Notification';
+      return;
     }
-    const p = await Notification.requestPermission()
-    permission.value = p
+    const p = await Notification.requestPermission();
+    permission.value = p;
   } catch (e: any) {
-    error.value = e?.message || '权限申请失败'
+    error.value = e?.message || '权限申请失败';
   }
 }
 function loadFromHistory(item: HistoryItem) {
-  title.value = item.title
-  body.value = item.body
-  timeoutSec.value = item.timeoutSec
+  title.value = item.title;
+  body.value = item.body;
+  timeoutSec.value = item.timeoutSec;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('notify-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('notify-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function saveToHistory() {
-  const item: HistoryItem = { title: title.value, body: body.value, timeoutSec: timeoutSec.value, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('notify-history', JSON.stringify(history.value))
+  const item: HistoryItem = { title: title.value, body: body.value, timeoutSec: timeoutSec.value, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('notify-history', JSON.stringify(history.value));
 }
 
 function process() {
-  error.value = ''
-  lastStatus.value = ''
+  error.value = '';
+  lastStatus.value = '';
   try {
-    if (typeof Notification === 'undefined') throw new Error('不支持 Notification')
-    if (Notification.permission !== 'granted') throw new Error('权限未授予')
-    const n = new Notification(title.value, { body: body.value })
-    lastStatus.value = '已发送'
-    saveToHistory()
-    setTimeout(() => n.close(), Math.max(1, timeoutSec.value || 1) * 1000)
+    if (typeof Notification === 'undefined') throw new Error('不支持 Notification');
+    if (Notification.permission !== 'granted') throw new Error('权限未授予');
+    const n = new Notification(title.value, { body: body.value });
+    lastStatus.value = '已发送';
+    saveToHistory();
+    setTimeout(() => n.close(), Math.max(1, timeoutSec.value || 1) * 1000);
   } catch (e: any) {
-    error.value = e?.message || '发送失败'
+    error.value = e?.message || '发送失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('notify-history')
+  const saved = localStorage.getItem('notify-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

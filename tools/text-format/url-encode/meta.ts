@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'url-encode',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'text-format',
   tags: ['URL编码', '百分号编码', 'URI', '表单编码', 'URL解析', '参数处理'],
   i18nKey: 'tools.url-encode',
-  entry: 'tools/text-format/url-encode/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/url-encode/Component.vue'
+};
+export default meta;

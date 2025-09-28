@@ -78,8 +78,8 @@
                   diff.type === 'added'
                     ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
                     : diff.type === 'removed'
-                      ? 'bg-red-50 dark:bg-red-900/20 border-red-500'
-                      : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+                    ? 'bg-red-50 dark:bg-red-900/20 border-red-500'
+                    : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
                 ]"
               >
                 <div class="flex justify-between items-start mb-2">
@@ -90,8 +90,8 @@
                         diff.type === 'added'
                           ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
                           : diff.type === 'removed'
-                            ? 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
-                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
+                          ? 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
+                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
                       ]"
                     >
                       {{ diff.type === 'added' ? '新增' : diff.type === 'removed' ? '删除' : '修改' }}
@@ -178,49 +178,49 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 interface JsonDifference {
-  type: 'added' | 'removed' | 'changed'
-  path: string
-  oldValue?: any
-  newValue?: any
+  type: 'added' | 'removed' | 'changed';
+  path: string;
+  oldValue?: any;
+  newValue?: any;
 }
 
-const leftJson = ref('')
-const rightJson = ref('')
-const leftError = ref('')
-const rightError = ref('')
-const differences = ref<JsonDifference[]>([])
+const leftJson = ref('');
+const rightJson = ref('');
+const leftError = ref('');
+const rightError = ref('');
+const differences = ref<JsonDifference[]>([]);
 
-const addedCount = computed(() => differences.value.filter((d) => d.type === 'added').length)
-const removedCount = computed(() => differences.value.filter((d) => d.type === 'removed').length)
-const changedCount = computed(() => differences.value.filter((d) => d.type === 'changed').length)
+const addedCount = computed(() => differences.value.filter((d) => d.type === 'added').length);
+const removedCount = computed(() => differences.value.filter((d) => d.type === 'removed').length);
+const changedCount = computed(() => differences.value.filter((d) => d.type === 'changed').length);
 
 function compareJson() {
-  differences.value = []
-  leftError.value = ''
-  rightError.value = ''
+  differences.value = [];
+  leftError.value = '';
+  rightError.value = '';
 
-  if (!leftJson.value || !rightJson.value) return
+  if (!leftJson.value || !rightJson.value) return;
 
   try {
-    const leftObj = JSON.parse(leftJson.value)
-    const rightObj = JSON.parse(rightJson.value)
+    const leftObj = JSON.parse(leftJson.value);
+    const rightObj = JSON.parse(rightJson.value);
 
-    differences.value = findDifferences(leftObj, rightObj, '')
+    differences.value = findDifferences(leftObj, rightObj, '');
   } catch (error) {
     if (!isValidJson(leftJson.value)) {
-      leftError.value = '左侧 JSON 格式错误'
+      leftError.value = '左侧 JSON 格式错误';
     }
     if (!isValidJson(rightJson.value)) {
-      rightError.value = '右侧 JSON 格式错误'
+      rightError.value = '右侧 JSON 格式错误';
     }
   }
 }
 
 function findDifferences(left: any, right: any, path: string): JsonDifference[] {
-  const diffs: JsonDifference[] = []
+  const diffs: JsonDifference[] = [];
 
   // 处理 null 和 undefined
   if (left === null || left === undefined) {
@@ -229,9 +229,9 @@ function findDifferences(left: any, right: any, path: string): JsonDifference[] 
         type: 'added',
         path: path || 'root',
         newValue: right
-      })
+      });
     }
-    return diffs
+    return diffs;
   }
 
   if (right === null || right === undefined) {
@@ -239,8 +239,8 @@ function findDifferences(left: any, right: any, path: string): JsonDifference[] 
       type: 'removed',
       path: path || 'root',
       oldValue: left
-    })
-    return diffs
+    });
+    return diffs;
   }
 
   // 类型不同
@@ -250,8 +250,8 @@ function findDifferences(left: any, right: any, path: string): JsonDifference[] 
       path: path || 'root',
       oldValue: left,
       newValue: right
-    })
-    return diffs
+    });
+    return diffs;
   }
 
   // 基本类型比较
@@ -262,34 +262,34 @@ function findDifferences(left: any, right: any, path: string): JsonDifference[] 
         path: path || 'root',
         oldValue: left,
         newValue: right
-      })
+      });
     }
-    return diffs
+    return diffs;
   }
 
   // 数组比较
   if (Array.isArray(left) && Array.isArray(right)) {
-    const maxLength = Math.max(left.length, right.length)
+    const maxLength = Math.max(left.length, right.length);
     for (let i = 0; i < maxLength; i++) {
-      const currentPath = path ? `${path}[${i}]` : `[${i}]`
+      const currentPath = path ? `${path}[${i}]` : `[${i}]`;
 
       if (i >= left.length) {
         diffs.push({
           type: 'added',
           path: currentPath,
           newValue: right[i]
-        })
+        });
       } else if (i >= right.length) {
         diffs.push({
           type: 'removed',
           path: currentPath,
           oldValue: left[i]
-        })
+        });
       } else {
-        diffs.push(...findDifferences(left[i], right[i], currentPath))
+        diffs.push(...findDifferences(left[i], right[i], currentPath));
       }
     }
-    return diffs
+    return diffs;
   }
 
   // 对象比较
@@ -299,105 +299,105 @@ function findDifferences(left: any, right: any, path: string): JsonDifference[] 
       path: path || 'root',
       oldValue: left,
       newValue: right
-    })
-    return diffs
+    });
+    return diffs;
   }
 
   // 获取所有键
-  const leftKeys = new Set(Object.keys(left))
-  const rightKeys = new Set(Object.keys(right))
-  const allKeys = new Set([...leftKeys, ...rightKeys])
+  const leftKeys = new Set(Object.keys(left));
+  const rightKeys = new Set(Object.keys(right));
+  const allKeys = new Set([...leftKeys, ...rightKeys]);
 
   for (const key of allKeys) {
-    const currentPath = path ? `${path}.${key}` : key
+    const currentPath = path ? `${path}.${key}` : key;
 
     if (!leftKeys.has(key)) {
       diffs.push({
         type: 'added',
         path: currentPath,
         newValue: right[key]
-      })
+      });
     } else if (!rightKeys.has(key)) {
       diffs.push({
         type: 'removed',
         path: currentPath,
         oldValue: left[key]
-      })
+      });
     } else {
-      diffs.push(...findDifferences(left[key], right[key], currentPath))
+      diffs.push(...findDifferences(left[key], right[key], currentPath));
     }
   }
 
-  return diffs
+  return diffs;
 }
 
 function isValidJson(str: string): boolean {
   try {
-    JSON.parse(str)
-    return true
+    JSON.parse(str);
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
 
 function formatJson(side: 'left' | 'right') {
   try {
-    const json = side === 'left' ? leftJson.value : rightJson.value
-    const parsed = JSON.parse(json)
-    const formatted = JSON.stringify(parsed, null, 2)
+    const json = side === 'left' ? leftJson.value : rightJson.value;
+    const parsed = JSON.parse(json);
+    const formatted = JSON.stringify(parsed, null, 2);
 
     if (side === 'left') {
-      leftJson.value = formatted
-      leftError.value = ''
+      leftJson.value = formatted;
+      leftError.value = '';
     } else {
-      rightJson.value = formatted
-      rightError.value = ''
+      rightJson.value = formatted;
+      rightError.value = '';
     }
 
-    compareJson()
+    compareJson();
   } catch (error) {
     if (side === 'left') {
-      leftError.value = 'JSON 格式错误，无法格式化'
+      leftError.value = 'JSON 格式错误，无法格式化';
     } else {
-      rightError.value = 'JSON 格式错误，无法格式化'
+      rightError.value = 'JSON 格式错误，无法格式化';
     }
   }
 }
 
 function minifyJson(side: 'left' | 'right') {
   try {
-    const json = side === 'left' ? leftJson.value : rightJson.value
-    const parsed = JSON.parse(json)
-    const minified = JSON.stringify(parsed)
+    const json = side === 'left' ? leftJson.value : rightJson.value;
+    const parsed = JSON.parse(json);
+    const minified = JSON.stringify(parsed);
 
     if (side === 'left') {
-      leftJson.value = minified
-      leftError.value = ''
+      leftJson.value = minified;
+      leftError.value = '';
     } else {
-      rightJson.value = minified
-      rightError.value = ''
+      rightJson.value = minified;
+      rightError.value = '';
     }
 
-    compareJson()
+    compareJson();
   } catch (error) {
     if (side === 'left') {
-      leftError.value = 'JSON 格式错误，无法压缩'
+      leftError.value = 'JSON 格式错误，无法压缩';
     } else {
-      rightError.value = 'JSON 格式错误，无法压缩'
+      rightError.value = 'JSON 格式错误，无法压缩';
     }
   }
 }
 
 function swapJson() {
-  const temp = leftJson.value
-  leftJson.value = rightJson.value
-  rightJson.value = temp
+  const temp = leftJson.value;
+  leftJson.value = rightJson.value;
+  rightJson.value = temp;
 
-  const tempError = leftError.value
-  leftError.value = rightError.value
-  rightError.value = tempError
+  const tempError = leftError.value;
+  leftError.value = rightError.value;
+  rightError.value = tempError;
 
-  compareJson()
+  compareJson();
 }
 
 function loadExample() {
@@ -415,7 +415,7 @@ function loadExample() {
     },
     null,
     2
-  )
+  );
 
   rightJson.value = JSON.stringify(
     {
@@ -434,43 +434,43 @@ function loadExample() {
     },
     null,
     2
-  )
+  );
 
-  compareJson()
+  compareJson();
 }
 
 function clearAll() {
-  leftJson.value = ''
-  rightJson.value = ''
-  leftError.value = ''
-  rightError.value = ''
-  differences.value = []
+  leftJson.value = '';
+  rightJson.value = '';
+  leftError.value = '';
+  rightError.value = '';
+  differences.value = [];
 }
 
 function formatValue(value: any): string {
-  if (value === null) return 'null'
-  if (value === undefined) return 'undefined'
-  if (typeof value === 'string') return `"${value}"`
-  if (typeof value === 'object') return JSON.stringify(value)
-  return String(value)
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
+  if (typeof value === 'string') return `"${value}"`;
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
 }
 
 function formatDifference(diff: JsonDifference): string {
-  let result = `路径: ${diff.path}\n类型: ${diff.type === 'added' ? '新增' : diff.type === 'removed' ? '删除' : '修改'}\n`
+  let result = `路径: ${diff.path}\n类型: ${diff.type === 'added' ? '新增' : diff.type === 'removed' ? '删除' : '修改'}\n`;
 
   if (diff.oldValue !== undefined) {
-    result += `原值: ${formatValue(diff.oldValue)}\n`
+    result += `原值: ${formatValue(diff.oldValue)}\n`;
   }
   if (diff.newValue !== undefined) {
-    result += `新值: ${formatValue(diff.newValue)}\n`
+    result += `新值: ${formatValue(diff.newValue)}\n`;
   }
 
-  return result
+  return result;
 }
 
 function copyDifferences() {
-  const report = differences.value.map(formatDifference).join('\n---\n')
-  copyToClipboard(report)
+  const report = differences.value.map(formatDifference).join('\n---\n');
+  copyToClipboard(report);
 }
 
 function exportReport() {
@@ -485,15 +485,15 @@ function exportReport() {
 
 详细差异:
 ${differences.value.map((diff, index) => `${index + 1}. ${formatDifference(diff)}`).join('\n')}
-`
+`;
 
-  const blob = new Blob([report], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `json-diff-report-${new Date().toISOString().slice(0, 10)}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([report], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `json-diff-report-${new Date().toISOString().slice(0, 10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function copyToClipboard(text: string) {
@@ -503,7 +503,7 @@ function copyToClipboard(text: string) {
       // 可以添加成功提示
     })
     .catch((err) => {
-      console.error('复制失败:', err)
-    })
+      console.error('复制失败:', err);
+    });
 }
 </script>

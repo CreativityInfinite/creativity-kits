@@ -334,63 +334,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue';
 
 interface TestOptions {
-  testMode: 'match' | 'replace' | 'split' | 'extract'
+  testMode: 'match' | 'replace' | 'split' | 'extract';
 }
 
 interface RegexFlags {
-  global: boolean
-  ignoreCase: boolean
-  multiline: boolean
-  dotAll: boolean
-  unicode: boolean
-  sticky: boolean
+  global: boolean;
+  ignoreCase: boolean;
+  multiline: boolean;
+  dotAll: boolean;
+  unicode: boolean;
+  sticky: boolean;
 }
 
 interface MatchResult {
-  match: string
-  index: number
-  groups: string[]
+  match: string;
+  index: number;
+  groups: string[];
 }
 
 interface TestResult {
-  isMatch: boolean
-  matchCount: number
-  totalChars: number
-  matches: MatchResult[]
-  replaceResult?: string
-  splitResult?: string[]
-  extractResult?: string[]
+  isMatch: boolean;
+  matchCount: number;
+  totalChars: number;
+  matches: MatchResult[];
+  replaceResult?: string;
+  splitResult?: string[];
+  extractResult?: string[];
 }
 
 interface TestHistory {
-  pattern: string
-  flags: string
-  text: string
-  timestamp: string
-  matches: number
+  pattern: string;
+  flags: string;
+  text: string;
+  timestamp: string;
+  matches: number;
 }
 
 interface RegexExplanation {
-  pattern: string
-  description: string
+  pattern: string;
+  description: string;
 }
 
 interface CommonPattern {
-  regex: string
-  flags: string
-  description: string
-  sample: string
+  regex: string;
+  flags: string;
+  description: string;
+  sample: string;
 }
 
-const regexPattern = ref('')
-const testText = ref('')
-const replaceText = ref('')
-const regexError = ref('')
-const highlightedText = ref('')
-const regexExplanation = ref<RegexExplanation[]>([])
+const regexPattern = ref('');
+const testText = ref('');
+const replaceText = ref('');
+const regexError = ref('');
+const highlightedText = ref('');
+const regexExplanation = ref<RegexExplanation[]>([]);
 
 const flags = ref<RegexFlags>({
   global: true,
@@ -399,25 +399,25 @@ const flags = ref<RegexFlags>({
   dotAll: false,
   unicode: false,
   sticky: false
-})
+});
 
 const options = ref<TestOptions>({
   testMode: 'match'
-})
+});
 
-const testHistory = ref<TestHistory[]>([])
-const testResult = ref<TestResult | null>(null)
+const testHistory = ref<TestHistory[]>([]);
+const testResult = ref<TestResult | null>(null);
 
 const regexFlags = computed(() => {
-  let flagStr = ''
-  if (flags.value.global) flagStr += 'g'
-  if (flags.value.ignoreCase) flagStr += 'i'
-  if (flags.value.multiline) flagStr += 'm'
-  if (flags.value.dotAll) flagStr += 's'
-  if (flags.value.unicode) flagStr += 'u'
-  if (flags.value.sticky) flagStr += 'y'
-  return flagStr
-})
+  let flagStr = '';
+  if (flags.value.global) flagStr += 'g';
+  if (flags.value.ignoreCase) flagStr += 'i';
+  if (flags.value.multiline) flagStr += 'm';
+  if (flags.value.dotAll) flagStr += 's';
+  if (flags.value.unicode) flagStr += 'u';
+  if (flags.value.sticky) flagStr += 'y';
+  return flagStr;
+});
 
 const commonPatterns: Record<string, CommonPattern> = {
   邮箱地址: {
@@ -468,62 +468,62 @@ const commonPatterns: Record<string, CommonPattern> = {
     description: '匹配YYYY-MM-DD或YYYY/MM/DD格式日期',
     sample: '2024-01-01'
   }
-}
+};
 
 watch([regexPattern, testText, replaceText, () => options.value.testMode], () => {
   if (regexPattern.value && testText.value) {
-    testRegex()
+    testRegex();
   }
-})
+});
 
 function updateFlags() {
   if (regexPattern.value && testText.value) {
-    testRegex()
+    testRegex();
   }
 }
 
 function testRegex() {
   if (!regexPattern.value || !testText.value) {
-    testResult.value = null
-    regexError.value = ''
-    highlightedText.value = ''
-    return
+    testResult.value = null;
+    regexError.value = '';
+    highlightedText.value = '';
+    return;
   }
 
   try {
-    regexError.value = ''
-    const regex = new RegExp(regexPattern.value, regexFlags.value)
+    regexError.value = '';
+    const regex = new RegExp(regexPattern.value, regexFlags.value);
 
     switch (options.value.testMode) {
       case 'match':
-        testResult.value = performMatch(regex)
-        break
+        testResult.value = performMatch(regex);
+        break;
       case 'replace':
-        testResult.value = performReplace(regex)
-        break
+        testResult.value = performReplace(regex);
+        break;
       case 'split':
-        testResult.value = performSplit(regex)
-        break
+        testResult.value = performSplit(regex);
+        break;
       case 'extract':
-        testResult.value = performExtract(regex)
-        break
+        testResult.value = performExtract(regex);
+        break;
     }
 
     // 添加到历史记录
     if (testResult.value?.isMatch) {
-      addToHistory(regexPattern.value, regexFlags.value, testText.value, testResult.value.matchCount)
+      addToHistory(regexPattern.value, regexFlags.value, testText.value, testResult.value.matchCount);
     }
   } catch (error) {
-    regexError.value = error instanceof Error ? error.message : '正则表达式语法错误'
-    testResult.value = null
-    highlightedText.value = ''
+    regexError.value = error instanceof Error ? error.message : '正则表达式语法错误';
+    testResult.value = null;
+    highlightedText.value = '';
   }
 }
 
 function performMatch(regex: RegExp): TestResult {
-  const matches: MatchResult[] = []
-  let match: RegExpExecArray | null
-  let totalChars = 0
+  const matches: MatchResult[] = [];
+  let match: RegExpExecArray | null;
+  let totalChars = 0;
 
   if (regex.global) {
     while ((match = regex.exec(testText.value)) !== null) {
@@ -531,23 +531,23 @@ function performMatch(regex: RegExp): TestResult {
         match: match[0],
         index: match.index,
         groups: match.slice(1)
-      })
-      totalChars += match[0].length
+      });
+      totalChars += match[0].length;
 
       // 防止无限循环
       if (match[0].length === 0) {
-        regex.lastIndex++
+        regex.lastIndex++;
       }
     }
   } else {
-    match = regex.exec(testText.value)
+    match = regex.exec(testText.value);
     if (match) {
       matches.push({
         match: match[0],
         index: match.index,
         groups: match.slice(1)
-      })
-      totalChars = match[0].length
+      });
+      totalChars = match[0].length;
     }
   }
 
@@ -556,13 +556,13 @@ function performMatch(regex: RegExp): TestResult {
     matchCount: matches.length,
     totalChars,
     matches
-  }
+  };
 }
 
 function performReplace(regex: RegExp): TestResult {
-  const replaceStr = replaceText.value || ''
-  const result = testText.value.replace(regex, replaceStr)
-  const matches = testText.value.match(regex) || []
+  const replaceStr = replaceText.value || '';
+  const result = testText.value.replace(regex, replaceStr);
+  const matches = testText.value.match(regex) || [];
 
   return {
     isMatch: matches.length > 0,
@@ -570,12 +570,12 @@ function performReplace(regex: RegExp): TestResult {
     totalChars: matches.reduce((sum, match) => sum + match.length, 0),
     matches: [],
     replaceResult: result
-  }
+  };
 }
 
 function performSplit(regex: RegExp): TestResult {
-  const parts = testText.value.split(regex)
-  const matches = testText.value.match(regex) || []
+  const parts = testText.value.split(regex);
+  const matches = testText.value.match(regex) || [];
 
   return {
     isMatch: matches.length > 0,
@@ -583,11 +583,11 @@ function performSplit(regex: RegExp): TestResult {
     totalChars: matches.reduce((sum, match) => sum + match.length, 0),
     matches: [],
     splitResult: parts
-  }
+  };
 }
 
 function performExtract(regex: RegExp): TestResult {
-  const matches = testText.value.match(regex) || []
+  const matches = testText.value.match(regex) || [];
 
   return {
     isMatch: matches.length > 0,
@@ -595,60 +595,60 @@ function performExtract(regex: RegExp): TestResult {
     totalChars: matches.reduce((sum, match) => sum + match.length, 0),
     matches: [],
     extractResult: matches
-  }
+  };
 }
 
 function highlightMatches() {
   if (!regexPattern.value || !testText.value || !testResult.value?.isMatch) {
-    highlightedText.value = ''
-    return
+    highlightedText.value = '';
+    return;
   }
 
   try {
-    const regex = new RegExp(regexPattern.value, regexFlags.value)
-    let highlighted = testText.value
-    let offset = 0
+    const regex = new RegExp(regexPattern.value, regexFlags.value);
+    let highlighted = testText.value;
+    let offset = 0;
 
     if (regex.global) {
-      const matches: RegExpExecArray[] = []
-      let match: RegExpExecArray | null
+      const matches: RegExpExecArray[] = [];
+      let match: RegExpExecArray | null;
 
       while ((match = regex.exec(testText.value)) !== null) {
-        matches.push(match)
+        matches.push(match);
         if (match[0].length === 0) {
-          regex.lastIndex++
+          regex.lastIndex++;
         }
       }
 
       // 从后往前替换，避免位置偏移
       matches.reverse().forEach((match, index) => {
-        const colors = ['bg-yellow-200', 'bg-green-200', 'bg-blue-200', 'bg-pink-200', 'bg-purple-200']
-        const color = colors[index % colors.length]
-        const replacement = `<span class="${color} px-1 rounded">${escapeHtml(match[0])}</span>`
-        highlighted = highlighted.slice(0, match.index) + replacement + highlighted.slice(match.index + match[0].length)
-      })
+        const colors = ['bg-yellow-200', 'bg-green-200', 'bg-blue-200', 'bg-pink-200', 'bg-purple-200'];
+        const color = colors[index % colors.length];
+        const replacement = `<span class="${color} px-1 rounded">${escapeHtml(match[0])}</span>`;
+        highlighted = highlighted.slice(0, match.index) + replacement + highlighted.slice(match.index + match[0].length);
+      });
     } else {
-      const match = regex.exec(testText.value)
+      const match = regex.exec(testText.value);
       if (match) {
-        const replacement = `<span class="bg-yellow-200 px-1 rounded">${escapeHtml(match[0])}</span>`
-        highlighted = highlighted.slice(0, match.index) + replacement + highlighted.slice(match.index + match[0].length)
+        const replacement = `<span class="bg-yellow-200 px-1 rounded">${escapeHtml(match[0])}</span>`;
+        highlighted = highlighted.slice(0, match.index) + replacement + highlighted.slice(match.index + match[0].length);
       }
     }
 
-    highlightedText.value = highlighted.replace(/\n/g, '<br>')
+    highlightedText.value = highlighted.replace(/\n/g, '<br>');
   } catch (error) {
-    highlightedText.value = ''
+    highlightedText.value = '';
   }
 }
 
 function explainRegex() {
   if (!regexPattern.value) {
-    regexExplanation.value = []
-    return
+    regexExplanation.value = [];
+    return;
   }
 
-  const explanations: RegexExplanation[] = []
-  const pattern = regexPattern.value
+  const explanations: RegexExplanation[] = [];
+  const pattern = regexPattern.value;
 
   // 简单的正则解释逻辑
   const explanationMap: Record<string, string> = {
@@ -666,147 +666,147 @@ function explainRegex() {
     '\\S': '匹配非空白字符',
     '\\b': '匹配单词边界',
     '\\B': '匹配非单词边界'
-  }
+  };
 
   // 查找特殊字符并解释
   for (const [char, desc] of Object.entries(explanationMap)) {
     if (pattern.includes(char)) {
-      explanations.push({ pattern: char, description: desc })
+      explanations.push({ pattern: char, description: desc });
     }
   }
 
   // 查找字符类
-  const charClassRegex = /\[([^\]]+)\]/g
-  let match: RegExpExecArray | null
+  const charClassRegex = /\[([^\]]+)\]/g;
+  let match: RegExpExecArray | null;
   while ((match = charClassRegex.exec(pattern)) !== null) {
     explanations.push({
       pattern: match[0],
       description: `字符类：匹配 ${match[1]} 中的任意一个字符`
-    })
+    });
   }
 
   // 查找量词
-  const quantifierRegex = /\{(\d+(?:,\d*)?)\}/g
+  const quantifierRegex = /\{(\d+(?:,\d*)?)\}/g;
   while ((match = quantifierRegex.exec(pattern)) !== null) {
     explanations.push({
       pattern: match[0],
       description: `量词：匹配前面的字符 ${match[1]} 次`
-    })
+    });
   }
 
   // 查找捕获组
-  const groupRegex = /\(([^)]+)\)/g
-  let groupIndex = 1
+  const groupRegex = /\(([^)]+)\)/g;
+  let groupIndex = 1;
   while ((match = groupRegex.exec(pattern)) !== null) {
     explanations.push({
       pattern: match[0],
       description: `捕获组 ${groupIndex}：${match[1]}`
-    })
-    groupIndex++
+    });
+    groupIndex++;
   }
 
-  regexExplanation.value = explanations
+  regexExplanation.value = explanations;
 }
 
 function validateRegex() {
   if (!regexPattern.value) {
-    alert('请先输入正则表达式')
-    return
+    alert('请先输入正则表达式');
+    return;
   }
 
   try {
-    new RegExp(regexPattern.value, regexFlags.value)
-    alert('正则表达式语法正确')
+    new RegExp(regexPattern.value, regexFlags.value);
+    alert('正则表达式语法正确');
   } catch (error) {
-    alert(`正则表达式语法错误：${error instanceof Error ? error.message : '未知错误'}`)
+    alert(`正则表达式语法错误：${error instanceof Error ? error.message : '未知错误'}`);
   }
 }
 
 function loadPattern(pattern: CommonPattern, name: string) {
-  regexPattern.value = pattern.regex
+  regexPattern.value = pattern.regex;
 
   // 设置标志
-  flags.value.global = pattern.flags.includes('g')
-  flags.value.ignoreCase = pattern.flags.includes('i')
-  flags.value.multiline = pattern.flags.includes('m')
-  flags.value.dotAll = pattern.flags.includes('s')
-  flags.value.unicode = pattern.flags.includes('u')
-  flags.value.sticky = pattern.flags.includes('y')
+  flags.value.global = pattern.flags.includes('g');
+  flags.value.ignoreCase = pattern.flags.includes('i');
+  flags.value.multiline = pattern.flags.includes('m');
+  flags.value.dotAll = pattern.flags.includes('s');
+  flags.value.unicode = pattern.flags.includes('u');
+  flags.value.sticky = pattern.flags.includes('y');
 
-  testText.value = pattern.sample
+  testText.value = pattern.sample;
 
-  testRegex()
+  testRegex();
 }
 
 function loadSampleRegex() {
-  regexPattern.value = '\\b\\w+@\\w+\\.\\w+\\b'
-  flags.value.global = true
-  flags.value.ignoreCase = true
-  testText.value = '联系我们：admin@example.com 或 support@test.org\n技术支持：tech@company.net'
+  regexPattern.value = '\\b\\w+@\\w+\\.\\w+\\b';
+  flags.value.global = true;
+  flags.value.ignoreCase = true;
+  testText.value = '联系我们：admin@example.com 或 support@test.org\n技术支持：tech@company.net';
 
-  testRegex()
+  testRegex();
 }
 
 function testManually() {
-  testRegex()
+  testRegex();
 }
 
 function clearRegex() {
-  regexPattern.value = ''
-  testResult.value = null
-  regexError.value = ''
-  highlightedText.value = ''
-  regexExplanation.value = []
+  regexPattern.value = '';
+  testResult.value = null;
+  regexError.value = '';
+  highlightedText.value = '';
+  regexExplanation.value = [];
 }
 
 function clearText() {
-  testText.value = ''
-  testResult.value = null
-  highlightedText.value = ''
+  testText.value = '';
+  testResult.value = null;
+  highlightedText.value = '';
 }
 
 async function copyResults() {
-  if (!testResult.value) return
+  if (!testResult.value) return;
 
-  let content = `正则表达式: /${regexPattern.value}/${regexFlags.value}\n`
-  content += `测试模式: ${options.value.testMode}\n`
-  content += `匹配状态: ${testResult.value.isMatch ? '成功' : '失败'}\n`
-  content += `匹配数量: ${testResult.value.matchCount}\n\n`
+  let content = `正则表达式: /${regexPattern.value}/${regexFlags.value}\n`;
+  content += `测试模式: ${options.value.testMode}\n`;
+  content += `匹配状态: ${testResult.value.isMatch ? '成功' : '失败'}\n`;
+  content += `匹配数量: ${testResult.value.matchCount}\n\n`;
 
   if (testResult.value.matches.length > 0) {
-    content += '匹配详情:\n'
+    content += '匹配详情:\n';
     testResult.value.matches.forEach((match, index) => {
-      content += `${index + 1}. "${match.match}" (位置: ${match.index})\n`
+      content += `${index + 1}. "${match.match}" (位置: ${match.index})\n`;
       if (match.groups.length > 0) {
         match.groups.forEach((group, groupIndex) => {
-          content += `   组 ${groupIndex + 1}: "${group || '(空)'}"\n`
-        })
+          content += `   组 ${groupIndex + 1}: "${group || '(空)'}"\n`;
+        });
       }
-    })
+    });
   }
 
   if (testResult.value.replaceResult) {
-    content += `\n替换结果:\n${testResult.value.replaceResult}`
+    content += `\n替换结果:\n${testResult.value.replaceResult}`;
   }
 
   if (testResult.value.splitResult) {
-    content += `\n分割结果:\n${testResult.value.splitResult.join('\n---\n')}`
+    content += `\n分割结果:\n${testResult.value.splitResult.join('\n---\n')}`;
   }
 
   if (testResult.value.extractResult) {
-    content += `\n提取结果:\n${testResult.value.extractResult.join('\n')}`
+    content += `\n提取结果:\n${testResult.value.extractResult.join('\n')}`;
   }
 
   try {
-    await navigator.clipboard.writeText(content)
+    await navigator.clipboard.writeText(content);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function downloadResults() {
-  if (!testResult.value) return
+  if (!testResult.value) return;
 
   const content = `正则表达式测试结果
 
@@ -856,52 +856,52 @@ ${testResult.value.extractResult.join('\n')}`
 }
 
 生成时间: ${new Date().toLocaleString()}
-`
+`;
 
-  const blob = new Blob([content], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'regex-test-results.txt'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'regex-test-results.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function handleFileUpload(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    testText.value = content
+    const content = e.target?.result as string;
+    testText.value = content;
 
     if (regexPattern.value) {
-      testRegex()
+      testRegex();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
+  event.preventDefault();
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
 
-  const file = files[0]
-  const reader = new FileReader()
+  const file = files[0];
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    testText.value = content
+    const content = e.target?.result as string;
+    testText.value = content;
 
     if (regexPattern.value) {
-      testRegex()
+      testRegex();
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 }
 
 function addToHistory(pattern: string, flagStr: string, text: string, matches: number) {
@@ -911,65 +911,65 @@ function addToHistory(pattern: string, flagStr: string, text: string, matches: n
     text: text.slice(0, 100) + (text.length > 100 ? '...' : ''),
     timestamp: new Date().toLocaleString(),
     matches
-  }
+  };
 
-  testHistory.value.unshift(historyItem)
-  testHistory.value = testHistory.value.slice(0, 10)
-  saveTestHistory()
+  testHistory.value.unshift(historyItem);
+  testHistory.value = testHistory.value.slice(0, 10);
+  saveTestHistory();
 }
 
 function loadFromHistory(history: TestHistory) {
-  regexPattern.value = history.pattern
+  regexPattern.value = history.pattern;
 
   // 设置标志
-  flags.value.global = history.flags.includes('g')
-  flags.value.ignoreCase = history.flags.includes('i')
-  flags.value.multiline = history.flags.includes('m')
-  flags.value.dotAll = history.flags.includes('s')
-  flags.value.unicode = history.flags.includes('u')
-  flags.value.sticky = history.flags.includes('y')
+  flags.value.global = history.flags.includes('g');
+  flags.value.ignoreCase = history.flags.includes('i');
+  flags.value.multiline = history.flags.includes('m');
+  flags.value.dotAll = history.flags.includes('s');
+  flags.value.unicode = history.flags.includes('u');
+  flags.value.sticky = history.flags.includes('y');
 
-  testRegex()
+  testRegex();
 }
 
 function clearHistory() {
-  testHistory.value = []
-  saveTestHistory()
+  testHistory.value = [];
+  saveTestHistory();
 }
 
 function saveTestHistory() {
   try {
-    localStorage.setItem('regex-test-history', JSON.stringify(testHistory.value))
+    localStorage.setItem('regex-test-history', JSON.stringify(testHistory.value));
   } catch (error) {
-    console.error('保存测试历史失败:', error)
+    console.error('保存测试历史失败:', error);
   }
 }
 
 function loadTestHistory() {
   try {
-    const saved = localStorage.getItem('regex-test-history')
+    const saved = localStorage.getItem('regex-test-history');
     if (saved) {
-      testHistory.value = JSON.parse(saved)
+      testHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载测试历史失败:', error)
+    console.error('加载测试历史失败:', error);
   }
 }
 
 function escapeHtml(text: string): string {
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function getByteLength(str: string): number {
-  return new Blob([str]).size
+  return new Blob([str]).size;
 }
 
 // 组件挂载时加载历史记录
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
-  loadTestHistory()
-})
+  loadTestHistory();
+});
 </script>

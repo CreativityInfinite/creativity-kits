@@ -298,31 +298,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue';
 
 interface TimestampResult {
-  local: string
-  utc: string
-  iso: string
-  relative: string
+  local: string;
+  utc: string;
+  iso: string;
+  relative: string;
 }
 
 interface DateTimeResult {
-  unix: number
-  unixMs: number
-  iso: string
-  relative: string
+  unix: number;
+  unixMs: number;
+  iso: string;
+  relative: string;
 }
 
 interface BatchResult {
-  input: string
-  output: string
+  input: string;
+  output: string;
 }
 
 interface ConversionHistory {
-  input: string
-  output: string
-  timestamp: string
+  input: string;
+  output: string;
+  timestamp: string;
 }
 
 const currentTime = ref({
@@ -330,26 +330,26 @@ const currentTime = ref({
   unixMs: 0,
   iso: '',
   local: ''
-})
+});
 
-const inputTimestamp = ref('')
-const timestampResult = ref<TimestampResult | null>(null)
+const inputTimestamp = ref('');
+const timestampResult = ref<TimestampResult | null>(null);
 
-const inputDateTime = ref('')
-const inputDateText = ref('')
-const dateTimeResult = ref<DateTimeResult | null>(null)
+const inputDateTime = ref('');
+const inputDateText = ref('');
+const dateTimeResult = ref<DateTimeResult | null>(null);
 
-const batchInput = ref('')
-const batchResults = ref<BatchResult[]>([])
+const batchInput = ref('');
+const batchResults = ref<BatchResult[]>([]);
 
-const conversionHistory = ref<ConversionHistory[]>([])
+const conversionHistory = ref<ConversionHistory[]>([]);
 
 const timezoneConversion = ref({
   from: 'Asia/Shanghai',
   to: 'America/New_York',
   input: '',
   result: ''
-})
+});
 
 const commonTimezones = [
   { value: 'UTC', label: 'UTC (协调世界时)' },
@@ -362,67 +362,67 @@ const commonTimezones = [
   { value: 'Asia/Seoul', label: 'Asia/Seoul (首尔)' },
   { value: 'Australia/Sydney', label: 'Australia/Sydney (悉尼)' },
   { value: 'Asia/Dubai', label: 'Asia/Dubai (迪拜)' }
-]
+];
 
-let timeInterval: NodeJS.Timeout | null = null
+let timeInterval: NodeJS.Timeout | null = null;
 
 onMounted(() => {
-  loadConversionHistory()
-  updateCurrentTime()
+  loadConversionHistory();
+  updateCurrentTime();
   // 每秒更新当前时间
-  timeInterval = setInterval(updateCurrentTime, 1000)
-})
+  timeInterval = setInterval(updateCurrentTime, 1000);
+});
 
 onUnmounted(() => {
   if (timeInterval) {
-    clearInterval(timeInterval)
+    clearInterval(timeInterval);
   }
-})
+});
 
 function updateCurrentTime() {
-  const now = new Date()
+  const now = new Date();
   currentTime.value = {
     unix: Math.floor(now.getTime() / 1000),
     unixMs: now.getTime(),
     iso: now.toISOString(),
     local: now.toLocaleString()
-  }
+  };
 }
 
 function refreshCurrentTime() {
-  updateCurrentTime()
+  updateCurrentTime();
 }
 
 function useCurrentTimestamp() {
-  inputTimestamp.value = currentTime.value.unix.toString()
-  convertFromTimestamp()
+  inputTimestamp.value = currentTime.value.unix.toString();
+  convertFromTimestamp();
 }
 
 function convertFromTimestamp() {
-  const input = inputTimestamp.value.trim()
+  const input = inputTimestamp.value.trim();
   if (!input) {
-    timestampResult.value = null
-    return
+    timestampResult.value = null;
+    return;
   }
 
   try {
-    let timestamp = parseInt(input)
+    let timestamp = parseInt(input);
 
     // 判断是秒还是毫秒
     if (timestamp.toString().length === 10) {
       // 秒级时间戳
-      timestamp = timestamp * 1000
+      timestamp = timestamp * 1000;
     } else if (timestamp.toString().length !== 13) {
       // 无效的时间戳长度
-      timestampResult.value = null
-      return
+      timestampResult.value = null;
+      return;
     }
 
-    const date = new Date(timestamp)
+    const date = new Date(timestamp);
 
     if (isNaN(date.getTime())) {
-      timestampResult.value = null
-      return
+      timestampResult.value = null;
+      return;
     }
 
     timestampResult.value = {
@@ -430,28 +430,28 @@ function convertFromTimestamp() {
       utc: date.toUTCString(),
       iso: date.toISOString(),
       relative: getRelativeTime(date)
-    }
+    };
 
     // 添加到历史记录
-    addToHistory(input, date.toLocaleString())
+    addToHistory(input, date.toLocaleString());
   } catch (error) {
-    timestampResult.value = null
+    timestampResult.value = null;
   }
 }
 
 function convertFromDateTime() {
-  const input = inputDateTime.value
+  const input = inputDateTime.value;
   if (!input) {
-    dateTimeResult.value = null
-    return
+    dateTimeResult.value = null;
+    return;
   }
 
   try {
-    const date = new Date(input)
+    const date = new Date(input);
 
     if (isNaN(date.getTime())) {
-      dateTimeResult.value = null
-      return
+      dateTimeResult.value = null;
+      return;
     }
 
     dateTimeResult.value = {
@@ -459,28 +459,28 @@ function convertFromDateTime() {
       unixMs: date.getTime(),
       iso: date.toISOString(),
       relative: getRelativeTime(date)
-    }
+    };
 
     // 添加到历史记录
-    addToHistory(input, Math.floor(date.getTime() / 1000).toString())
+    addToHistory(input, Math.floor(date.getTime() / 1000).toString());
   } catch (error) {
-    dateTimeResult.value = null
+    dateTimeResult.value = null;
   }
 }
 
 function convertFromDateText() {
-  const input = inputDateText.value.trim()
+  const input = inputDateText.value.trim();
   if (!input) {
-    dateTimeResult.value = null
-    return
+    dateTimeResult.value = null;
+    return;
   }
 
   try {
-    const date = new Date(input)
+    const date = new Date(input);
 
     if (isNaN(date.getTime())) {
-      dateTimeResult.value = null
-      return
+      dateTimeResult.value = null;
+      return;
     }
 
     dateTimeResult.value = {
@@ -488,28 +488,28 @@ function convertFromDateText() {
       unixMs: date.getTime(),
       iso: date.toISOString(),
       relative: getRelativeTime(date)
-    }
+    };
 
     // 添加到历史记录
-    addToHistory(input, Math.floor(date.getTime() / 1000).toString())
+    addToHistory(input, Math.floor(date.getTime() / 1000).toString());
   } catch (error) {
-    dateTimeResult.value = null
+    dateTimeResult.value = null;
   }
 }
 
 function convertTimezone() {
-  const input = timezoneConversion.value.input
+  const input = timezoneConversion.value.input;
   if (!input) {
-    timezoneConversion.value.result = ''
-    return
+    timezoneConversion.value.result = '';
+    return;
   }
 
   try {
-    const date = new Date(input)
+    const date = new Date(input);
 
     if (isNaN(date.getTime())) {
-      timezoneConversion.value.result = '无效的日期时间'
-      return
+      timezoneConversion.value.result = '无效的日期时间';
+      return;
     }
 
     // 简化的时区转换（实际应用中可能需要更复杂的时区库）
@@ -522,32 +522,32 @@ function convertTimezone() {
       minute: '2-digit',
       second: '2-digit',
       hour12: false
-    }
+    };
 
-    timezoneConversion.value.result = date.toLocaleString('zh-CN', options)
+    timezoneConversion.value.result = date.toLocaleString('zh-CN', options);
   } catch (error) {
-    timezoneConversion.value.result = '转换失败'
+    timezoneConversion.value.result = '转换失败';
   }
 }
 
 function getRelativeTime(date: Date): string {
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffSeconds = Math.floor(diffMs / 1000)
-  const diffMinutes = Math.floor(diffSeconds / 60)
-  const diffHours = Math.floor(diffMinutes / 60)
-  const diffDays = Math.floor(diffHours / 24)
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSeconds = Math.floor(diffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
 
   if (Math.abs(diffSeconds) < 60) {
-    return diffSeconds >= 0 ? '刚刚' : '即将'
+    return diffSeconds >= 0 ? '刚刚' : '即将';
   } else if (Math.abs(diffMinutes) < 60) {
-    return diffMinutes >= 0 ? `${diffMinutes}分钟前` : `${Math.abs(diffMinutes)}分钟后`
+    return diffMinutes >= 0 ? `${diffMinutes}分钟前` : `${Math.abs(diffMinutes)}分钟后`;
   } else if (Math.abs(diffHours) < 24) {
-    return diffHours >= 0 ? `${diffHours}小时前` : `${Math.abs(diffHours)}小时后`
+    return diffHours >= 0 ? `${diffHours}小时前` : `${Math.abs(diffHours)}小时后`;
   } else if (Math.abs(diffDays) < 30) {
-    return diffDays >= 0 ? `${diffDays}天前` : `${Math.abs(diffDays)}天后`
+    return diffDays >= 0 ? `${diffDays}天前` : `${Math.abs(diffDays)}天后`;
   } else {
-    return date.toLocaleDateString()
+    return date.toLocaleDateString();
   }
 }
 
@@ -555,85 +555,85 @@ function processBatch() {
   const lines = batchInput.value
     .trim()
     .split('\n')
-    .filter((line) => line.trim())
-  const results: BatchResult[] = []
+    .filter((line) => line.trim());
+  const results: BatchResult[] = [];
 
   for (const line of lines) {
-    const input = line.trim()
+    const input = line.trim();
     try {
-      let timestamp = parseInt(input)
+      let timestamp = parseInt(input);
 
       // 判断是秒还是毫秒
       if (timestamp.toString().length === 10) {
-        timestamp = timestamp * 1000
+        timestamp = timestamp * 1000;
       } else if (timestamp.toString().length !== 13) {
         results.push({
           input,
           output: '无效的时间戳格式'
-        })
-        continue
+        });
+        continue;
       }
 
-      const date = new Date(timestamp)
+      const date = new Date(timestamp);
 
       if (isNaN(date.getTime())) {
         results.push({
           input,
           output: '无效的时间戳'
-        })
-        continue
+        });
+        continue;
       }
 
       results.push({
         input,
         output: date.toLocaleString()
-      })
+      });
     } catch (error) {
       results.push({
         input,
         output: '转换失败'
-      })
+      });
     }
   }
 
-  batchResults.value = results
+  batchResults.value = results;
 }
 
 function clearBatch() {
-  batchInput.value = ''
-  batchResults.value = []
+  batchInput.value = '';
+  batchResults.value = [];
 }
 
 async function copyBatchResults() {
-  const content = batchResults.value.map((r) => `${r.input}\t${r.output}`).join('\n')
+  const content = batchResults.value.map((r) => `${r.input}\t${r.output}`).join('\n');
   try {
-    await navigator.clipboard.writeText(content)
+    await navigator.clipboard.writeText(content);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function exportBatchResults() {
-  const csvContent = 'Timestamp,DateTime\n' + batchResults.value.map((r) => `"${r.input}","${r.output}"`).join('\n')
+  const csvContent = 'Timestamp,DateTime\n' + batchResults.value.map((r) => `"${r.input}","${r.output}"`).join('\n');
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `timestamp-conversion-${new Date().toISOString().slice(0, 10)}.csv`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `timestamp-conversion-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 async function copyText(text: string) {
   try {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(text);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
@@ -642,34 +642,34 @@ function addToHistory(input: string, output: string) {
     input,
     output,
     timestamp: new Date().toLocaleString()
-  }
+  };
 
-  conversionHistory.value.unshift(historyItem)
-  conversionHistory.value = conversionHistory.value.slice(0, 50) // 限制历史记录数量
-  saveConversionHistory()
+  conversionHistory.value.unshift(historyItem);
+  conversionHistory.value = conversionHistory.value.slice(0, 50); // 限制历史记录数量
+  saveConversionHistory();
 }
 
 function clearHistory() {
-  conversionHistory.value = []
-  saveConversionHistory()
+  conversionHistory.value = [];
+  saveConversionHistory();
 }
 
 function loadConversionHistory() {
   try {
-    const saved = localStorage.getItem('timestamp-converter-history')
+    const saved = localStorage.getItem('timestamp-converter-history');
     if (saved) {
-      conversionHistory.value = JSON.parse(saved)
+      conversionHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载转换历史失败:', error)
+    console.error('加载转换历史失败:', error);
   }
 }
 
 function saveConversionHistory() {
   try {
-    localStorage.setItem('timestamp-converter-history', JSON.stringify(conversionHistory.value))
+    localStorage.setItem('timestamp-converter-history', JSON.stringify(conversionHistory.value));
   } catch (error) {
-    console.error('保存转换历史失败:', error)
+    console.error('保存转换历史失败:', error);
   }
 }
 </script>

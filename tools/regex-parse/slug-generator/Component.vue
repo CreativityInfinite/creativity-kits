@@ -74,56 +74,56 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-type HistoryItem = { summary: string; result: string; timestamp: number }
+import { computed, onMounted, ref } from 'vue';
+type HistoryItem = { summary: string; result: string; timestamp: number };
 
-const text = ref('')
-const lowercase = ref(true)
-const sep = ref('-')
-const maxLen = ref(80)
+const text = ref('');
+const lowercase = ref(true);
+const sep = ref('-');
+const maxLen = ref(80);
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => text.value.trim().length > 0)
+const canProcess = computed(() => text.value.trim().length > 0);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const a = document.createElement('a')
-  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(result.value)
-  a.download = 'slug.txt'
-  a.click()
+  if (!result.value) return;
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(result.value);
+  a.download = 'slug.txt';
+  a.click();
 }
 function saveToHistory() {
-  if (!result.value) return
-  history.value.unshift({ summary: text.value.slice(0, 40), result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('slug-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  history.value.unshift({ summary: text.value.slice(0, 40), result: result.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('slug-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('slug-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('slug-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 const translitMap: Record<string, string> = {
@@ -160,47 +160,47 @@ const translitMap: Record<string, string> = {
   '＼': '\\',
   '｜': '|',
   '～': '~'
-}
+};
 
 function basicTranslit(s: string) {
-  let out = s.normalize('NFKD')
-  out = out.replace(/[\u0300-\u036f]/g, '') // 去除音标
-  out = out.replace(/[^\x00-\x7F]/g, (ch) => translitMap[ch] ?? ch) // 简化替换
-  return out
+  let out = s.normalize('NFKD');
+  out = out.replace(/[\u0300-\u036f]/g, ''); // 去除音标
+  out = out.replace(/[^\x00-\x7F]/g, (ch) => translitMap[ch] ?? ch); // 简化替换
+  return out;
 }
 
 function toSlug(s: string, sepChar: string, lower: boolean, maxLenNum: number) {
-  let out = basicTranslit(s)
-  out = out.replace(/['"]/g, '') // 去掉引号
-  out = out.replace(/[^a-zA-Z0-9]+/g, sepChar) // 非字母数字替换为分隔符
-  out = out.replace(new RegExp('\\' + sepChar + '+', 'g'), sepChar) // 连续分隔符合并
-  out = out.replace(new RegExp('^\\' + sepChar + '|\\' + sepChar + '$', 'g'), '') // 去首尾
-  if (lower) out = out.toLowerCase()
-  if (maxLenNum > 0 && out.length > maxLenNum) out = out.slice(0, maxLenNum).replace(new RegExp('\\' + sepChar + '+$', ''), '')
-  return out
+  let out = basicTranslit(s);
+  out = out.replace(/['"]/g, ''); // 去掉引号
+  out = out.replace(/[^a-zA-Z0-9]+/g, sepChar); // 非字母数字替换为分隔符
+  out = out.replace(new RegExp('\\' + sepChar + '+', 'g'), sepChar); // 连续分隔符合并
+  out = out.replace(new RegExp('^\\' + sepChar + '|\\' + sepChar + '$', 'g'), ''); // 去首尾
+  if (lower) out = out.toLowerCase();
+  if (maxLenNum > 0 && out.length > maxLenNum) out = out.slice(0, maxLenNum).replace(new RegExp('\\' + sepChar + '+$', ''), '');
+  return out;
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const t0 = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const t0 = performance.now();
   try {
-    const slug = toSlug(text.value, sep.value || '-', !!lowercase.value, maxLen.value || 0)
-    if (!slug) throw new Error('无法生成有效 slug（请更换输入或分隔符）')
-    result.value = slug
-    processingTime.value = Math.round(performance.now() - t0)
+    const slug = toSlug(text.value, sep.value || '-', !!lowercase.value, maxLen.value || 0);
+    if (!slug) throw new Error('无法生成有效 slug（请更换输入或分隔符）');
+    result.value = slug;
+    processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '生成失败'
+    error.value = e?.message || '生成失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('slug-history')
+  const saved = localStorage.getItem('slug-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

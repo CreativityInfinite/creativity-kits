@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'image-metadata-sanitizer',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.image-metadata-sanitizer',
   entry: 'tools/security-privacy/image-metadata-sanitizer/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

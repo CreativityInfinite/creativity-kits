@@ -50,39 +50,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-const file = ref<File | null>(null)
-const previewUrl = ref('')
-const meta = ref<any>(null)
-const gps = ref<{ lat: number; lng: number } | null>(null)
-const error = ref('')
+const file = ref<File | null>(null);
+const previewUrl = ref('');
+const meta = ref<any>(null);
+const gps = ref<{ lat: number; lng: number } | null>(null);
+const error = ref('');
 
 function onFile(e: Event) {
-  const t = e.target as HTMLInputElement
-  file.value = t.files?.[0] || null
-  previewUrl.value = file.value ? URL.createObjectURL(file.value) : ''
-  meta.value = null
-  gps.value = null
-  error.value = ''
+  const t = e.target as HTMLInputElement;
+  file.value = t.files?.[0] || null;
+  previewUrl.value = file.value ? URL.createObjectURL(file.value) : '';
+  meta.value = null;
+  gps.value = null;
+  error.value = '';
 }
 
-const fullJson = computed(() => (meta.value ? JSON.stringify(meta.value, null, 2) : ''))
+const fullJson = computed(() => (meta.value ? JSON.stringify(meta.value, null, 2) : ''));
 
 async function readExif() {
-  error.value = ''
+  error.value = '';
   if (!file.value) {
-    error.value = '请先选择图片'
-    return
+    error.value = '请先选择图片';
+    return;
   }
   try {
     // @ts-ignore
-    const exifr: any = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.esm.js')
-    meta.value = await (exifr as any).parse(file.value)
-    const g = await (exifr as any).gps(file.value)
-    gps.value = g ? { lat: g.latitude, lng: g.longitude } : null
+    const exifr: any = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.esm.js');
+    meta.value = await (exifr as any).parse(file.value);
+    const g = await (exifr as any).gps(file.value);
+    gps.value = g ? { lat: g.latitude, lng: g.longitude } : null;
   } catch (e: any) {
-    error.value = e?.message || '解析失败'
+    error.value = e?.message || '解析失败';
   }
 }
 </script>

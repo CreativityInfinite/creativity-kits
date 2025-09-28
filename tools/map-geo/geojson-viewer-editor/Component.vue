@@ -51,72 +51,72 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const raw = ref('')
-const pretty = ref('')
-const error = ref('')
-const stats = ref<null | { type: string; features: number; geometries: number; bounds: string }>(null)
+const raw = ref('');
+const pretty = ref('');
+const error = ref('');
+const stats = ref<null | { type: string; features: number; geometries: number; bounds: string }>(null);
 
 function validate() {
-  error.value = ''
-  pretty.value = ''
-  stats.value = null
+  error.value = '';
+  pretty.value = '';
+  stats.value = null;
   try {
-    const json = JSON.parse(raw.value)
-    if (!json || typeof json !== 'object') throw new Error('不是有效的 JSON')
-    const type = json.type || 'Unknown'
-    let features = 0
-    let geometries = 0
-    const bounds = [Infinity, Infinity, -Infinity, -Infinity] as [number, number, number, number]
+    const json = JSON.parse(raw.value);
+    if (!json || typeof json !== 'object') throw new Error('不是有效的 JSON');
+    const type = json.type || 'Unknown';
+    let features = 0;
+    let geometries = 0;
+    const bounds = [Infinity, Infinity, -Infinity, -Infinity] as [number, number, number, number];
 
     function scanGeometry(g: any) {
-      if (!g) return
-      geometries++
+      if (!g) return;
+      geometries++;
       if (g.type === 'GeometryCollection' && Array.isArray(g.geometries)) {
-        g.geometries.forEach(scanGeometry)
+        g.geometries.forEach(scanGeometry);
       } else {
-        const coords = g.coordinates
-        visitCoords(coords)
+        const coords = g.coordinates;
+        visitCoords(coords);
       }
     }
     function visitCoords(c: any) {
       if (Array.isArray(c) && typeof c[0] === 'number' && typeof c[1] === 'number') {
-        const [x, y] = c
-        bounds[0] = Math.min(bounds[0], x)
-        bounds[1] = Math.min(bounds[1], y)
-        bounds[2] = Math.max(bounds[2], x)
-        bounds[3] = Math.max(bounds[3], y)
+        const [x, y] = c;
+        bounds[0] = Math.min(bounds[0], x);
+        bounds[1] = Math.min(bounds[1], y);
+        bounds[2] = Math.max(bounds[2], x);
+        bounds[3] = Math.max(bounds[3], y);
       } else if (Array.isArray(c)) {
-        c.forEach(visitCoords)
+        c.forEach(visitCoords);
       }
     }
 
     if (type === 'FeatureCollection' && Array.isArray(json.features)) {
-      features = json.features.length
-      json.features.forEach((f: any) => scanGeometry(f.geometry))
+      features = json.features.length;
+      json.features.forEach((f: any) => scanGeometry(f.geometry));
     } else if (type === 'Feature' && json.geometry) {
-      features = 1
-      scanGeometry(json.geometry)
+      features = 1;
+      scanGeometry(json.geometry);
     } else if (json.coordinates || json.type) {
-      scanGeometry(json)
+      scanGeometry(json);
     }
 
-    const bbox = bounds[0] === Infinity ? '无' : `[${bounds[0].toFixed(4)}, ${bounds[1].toFixed(4)} ~ ${bounds[2].toFixed(4)}, ${bounds[3].toFixed(4)}]`
-    stats.value = { type, features, geometries, bounds: bbox }
-    pretty.value = JSON.stringify(json, null, 2)
+    const bbox = bounds[0] === Infinity ? '无' : `[${bounds[0].toFixed(4)}, ${bounds[1].toFixed(4)} ~ ${bounds[2].toFixed(4)}, ${bounds[3].toFixed(4)}]`;
+    stats.value = { type, features, geometries, bounds: bbox };
+    pretty.value = JSON.stringify(json, null, 2);
   } catch (e: any) {
-    error.value = e?.message || '解析失败'
+    error.value = e?.message || '解析失败';
   }
 }
 
 async function copy() {
-  if (!pretty.value) return
+  if (!pretty.value) return;
   try {
-    await navigator.clipboard.writeText(pretty.value)
-    alert('已复制')
+    await navigator.clipboard.writeText(pretty.value);
+    alert('已复制');
   } catch {
-    alert('复制失败，请手动复制')
+    alert('复制失败，请手动复制');
   }
 }
 </script>

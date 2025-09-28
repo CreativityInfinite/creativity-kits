@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'credit-card-validator',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:credit-card',
   i18nKey: 'tools.credit-card-validator',
-  entry: 'tools/regex-parse/credit-card-validator/Component.vue',
-}
-export default meta
+  entry: 'tools/regex-parse/credit-card-validator/Component.vue'
+};
+export default meta;

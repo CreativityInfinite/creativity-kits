@@ -131,171 +131,171 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-type HistoryItem = { type: 'text' | 'image'; position: string; opacity: number; offset: number; url: string; timestamp: number }
+import { onMounted, ref } from 'vue';
+type HistoryItem = { type: 'text' | 'image'; position: string; opacity: number; offset: number; url: string; timestamp: number };
 
-const baseImg = ref<HTMLImageElement | null>(null)
-const wmImg = ref<HTMLImageElement | null>(null)
-const cv = ref<HTMLCanvasElement | null>(null)
+const baseImg = ref<HTMLImageElement | null>(null);
+const wmImg = ref<HTMLImageElement | null>(null);
+const cv = ref<HTMLCanvasElement | null>(null);
 
-const wmType = ref<'text' | 'image'>('text')
-const wmText = ref('FancyTools')
-const fontSize = ref(32)
-const fill = ref('#ffffff')
-const stroke = ref('#000000')
-const imgScale = ref(20) // watermark image width as % of base width
-const tiled = ref(false)
+const wmType = ref<'text' | 'image'>('text');
+const wmText = ref('FancyTools');
+const fontSize = ref(32);
+const fill = ref('#ffffff');
+const stroke = ref('#000000');
+const imgScale = ref(20); // watermark image width as % of base width
+const tiled = ref(false);
 
-const position = ref<'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'>('bottom-right')
-const opacity = ref(0.5)
-const offset = ref(16)
+const position = ref<'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'>('bottom-right');
+const opacity = ref(0.5);
+const offset = ref(16);
 
-const outUrl = ref('')
-const error = ref('')
-const history = ref<HistoryItem[]>([])
+const outUrl = ref('');
+const error = ref('');
+const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
-  outUrl.value = ''
-  error.value = ''
-  wmImg.value = null
+  outUrl.value = '';
+  error.value = '';
+  wmImg.value = null;
 }
 function copyUrl() {
-  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'))
+  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'));
 }
 function downloadResult() {
-  if (!outUrl.value) return
-  const a = document.createElement('a')
-  a.href = outUrl.value
-  a.download = 'watermark.png'
-  a.click()
+  if (!outUrl.value) return;
+  const a = document.createElement('a');
+  a.href = outUrl.value;
+  a.download = 'watermark.png';
+  a.click();
 }
 function saveToHistory() {
-  if (!outUrl.value) return
-  history.value.unshift({ type: wmType.value, position: position.value, opacity: opacity.value, offset: offset.value, url: outUrl.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('wm-history', JSON.stringify(history.value))
+  if (!outUrl.value) return;
+  history.value.unshift({ type: wmType.value, position: position.value, opacity: opacity.value, offset: offset.value, url: outUrl.value, timestamp: Date.now() });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('wm-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  outUrl.value = h.url
-  position.value = h.position as any
-  opacity.value = h.opacity
-  offset.value = h.offset
+  outUrl.value = h.url;
+  position.value = h.position as any;
+  opacity.value = h.opacity;
+  offset.value = h.offset;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('wm-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('wm-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function onBaseFile(e: Event) {
-  const f = (e.target as HTMLInputElement).files?.[0]
-  if (!f) return
-  const img = new Image()
-  img.onload = () => (baseImg.value = img)
-  img.onerror = () => (error.value = '底图加载失败')
-  img.src = URL.createObjectURL(f)
+  const f = (e.target as HTMLInputElement).files?.[0];
+  if (!f) return;
+  const img = new Image();
+  img.onload = () => (baseImg.value = img);
+  img.onerror = () => (error.value = '底图加载失败');
+  img.src = URL.createObjectURL(f);
 }
 function onWatermarkFile(e: Event) {
-  const f = (e.target as HTMLInputElement).files?.[0]
-  if (!f) return
-  const img = new Image()
-  img.onload = () => (wmImg.value = img)
-  img.onerror = () => (error.value = '水印加载失败')
-  img.src = URL.createObjectURL(f)
+  const f = (e.target as HTMLInputElement).files?.[0];
+  if (!f) return;
+  const img = new Image();
+  img.onload = () => (wmImg.value = img);
+  img.onerror = () => (error.value = '水印加载失败');
+  img.src = URL.createObjectURL(f);
 }
 
 function drawWatermark(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  ctx.globalAlpha = Math.min(1, Math.max(0, opacity.value || 0.5))
+  ctx.globalAlpha = Math.min(1, Math.max(0, opacity.value || 0.5));
   if (wmType.value === 'text') {
-    ctx.font = `bold ${fontSize.value || 32}px system-ui, sans-serif`
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    const text = wmText.value || ''
+    ctx.font = `bold ${fontSize.value || 32}px system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const text = wmText.value || '';
     const drawAt = (x: number, y: number) => {
       if (stroke.value) {
-        ctx.strokeStyle = stroke.value
-        ctx.lineWidth = Math.max(1, Math.floor((fontSize.value || 32) / 12))
-        ctx.strokeText(text, x, y)
+        ctx.strokeStyle = stroke.value;
+        ctx.lineWidth = Math.max(1, Math.floor((fontSize.value || 32) / 12));
+        ctx.strokeText(text, x, y);
       }
-      ctx.fillStyle = fill.value || '#fff'
-      ctx.fillText(text, x, y)
-    }
+      ctx.fillStyle = fill.value || '#fff';
+      ctx.fillText(text, x, y);
+    };
     if (tiled.value) {
       const stepX = Math.max(80, fontSize.value * 4),
-        stepY = Math.max(80, fontSize.value * 2.5)
+        stepY = Math.max(80, fontSize.value * 2.5);
       for (let y = offset.value; y < h; y += stepY) {
         for (let x = offset.value; x < w; x += stepX) {
-          drawAt(x, y)
+          drawAt(x, y);
         }
       }
     } else {
-      const { x, y } = anchor(w, h, offset.value, offset.value)
-      drawAt(x, y)
+      const { x, y } = anchor(w, h, offset.value, offset.value);
+      drawAt(x, y);
     }
   } else {
-    if (!wmImg.value) return
-    const ww = Math.round(w * (Math.min(100, Math.max(1, imgScale.value)) / 100))
-    const ratio = wmImg.value.naturalHeight / wmImg.value.naturalWidth
-    const hh = Math.round(ww * ratio)
-    const drawAt = (x: number, y: number) => ctx.drawImage(wmImg.value!, x - ww / 2, y - hh / 2, ww, hh)
+    if (!wmImg.value) return;
+    const ww = Math.round(w * (Math.min(100, Math.max(1, imgScale.value)) / 100));
+    const ratio = wmImg.value.naturalHeight / wmImg.value.naturalWidth;
+    const hh = Math.round(ww * ratio);
+    const drawAt = (x: number, y: number) => ctx.drawImage(wmImg.value!, x - ww / 2, y - hh / 2, ww, hh);
     if (tiled.value) {
       const stepX = ww + Math.max(32, offset.value),
-        stepY = hh + Math.max(32, offset.value)
+        stepY = hh + Math.max(32, offset.value);
       for (let y = stepY / 2; y < h; y += stepY) {
         for (let x = stepX / 2; x < w; x += stepX) {
-          drawAt(x, y)
+          drawAt(x, y);
         }
       }
     } else {
-      const { x, y } = anchor(w, h, offset.value, offset.value)
-      drawAt(x, y)
+      const { x, y } = anchor(w, h, offset.value, offset.value);
+      drawAt(x, y);
     }
   }
-  ctx.globalAlpha = 1
+  ctx.globalAlpha = 1;
 }
 function anchor(w: number, h: number, ox: number, oy: number) {
   let x = w / 2,
-    y = h / 2
+    y = h / 2;
   if (position.value === 'top-left') {
-    x = ox
-    y = oy
+    x = ox;
+    y = oy;
   } else if (position.value === 'top-right') {
-    x = w - ox
-    y = oy
+    x = w - ox;
+    y = oy;
   } else if (position.value === 'bottom-left') {
-    x = ox
-    y = h - oy
+    x = ox;
+    y = h - oy;
   } else if (position.value === 'bottom-right') {
-    x = w - ox
-    y = h - oy
+    x = w - ox;
+    y = h - oy;
   }
-  return { x, y }
+  return { x, y };
 }
 
 function process() {
-  error.value = ''
+  error.value = '';
   try {
-    if (!baseImg.value) throw new Error('请先选择底图')
-    const canvas = cv.value!
-    canvas.width = baseImg.value.naturalWidth
-    canvas.height = baseImg.value.naturalHeight
-    const ctx = canvas.getContext('2d')!
-    ctx.drawImage(baseImg.value, 0, 0, canvas.width, canvas.height)
-    drawWatermark(ctx, canvas.width, canvas.height)
-    outUrl.value = canvas.toDataURL('image/png')
+    if (!baseImg.value) throw new Error('请先选择底图');
+    const canvas = cv.value!;
+    canvas.width = baseImg.value.naturalWidth;
+    canvas.height = baseImg.value.naturalHeight;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(baseImg.value, 0, 0, canvas.width, canvas.height);
+    drawWatermark(ctx, canvas.width, canvas.height);
+    outUrl.value = canvas.toDataURL('image/png');
   } catch (e: any) {
-    error.value = e?.message || '处理失败'
+    error.value = e?.message || '处理失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('wm-history')
+  const saved = localStorage.getItem('wm-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'social-post-scheduler',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.social-post-scheduler',
   entry: 'tools/social-marketing/social-post-scheduler/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;

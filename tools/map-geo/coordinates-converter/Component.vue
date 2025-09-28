@@ -245,48 +245,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface DMSCoordinate {
-  degrees: number
-  minutes: number
-  seconds: number
-  direction: 'N' | 'S' | 'E' | 'W'
+  degrees: number;
+  minutes: number;
+  seconds: number;
+  direction: 'N' | 'S' | 'E' | 'W';
 }
 
 interface DMCoordinate {
-  degrees: number
-  minutes: number
-  direction: 'N' | 'S' | 'E' | 'W'
+  degrees: number;
+  minutes: number;
+  direction: 'N' | 'S' | 'E' | 'W';
 }
 
 interface ConversionResult {
   decimal: {
-    lat: number
-    lng: number
-  }
+    lat: number;
+    lng: number;
+  };
   dms: {
-    lat: DMSCoordinate
-    lng: DMSCoordinate
-  }
+    lat: DMSCoordinate;
+    lng: DMSCoordinate;
+  };
   dm: {
-    lat: DMCoordinate
-    lng: DMCoordinate
-  }
+    lat: DMCoordinate;
+    lng: DMCoordinate;
+  };
 }
 
 interface HistoryItem extends ConversionResult {
-  timestamp: number
+  timestamp: number;
 }
 
-const inputFormat = ref<'decimal' | 'dms' | 'dm'>('decimal')
-const result = ref<ConversionResult | null>(null)
-const history = ref<HistoryItem[]>([])
+const inputFormat = ref<'decimal' | 'dms' | 'dm'>('decimal');
+const result = ref<ConversionResult | null>(null);
+const history = ref<HistoryItem[]>([]);
 
 const decimal = ref({
   lat: '',
   lng: ''
-})
+});
 
 const dms = ref({
   lat: {
@@ -301,7 +301,7 @@ const dms = ref({
     seconds: 0,
     direction: 'E' as const
   }
-})
+});
 
 const dm = ref({
   lat: {
@@ -314,39 +314,39 @@ const dm = ref({
     minutes: 0,
     direction: 'E' as const
   }
-})
+});
 
 const canConvert = computed(() => {
   if (inputFormat.value === 'decimal') {
-    return decimal.value.lat !== '' && decimal.value.lng !== ''
+    return decimal.value.lat !== '' && decimal.value.lng !== '';
   } else if (inputFormat.value === 'dms') {
-    return dms.value.lat.degrees !== null && dms.value.lng.degrees !== null
+    return dms.value.lat.degrees !== null && dms.value.lng.degrees !== null;
   } else if (inputFormat.value === 'dm') {
-    return dm.value.lat.degrees !== null && dm.value.lng.degrees !== null
+    return dm.value.lat.degrees !== null && dm.value.lng.degrees !== null;
   }
-  return false
-})
+  return false;
+});
 
 function convert() {
-  if (!canConvert.value) return
+  if (!canConvert.value) return;
 
-  let lat: number, lng: number
+  let lat: number, lng: number;
 
   if (inputFormat.value === 'decimal') {
-    lat = parseFloat(decimal.value.lat)
-    lng = parseFloat(decimal.value.lng)
+    lat = parseFloat(decimal.value.lat);
+    lng = parseFloat(decimal.value.lng);
   } else if (inputFormat.value === 'dms') {
-    lat = dmsToDecimal(dms.value.lat)
-    lng = dmsToDecimal(dms.value.lng)
+    lat = dmsToDecimal(dms.value.lat);
+    lng = dmsToDecimal(dms.value.lng);
   } else {
-    lat = dmToDecimal(dm.value.lat)
-    lng = dmToDecimal(dm.value.lng)
+    lat = dmToDecimal(dm.value.lat);
+    lng = dmToDecimal(dm.value.lng);
   }
 
   // 验证坐标范围
   if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-    alert('坐标超出有效范围！纬度: -90° 到 90°，经度: -180° 到 180°')
-    return
+    alert('坐标超出有效范围！纬度: -90° 到 90°，经度: -180° 到 180°');
+    return;
   }
 
   result.value = {
@@ -362,80 +362,80 @@ function convert() {
       lat: decimalToDM(lat, 'lat'),
       lng: decimalToDM(lng, 'lng')
     }
-  }
+  };
 }
 
 function dmsToDecimal(coord: DMSCoordinate): number {
-  let decimal = coord.degrees + coord.minutes / 60 + coord.seconds / 3600
+  let decimal = coord.degrees + coord.minutes / 60 + coord.seconds / 3600;
   if (coord.direction === 'S' || coord.direction === 'W') {
-    decimal = -decimal
+    decimal = -decimal;
   }
-  return decimal
+  return decimal;
 }
 
 function dmToDecimal(coord: DMCoordinate): number {
-  let decimal = coord.degrees + coord.minutes / 60
+  let decimal = coord.degrees + coord.minutes / 60;
   if (coord.direction === 'S' || coord.direction === 'W') {
-    decimal = -decimal
+    decimal = -decimal;
   }
-  return decimal
+  return decimal;
 }
 
 function decimalToDMS(decimal: number, type: 'lat' | 'lng'): DMSCoordinate {
-  const abs = Math.abs(decimal)
-  const degrees = Math.floor(abs)
-  const minutesFloat = (abs - degrees) * 60
-  const minutes = Math.floor(minutesFloat)
-  const seconds = Math.round((minutesFloat - minutes) * 60 * 1000) / 1000
+  const abs = Math.abs(decimal);
+  const degrees = Math.floor(abs);
+  const minutesFloat = (abs - degrees) * 60;
+  const minutes = Math.floor(minutesFloat);
+  const seconds = Math.round((minutesFloat - minutes) * 60 * 1000) / 1000;
 
-  let direction: 'N' | 'S' | 'E' | 'W'
+  let direction: 'N' | 'S' | 'E' | 'W';
   if (type === 'lat') {
-    direction = decimal >= 0 ? 'N' : 'S'
+    direction = decimal >= 0 ? 'N' : 'S';
   } else {
-    direction = decimal >= 0 ? 'E' : 'W'
+    direction = decimal >= 0 ? 'E' : 'W';
   }
 
-  return { degrees, minutes, seconds, direction }
+  return { degrees, minutes, seconds, direction };
 }
 
 function decimalToDM(decimal: number, type: 'lat' | 'lng'): DMCoordinate {
-  const abs = Math.abs(decimal)
-  const degrees = Math.floor(abs)
-  const minutes = Math.round((abs - degrees) * 60 * 1000) / 1000
+  const abs = Math.abs(decimal);
+  const degrees = Math.floor(abs);
+  const minutes = Math.round((abs - degrees) * 60 * 1000) / 1000;
 
-  let direction: 'N' | 'S' | 'E' | 'W'
+  let direction: 'N' | 'S' | 'E' | 'W';
   if (type === 'lat') {
-    direction = decimal >= 0 ? 'N' : 'S'
+    direction = decimal >= 0 ? 'N' : 'S';
   } else {
-    direction = decimal >= 0 ? 'E' : 'W'
+    direction = decimal >= 0 ? 'E' : 'W';
   }
 
-  return { degrees, minutes, direction }
+  return { degrees, minutes, direction };
 }
 
 function formatDMS(coord: DMSCoordinate): string {
-  return `${coord.degrees}°${coord.minutes}'${coord.seconds}"${coord.direction}`
+  return `${coord.degrees}°${coord.minutes}'${coord.seconds}"${coord.direction}`;
 }
 
 function formatDM(coord: DMCoordinate): string {
-  return `${coord.degrees}°${coord.minutes}'${coord.direction}`
+  return `${coord.degrees}°${coord.minutes}'${coord.direction}`;
 }
 
 function clearInputs() {
-  decimal.value = { lat: '', lng: '' }
+  decimal.value = { lat: '', lng: '' };
   dms.value = {
     lat: { degrees: 0, minutes: 0, seconds: 0, direction: 'N' },
     lng: { degrees: 0, minutes: 0, seconds: 0, direction: 'E' }
-  }
+  };
   dm.value = {
     lat: { degrees: 0, minutes: 0, direction: 'N' },
     lng: { degrees: 0, minutes: 0, direction: 'E' }
-  }
+  };
 }
 
 function clearAll() {
-  clearInputs()
-  result.value = null
+  clearInputs();
+  result.value = null;
 }
 
 function loadExample() {
@@ -449,51 +449,51 @@ function loadExample() {
       lat: { degrees: 39, minutes: 54.252, direction: 'N' as const },
       lng: { degrees: 116, minutes: 24.444, direction: 'E' as const }
     }
-  }
+  };
 
   if (inputFormat.value === 'decimal') {
-    decimal.value = examples.decimal
+    decimal.value = examples.decimal;
   } else if (inputFormat.value === 'dms') {
-    dms.value = examples.dms
+    dms.value = examples.dms;
   } else {
-    dm.value = examples.dm
+    dm.value = examples.dm;
   }
 }
 
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text).then(() => {
-    alert('已复制到剪贴板')
-  })
+    alert('已复制到剪贴板');
+  });
 }
 
 function openInMaps() {
-  if (!result.value) return
+  if (!result.value) return;
 
-  const { lat, lng } = result.value.decimal
-  const url = `https://www.google.com/maps?q=${lat},${lng}`
-  window.open(url, '_blank')
+  const { lat, lng } = result.value.decimal;
+  const url = `https://www.google.com/maps?q=${lat},${lng}`;
+  window.open(url, '_blank');
 }
 
 function saveToHistory() {
-  if (!result.value) return
+  if (!result.value) return;
 
   const item: HistoryItem = {
     ...result.value,
     timestamp: Date.now()
-  }
+  };
 
   // 避免重复
-  const exists = history.value.some((h) => Math.abs(h.decimal.lat - item.decimal.lat) < 0.000001 && Math.abs(h.decimal.lng - item.decimal.lng) < 0.000001)
+  const exists = history.value.some((h) => Math.abs(h.decimal.lat - item.decimal.lat) < 0.000001 && Math.abs(h.decimal.lng - item.decimal.lng) < 0.000001);
 
   if (!exists) {
-    history.value.unshift(item)
+    history.value.unshift(item);
 
     // 只保留最近20条
     if (history.value.length > 20) {
-      history.value = history.value.slice(0, 20)
+      history.value = history.value.slice(0, 20);
     }
 
-    saveHistoryToStorage()
+    saveHistoryToStorage();
   }
 }
 
@@ -502,19 +502,19 @@ function loadFromHistory(item: HistoryItem) {
     decimal: item.decimal,
     dms: item.dms,
     dm: item.dm
-  }
+  };
 
   // 同时更新输入框
   decimal.value = {
     lat: item.decimal.lat.toString(),
     lng: item.decimal.lng.toString()
-  }
-  inputFormat.value = 'decimal'
+  };
+  inputFormat.value = 'decimal';
 }
 
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  saveHistoryToStorage()
+  history.value.splice(index, 1);
+  saveHistoryToStorage();
 }
 
 function formatDate(timestamp: number): string {
@@ -523,25 +523,25 @@ function formatDate(timestamp: number): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  })
+  });
 }
 
 function saveHistoryToStorage() {
-  localStorage.setItem('coordinates-history', JSON.stringify(history.value))
+  localStorage.setItem('coordinates-history', JSON.stringify(history.value));
 }
 
 function loadHistoryFromStorage() {
-  const saved = localStorage.getItem('coordinates-history')
+  const saved = localStorage.getItem('coordinates-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch (error) {
-      console.error('加载历史记录失败:', error)
+      console.error('加载历史记录失败:', error);
     }
   }
 }
 
 onMounted(() => {
-  loadHistoryFromStorage()
-})
+  loadHistoryFromStorage();
+});
 </script>

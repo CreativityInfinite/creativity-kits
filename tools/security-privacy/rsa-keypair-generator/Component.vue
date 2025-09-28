@@ -139,65 +139,65 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 type HistoryItem = {
-  modulusLength: number
-  hash: 'SHA-256' | 'SHA-384' | 'SHA-512'
-  outputFormat: 'pem' | 'jwk'
-  result: string
-  notes?: string
-  outputLength: number
-  timestamp: number
-}
+  modulusLength: number;
+  hash: 'SHA-256' | 'SHA-384' | 'SHA-512';
+  outputFormat: 'pem' | 'jwk';
+  result: string;
+  notes?: string;
+  outputLength: number;
+  timestamp: number;
+};
 
-const modulusLength = ref(2048)
-const hash = ref<'SHA-256' | 'SHA-384' | 'SHA-512'>('SHA-256')
-const outputFormat = ref<'pem' | 'jwk'>('pem')
-const notes = ref('')
+const modulusLength = ref(2048);
+const hash = ref<'SHA-256' | 'SHA-384' | 'SHA-512'>('SHA-256');
+const outputFormat = ref<'pem' | 'jwk'>('pem');
+const notes = ref('');
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => true)
+const canProcess = computed(() => true);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
-  notes.value = ''
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
+  notes.value = '';
 }
 
 function swapView() {
-  if (!result.value) return
-  outputFormat.value = outputFormat.value === 'pem' ? 'jwk' : 'pem'
+  if (!result.value) return;
+  outputFormat.value = outputFormat.value === 'pem' ? 'jwk' : 'pem';
 }
 
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
 }
 
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 
 function downloadResult() {
-  if (!result.value) return
-  const ext = outputFormat.value === 'pem' ? 'pem' : 'json'
-  const filename = `rsa_key_${new Date().toISOString().slice(0, 10)}.${ext}`
-  const blob = new Blob([result.value], { type: ext === 'pem' ? 'application/x-pem-file' : 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const ext = outputFormat.value === 'pem' ? 'pem' : 'json';
+  const filename = `rsa_key_${new Date().toISOString().slice(0, 10)}.${ext}`;
+  const blob = new Blob([result.value], { type: ext === 'pem' ? 'application/x-pem-file' : 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function saveToHistory() {
-  if (!result.value) return
+  if (!result.value) return;
   const item: HistoryItem = {
     modulusLength: modulusLength.value,
     hash: hash.value,
@@ -206,41 +206,41 @@ function saveToHistory() {
     notes: notes.value || undefined,
     outputLength: result.value.length,
     timestamp: Date.now()
-  }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('rsa-keypair-history', JSON.stringify(history.value))
+  };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('rsa-keypair-history', JSON.stringify(history.value));
 }
 
 function loadFromHistory(item: HistoryItem) {
-  modulusLength.value = item.modulusLength
-  hash.value = item.hash
-  outputFormat.value = item.outputFormat
-  result.value = item.result
-  error.value = ''
-  processingTime.value = null
-  notes.value = item.notes || ''
+  modulusLength.value = item.modulusLength;
+  hash.value = item.hash;
+  outputFormat.value = item.outputFormat;
+  result.value = item.result;
+  error.value = '';
+  processingTime.value = null;
+  notes.value = item.notes || '';
 }
 
 function removeFromHistory(index: number) {
-  history.value.splice(index, 1)
-  localStorage.setItem('rsa-keypair-history', JSON.stringify(history.value))
+  history.value.splice(index, 1);
+  localStorage.setItem('rsa-keypair-history', JSON.stringify(history.value));
 }
 
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function wrapPem(b64: string, label: string) {
-  const lines = b64.match(/.{1,64}/g) || []
-  return `-----BEGIN ${label}-----\n${lines.join('\n')}\n-----END ${label}-----`
+  const lines = b64.match(/.{1,64}/g) || [];
+  return `-----BEGIN ${label}-----\n${lines.join('\n')}\n-----END ${label}-----`;
 }
 
 async function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const start = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const start = performance.now();
 
   try {
     const alg: RsaHashedKeyGenParams = {
@@ -248,36 +248,36 @@ async function process() {
       modulusLength: Math.max(1024, Math.min(8192, modulusLength.value)),
       publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
       hash: hash.value
-    }
-    const kp = await crypto.subtle.generateKey(alg, true, ['encrypt', 'decrypt'])
+    };
+    const kp = await crypto.subtle.generateKey(alg, true, ['encrypt', 'decrypt']);
     if (outputFormat.value === 'pem') {
-      const [spki, pkcs8] = await Promise.all([crypto.subtle.exportKey('spki', kp.publicKey), crypto.subtle.exportKey('pkcs8', kp.privateKey)])
+      const [spki, pkcs8] = await Promise.all([crypto.subtle.exportKey('spki', kp.publicKey), crypto.subtle.exportKey('pkcs8', kp.privateKey)]);
       // to base64
       const toB64 = (buf: ArrayBuffer) => {
-        const bytes = new Uint8Array(buf)
-        let bin = ''
-        for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i])
-        return btoa(bin)
-      }
-      const pemPublic = wrapPem(toB64(spki), 'PUBLIC KEY')
-      const pemPrivate = wrapPem(toB64(pkcs8), 'PRIVATE KEY')
-      result.value = `${pemPublic}\n\n${pemPrivate}`
+        const bytes = new Uint8Array(buf);
+        let bin = '';
+        for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+        return btoa(bin);
+      };
+      const pemPublic = wrapPem(toB64(spki), 'PUBLIC KEY');
+      const pemPrivate = wrapPem(toB64(pkcs8), 'PRIVATE KEY');
+      result.value = `${pemPublic}\n\n${pemPrivate}`;
     } else {
-      const [jwkPublic, jwkPrivate] = await Promise.all([crypto.subtle.exportKey('jwk', kp.publicKey), crypto.subtle.exportKey('jwk', kp.privateKey)])
-      result.value = JSON.stringify({ publicKey: jwkPublic, privateKey: jwkPrivate }, null, 2)
+      const [jwkPublic, jwkPrivate] = await Promise.all([crypto.subtle.exportKey('jwk', kp.publicKey), crypto.subtle.exportKey('jwk', kp.privateKey)]);
+      result.value = JSON.stringify({ publicKey: jwkPublic, privateKey: jwkPrivate }, null, 2);
     }
-    processingTime.value = Math.round(performance.now() - start)
+    processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '生成失败'
+    error.value = e?.message || '生成失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('rsa-keypair-history')
+  const saved = localStorage.getItem('rsa-keypair-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

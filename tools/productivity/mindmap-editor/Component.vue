@@ -39,57 +39,57 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const input = ref('')
-const output = ref('')
+const input = ref('');
+const output = ref('');
 
 function process() {
-  const src = input.value.replace(/\r\n/g, '\n').trim()
+  const src = input.value.replace(/\r\n/g, '\n').trim();
   if (!src) {
-    output.value = ''
-    return
+    output.value = '';
+    return;
   }
-  const lines = src.split('\n').filter((l) => l.trim().length > 0)
+  const lines = src.split('\n').filter((l) => l.trim().length > 0);
 
-  type Node = { text: string; children: Node[] }
-  const root: Node = { text: 'root', children: [] }
-  const stack: { indent: number; node: Node }[] = [{ indent: -1, node: root }]
+  type Node = { text: string; children: Node[] };
+  const root: Node = { text: 'root', children: [] };
+  const stack: { indent: number; node: Node }[] = [{ indent: -1, node: root }];
 
   function getIndent(s: string): number {
-    let n = 0
+    let n = 0;
     for (const ch of s) {
-      if (ch === ' ') n += 1
-      else if (ch === '\t') n += 2
-      else break
+      if (ch === ' ') n += 1;
+      else if (ch === '\t') n += 2;
+      else break;
     }
     // 把连续空格折算为层级（2空格视为1级）
-    return Math.floor(n / 2)
+    return Math.floor(n / 2);
   }
 
   for (const raw of lines) {
-    const indent = getIndent(raw)
-    const text = raw.trim()
-    const node: Node = { text, children: [] }
+    const indent = getIndent(raw);
+    const text = raw.trim();
+    const node: Node = { text, children: [] };
 
     while (stack.length && stack[stack.length - 1].indent >= indent) {
-      stack.pop()
+      stack.pop();
     }
-    stack[stack.length - 1].node.children.push(node)
-    stack.push({ indent, node })
+    stack[stack.length - 1].node.children.push(node);
+    stack.push({ indent, node });
   }
 
-  output.value = JSON.stringify(root.children.length === 1 ? root.children[0] : root.children, null, 2)
+  output.value = JSON.stringify(root.children.length === 1 ? root.children[0] : root.children, null, 2);
 }
 
 async function copyToClipboard() {
-  if (!output.value) return
+  if (!output.value) return;
   try {
-    await navigator.clipboard.writeText(output.value)
-    alert('已复制到剪贴板')
+    await navigator.clipboard.writeText(output.value);
+    alert('已复制到剪贴板');
   } catch (err) {
-    console.error('复制失败:', err)
-    alert('复制失败，请重试')
+    console.error('复制失败:', err);
+    alert('复制失败，请重试');
   }
 }
 </script>

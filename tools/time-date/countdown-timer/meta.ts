@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'countdown-timer',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:timer',
   i18nKey: 'tools.countdown-timer',
-  entry: 'tools/time-date/countdown-timer/Component.vue',
-}
-export default meta
+  entry: 'tools/time-date/countdown-timer/Component.vue'
+};
+export default meta;

@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'glob-tester',
@@ -9,6 +9,6 @@ const meta: ToolMeta = {
   color: '#10b981',
   icon: 'tabler:file-search',
   i18nKey: 'tools.glob-tester',
-  entry: 'tools/regex-parse/glob-tester/Component.vue',
-}
-export default meta
+  entry: 'tools/regex-parse/glob-tester/Component.vue'
+};
+export default meta;

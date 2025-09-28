@@ -56,85 +56,88 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const file = ref<File | null>(null)
-const imgUrl = ref('')
-const previewUrl = ref('')
-const outUrl = ref('')
-const overlay = ref('#000000')
-const title = ref('地图快照')
-const subtitle = ref('')
-const showDate = ref(true)
+const file = ref<File | null>(null);
+const imgUrl = ref('');
+const previewUrl = ref('');
+const outUrl = ref('');
+const overlay = ref('#000000');
+const title = ref('地图快照');
+const subtitle = ref('');
+const showDate = ref(true);
 
 function onFile(e: Event) {
-  const t = e.target as HTMLInputElement
-  file.value = t.files?.[0] || null
-  previewUrl.value = file.value ? URL.createObjectURL(file.value) : ''
-  outUrl.value = ''
+  const t = e.target as HTMLInputElement;
+  file.value = t.files?.[0] || null;
+  previewUrl.value = file.value ? URL.createObjectURL(file.value) : '';
+  outUrl.value = '';
 }
 
 async function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error('图片加载失败（可能跨域）'))
-    img.src = src
-  })
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('图片加载失败（可能跨域）'));
+    img.src = src;
+  });
 }
 
 async function generate() {
-  outUrl.value = ''
-  const src = previewUrl.value || imgUrl.value.trim()
-  if (!src) { alert('请上传图片或输入图片 URL'); return }
-  const img = await loadImage(src)
+  outUrl.value = '';
+  const src = previewUrl.value || imgUrl.value.trim();
+  if (!src) {
+    alert('请上传图片或输入图片 URL');
+    return;
+  }
+  const img = await loadImage(src);
 
-  const canvas = document.createElement('canvas')
-  canvas.width = img.naturalWidth
-  canvas.height = img.naturalHeight
-  const ctx = canvas.getContext('2d')!
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d')!;
 
-  ctx.drawImage(img, 0, 0)
+  ctx.drawImage(img, 0, 0);
 
   // 顶部半透明条
-  ctx.fillStyle = hexToRgba(overlay.value, 0.35)
-  const barH = Math.max(60, Math.floor(canvas.height * 0.14))
-  ctx.fillRect(0, 0, canvas.width, barH)
+  ctx.fillStyle = hexToRgba(overlay.value, 0.35);
+  const barH = Math.max(60, Math.floor(canvas.height * 0.14));
+  ctx.fillRect(0, 0, canvas.width, barH);
 
   // 文本
-  ctx.fillStyle = '#ffffff'
-  ctx.textBaseline = 'top'
-  ctx.font = '700 36px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto'
-  ctx.fillText(title.value || '', 24, 16)
+  ctx.fillStyle = '#ffffff';
+  ctx.textBaseline = 'top';
+  ctx.font = '700 36px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto';
+  ctx.fillText(title.value || '', 24, 16);
 
-  ctx.font = '400 22px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto'
-  let y = 16 + 44
+  ctx.font = '400 22px ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto';
+  let y = 16 + 44;
   if (subtitle.value) {
-    ctx.fillText(subtitle.value, 24, y)
-    y += 32
+    ctx.fillText(subtitle.value, 24, y);
+    y += 32;
   }
   if (showDate.value) {
-    const ds = new Date().toLocaleString()
-    ctx.fillText(ds, 24, y)
+    const ds = new Date().toLocaleString();
+    ctx.fillText(ds, 24, y);
   }
 
-  outUrl.value = canvas.toDataURL('image/png')
+  outUrl.value = canvas.toDataURL('image/png');
 }
 
 function hexToRgba(hex: string, alpha = 1) {
-  const m = hex.replace('#', '')
-  const r = parseInt(m.slice(0, 2), 16)
-  const g = parseInt(m.slice(2, 4), 16)
-  const b = parseInt(m.slice(4, 6), 16)
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  const m = hex.replace('#', '');
+  const r = parseInt(m.slice(0, 2), 16);
+  const g = parseInt(m.slice(2, 4), 16);
+  const b = parseInt(m.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 function download() {
-  if (!outUrl.value) return
-  const a = document.createElement('a')
-  a.href = outUrl.value
-  a.download = 'map-snapshot.png'
-  a.click()
+  if (!outUrl.value) return;
+  const a = document.createElement('a');
+  a.href = outUrl.value;
+  a.download = 'map-snapshot.png';
+  a.click();
 }
 </script>

@@ -82,111 +82,111 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-type HistoryItem = { endAt: number; label: string; result: string; timestamp: number }
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+type HistoryItem = { endAt: number; label: string; result: string; timestamp: number };
 
-const target = ref('')
-const beep = ref(true)
-const label = ref('')
+const target = ref('');
+const beep = ref(true);
+const label = ref('');
 
-const endAt = ref<number | null>(null)
-const display = ref('00:00:00')
-const timer = ref<number | null>(null)
+const endAt = ref<number | null>(null);
+const display = ref('00:00:00');
+const timer = ref<number | null>(null);
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
-const audioRef = ref<HTMLAudioElement | null>(null)
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
+const audioRef = ref<HTMLAudioElement | null>(null);
 
-const canStart = computed(() => !!target.value)
+const canStart = computed(() => !!target.value);
 
 function clearAll() {
-  stop()
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
-  display.value = '00:00:00'
+  stop();
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
+  display.value = '00:00:00';
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const filename = `countdown_${new Date().toISOString().slice(0, 10)}.json`
-  const blob = new Blob([result.value], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const filename = `countdown_${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([result.value], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!endAt.value) return
-  const item: HistoryItem = { endAt: endAt.value, label: label.value.trim(), result: result.value, timestamp: Date.now() }
-  history.value.unshift(item)
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('countdown-history', JSON.stringify(history.value))
+  if (!endAt.value) return;
+  const item: HistoryItem = { endAt: endAt.value, label: label.value.trim(), result: result.value, timestamp: Date.now() };
+  history.value.unshift(item);
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('countdown-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  target.value = new Date(h.endAt).toISOString().slice(0, 16)
-  result.value = h.result
+  target.value = new Date(h.endAt).toISOString().slice(0, 16);
+  result.value = h.result;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('countdown-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('countdown-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function tick() {
-  if (endAt.value == null) return
-  const now = Date.now()
-  const remainMs = Math.max(0, endAt.value - now)
-  const sec = Math.floor(remainMs / 1000)
+  if (endAt.value == null) return;
+  const now = Date.now();
+  const remainMs = Math.max(0, endAt.value - now);
+  const sec = Math.floor(remainMs / 1000);
   const h = Math.floor(sec / 3600),
     m = Math.floor((sec % 3600) / 60),
-    s = sec % 60
-  display.value = [h, m, s].map((n) => String(n).padStart(2, '0')).join(':')
-  result.value = JSON.stringify({ endAt: endAt.value, now, remainMs, remainSec: sec, display: display.value }, null, 2)
+    s = sec % 60;
+  display.value = [h, m, s].map((n) => String(n).padStart(2, '0')).join(':');
+  result.value = JSON.stringify({ endAt: endAt.value, now, remainMs, remainSec: sec, display: display.value }, null, 2);
   if (remainMs <= 0) {
-    stop()
-    if (beep.value) audioRef.value?.play().catch(() => {})
+    stop();
+    if (beep.value) audioRef.value?.play().catch(() => {});
   }
 }
 function start() {
   try {
-    const d = new Date(target.value)
-    const t = d.getTime()
-    if (Number.isNaN(t)) throw new Error('无效的目标时间')
-    endAt.value = t
-    processingTime.value = 0
-    stop()
-    tick()
-    timer.value = window.setInterval(tick, 500)
+    const d = new Date(target.value);
+    const t = d.getTime();
+    if (Number.isNaN(t)) throw new Error('无效的目标时间');
+    endAt.value = t;
+    processingTime.value = 0;
+    stop();
+    tick();
+    timer.value = window.setInterval(tick, 500);
   } catch (e: any) {
-    error.value = e?.message || '启动失败'
+    error.value = e?.message || '启动失败';
   }
 }
 function stop() {
   if (timer.value != null) {
-    window.clearInterval(timer.value)
-    timer.value = null
+    window.clearInterval(timer.value);
+    timer.value = null;
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('countdown-history')
+  const saved = localStorage.getItem('countdown-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
-onUnmounted(() => stop())
+});
+onUnmounted(() => stop());
 </script>

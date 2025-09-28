@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'url-decode',
@@ -7,6 +7,6 @@ const meta: ToolMeta = {
   category: 'text-format',
   tags: ['URL解码', '百分号解码', 'URI解码', '表单解码', 'URL分析', '参数解析'],
   i18nKey: 'tools.url-decode',
-  entry: 'tools/text-format/url-decode/Component.vue',
-}
-export default meta
+  entry: 'tools/text-format/url-decode/Component.vue'
+};
+export default meta;

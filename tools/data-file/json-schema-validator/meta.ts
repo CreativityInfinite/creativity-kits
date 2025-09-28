@@ -1,4 +1,4 @@
-import type { ToolMeta } from '~/types/tool'
+import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'json-schema-validator',
@@ -10,6 +10,6 @@ const meta: ToolMeta = {
   i18nKey: 'tools.json-schema-validator',
   entry: 'tools/data-file/json-schema-validator/Component.vue',
   isNew: true,
-  isPopular: false,
-}
-export default meta
+  isPopular: false
+};
+export default meta;
