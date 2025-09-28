@@ -9,10 +9,13 @@
 import { computed } from 'vue'
 import UiSwitch from '~/components/ui/Switch.vue'
 import { useThemePalette } from '~/composables/useThemePalette'
+import { useFancyThemeTransition } from '~/composables/useFancyThemeTransition'
 
-const { mode, setMode } = useThemePalette()
+const { mode } = useThemePalette()
+const { setModeWithTransition } = useFancyThemeTransition()
+
 const isDark = computed({
   get: () => mode.value === 'dark',
-  set: (v: boolean) => setMode(v ? 'dark' : 'light')
+  set: (v: boolean) => setModeWithTransition(v ? 'dark' : 'light')
 })
 </script>

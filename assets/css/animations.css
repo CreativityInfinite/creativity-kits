@@ -197,3 +197,81 @@ html[data-theme='prism-laser'] {
     animation: none !important;
   }
 }
+
+/* ---------------- Fancy theme switch: View Transition + Fallback ---------------- */
+
+/* 背景色变量（用于回退遮罩） */
+:root {
+  --bg-light: #ffffff;
+  --bg-dark: #0a0a0a;
+}
+
+/* View Transitions: 以 data-theme-switch 控制方向与起点 */
+:root::view-transition-old(root),
+:root::view-transition-new(root) {
+  animation: none;
+}
+
+/* 切到暗色：新状态从左下角圆形扩散 */
+:root[data-theme-switch='to-dark']::view-transition-new(root) {
+  clip-path: circle(0% at 0% 100%);
+  animation: vt-reveal-from-left-bottom 600ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+/* 切到亮色：新状态从右上角圆形扩散 */
+:root[data-theme-switch='to-light']::view-transition-new(root) {
+  clip-path: circle(0% at 100% 0%);
+  animation: vt-reveal-from-right-top 600ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes vt-reveal-from-left-bottom {
+  from {
+    clip-path: circle(0% at 0% 100%);
+  }
+  to {
+    clip-path: circle(150% at 0% 100%);
+  }
+}
+
+@keyframes vt-reveal-from-right-top {
+  from {
+    clip-path: circle(0% at 100% 0%);
+  }
+  to {
+    clip-path: circle(150% at 100% 0%);
+  }
+}
+
+/* 回退遮罩：一个固定定位的全屏层，使用目标主题背景色并径向扩散 */
+.theme-wipe-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  will-change: clip-path, transform, opacity;
+  /* 以 CSS 变量定义起点，便于 JS 指定 */
+  --wipe-cx: 0%;
+  --wipe-cy: 100%;
+  clip-path: circle(0% at var(--wipe-cx) var(--wipe-cy));
+}
+
+@keyframes wipe-grow {
+  from {
+    clip-path: circle(0% at var(--wipe-cx) var(--wipe-cy));
+  }
+  to {
+    clip-path: circle(160% at var(--wipe-cx) var(--wipe-cy));
+  }
+}
+
+/* 减少动效时禁用所有主题过渡 */
+@media (prefers-reduced-motion: reduce) {
+  :root::view-transition-old(root),
+  :root::view-transition-new(root) {
+    animation: none !important;
+  }
+  .theme-wipe-overlay {
+    display: none !important;
+    animation: none !important;
+  }
+}
