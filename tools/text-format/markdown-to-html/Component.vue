@@ -182,30 +182,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
 interface ConversionOptions {
-  breaks: boolean
-  linkify: boolean
-  typographer: boolean
-  html: boolean
-  xhtmlOut: boolean
+  breaks: boolean;
+  linkify: boolean;
+  typographer: boolean;
+  html: boolean;
+  xhtmlOut: boolean;
 }
 
 interface ConversionHistory {
-  title: string
-  markdown: string
-  html: string
-  timestamp: string
-  inputLength: number
-  outputLength: number
-  options: ConversionOptions
+  title: string;
+  markdown: string;
+  html: string;
+  timestamp: string;
+  inputLength: number;
+  outputLength: number;
+  options: ConversionOptions;
 }
 
-const markdownInput = ref('')
-const htmlOutput = ref('')
-const activeTab = ref<'preview' | 'code'>('preview')
-const conversionHistory = ref<ConversionHistory[]>([])
+const markdownInput = ref('');
+const htmlOutput = ref('');
+const activeTab = ref<'preview' | 'code'>('preview');
+const conversionHistory = ref<ConversionHistory[]>([]);
 
 const options = ref<ConversionOptions>({
   breaks: true,
@@ -213,128 +213,133 @@ const options = ref<ConversionOptions>({
   typographer: true,
   html: false,
   xhtmlOut: false
-})
+});
 
 const compressionRatio = computed(() => {
-  if (markdownInput.value.length === 0) return 0
-  return Math.round((htmlOutput.value.length / markdownInput.value.length) * 100)
-})
+  if (markdownInput.value.length === 0) return 0;
+  return Math.round((htmlOutput.value.length / markdownInput.value.length) * 100);
+});
 
 // 简单的 Markdown 转 HTML 实现
 function convertToHtml() {
   if (!markdownInput.value.trim()) {
-    htmlOutput.value = ''
-    return
+    htmlOutput.value = '';
+    return;
   }
 
-  let html = markdownInput.value
+  let html = markdownInput.value;
 
   // 转义 HTML 字符（如果不允许 HTML）
   if (!options.value.html) {
-    html = html
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
+    html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   // 标题
-  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>')
-  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>')
-  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>')
+  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
 
   // 粗体和斜体
-  html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>')
+  html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
   // 删除线
-  html = html.replace(/~~(.*?)~~/g, '<del>$1</del>')
+  html = html.replace(/~~(.*?)~~/g, '<del>$1</del>');
 
   // 行内代码
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>')
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
   // 代码块
   html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-    const language = lang ? ` class="language-${lang}"` : ''
-    return `<pre><code${language}>${code.trim()}</code></pre>`
-  })
+    const language = lang ? ` class="language-${lang}"` : '';
+    return `<pre><code${language}>${code.trim()}</code></pre>`;
+  });
 
   // 链接
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
 
   // 图片
-  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
 
   // 自动链接
   if (options.value.linkify) {
-    html = html.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1">$1</a>')
+    html = html.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1">$1</a>');
   }
 
   // 引用
-  html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+  html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
 
   // 分割线
-  html = html.replace(/^---$/gm, '<hr>')
+  html = html.replace(/^---$/gm, '<hr>');
 
   // 无序列表
-  html = html.replace(/^- (.*$)/gm, '<li>$1</li>')
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+  html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
 
   // 有序列表
-  html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+  html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
 
   // 任务列表
-  html = html.replace(/^- \[x\] (.*$)/gm, '<li><input type="checkbox" checked disabled> $1</li>')
-  html = html.replace(/^- \[ \] (.*$)/gm, '<li><input type="checkbox" disabled> $1</li>')
+  html = html.replace(/^- \[x\] (.*$)/gm, '<li><input type="checkbox" checked disabled> $1</li>');
+  html = html.replace(/^- \[ \] (.*$)/gm, '<li><input type="checkbox" disabled> $1</li>');
 
   // 表格（简单实现）
-  const tableRegex = /^\|(.+)\|\s*\n\|[-\s|:]+\|\s*\n((?:\|.+\|\s*\n?)*)/gm
+  const tableRegex = /^\|(.+)\|\s*\n\|[-\s|:]+\|\s*\n((?:\|.+\|\s*\n?)*)/gm;
   html = html.replace(tableRegex, (match, header, rows) => {
-    const headerCells = header.split('|').map((cell: string) => `<th>${cell.trim()}</th>`).join('')
-    const rowCells = rows.trim().split('\n').map((row: string) => {
-      const cells = row.split('|').map((cell: string) => `<td>${cell.trim()}</td>`).join('')
-      return `<tr>${cells}</tr>`
-    }).join('')
-    return `<table><thead><tr>${headerCells}</tr></thead><tbody>${rowCells}</tbody></table>`
-  })
+    const headerCells = header
+      .split('|')
+      .map((cell: string) => `<th>${cell.trim()}</th>`)
+      .join('');
+    const rowCells = rows
+      .trim()
+      .split('\n')
+      .map((row: string) => {
+        const cells = row
+          .split('|')
+          .map((cell: string) => `<td>${cell.trim()}</td>`)
+          .join('');
+        return `<tr>${cells}</tr>`;
+      })
+      .join('');
+    return `<table><thead><tr>${headerCells}</tr></thead><tbody>${rowCells}</tbody></table>`;
+  });
 
   // 段落
   if (options.value.breaks) {
-    html = html.replace(/\n/g, '<br>')
+    html = html.replace(/\n/g, '<br>');
   } else {
-    html = html.replace(/\n\n/g, '</p><p>')
-    html = `<p>${html}</p>`
+    html = html.replace(/\n\n/g, '</p><p>');
+    html = `<p>${html}</p>`;
   }
 
   // 排版优化
   if (options.value.typographer) {
-    html = html.replace(/\.\.\./g, '…')
-    html = html.replace(/--/g, '—')
-    html = html.replace(/"([^"]+)"/g, '"$1"')
-    html = html.replace(/'([^']+)'/g, ''$1'')
+    html = html.replace(/\.\.\./g, '…');
+    html = html.replace(/--/g, '—');
+    html = html.replace(/"([^"]+)"/g, '"$1"');
+    html = html.replace(/'([^']+)'/g, '"$1"');
   }
 
   // XHTML 输出
   if (options.value.xhtmlOut) {
-    html = html.replace(/<br>/g, '<br />')
-    html = html.replace(/<hr>/g, '<hr />')
-    html = html.replace(/<img ([^>]+)>/g, '<img $1 />')
+    html = html.replace(/<br>/g, '<br />');
+    html = html.replace(/<hr>/g, '<hr />');
+    html = html.replace(/<img ([^>]+)>/g, '<img $1 />');
   }
 
-  htmlOutput.value = html
+  htmlOutput.value = html;
 
   // 添加到历史记录
-  addToHistory()
+  addToHistory();
 }
 
 function addToHistory() {
-  if (!markdownInput.value.trim() || !htmlOutput.value.trim()) return
+  if (!markdownInput.value.trim() || !htmlOutput.value.trim()) return;
 
   // 提取标题作为文档名
-  const titleMatch = markdownInput.value.match(/^#\s+(.+)$/m)
-  const title = titleMatch ? titleMatch[1] : `文档 ${conversionHistory.value.length + 1}`
+  const titleMatch = markdownInput.value.match(/^#\s+(.+)$/m);
+  const title = titleMatch ? titleMatch[1] : `文档 ${conversionHistory.value.length + 1}`;
 
   const historyItem: ConversionHistory = {
     title,
@@ -344,22 +349,22 @@ function addToHistory() {
     inputLength: markdownInput.value.length,
     outputLength: htmlOutput.value.length,
     options: { ...options.value }
-  }
+  };
 
-  conversionHistory.value.unshift(historyItem)
-  conversionHistory.value = conversionHistory.value.slice(0, 50) // 限制历史记录数量
-  saveHistory()
+  conversionHistory.value.unshift(historyItem);
+  conversionHistory.value = conversionHistory.value.slice(0, 50); // 限制历史记录数量
+  saveHistory();
 }
 
 function loadFromHistory(history: ConversionHistory) {
-  markdownInput.value = history.markdown
-  options.value = { ...history.options }
-  convertToHtml()
+  markdownInput.value = history.markdown;
+  options.value = { ...history.options };
+  convertToHtml();
 }
 
 function clearHistory() {
-  conversionHistory.value = []
-  saveHistory()
+  conversionHistory.value = [];
+  saveHistory();
 }
 
 function loadSample() {
@@ -422,29 +427,29 @@ function hello() {
 
 ---
 
-这就是 Markdown 的基本语法示例！`
+这就是 Markdown 的基本语法示例！`;
 
-  convertToHtml()
+  convertToHtml();
 }
 
 function clearInput() {
-  markdownInput.value = ''
-  htmlOutput.value = ''
+  markdownInput.value = '';
+  htmlOutput.value = '';
 }
 
 async function copyHtml() {
-  if (!htmlOutput.value) return
+  if (!htmlOutput.value) return;
 
   try {
-    await navigator.clipboard.writeText(htmlOutput.value)
+    await navigator.clipboard.writeText(htmlOutput.value);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error)
+    console.error('复制失败:', error);
   }
 }
 
 function downloadHtml() {
-  if (!htmlOutput.value) return
+  if (!htmlOutput.value) return;
 
   const fullHtml = `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -524,75 +529,75 @@ function downloadHtml() {
 <body>
 ${htmlOutput.value}
 </body>
-</html>`
+</html>`;
 
-  const blob = new Blob([fullHtml], { type: 'text/html' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'markdown-converted.html'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  const blob = new Blob([fullHtml], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'markdown-converted.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function handleFileUpload(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    markdownInput.value = content
-    convertToHtml()
-  }
-  reader.readAsText(file)
+    const content = e.target?.result as string;
+    markdownInput.value = content;
+    convertToHtml();
+  };
+  reader.readAsText(file);
 }
 
 function handleFileDrop(event: DragEvent) {
-  event.preventDefault()
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
+  event.preventDefault();
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
 
-  const file = files[0]
+  const file = files[0];
   if (!file.name.match(/\.(md|markdown|txt)$/i)) {
-    alert('请上传 .md, .markdown 或 .txt 文件')
-    return
+    alert('请上传 .md, .markdown 或 .txt 文件');
+    return;
   }
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    const content = e.target?.result as string
-    markdownInput.value = content
-    convertToHtml()
-  }
-  reader.readAsText(file)
+    const content = e.target?.result as string;
+    markdownInput.value = content;
+    convertToHtml();
+  };
+  reader.readAsText(file);
 }
 
 function saveHistory() {
   try {
-    localStorage.setItem('markdown-conversion-history', JSON.stringify(conversionHistory.value))
+    localStorage.setItem('markdown-conversion-history', JSON.stringify(conversionHistory.value));
   } catch (error) {
-    console.error('保存历史记录失败:', error)
+    console.error('保存历史记录失败:', error);
   }
 }
 
 function loadHistory() {
   try {
-    const saved = localStorage.getItem('markdown-conversion-history')
+    const saved = localStorage.getItem('markdown-conversion-history');
     if (saved) {
-      conversionHistory.value = JSON.parse(saved)
+      conversionHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载历史记录失败:', error)
+    console.error('加载历史记录失败:', error);
   }
 }
 
 onMounted(() => {
-  loadHistory()
-})
+  loadHistory();
+});
 </script>
 
 <style scoped>

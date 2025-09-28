@@ -79,8 +79,8 @@
           </div>
           <div class="text-xs truncate">lastmod: {{ h.withLastmod ? '是' : '否' }} · changefreq: {{ h.changefreq || '-' }} · priority: {{ h.priority ?? '-' }}</div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text白 rounded text-xs">加载</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text白 rounded text-xs">删除</button>
           </div>
         </div>
       </div>
@@ -89,111 +89,114 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-type HistoryItem = { count: number; withLastmod: boolean; changefreq: string; priority: number | null; result: string; timestamp: number }
+import { computed, onMounted, ref } from 'vue';
+type HistoryItem = { count: number; withLastmod: boolean; changefreq: string; priority: number | null; result: string; timestamp: number };
 
-const urlsText = ref('')
-const changefreq = ref('')
-const priority = ref<number | null>(0.8)
-const withLastmod = ref(true)
+const urlsText = ref('');
+const changefreq = ref('');
+const priority = ref<number | null>(0.8);
+const withLastmod = ref(true);
 
-const result = ref('')
-const error = ref('')
-const processingTime = ref<number | null>(null)
-const history = ref<HistoryItem[]>([])
+const result = ref('');
+const error = ref('');
+const processingTime = ref<number | null>(null);
+const history = ref<HistoryItem[]>([]);
 
-const canProcess = computed(() => urlsText.value.trim().length > 0)
+const canProcess = computed(() => urlsText.value.trim().length > 0);
 
 function clearAll() {
-  result.value = ''
-  error.value = ''
-  processingTime.value = null
+  result.value = '';
+  error.value = '';
+  processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'))
+  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
 }
 function copyResult() {
-  if (result.value) copyText(result.value)
+  if (result.value) copyText(result.value);
 }
 function downloadResult() {
-  if (!result.value) return
-  const blob = new Blob([result.value], { type: 'application/xml' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'sitemap.xml'
-  a.click()
-  URL.revokeObjectURL(url)
+  if (!result.value) return;
+  const blob = new Blob([result.value], { type: 'application/xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sitemap.xml';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 function saveToHistory() {
-  if (!result.value) return
-  history.value.unshift({ count: result.value.match(/<url>/g)?.length || 0, withLastmod: withLastmod.value, changefreq: changefreq.value, priority: priority.value ?? null, result: result.value, timestamp: Date.now() })
-  if (history.value.length > 10) history.value = history.value.slice(0, 10)
-  localStorage.setItem('sitemap-history', JSON.stringify(history.value))
+  if (!result.value) return;
+  history.value.unshift({
+    count: result.value.match(/<url>/g)?.length || 0,
+    withLastmod: withLastmod.value,
+    changefreq: changefreq.value,
+    priority: priority.value ?? null,
+    result: result.value,
+    timestamp: Date.now()
+  });
+  if (history.value.length > 10) history.value = history.value.slice(0, 10);
+  localStorage.setItem('sitemap-history', JSON.stringify(history.value));
 }
 function loadFromHistory(h: HistoryItem) {
-  result.value = h.result
-  error.value = ''
-  processingTime.value = null
+  result.value = h.result;
+  error.value = '';
+  processingTime.value = null;
 }
 function removeFromHistory(i: number) {
-  history.value.splice(i, 1)
-  localStorage.setItem('sitemap-history', JSON.stringify(history.value))
+  history.value.splice(i, 1);
+  localStorage.setItem('sitemap-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
 }
 
 function escXml(s: string) {
-  return s.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, ''')
+  return s.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/\'/g, '');
 }
 
 function process() {
-  error.value = ''
-  result.value = ''
-  processingTime.value = null
-  const t0 = performance.now()
+  error.value = '';
+  result.value = '';
+  processingTime.value = null;
+  const t0 = performance.now();
   try {
     const lines = urlsText.value
       .split(/\r?\n/)
       .map((s) => s.trim())
-      .filter(Boolean)
-    if (!lines.length) throw new Error('请输入至少一个 URL')
+      .filter(Boolean);
+    if (!lines.length) throw new Error('请输入至少一个 URL');
     // 校验 URL
     const validUrls = lines.map((u) => {
       try {
-        return new URL(u).toString()
+        return new URL(u).toString();
       } catch {
-        throw new Error(`无效 URL: ${u}`)
+        throw new Error(`无效 URL: ${u}`);
       }
-    })
-    const now = new Date().toISOString()
+    });
+    const now = new Date().toISOString();
     const body = validUrls
       .map((u) => {
-        const parts = [`<loc>${escXml(u)}</loc>`]
-        if (withLastmod.value) parts.push(`<lastmod>${now}</lastmod>`)
-        if (changefreq.value) parts.push(`<changefreq>${changefreq.value}</changefreq>`)
-        if (priority.value != null) parts.push(`<priority>${Math.max(0, Math.min(1, priority.value)).toFixed(1)}</priority>`)
-        return `  <url>\n    ${parts.join('\n    ')}\n  </url>`
+        const parts = [`<loc>${escXml(u)}</loc>`];
+        if (withLastmod.value) parts.push(`<lastmod>${now}</lastmod>`);
+        if (changefreq.value) parts.push(`<changefreq>${changefreq.value}</changefreq>`);
+        if (priority.value != null) parts.push(`<priority>${Math.max(0, Math.min(1, priority.value)).toFixed(1)}</priority>`);
+        return `  <url>\n    ${parts.join('\n    ')}\n  </url>`;
       })
-      .join('\n')
-    result.value =
-      `<?xml version="1.0" encoding="UTF-8"?>\n` +
-      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-      `${body}\n` +
-      `</urlset>\n`
-    processingTime.value = Math.round(performance.now() - t0)
+      .join('\n');
+    result.value = `<?xml version="1.0" encoding="UTF-8"?>\n` + `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` + `${body}\n` + `</urlset>\n`;
+    processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '生成失败'
+    error.value = e?.message || '生成失败';
   }
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem('sitemap-history')
+  const saved = localStorage.getItem('sitemap-history');
   if (saved) {
     try {
-      history.value = JSON.parse(saved)
+      history.value = JSON.parse(saved);
     } catch {}
   }
-})
+});
 </script>

@@ -469,7 +469,6 @@ const chinesePinyin: Record<string, string> = {
   工: 'gōng',
   作: 'zuò',
   家: 'jiā',
-  学: 'xué',
   校: 'xiào',
   老: 'lǎo',
   师: 'shī',

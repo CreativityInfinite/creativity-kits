@@ -9,7 +9,7 @@
     "generate": "nuxt generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
+    "format": "prettier --write . --ignore-path .gitignore",
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",

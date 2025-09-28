@@ -28,7 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, h, defineComponent } from 'vue';
+import type { PropType } from 'vue';
 
 type Task = { id: string; title: string; status: 'todo' | 'doing' | 'done' };
 
@@ -52,46 +53,34 @@ function move(id: string, to: Task['status']) {
   const t = tasks.value.find((x) => x.id === id);
   if (t) t.status = to;
 }
-</script>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-export default {};
-</script>
-
-<script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
-</script>
-
-<template #KanbanColumn="{ title, list, move }"></template>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-export const KanbanColumn = defineComponent({
+const KanbanColumn = defineComponent({
   name: 'KanbanColumn',
   props: {
     title: { type: String, required: true },
-    list: { type: Array, required: true }
+    list: { type: Array as PropType<Task[]>, required: true }
   },
   emits: ['move'],
   setup(props, { emit }) {
-    const moveTo = (id: string, to: 'todo' | 'doing' | 'done') => emit('move', id, to);
-    return { moveTo, props };
-  },
-  template: `
-  <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-    <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">{{ title }}</div>
-    <div class="space-y-2">
-      <div v-for="t in list" :key="t.id" class="p-3 rounded-md border dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-        <div class="text-sm mb-2">{{ t.title }}</div>
-        <div class="flex gap-2">
-          <button @click="moveTo(t.id, 'todo')" class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded">待办</button>
-          <button @click="moveTo(t.id, 'doing')" class="px-2 py-1 text-xs bg-blue-200 dark:bg-blue-700 rounded">进行中</button>
-          <button @click="moveTo(t.id, 'done')" class="px-2 py-1 text-xs bg-green-200 dark:bg-green-700 rounded">已完成</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  `
+    const moveTo = (id: string, to: Task['status']) => emit('move', id, to);
+    return () =>
+      h('div', { class: 'bg-white dark:bg-gray-800 rounded-lg p-4 border' }, [
+        h('div', { class: 'text-sm font-medium text-gray-700 dark:text-gray-200 mb-3' }, props.title),
+        h(
+          'div',
+          { class: 'space-y-2' },
+          props.list.map((t) =>
+            h('div', { key: t.id, class: 'p-3 rounded-md border dark:border-gray-700 bg-gray-50 dark:bg-gray-900' }, [
+              h('div', { class: 'text-sm mb-2' }, t.title),
+              h('div', { class: 'flex gap-2' }, [
+                h('button', { class: 'px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded', onClick: () => moveTo(t.id, 'todo') }, '待办'),
+                h('button', { class: 'px-2 py-1 text-xs bg-blue-200 dark:bg-blue-700 rounded', onClick: () => moveTo(t.id, 'doing') }, '进行中'),
+                h('button', { class: 'px-2 py-1 text-xs bg-green-200 dark:bg-green-700 rounded', onClick: () => moveTo(t.id, 'done') }, '已完成')
+              ])
+            ])
+          )
+        )
+      ]);
+  }
 });
 </script>

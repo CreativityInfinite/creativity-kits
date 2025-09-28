@@ -151,7 +151,7 @@
                   <div class="font-mono text-sm break-all" :class="getPasswordStrengthClass(password.strength)">
                     {{ password.value }}
                   </div>
-                  <div class="text-xs text-gray-500 mt-1">强度: {{ password.strength.label }} | 熵: {{ password.entropy.toFixed(1)} bits</div>
+                  <div class="text-xs text-gray-500 mt-1">强度: {{ password.strength.label }} | 熵: {{ password.entropy.toFixed(1) }} bits</div>
                 </div>
                 <div class="flex gap-1 ml-3">
                   <button @click="copyPassword(password.value)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
