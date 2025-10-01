@@ -419,7 +419,7 @@ function onTabChange(id: string) {
 const showToast = ref(false);
 const toastMessage = ref('');
 const toastProgress = ref(100);
-let toastTimer: NodeJS.Timeout | null = null;
+let toastTimer: number | null = null;
 
 // ==================== 联系方式功能 ====================
 // 复制到剪贴板

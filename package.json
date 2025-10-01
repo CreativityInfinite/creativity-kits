@@ -13,8 +13,7 @@
     "format": "prettier --write . --ignore-path .gitignore",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "new:tool": "node scripts/new-tool.js"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@iconify/vue": "^4.3.0",
