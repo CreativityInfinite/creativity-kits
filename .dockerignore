@@ -1,0 +1,22 @@
+# Reduce Docker build context size
+.git
+.github
+.gitignore
+node_modules
+npm-debug.log
+pnpm-lock.yaml
+yarn.lock
+
+# Build artifacts
+.output
+.nuxt
+dist
+.playwright
+playwright-report
+coverage
+
+# Local files
+.DS_Store
+*.local
+.env.local
+.env.*.local
