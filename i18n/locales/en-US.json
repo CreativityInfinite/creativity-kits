@@ -1,0 +1,43 @@
+{
+  "common": {
+    "backToTop": "Back to Top",
+    "back": "Back",
+    "open": "Open"
+  },
+  "home": {
+    "subtitle": "A modern suite of creative tools: text/data/media/map/regex/time utilities to boost your productivity.",
+    "searchPlaceholder": "Search by name or tags… /"
+  },
+  "tabs": {
+    "all": "All",
+    "hot": "Hot",
+    "new": "New"
+  },
+  "categories": {
+    "education-language": "Education & Language",
+    "math-unit": "Math & Units",
+    "system-browser": "System & Browser"
+  },
+  "tools": {
+    "typing-practice": {
+      "name": "Typing Practice",
+      "desc": "Multilingual typing practice for English, Chinese, code and numbers with real-time WPM and accuracy stats.",
+      "tags": ["typing", "practice", "speed", "accuracy", "WPM", "keyboard"]
+    },
+    "matrix-calculator": {
+      "name": "Matrix Calculator",
+      "desc": "Matrix addition/multiplication and determinant calculation tool.",
+      "tags": ["matrix", "linear algebra", "math", "determinant", "calculator"]
+    },
+    "clipboard-manager": {
+      "name": "Clipboard Manager",
+      "desc": "Smart clipboard history manager with content categorization and search.",
+      "tags": ["clipboard", "history", "copy & paste", "management", "productivity"]
+    }
+  },
+  "themes": {
+    "coolBlue": "Nebula Blue",
+    "cyberPurple": "Quantum Purple",
+    "prismLaser": "Prism Laser"
+  }
+}

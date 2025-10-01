@@ -80,7 +80,7 @@
       "tags": ["Unit Conversion", "Length", "Weight", "Temperature", "Area", "Volume", "Speed"]
     },
     "pomodoro-timer": {
-      "name": "pomodoro-timer",
+      "name": "Pomodoro Timer",
       "desc": "A Pomodoro timer for focused work, supporting work/break cycle management and statistics.",
       "tags": ["Time Management", "Focus", "Efficiency", "Pomodoro Technique", "Timer"]
     },
@@ -90,7 +90,7 @@
       "tags": ["UTM", "Marketing Tracking", "Link Generation", "QR Code", "Data Analysis"]
     },
     "typing-practice": {
-      "name": "typing-practice",
+      "name": "Typing Practice",
       "desc": "A multilingual typing practice tool supporting English, Chinese, code, and numeric drills, with real-time speed and accuracy statistics.",
       "tags": ["Typing", "Practice", "Speed", "Accuracy", "WPM", "Keyboard"]
     },
@@ -100,7 +100,7 @@
       "tags": ["Distance Calculation", "Haversine", "Geography", "Coordinates", "Bearing"]
     },
     "clipboard-manager": {
-      "name": "clipboard-manager",
+      "name": "Clipboard Manager",
       "desc": "An intelligent clipboard history manager supporting content categorization and search.",
       "tags": ["Clipboard", "History", "Copy Paste", "Management Tool", "Efficiency"]
     },
@@ -370,7 +370,7 @@
       "tags": ["Fraction", "Decimal", "Math Conversion", "Repeating Decimal", "Batch Processing"]
     },
     "matrix-calculator": {
-      "name": "matrix-calculator",
+      "name": "Matrix Calculator",
       "desc": "A mathematical tool supporting matrix addition, subtraction, multiplication, and determinant calculation.",
       "tags": ["Matrix", "Linear Algebra", "Math Calculation", "Determinant", "Math Tool"]
     },

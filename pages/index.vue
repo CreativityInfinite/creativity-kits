@@ -119,8 +119,12 @@ import type { ToolMetaRuntime } from '~/types/tool';
 import { useState } from 'nuxt/app';
 import { useI18n } from 'vue-i18n';
 import { Icon } from '@iconify/vue';
+import { pinyin } from 'pinyin-pro';
+import * as OpenCC from 'opencc-js';
 
-const { t } = useI18n();
+const { t, tm } = useI18n();
+const convS2T = OpenCC.Converter({ from: 'cn', to: 'tw' });
+const convT2S = OpenCC.Converter({ from: 'tw', to: 'cn' });
 
 // 直接顶层获取，避免 Ref 嵌套导致 tool 为 true/false/undefined
 const { tools, categories, popularTag } = await useTools();
@@ -180,14 +184,60 @@ onBeforeUnmount(() => {
 });
 
 const isTabMatch = isMatchFactory(activeTab, popularTag);
-function isMatch(t: ToolMetaRuntime) {
-  if (!t) return false;
-  if (!isTabMatch(t)) return false;
+
+// 规范化工具函数
+function norm(s: string) {
+  return (s || '').toLowerCase().trim();
+}
+function collapse(s: string) {
+  return norm(s).replace(/\s+/g, '');
+}
+function toPinyin(s: string) {
+  // 去掉声调、空格紧凑
+  try {
+    return collapse(pinyin(s, { toneType: 'none', type: 'array' }).join(' '));
+  } catch {
+    return '';
+  }
+}
+function variantsForText(s: string) {
+  const base = norm(s);
+  const baseT = convS2T(s);
+  const baseS = convT2S(s);
+  return Array.from(new Set([base, collapse(base), norm(baseS), collapse(baseS), norm(baseT), collapse(baseT), toPinyin(base), toPinyin(baseS), toPinyin(baseT)])).filter(Boolean);
+}
+function variantsForTags(items: any[]) {
+  const texts = items.map((it) => (typeof it === 'string' ? it : (it?.body?.static ?? it?.text ?? ''))).filter(Boolean) as string[];
+  const joined = texts.join(' ');
+  return variantsForText(joined);
+}
+
+function anyIncludes(haystackList: string[], needleList: string[]) {
+  return haystackList.some((h) => needleList.some((n) => n && h.includes(n)));
+}
+
+function isMatch(tool: ToolMetaRuntime) {
+  if (!tool) return false;
+  if (!isTabMatch(tool)) return false;
+
   const q = normalizedQuery.value;
   if (!q) return true;
-  const name = (t.name || '').toLowerCase();
-  const tags = (t.tags || '').toLowerCase();
-  return name.includes(q) || tags.includes(q);
+
+  // 用户输入的多形态（简体/繁体/紧凑/拼音）
+  const qVariants = variantsForText(q);
+
+  // 本地化名称与标签
+  const localizedName = typeof tool.name === 'string' ? t(tool.name) : '';
+  const localizedTags = typeof tool.tags === 'string' ? (tm as any)(tool.tags) : [];
+
+  // 构建待匹配的候选形态
+  const nameVariants = variantsForText(localizedName);
+  const tagVariants = Array.isArray(localizedTags) ? variantsForTags(localizedTags) : [];
+
+  // 原始键回退（不做拼音，仅键值匹配）
+  const rawVariants = [norm(String(tool.name || '')), norm(String(tool.tags || ''))].filter(Boolean);
+
+  return anyIncludes(nameVariants, qVariants) || anyIncludes(tagVariants, qVariants) || rawVariants.some((rv) => rv.includes(norm(q)));
 }
 const sortedTools = computed(() => {
   const list = tools.value || [];
