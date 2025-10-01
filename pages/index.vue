@@ -13,6 +13,20 @@
       ></div>
     </div>
 
+    <!-- 全页面浮动粒子动画 -->
+    <div class="floating-particles-global absolute inset-0 pointer-events-none overflow-hidden transition-opacity duration-300" :class="{ 'particles-visible': particlesVisible }">
+      <div
+        class="particle-global"
+        v-for="n in 20"
+        :key="n"
+        :style="{
+          animationDelay: Math.random() * 15 + 2 + 's',
+          left: Math.random() * 100 + '%',
+          animationDuration: 12 + Math.random() * 8 + 's'
+        }"
+      ></div>
+    </div>
+
     <main id="top" class="mx-auto relative max-w-7xl px-4 pb-16 pt-20 md:pt-24 lg:pt-28">
       <!-- 页面头部 -->
       <header class="mb-6 md:mb-8 lg:mb-10">
@@ -206,19 +220,6 @@
             </div>
           </div>
 
-          <!-- 浮动粒子动画 -->
-          <div class="floating-particles absolute inset-0 pointer-events-none overflow-hidden opacity-60 dark:opacity-100 transition-opacity duration-300">
-            <div
-              class="particle"
-              v-for="n in 8"
-              :key="n"
-              :style="{
-                animationDelay: n * 0.8 + 's',
-                left: n * 12.5 + '%'
-              }"
-            ></div>
-          </div>
-
           <!-- 装饰元素 -->
           <div class="contact-decorations absolute inset-0 pointer-events-none">
             <div
@@ -305,6 +306,9 @@ const searchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 const normalizedQuery = computed(() => query.value.trim().toLowerCase());
 
+// ==================== 粒子动画控制 ====================
+const particlesVisible = ref(false);
+
 // 全局键盘快捷键
 function onGlobalKeydown(e: KeyboardEvent) {
   if ((e.key === '/' || e.key === 's') && !e.metaKey && !e.ctrlKey && !e.altKey) {
@@ -331,6 +335,11 @@ onMounted(() => {
   );
   io.observe(sentinel.value);
   window.addEventListener('keydown', onGlobalKeydown);
+
+  // 延迟显示粒子动画，避免页面加载时在顶部显示
+  setTimeout(() => {
+    particlesVisible.value = true;
+  }, 100);
 });
 
 onBeforeUnmount(() => {
@@ -607,35 +616,106 @@ function showToastNotification(message: string) {
     opacity 0.3s ease;
 }
 
-/* ==================== 浮动粒子动画 ==================== */
-.floating-particles {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+/* ==================== 全页面浮动粒子动画 ==================== */
+.floating-particles-global {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
+  z-index: -10;
+  opacity: 0;
+
+  &.particles-visible {
+    opacity: 0.6;
+  }
 }
 
-.particle {
+.dark .floating-particles-global.particles-visible {
+  opacity: 1;
+}
+
+.particle-global {
   position: absolute;
-  width: 6px;
-  height: 6px;
-  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
   border-radius: 50%;
-  opacity: 0.4;
-  animation: float-particle 12s infinite linear;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  opacity: 0;
+  top: -10px;
+  animation: float-particle-random infinite linear;
   transition:
     opacity 0.3s ease,
     box-shadow 0.3s ease;
 
+  // 随机大小
+  &:nth-child(5n + 1) {
+    width: 4px;
+    height: 4px;
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+  }
+
+  &:nth-child(5n + 2) {
+    width: 6px;
+    height: 6px;
+    background: linear-gradient(45deg, #f59e0b, #ef4444);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+  }
+
+  &:nth-child(5n + 3) {
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(45deg, #10b981, #06b6d4);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+  }
+
+  &:nth-child(5n + 4) {
+    width: 5px;
+    height: 5px;
+    background: linear-gradient(45deg, #8b5cf6, #ec4899);
+    box-shadow: 0 0 9px rgba(139, 92, 246, 0.3);
+  }
+
+  &:nth-child(5n) {
+    width: 7px;
+    height: 7px;
+    background: linear-gradient(45deg, #06b6d4, #10b981, #3b82f6);
+    box-shadow: 0 0 11px rgba(6, 182, 212, 0.4);
+  }
+
+  // 随机动画变体
   &:nth-child(odd) {
-    background: linear-gradient(45deg, #f59e0b, #ef4444, #ec4899);
+    animation-name: float-particle-zigzag;
+  }
+
+  &:nth-child(3n) {
+    animation-name: float-particle-spiral;
+  }
+
+  &:nth-child(7n) {
+    animation-name: float-particle-wave;
   }
 }
 
-.dark .particle {
+.dark .particle-global {
   opacity: 0.7;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+
+  &:nth-child(5n + 1) {
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+  }
+
+  &:nth-child(5n + 2) {
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
+  }
+
+  &:nth-child(5n + 3) {
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.6);
+  }
+
+  &:nth-child(5n + 4) {
+    box-shadow: 0 0 13px rgba(139, 92, 246, 0.5);
+  }
+
+  &:nth-child(5n) {
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.6);
+  }
 }
 
 /* ==================== 弹窗通知样式 ==================== */
@@ -671,21 +751,139 @@ function showToastNotification(message: string) {
   }
 }
 
-@keyframes float-particle {
+// 基础随机上升动画
+@keyframes float-particle-random {
   0% {
-    transform: translateY(120vh) rotate(0deg) scale(0);
+    transform: translateY(120vh) translateX(0) rotate(0deg) scale(0);
     opacity: 0;
   }
   5% {
+    opacity: 0.4;
+    transform: translateY(110vh) translateX(10px) rotate(45deg) scale(1);
+  }
+  20% {
+    transform: translateY(85vh) translateX(-15px) rotate(120deg) scale(1.1);
+  }
+  40% {
+    transform: translateY(60vh) translateX(20px) rotate(200deg) scale(0.9);
+  }
+  60% {
+    transform: translateY(40vh) translateX(-10px) rotate(280deg) scale(1.2);
+  }
+  80% {
+    transform: translateY(20vh) translateX(5px) rotate(340deg) scale(1);
+  }
+  95% {
+    opacity: 0.4;
+    transform: translateY(5vh) translateX(0px) rotate(360deg) scale(1);
+  }
+  100% {
+    transform: translateY(-5vh) translateX(0) rotate(380deg) scale(0);
+    opacity: 0;
+  }
+}
+
+// Z字形上升动画
+@keyframes float-particle-zigzag {
+  0% {
+    transform: translateY(120vh) translateX(0) rotate(0deg) scale(0);
+    opacity: 0;
+  }
+  8% {
     opacity: 0.7;
-    transform: translateY(110vh) rotate(18deg) scale(1);
+    transform: translateY(105vh) translateX(30px) rotate(60deg) scale(1);
+  }
+  25% {
+    transform: translateY(80vh) translateX(-40px) rotate(150deg) scale(1.1);
+  }
+  45% {
+    transform: translateY(55vh) translateX(35px) rotate(240deg) scale(0.8);
+  }
+  65% {
+    transform: translateY(35vh) translateX(-25px) rotate(300deg) scale(1.3);
+  }
+  85% {
+    transform: translateY(15vh) translateX(15px) rotate(350deg) scale(1);
   }
   95% {
     opacity: 0.7;
-    transform: translateY(-10vh) rotate(342deg) scale(1);
+    transform: translateY(5vh) translateX(0px) rotate(360deg) scale(1);
   }
   100% {
-    transform: translateY(-20vh) rotate(360deg) scale(0);
+    transform: translateY(-5vh) translateX(0) rotate(380deg) scale(0);
+    opacity: 0;
+  }
+}
+
+// 螺旋上升动画
+@keyframes float-particle-spiral {
+  0% {
+    transform: translateY(120vh) translateX(0) rotate(0deg) scale(0);
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.8;
+    transform: translateY(108vh) translateX(20px) rotate(90deg) scale(1);
+  }
+  22% {
+    transform: translateY(85vh) translateX(0) rotate(180deg) scale(1.2);
+  }
+  38% {
+    transform: translateY(62vh) translateX(-20px) rotate(270deg) scale(0.9);
+  }
+  54% {
+    transform: translateY(42vh) translateX(0) rotate(360deg) scale(1.1);
+  }
+  70% {
+    transform: translateY(25vh) translateX(15px) rotate(450deg) scale(1);
+  }
+  86% {
+    transform: translateY(10vh) translateX(0) rotate(520deg) scale(1);
+  }
+  95% {
+    opacity: 0.8;
+    transform: translateY(5vh) translateX(-5px) rotate(540deg) scale(1);
+  }
+  100% {
+    transform: translateY(-5vh) translateX(-10px) rotate(560deg) scale(0);
+    opacity: 0;
+  }
+}
+
+// 波浪上升动画
+@keyframes float-particle-wave {
+  0% {
+    transform: translateY(120vh) translateX(0) rotate(0deg) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+    transform: translateY(100vh) translateX(25px) rotate(72deg) scale(1);
+  }
+  22% {
+    transform: translateY(82vh) translateX(0) rotate(144deg) scale(1.1);
+  }
+  34% {
+    transform: translateY(65vh) translateX(-30px) rotate(216deg) scale(0.8);
+  }
+  46% {
+    transform: translateY(48vh) translateX(0) rotate(288deg) scale(1.2);
+  }
+  58% {
+    transform: translateY(32vh) translateX(20px) rotate(360deg) scale(1);
+  }
+  70% {
+    transform: translateY(20vh) translateX(0) rotate(432deg) scale(0.9);
+  }
+  82% {
+    transform: translateY(10vh) translateX(-15px) rotate(504deg) scale(1);
+  }
+  94% {
+    opacity: 0.6;
+    transform: translateY(5vh) translateX(0px) rotate(540deg) scale(1);
+  }
+  100% {
+    transform: translateY(-5vh) translateX(0) rotate(576deg) scale(0);
     opacity: 0;
   }
 }

@@ -33,7 +33,7 @@
         :key="tag"
         class="rounded-md bg-gray-100 dark:bg-white/5 px-1.5 py-0.5 text-[10px] text-gray-600 dark:text-gray-300 ring-1 ring-gray-200 dark:ring-white/10 font-medium"
       >
-        #{{ tag.body.static }}
+        #{{ tag?.body?.static ?? tag?.text ?? tag ?? '' }}
       </span>
     </div>
 
