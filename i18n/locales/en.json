@@ -659,5 +659,15 @@
     "coolBlue": "Nebula Blue",
     "cyberPurple": "Quantum Purple",
     "prismLaser": "Prism Laser"
+  },
+  "contact": {
+    "title": "Contact",
+    "slogan": "Infinite Creativity, Connected Future · Making Every Idea Shine",
+    "wechat": "WeChat",
+    "website": "Website",
+    "clickToCopy": "Click to copy",
+    "clickToVisit": "Click to visit",
+    "copySuccess": "{type} copied to clipboard",
+    "copyError": "Copy failed, please copy manually"
   }
 }

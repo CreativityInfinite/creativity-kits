@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <!-- Fullscreen techy background layers -->
+    <!-- 全屏科技感背景层 -->
     <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
       <div class="neon-grid absolute inset-0"></div>
       <div class="stars absolute inset-0"></div>
@@ -14,6 +14,7 @@
     </div>
 
     <main id="top" class="mx-auto relative max-w-7xl px-4 pb-16 pt-20 md:pt-24 lg:pt-28">
+      <!-- 页面头部 -->
       <header class="mb-6 md:mb-8 lg:mb-10">
         <div class="flex items-center justify-between gap-3">
           <h1 class="text-3xl font-semibold tracking-tight md:text-4xl lg:text-5xl">
@@ -27,14 +28,17 @@
         <div class="shimmer-line mt-3 h-[2px] w-28 rounded-full" aria-hidden="true"></div>
       </header>
 
-      <!-- Search: 科技感玻璃拟态，名称/标签模糊匹配 -->
+      <!-- 搜索框：科技感玻璃拟态设计 -->
       <div class="relative mt-2 mb-3">
         <div class="group relative">
+          <!-- 搜索图标 -->
           <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <svg class="h-5 w-5 text-gray-400 group-focus-within:text-sky-500 transition-colors" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </span>
+
+          <!-- 搜索输入框 -->
           <input
             ref="searchInput"
             v-model="query"
@@ -43,34 +47,39 @@
             type="text"
             inputmode="search"
             :placeholder="t('home.searchPlaceholder')"
-            class="w-full rounded-xl bg-white/70 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm pl-10 pr-20 h-12 text-sm md:text-base text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none transition-all duration-300 transform focus:ring-0 focus:border-transparent focus:scale-[1.01] focus:shadow-[0_0_0_3px_rgba(56,189,248,0.15)] hover:bg-white/80 dark:hover:bg-white/10"
+            class="w-full rounded-xl bg-white/90 dark:bg-white/5 backdrop-blur-md border border-gray-300/40 dark:border-white/10 shadow-lg pl-10 pr-20 h-12 text-sm md:text-base text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-500 outline-none transition-all duration-300 transform focus:ring-0 focus:border-sky-400/50 focus:scale-[1.01] focus:shadow-[0_0_0_3px_rgba(56,189,248,0.15)] hover:bg-white/95 dark:hover:bg-white/10 hover:border-gray-400/50 dark:hover:border-white/20"
             aria-label="搜索工具"
           />
-          <!-- 右侧动效图标（不阻挡点击） -->
-          <span class="pointer-events-none absolute right-10 mt top-1/2 -translate-y-1/2 transform">
+
+          <!-- 外环描边效果 -->
+          <div
+            class="pointer-events-none absolute -inset-px rounded-xl transition-all duration-300"
+            :class="searchFocused ? 'ring-2 ring-sky-400/60 shadow-[0_0_20px_rgba(56,189,248,0.25)]' : 'ring-1 ring-gray-200/30 dark:ring-white/10'"
+          ></div>
+
+          <!-- 右侧装饰图标 -->
+          <span class="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 transform">
             <Icon
               icon="tabler:sparkles"
               aria-hidden="true"
               class="h-6 w-6 text-fuchsia-500/70 group-focus-within:text-fuchsia-400 transition-colors duration-300 origin-center group-focus-within:rotate-12 transition-transform duration-300"
             />
           </span>
+
+          <!-- 清除按钮 -->
           <button
             v-if="query"
             @click="
               query = '';
               searchInput?.focus();
             "
-            class="absolute inset-y-0 right-0 mr-2 my-2 px-2 rounded-lg text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors"
+            class="absolute inset-y-0 right-0 mr-2 my-2 px-2 rounded-lg text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors flex items-center justify-center"
             aria-label="清除搜索"
           >
-            清除
+            <Icon icon="tdesign:clear-filled" class="w-4 h-4" />
           </button>
-          <!-- 外环描边 -->
-          <div
-            class="pointer-events-none absolute -inset-px rounded-xl transition-all duration-300"
-            :class="searchFocused ? 'ring-2 ring-sky-400/50 shadow-[0_0_20px_rgba(56,189,248,0.25)]' : 'ring-1 ring-white/10'"
-          ></div>
-          <!-- 霓虹扫光 -->
+
+          <!-- 霓虹扫光效果 -->
           <div
             class="pointer-events-none absolute -inset-0.5 rounded-xl bg-gradient-to-r from-sky-500/0 via-fuchsia-500/10 to-emerald-400/0 blur opacity-0 group-focus-within:opacity-100 group-focus-within:animate-pulse transition-opacity duration-500"
             aria-hidden="true"
@@ -78,11 +87,13 @@
         </div>
       </div>
 
+      <!-- 标签栏吸顶检测元素 -->
       <div ref="sentinel" class="h-1 -mt-1" aria-hidden="true"></div>
 
+      <!-- 标签栏区域 -->
       <div class="-mx-4 mb-6 px-4 pt-4 pb-2 sticky top-0 z-30 transition-all duration-500 ease-out">
-        <!-- 吸顶时才展示顶部渐变遮罩 -->
         <div class="relative rounded-xl">
+          <!-- 吸顶时的渐变遮罩 -->
           <transition name="tabmask">
             <div v-if="tabsSticky" class="pointer-events-none absolute inset-0 -mx-4 px-4" aria-hidden="true">
               <div class="h-12 -mt-2 w-full bg-gradient-to-b from-white/95 via-white/85 to-white/20 dark:from-bg/95 dark:via-bg/85 dark:to-bg/20 backdrop-blur-sm"></div>
@@ -92,13 +103,157 @@
         </div>
       </div>
 
-      <!-- Cards zone with techy decorative layers -->
+      <!-- 工具卡片网格区域 -->
       <div class="relative">
-        <!-- 使用 TransitionGroup 直接作为网格容器，启用 FLIP 过渡 -->
         <TransitionGroup name="grid" tag="div" class="grid auto-rows-[minmax(180px,auto)] grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5" appear>
           <ToolCard v-for="tool in sortedTools" :key="tool.id" :tool="tool" :active="isMatch(tool)" :disabled="!isMatch(tool)" class="duration-500 ease-out" />
         </TransitionGroup>
       </div>
+
+      <!-- 联系方式区域 -->
+      <div class="contact-section mt-20 mb-12">
+        <div class="contact-container relative">
+          <!-- 联系方式标题和标语 -->
+          <div class="contact-header text-center mb-12">
+            <div class="contact-title-wrapper relative">
+              <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-3 relative z-10">
+                {{ t('contact.title') }}
+              </h3>
+              <div class="title-glow absolute inset-0 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-fuchsia-500 to-emerald-400 blur-sm opacity-50">
+                {{ t('contact.title') }}
+              </div>
+            </div>
+            <p class="text-lg text-gray-600 dark:text-gray-400 mb-4 font-medium">
+              {{ t('contact.slogan') }}
+            </p>
+            <div class="title-line mx-auto h-[3px] w-24 bg-gradient-to-r from-sky-500 via-fuchsia-500 to-emerald-400 rounded-full relative">
+              <div class="absolute inset-0 bg-gradient-to-r from-sky-500 via-fuchsia-500 to-emerald-400 rounded-full blur-sm opacity-60"></div>
+            </div>
+          </div>
+
+          <!-- 联系方式卡片 -->
+          <div class="contact-items flex flex-col sm:flex-row gap-8 justify-center items-center max-w-3xl mx-auto">
+            <!-- 微信联系卡片 -->
+            <div class="contact-item group relative cursor-pointer transform transition-all duration-500 hover:scale-105" @click="copyToClipboard('17695796264', 'wechat')">
+              <div
+                class="contact-card relative p-8 rounded-3xl bg-white/95 dark:bg-white/5 backdrop-blur-xl border border-gray-200/40 dark:border-white/10 shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden"
+              >
+                <!-- 背景渐变覆盖层 -->
+                <div class="absolute inset-0 bg-gradient-to-br from-green-400/5 to-emerald-600/5 dark:from-green-400/10 dark:to-emerald-600/10"></div>
+
+                <!-- 图标区域 -->
+                <div class="contact-icon-wrapper relative flex items-center justify-center mb-6">
+                  <div
+                    class="contact-icon wechat-icon relative z-10 w-16 h-16 rounded-2xl bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 flex items-center justify-center text-white shadow-xl group-hover:shadow-2xl transition-all duration-500"
+                  >
+                    <Icon icon="ri:wechat-fill" class="w-8 h-8" />
+                  </div>
+                  <div class="pulse-ring absolute inset-0 rounded-2xl border-2 border-green-400 opacity-0 group-hover:opacity-100 group-hover:animate-ping"></div>
+                  <div class="glow-ring absolute inset-0 rounded-2xl bg-green-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+
+                <!-- 联系信息 -->
+                <div class="contact-info text-center relative z-10">
+                  <span class="contact-label block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider">
+                    {{ t('contact.wechat') }}
+                  </span>
+                  <span class="contact-value block text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">17695796264</span>
+                  <span class="contact-hint block text-xs text-gray-500 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {{ t('contact.clickToCopy') }}
+                  </span>
+                </div>
+
+                <!-- 动画边框效果 -->
+                <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-sm"></div>
+                <div class="hover-effect absolute inset-0 rounded-3xl bg-gradient-to-r from-green-400/10 to-emerald-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
+            </div>
+
+            <!-- 官网联系卡片 -->
+            <div class="contact-item group relative cursor-pointer transform transition-all duration-500 hover:scale-105" @click="openWebsite">
+              <div
+                class="contact-card relative p-8 rounded-3xl bg-white/95 dark:bg-white/5 backdrop-blur-xl border border-gray-200/40 dark:border-white/10 shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden"
+              >
+                <!-- 背景渐变覆盖层 -->
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-purple-600/5 dark:from-blue-400/10 dark:to-purple-600/10"></div>
+
+                <!-- 图标区域 -->
+                <div class="contact-icon-wrapper relative flex items-center justify-center mb-6">
+                  <div
+                    class="contact-icon website-icon relative z-10 w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 via-purple-500 to-purple-600 flex items-center justify-center text-white shadow-xl group-hover:shadow-2xl transition-all duration-500"
+                  >
+                    <Icon icon="ri:global-line" class="w-8 h-8" />
+                  </div>
+                  <div class="pulse-ring absolute inset-0 rounded-2xl border-2 border-blue-400 opacity-0 group-hover:opacity-100 group-hover:animate-ping"></div>
+                  <div class="glow-ring absolute inset-0 rounded-2xl bg-blue-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+
+                <!-- 联系信息 -->
+                <div class="contact-info text-center relative z-10">
+                  <span class="contact-label block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider">
+                    {{ t('contact.website') }}
+                  </span>
+                  <span class="contact-value block text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">creativityinfinite.com</span>
+                  <span class="contact-hint block text-xs text-gray-500 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {{ t('contact.clickToVisit') }}
+                  </span>
+                </div>
+
+                <!-- 动画边框效果 -->
+                <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400 via-purple-500 to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-sm"></div>
+                <div class="hover-effect absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 浮动粒子动画 -->
+          <div class="floating-particles absolute inset-0 pointer-events-none overflow-hidden opacity-60 dark:opacity-100 transition-opacity duration-300">
+            <div
+              class="particle"
+              v-for="n in 8"
+              :key="n"
+              :style="{
+                animationDelay: n * 0.8 + 's',
+                left: n * 12.5 + '%'
+              }"
+            ></div>
+          </div>
+
+          <!-- 装饰元素 -->
+          <div class="contact-decorations absolute inset-0 pointer-events-none">
+            <div
+              class="deco-circle absolute top-10 left-10 w-32 h-32 rounded-full bg-gradient-to-br from-sky-400/5 to-fuchsia-500/5 dark:from-sky-400/10 dark:to-fuchsia-500/10 blur-2xl animate-pulse transition-all duration-300"
+            ></div>
+            <div
+              class="deco-circle absolute bottom-10 right-10 w-40 h-40 rounded-full bg-gradient-to-br from-emerald-400/5 to-blue-500/5 dark:from-emerald-400/10 dark:to-blue-500/10 blur-2xl animate-pulse transition-all duration-300"
+              style="animation-delay: 2s"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 复制成功弹窗通知 -->
+      <Transition name="toast">
+        <div
+          v-if="showToast"
+          class="toast-notification fixed top-20 right-6 z-50 rounded-2xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/60 dark:border-gray-700/60 shadow-2xl overflow-hidden"
+        >
+          <div class="p-4">
+            <div class="flex items-center gap-3">
+              <div class="toast-icon w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                <Icon icon="ri:check-line" class="w-4 h-4 text-white" />
+              </div>
+              <div class="toast-content">
+                <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ toastMessage }}</p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="toast-progress absolute bottom-0 left-0 h-1 bg-gradient-to-r from-green-400 to-emerald-600 transition-all duration-3000 ease-linear"
+            :style="{ width: toastProgress + '%' }"
+          ></div>
+        </div>
+      </Transition>
     </main>
   </div>
 
@@ -106,13 +261,11 @@
 </template>
 
 <script setup lang="ts">
+// ==================== 组件导入 ====================
 import Tabs from '~/components/Tabs.vue';
 import ToolCard from '~/components/ToolCard.vue';
-import ThemeStyleSwitch from '~/components/ThemeStyleSwitch.vue';
-import ColorModeSwitch from '~/components/ColorModeSwitch.vue';
-import LangSwitch from '~/components/LangSwitch.vue';
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import BackToTop from '~/components/BackToTop.vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useTools } from '~/composables/useTools';
 import { isMatchFactory, sortByMatch } from '~/composables/useToolFilters';
 import type { ToolMetaRuntime } from '~/types/tool';
@@ -122,13 +275,15 @@ import { Icon } from '@iconify/vue';
 import { pinyin } from 'pinyin-pro';
 import * as OpenCC from 'opencc-js';
 
+// ==================== 国际化和转换器 ====================
 const { t, tm } = useI18n();
 const convS2T = OpenCC.Converter({ from: 'cn', to: 'tw' });
 const convT2S = OpenCC.Converter({ from: 'tw', to: 'cn' });
 
-// 直接顶层获取，避免 Ref 嵌套导致 tool 为 true/false/undefined
+// ==================== 工具数据获取 ====================
 const { tools, categories, popularTag } = await useTools();
 
+// ==================== 标签栏配置 ====================
 const tabs = computed(() => [
   { id: 'all', label: t('tabs.all') },
   { id: 'hot', label: t('tabs.hot') },
@@ -138,17 +293,19 @@ const tabs = computed(() => [
 
 const activeTab = ref('all');
 
+// ==================== 标签栏吸顶逻辑 ====================
 const sentinel = ref<HTMLElement | null>(null);
 let io: IntersectionObserver | null = null;
-// 用于与 app.vue 顶部开关联动隐藏：Tabs 一旦吸顶则隐藏右上角开关
 const headerSwitchesHidden = useState('headerSwitchesHidden', () => false);
 const tabsSticky = computed(() => headerSwitchesHidden.value);
 
+// ==================== 搜索功能 ====================
 const query = ref('');
 const searchFocused = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 const normalizedQuery = computed(() => query.value.trim().toLowerCase());
 
+// 全局键盘快捷键
 function onGlobalKeydown(e: KeyboardEvent) {
   if ((e.key === '/' || e.key === 's') && !e.metaKey && !e.ctrlKey && !e.altKey) {
     e.preventDefault();
@@ -162,12 +319,12 @@ function onGlobalKeydown(e: KeyboardEvent) {
   }
 }
 
+// ==================== 生命周期钩子 ====================
 onMounted(() => {
   if (!sentinel.value) return;
   io = new IntersectionObserver(
     (entries) => {
       const e = entries[0];
-      // 当 sentinel 不可见 => Tabs 已吸顶（卡在顶部），隐藏右上角
       headerSwitchesHidden.value = !e.isIntersecting;
     },
     { root: null, threshold: 0 }
@@ -175,37 +332,41 @@ onMounted(() => {
   io.observe(sentinel.value);
   window.addEventListener('keydown', onGlobalKeydown);
 });
+
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onGlobalKeydown);
   if (io && sentinel.value) io.unobserve(sentinel.value);
   io = null;
-  // 页面离开时恢复显示
   headerSwitchesHidden.value = false;
 });
 
+// ==================== 搜索匹配逻辑 ====================
 const isTabMatch = isMatchFactory(activeTab, popularTag);
 
-// 规范化工具函数
+// 文本规范化工具函数
 function norm(s: string) {
   return (s || '').toLowerCase().trim();
 }
+
 function collapse(s: string) {
   return norm(s).replace(/\s+/g, '');
 }
+
 function toPinyin(s: string) {
-  // 去掉声调、空格紧凑
   try {
     return collapse(pinyin(s, { toneType: 'none', type: 'array' }).join(' '));
   } catch {
     return '';
   }
 }
+
 function variantsForText(s: string) {
   const base = norm(s);
   const baseT = convS2T(s);
   const baseS = convT2S(s);
   return Array.from(new Set([base, collapse(base), norm(baseS), collapse(baseS), norm(baseT), collapse(baseT), toPinyin(base), toPinyin(baseS), toPinyin(baseT)])).filter(Boolean);
 }
+
 function variantsForTags(items: any[]) {
   const texts = items.map((it) => (typeof it === 'string' ? it : (it?.body?.static ?? it?.text ?? ''))).filter(Boolean) as string[];
   const joined = texts.join(' ');
@@ -216,6 +377,7 @@ function anyIncludes(haystackList: string[], needleList: string[]) {
   return haystackList.some((h) => needleList.some((n) => n && h.includes(n)));
 }
 
+// 工具匹配函数
 function isMatch(tool: ToolMetaRuntime) {
   if (!tool) return false;
   if (!isTabMatch(tool)) return false;
@@ -223,75 +385,375 @@ function isMatch(tool: ToolMetaRuntime) {
   const q = normalizedQuery.value;
   if (!q) return true;
 
-  // 用户输入的多形态（简体/繁体/紧凑/拼音）
   const qVariants = variantsForText(q);
-
-  // 本地化名称与标签
   const localizedName = typeof tool.name === 'string' ? t(tool.name) : '';
   const localizedTags = typeof tool.tags === 'string' ? (tm as any)(tool.tags) : [];
-
-  // 构建待匹配的候选形态
   const nameVariants = variantsForText(localizedName);
   const tagVariants = Array.isArray(localizedTags) ? variantsForTags(localizedTags) : [];
-
-  // 原始键回退（不做拼音，仅键值匹配）
   const rawVariants = [norm(String(tool.name || '')), norm(String(tool.tags || ''))].filter(Boolean);
 
   return anyIncludes(nameVariants, qVariants) || anyIncludes(tagVariants, qVariants) || rawVariants.some((rv) => rv.includes(norm(q)));
 }
+
+// 排序后的工具列表
 const sortedTools = computed(() => {
   const list = tools.value || [];
   return [...list].sort(sortByMatch(isMatch as (t: ToolMetaRuntime) => boolean));
 });
 
+// 标签切换处理
 function onTabChange(id: string) {
   activeTab.value = id;
 }
+
+// ==================== 弹窗通知状态 ====================
+const showToast = ref(false);
+const toastMessage = ref('');
+const toastProgress = ref(100);
+let toastTimer: NodeJS.Timeout | null = null;
+
+// ==================== 联系方式功能 ====================
+// 复制到剪贴板
+function copyToClipboard(text: string, type: string) {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      showToastNotification(t('contact.copySuccess', { type: t(`contact.${type}`) }));
+    })
+    .catch((err) => {
+      console.error('Failed to copy: ', err);
+      showToastNotification(t('contact.copyError'));
+    });
+}
+
+// 打开官网
+function openWebsite() {
+  window.open('https://www.creativityinfinite.com/', '_blank');
+}
+
+// 显示弹窗通知
+function showToastNotification(message: string) {
+  if (toastTimer) {
+    clearTimeout(toastTimer);
+  }
+
+  toastMessage.value = message;
+  showToast.value = true;
+  toastProgress.value = 100;
+
+  // 进度条动画
+  const progressInterval = setInterval(() => {
+    toastProgress.value -= 2;
+    if (toastProgress.value <= 0) {
+      clearInterval(progressInterval);
+    }
+  }, 60);
+
+  // 3秒后隐藏弹窗
+  toastTimer = setTimeout(() => {
+    showToast.value = false;
+    clearInterval(progressInterval);
+  }, 3000);
+}
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+/* ==================== 工具卡片网格过渡动画 ==================== */
 .grid-enter-active,
 .grid-leave-active {
   transition:
     opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+
 .grid-enter-from {
   opacity: 0;
   transform: translateY(24px) scale(0.96);
 }
+
 .grid-enter-to {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
+
 .grid-leave-from {
   opacity: 1;
   transform: scale(1);
 }
+
 .grid-leave-to {
   opacity: 0;
   transform: translateY(8px) scale(0.98);
 }
-/* 列表重排时启用移动过渡 */
+
+/* 列表重排时的移动过渡 */
 .grid-move {
   transition: transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-/* 保留仅与卡片网格重排相关的过渡样式，其他全局装饰动效已迁移至 assets/css/animations.css */
-/* Tabs 吸顶遮罩的淡入淡出 - 更长更明显的过渡 */
+
+/* ==================== 标签栏吸顶遮罩动画 ==================== */
 .tabmask-enter-active,
 .tabmask-leave-active {
   transition:
     opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
     transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
 .tabmask-enter-from,
 .tabmask-leave-to {
   opacity: 0;
   transform: translateY(-8px);
 }
+
 .tabmask-enter-to,
 .tabmask-leave-from {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* ==================== 联系方式区域样式 ==================== */
+.contact-section {
+  position: relative;
+  background: linear-gradient(135deg, transparent 0%, rgba(59, 130, 246, 0.01) 50%, transparent 100%);
+  transition: background 0.3s ease;
+}
+
+.dark .contact-section {
+  background: linear-gradient(135deg, transparent 0%, rgba(59, 130, 246, 0.02) 50%, transparent 100%);
+}
+
+.contact-container {
+  position: relative;
+  z-index: 10;
+}
+
+.contact-header {
+  position: relative;
+}
+
+.contact-title-wrapper {
+  display: inline-block;
+}
+
+.title-glow {
+  pointer-events: none;
+}
+
+/* ==================== 联系卡片样式 ==================== */
+.contact-card {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+  }
+}
+
+.contact-item {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+
+    .contact-card::before {
+      left: 100%;
+    }
+
+    .contact-icon {
+      transform: scale(1.15) rotate(8deg);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.contact-icon {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.contact-hint {
+  transition: all 0.3s ease;
+}
+
+.contact-decorations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ==================== 联系卡片动画效果 ==================== */
+.pulse-ring {
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+
+.glow-ring {
+  animation: glow-pulse 2s infinite;
+}
+
+.deco-circle {
+  animation: float-decoration 8s infinite ease-in-out;
+  transition:
+    background 0.3s ease,
+    opacity 0.3s ease;
+}
+
+/* ==================== 浮动粒子动画 ==================== */
+.floating-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: float-particle 12s infinite linear;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  transition:
+    opacity 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &:nth-child(odd) {
+    background: linear-gradient(45deg, #f59e0b, #ef4444, #ec4899);
+  }
+}
+
+.dark .particle {
+  opacity: 0.7;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+/* ==================== 弹窗通知样式 ==================== */
+.toast-notification {
+  animation: toast-slide-in 0.3s ease-out;
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(100%) scale(0.8);
+}
+
+.toast-progress {
+  animation: progress-shrink 3s linear forwards;
+}
+
+/* ==================== 动画关键帧 ==================== */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translateY(120vh) rotate(0deg) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.7;
+    transform: translateY(110vh) rotate(18deg) scale(1);
+  }
+  95% {
+    opacity: 0.7;
+    transform: translateY(-10vh) rotate(342deg) scale(1);
+  }
+  100% {
+    transform: translateY(-20vh) rotate(360deg) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes float-decoration {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes progress-shrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* ==================== 响应式布局 ==================== */
+@media (max-width: 640px) {
+  .contact-items {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .contact-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .contact-header h3 {
+    font-size: 2rem;
+  }
+
+  .contact-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+
+    svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-section {
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .contact-header {
+    margin-bottom: 2rem;
+  }
 }
 </style>

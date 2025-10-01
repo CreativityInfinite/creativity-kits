@@ -659,5 +659,15 @@
     "coolBlue": "星雲藍",
     "cyberPurple": "量子紫",
     "prismLaser": "稜鏡雷射"
+  },
+  "contact": {
+    "title": "聯繫方式",
+    "slogan": "創意無限，連接未來 · 讓每一個想法都閃閃發光",
+    "wechat": "微信",
+    "website": "官網",
+    "clickToCopy": "點擊複製",
+    "clickToVisit": "點擊訪問",
+    "copySuccess": "已複製 {type} 到剪貼板",
+    "copyError": "複製失敗，請手動複製"
   }
 }
