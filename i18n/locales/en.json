@@ -5,7 +5,8 @@
     "open": "Open"
   },
   "home": {
-    "subtitle": "An elegant and modern creative toolkit: commonly used utilities for text/data/media/maps/regex/time and more, empowering efficient creation."
+    "subtitle": "An elegant and modern creative toolkit: commonly used utilities for text/data/media/maps/regex/time and more, empowering efficient creation.",
+    "searchPlaceholder": "Search by name or tags… /"
   },
   "tabs": {
     "all": "All",

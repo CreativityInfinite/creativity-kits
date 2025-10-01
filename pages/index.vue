@@ -27,6 +27,57 @@
         <div class="shimmer-line mt-3 h-[2px] w-28 rounded-full" aria-hidden="true"></div>
       </header>
 
+      <!-- Search: 科技感玻璃拟态，名称/标签模糊匹配 -->
+      <div class="relative mt-2 mb-3">
+        <div class="group relative">
+          <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-gray-400 group-focus-within:text-sky-500 transition-colors" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <input
+            ref="searchInput"
+            v-model="query"
+            @focus="searchFocused = true"
+            @blur="searchFocused = false"
+            type="text"
+            inputmode="search"
+            :placeholder="t('home.searchPlaceholder')"
+            class="w-full rounded-xl bg-white/70 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm pl-10 pr-20 h-12 text-sm md:text-base text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none transition-all duration-300 transform focus:ring-0 focus:border-transparent focus:scale-[1.01] focus:shadow-[0_0_0_3px_rgba(56,189,248,0.15)] hover:bg-white/80 dark:hover:bg-white/10"
+            aria-label="搜索工具"
+          />
+          <!-- 右侧动效图标（不阻挡点击） -->
+          <span class="pointer-events-none absolute right-10 mt top-1/2 -translate-y-1/2 transform">
+            <Icon
+              icon="tabler:sparkles"
+              aria-hidden="true"
+              class="h-6 w-6 text-fuchsia-500/70 group-focus-within:text-fuchsia-400 transition-colors duration-300 origin-center group-focus-within:rotate-12 transition-transform duration-300"
+            />
+          </span>
+          <button
+            v-if="query"
+            @click="
+              query = '';
+              searchInput?.focus();
+            "
+            class="absolute inset-y-0 right-0 mr-2 my-2 px-2 rounded-lg text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors"
+            aria-label="清除搜索"
+          >
+            清除
+          </button>
+          <!-- 外环描边 -->
+          <div
+            class="pointer-events-none absolute -inset-px rounded-xl transition-all duration-300"
+            :class="searchFocused ? 'ring-2 ring-sky-400/50 shadow-[0_0_20px_rgba(56,189,248,0.25)]' : 'ring-1 ring-white/10'"
+          ></div>
+          <!-- 霓虹扫光 -->
+          <div
+            class="pointer-events-none absolute -inset-0.5 rounded-xl bg-gradient-to-r from-sky-500/0 via-fuchsia-500/10 to-emerald-400/0 blur opacity-0 group-focus-within:opacity-100 group-focus-within:animate-pulse transition-opacity duration-500"
+            aria-hidden="true"
+          ></div>
+        </div>
+      </div>
+
       <div ref="sentinel" class="h-1 -mt-1" aria-hidden="true"></div>
 
       <div class="-mx-4 mb-6 px-4 pt-4 pb-2 sticky top-0 z-30 transition-all duration-500 ease-out">
@@ -67,6 +118,7 @@ import { isMatchFactory, sortByMatch } from '~/composables/useToolFilters';
 import type { ToolMetaRuntime } from '~/types/tool';
 import { useState } from 'nuxt/app';
 import { useI18n } from 'vue-i18n';
+import { Icon } from '@iconify/vue';
 
 const { t } = useI18n();
 
@@ -88,6 +140,24 @@ let io: IntersectionObserver | null = null;
 const headerSwitchesHidden = useState('headerSwitchesHidden', () => false);
 const tabsSticky = computed(() => headerSwitchesHidden.value);
 
+const query = ref('');
+const searchFocused = ref(false);
+const searchInput = ref<HTMLInputElement | null>(null);
+const normalizedQuery = computed(() => query.value.trim().toLowerCase());
+
+function onGlobalKeydown(e: KeyboardEvent) {
+  if ((e.key === '/' || e.key === 's') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    e.preventDefault();
+    searchInput.value?.focus();
+  } else if (e.key === 'Escape') {
+    if (query.value) {
+      query.value = '';
+    } else {
+      (e.target as HTMLElement | null)?.blur?.();
+    }
+  }
+}
+
 onMounted(() => {
   if (!sentinel.value) return;
   io = new IntersectionObserver(
@@ -99,15 +169,26 @@ onMounted(() => {
     { root: null, threshold: 0 }
   );
   io.observe(sentinel.value);
+  window.addEventListener('keydown', onGlobalKeydown);
 });
 onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onGlobalKeydown);
   if (io && sentinel.value) io.unobserve(sentinel.value);
   io = null;
   // 页面离开时恢复显示
   headerSwitchesHidden.value = false;
 });
 
-const isMatch = isMatchFactory(activeTab, popularTag);
+const isTabMatch = isMatchFactory(activeTab, popularTag);
+function isMatch(t: ToolMetaRuntime) {
+  if (!t) return false;
+  if (!isTabMatch(t)) return false;
+  const q = normalizedQuery.value;
+  if (!q) return true;
+  const name = (t.name || '').toLowerCase();
+  const tags = (t.tags || '').toLowerCase();
+  return name.includes(q) || tags.includes(q);
+}
 const sortedTools = computed(() => {
   const list = tools.value || [];
   return [...list].sort(sortByMatch(isMatch as (t: ToolMetaRuntime) => boolean));
@@ -121,7 +202,9 @@ function onTabChange(id: string) {
 <style scoped>
 .grid-enter-active,
 .grid-leave-active {
-  transition: opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition:
+    opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .grid-enter-from {
   opacity: 0;
@@ -147,7 +230,9 @@ function onTabChange(id: string) {
 /* Tabs 吸顶遮罩的淡入淡出 - 更长更明显的过渡 */
 .tabmask-enter-active,
 .tabmask-leave-active {
-  transition: opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition:
+    opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .tabmask-enter-from,
 .tabmask-leave-to {
