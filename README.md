@@ -30,10 +30,7 @@ GitHub Widgets
 - Replace OWNER/REPO and USERNAME placeholders to enable dynamic widgets
 
 - Star History (trend)
-  - Date mode:  
-    https://api.star-history.com/svg?repos=OWNER/REPO&type=Date
-  - Embedded badge:  
-    [![Star History Chart](https://api.star-history.com/svg?repos=CreativityInfinite/creativity-kits&type=Date)](https://www.star-history.com/#CreativityInfinite/creativity-kits&Date)
+  - [![Star History Chart](https://api.star-history.com/svg?repos=CreativityInfinite/creativity-kits&type=Date)](https://www.star-history.com/#CreativityInfinite/creativity-kits&Date)
 
 - Repo Stats Card
   - [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=CreativityInfinite&repo=creativity-kits&theme=radical)](https://github.com/OWNER/REPO)

@@ -218,6 +218,42 @@
                 <div class="hover-effect absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </div>
             </div>
+
+            <!-- GitHub联系卡片 -->
+            <div class="contact-item group relative cursor-pointer transform transition-all duration-500 hover:scale-105" @click="openGithub">
+              <div
+                class="contact-card relative p-8 rounded-3xl bg-white/95 dark:bg-white/5 backdrop-blur-xl border border-gray-200/40 dark:border-white/10 shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden"
+              >
+                <!-- 背景渐变覆盖层 -->
+                <div class="absolute inset-0 bg-gradient-to-br from-gray-400/5 to-gray-800/5 dark:from-gray-400/10 dark:to-gray-800/10"></div>
+
+                <!-- 图标区域 -->
+                <div class="contact-icon-wrapper relative flex items-center justify-center mb-6">
+                  <div
+                    class="contact-icon github-icon relative z-10 w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-700 via-gray-800 to-black flex items-center justify-center text-white shadow-xl group-hover:shadow-2xl transition-all duration-500"
+                  >
+                    <Icon icon="ri:github-fill" class="w-8 h-8" />
+                  </div>
+                  <div class="pulse-ring absolute inset-0 rounded-2xl border-2 border-gray-600 opacity-0 group-hover:opacity-100 group-hover:animate-ping"></div>
+                  <div class="glow-ring absolute inset-0 rounded-2xl bg-gray-600/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+
+                <!-- 联系信息 -->
+                <div class="contact-info text-center relative z-10">
+                  <span class="contact-label block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider">
+                    {{ t('contact.github') }}
+                  </span>
+                  <span class="contact-value block text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">creativity-kits</span>
+                  <span class="contact-hint block text-xs text-gray-500 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {{ t('contact.clickToVisit') }}
+                  </span>
+                </div>
+
+                <!-- 动画边框效果 -->
+                <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-sm"></div>
+                <div class="hover-effect absolute inset-0 rounded-3xl bg-gradient-to-r from-gray-600/10 to-gray-800/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
+            </div>
           </div>
 
           <!-- 装饰元素 -->
@@ -438,6 +474,11 @@ function copyToClipboard(text: string, type: string) {
 // 打开官网
 function openWebsite() {
   window.open('https://www.creativityinfinite.com/', '_blank');
+}
+
+// 打开GitHub
+function openGithub() {
+  window.open('https://github.com/CreativityInfinite/creativity-kits', '_blank');
 }
 
 // 显示弹窗通知
