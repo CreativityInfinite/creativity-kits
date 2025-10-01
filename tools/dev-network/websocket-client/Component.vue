@@ -2,33 +2,33 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">WebSocket 客户端</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.websocket-client.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">WebSocket URL</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.websocket-client.page.wsUrl') }}</label>
             <input
               v-model="wsUrl"
               type="text"
               class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono"
-              placeholder="ws://localhost:8080 或 wss://echo.websocket.org"
+              :placeholder="$t('tools.websocket-client.page.wsUrlPlaceholder')"
               :disabled="isConnected"
             />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-sm font-medium mb-1">协议 (可选)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.websocket-client.page.protocolOptional') }}</label>
               <input
                 v-model="protocol"
                 type="text"
                 class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                placeholder="如: chat, echo"
+                :placeholder="$t('tools.websocket-client.page.protocolPlaceholder')"
                 :disabled="isConnected"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">连接状态</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.websocket-client.page.connectionStatus') }}</label>
               <div class="flex items-center gap-2 px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600">
                 <div
                   class="w-3 h-3 rounded-full"
@@ -45,22 +45,30 @@
           </div>
 
           <div class="flex gap-2">
-            <button @click="connect" :disabled="isConnected || !wsUrl" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md">连接</button>
-            <button @click="disconnect" :disabled="!isConnected" class="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-md">断开</button>
-            <button @click="clearMessages" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="connect" :disabled="isConnected || !wsUrl" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.websocket-client.page.connect') }}
+            </button>
+            <button @click="disconnect" :disabled="!isConnected" class="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.websocket-client.page.disconnect') }}
+            </button>
+            <button @click="clearMessages" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">
+              {{ $t('tools.websocket-client.page.clear') }}
+            </button>
           </div>
 
           <div v-if="isConnected" class="space-y-3">
             <div>
-              <label class="block text-sm font-medium mb-1">发送消息</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.websocket-client.page.sendMessage') }}</label>
               <div class="space-y-2">
                 <div class="flex gap-2">
                   <select v-model="messageType" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="text">文本</option>
+                    <option value="text">{{ $t('tools.websocket-client.page.typeText') }}</option>
                     <option value="json">JSON</option>
-                    <option value="binary">二进制</option>
+                    <option value="binary">{{ $t('tools.websocket-client.page.typeBinary') }}</option>
                   </select>
-                  <button @click="formatMessage" v-if="messageType === 'json'" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm">格式化</button>
+                  <button @click="formatMessage" v-if="messageType === 'json'" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm">
+                    {{ $t('tools.websocket-client.page.format') }}
+                  </button>
                 </div>
 
                 <textarea
@@ -72,14 +80,16 @@
                 />
 
                 <div class="flex justify-between items-center">
-                  <p class="text-xs text-gray-500">Ctrl+Enter 发送 | 字符数: {{ messageToSend.length }}</p>
-                  <button @click="sendMessage" :disabled="!messageToSend.trim()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">发送消息</button>
+                  <p class="text-xs text-gray-500">{{ $t('tools.websocket-client.page.ctrlEnterToSend') }} | {{ $t('tools.websocket-client.page.charCount', { n: messageToSend.length }) }}</p>
+                  <button @click="sendMessage" :disabled="!messageToSend.trim()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+                    {{ $t('tools.websocket-client.page.sendMessageBtn') }}
+                  </button>
                 </div>
               </div>
             </div>
 
             <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-              <h4 class="font-medium mb-3">快速消息模板</h4>
+              <h4 class="font-medium mb-3">{{ $t('tools.websocket-client.page.quickTemplates') }}</h4>
               <div class="grid grid-cols-2 gap-2">
                 <button
                   v-for="template in messageTemplates"
@@ -96,35 +106,37 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">消息日志</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.websocket-client.page.messageLog') }}</h3>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">连接信息</h4>
+            <h4 class="font-medium">{{ $t('tools.websocket-client.page.connectionInfo') }}</h4>
             <div class="flex gap-2">
-              <button @click="exportMessages" :disabled="messages.length === 0" class="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">导出日志</button>
+              <button @click="exportMessages" :disabled="messages.length === 0" class="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">
+                {{ $t('tools.websocket-client.page.exportLog') }}
+              </button>
               <button @click="toggleAutoScroll" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm" :class="{ 'bg-blue-800': autoScroll }">
-                {{ autoScroll ? '停止滚动' : '自动滚动' }}
+                {{ autoScroll ? $t('tools.websocket-client.page.stopScroll') : $t('tools.websocket-client.page.autoScroll') }}
               </button>
             </div>
           </div>
 
           <div class="space-y-2 text-sm">
             <div class="flex justify-between">
-              <span>URL:</span>
-              <code class="text-xs bg-gray-200 dark:bg-gray-600 px-1 rounded">{{ wsUrl || '未连接' }}</code>
+              <span>{{ $t('tools.websocket-client.page.urlLabel') }}</span>
+              <code class="text-xs bg-gray-200 dark:bg-gray-600 px-1 rounded">{{ wsUrl || $t('tools.websocket-client.page.notConnected') }}</code>
             </div>
             <div class="flex justify-between">
-              <span>协议:</span>
-              <span>{{ protocol || '默认' }}</span>
+              <span>{{ $t('tools.websocket-client.page.protocolLabel') }}</span>
+              <span>{{ protocol || $t('tools.websocket-client.page.defaultValue') }}</span>
             </div>
             <div class="flex justify-between">
-              <span>消息数量:</span>
+              <span>{{ $t('tools.websocket-client.page.messageCount') }}</span>
               <span>{{ messages.length }}</span>
             </div>
             <div class="flex justify-between">
-              <span>连接时间:</span>
-              <span>{{ connectionTime || '未连接' }}</span>
+              <span>{{ $t('tools.websocket-client.page.connectionTime') }}</span>
+              <span>{{ connectionTime || $t('tools.websocket-client.page.notConnected') }}</span>
             </div>
           </div>
         </div>
@@ -132,13 +144,13 @@
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
             <div class="flex justify-between items-center">
-              <span class="font-medium text-sm">消息历史</span>
+              <span class="font-medium text-sm">{{ $t('tools.websocket-client.page.history') }}</span>
               <div class="flex gap-2">
                 <select v-model="messageFilter" class="px-2 py-1 border rounded text-xs dark:bg-gray-600 dark:border-gray-500">
-                  <option value="all">全部</option>
-                  <option value="sent">已发送</option>
-                  <option value="received">已接收</option>
-                  <option value="system">系统</option>
+                  <option value="all">{{ $t('tools.websocket-client.page.filterAll') }}</option>
+                  <option value="sent">{{ $t('tools.websocket-client.page.filterSent') }}</option>
+                  <option value="received">{{ $t('tools.websocket-client.page.filterReceived') }}</option>
+                  <option value="system">{{ $t('tools.websocket-client.page.filterSystem') }}</option>
                 </select>
               </div>
             </div>
@@ -163,7 +175,13 @@
               >
                 <div class="flex justify-between items-start gap-2 mb-1">
                   <span class="font-medium text-xs opacity-75">
-                    {{ message.type === 'sent' ? '发送' : message.type === 'received' ? '接收' : '系统' }}
+                    {{
+                      message.type === 'sent'
+                        ? $t('tools.websocket-client.page.tagSent')
+                        : message.type === 'received'
+                          ? $t('tools.websocket-client.page.tagReceived')
+                          : $t('tools.websocket-client.page.tagSystem')
+                    }}
                   </span>
                   <span class="text-xs opacity-75">{{ message.timestamp }}</span>
                 </div>
@@ -173,13 +191,15 @@
                   <span v-else>{{ message.content }}</span>
                 </div>
 
-                <div v-if="message.size" class="text-xs opacity-75 mt-1">大小: {{ message.size }} bytes</div>
+                <div v-if="message.size" class="text-xs opacity-75 mt-1">
+                  {{ $t('tools.websocket-client.page.sizeBytes', { size: message.size }) }}
+                </div>
               </div>
             </div>
 
             <div v-if="filteredMessages.length === 0" class="text-center py-8 text-gray-500">
               <div class="text-2xl mb-2">💬</div>
-              <div>暂无消息</div>
+              <div>{{ $t('tools.websocket-client.page.noMessages') }}</div>
             </div>
           </div>
         </div>
@@ -187,24 +207,24 @@
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.websocket-client.page.guideTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">连接设置</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.websocket-client.page.connSettings') }}</h4>
           <ul class="space-y-1">
-            <li>• 支持 ws:// 和 wss:// 协议</li>
-            <li>• 可选择子协议</li>
-            <li>• 实时显示连接状态</li>
-            <li>• 自动重连功能</li>
+            <li>• {{ $t('tools.websocket-client.page.guideWs') }}</li>
+            <li>• {{ $t('tools.websocket-client.page.guideSubprotocol') }}</li>
+            <li>• {{ $t('tools.websocket-client.page.guideStatus') }}</li>
+            <li>• {{ $t('tools.websocket-client.page.guideReconnect') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">消息功能</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.websocket-client.page.messageFeatures') }}</h4>
           <ul class="space-y-1">
-            <li>• 支持文本、JSON、二进制消息</li>
-            <li>• JSON 自动格式化</li>
-            <li>• 消息历史记录</li>
-            <li>• 导出日志功能</li>
+            <li>• {{ $t('tools.websocket-client.page.guideTypes') }}</li>
+            <li>• {{ $t('tools.websocket-client.page.guideJsonFormat') }}</li>
+            <li>• {{ $t('tools.websocket-client.page.guideHistory') }}</li>
+            <li>• {{ $t('tools.websocket-client.page.guideExport') }}</li>
           </ul>
         </div>
       </div>
@@ -214,6 +234,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface Message {
   type: 'sent' | 'received' | 'system';
@@ -228,6 +249,8 @@ interface MessageTemplate {
   type: 'text' | 'json' | 'binary';
   content: string;
 }
+
+const { t } = useI18n();
 
 const wsUrl = ref('wss://echo.websocket.org');
 const protocol = ref('');
@@ -244,22 +267,22 @@ const messagesContainer = ref<HTMLElement>();
 
 const messageTemplates: MessageTemplate[] = [
   {
-    name: 'Ping',
+    name: t('tools.websocket-client.page.templatePing'),
     type: 'text',
     content: 'ping'
   },
   {
-    name: 'Hello',
+    name: t('tools.websocket-client.page.templateHello'),
     type: 'json',
     content: JSON.stringify({ type: 'hello', message: 'Hello WebSocket!' }, null, 2)
   },
   {
-    name: '心跳包',
+    name: t('tools.websocket-client.page.templateHeartbeat'),
     type: 'json',
     content: JSON.stringify({ type: 'heartbeat', timestamp: Date.now() }, null, 2)
   },
   {
-    name: '用户消息',
+    name: t('tools.websocket-client.page.templateUserMessage'),
     type: 'json',
     content: JSON.stringify(
       {
@@ -279,26 +302,26 @@ const isConnected = computed(() => connectionState.value === 'OPEN');
 const connectionStateText = computed(() => {
   switch (connectionState.value) {
     case 'CONNECTING':
-      return '连接中...';
+      return t('tools.websocket-client.page.stateConnecting');
     case 'OPEN':
-      return '已连接';
+      return t('tools.websocket-client.page.stateOpen');
     case 'CLOSING':
-      return '断开中...';
+      return t('tools.websocket-client.page.stateClosing');
     case 'CLOSED':
-      return '已断开';
+      return t('tools.websocket-client.page.stateClosed');
     default:
-      return '未知';
+      return t('tools.websocket-client.page.stateUnknown');
   }
 });
 
 const messagePlaceholder = computed(() => {
   switch (messageType.value) {
     case 'json':
-      return '输入 JSON 格式消息...\n{\n  "type": "message",\n  "content": "Hello"\n}';
+      return t('tools.websocket-client.page.placeholderJson');
     case 'binary':
-      return '输入十六进制字符串 (如: 48656c6c6f) 或文本';
+      return t('tools.websocket-client.page.placeholderBinary');
     default:
-      return '输入要发送的文本消息...';
+      return t('tools.websocket-client.page.placeholderText');
   }
 });
 
@@ -315,19 +338,19 @@ function connect() {
   }
 
   try {
-    addSystemMessage('正在连接到 ' + wsUrl.value);
+    addSystemMessage(t('tools.websocket-client.page.connectingTo', { url: wsUrl.value }));
     connectionState.value = 'CONNECTING';
 
     const protocols = protocol.value ? [protocol.value] : undefined;
     ws.value = new WebSocket(wsUrl.value, protocols);
 
-    ws.value.onopen = (event) => {
+    ws.value.onopen = () => {
       connectionState.value = 'OPEN';
       connectionTime.value = new Date().toLocaleString('zh-CN');
-      addSystemMessage('连接成功');
+      addSystemMessage(t('tools.websocket-client.page.connected'));
 
       if (ws.value?.protocol) {
-        addSystemMessage(`使用协议: ${ws.value.protocol}`);
+        addSystemMessage(t('tools.websocket-client.page.usingProtocol', { p: ws.value.protocol }));
       }
     };
 
@@ -340,16 +363,15 @@ function connect() {
         content = event.data;
         size = new Blob([event.data]).size;
 
-        // 尝试格式化 JSON
         try {
           const parsed = JSON.parse(event.data);
           formatted = JSON.stringify(parsed, null, 2);
         } catch {
-          // 不是 JSON，保持原样
+          // not JSON
         }
       } else if (event.data instanceof Blob) {
         size = event.data.size;
-        content = `[Blob 数据, ${size} bytes]`;
+        content = t('tools.websocket-client.page.blobData', { size });
       } else if (event.data instanceof ArrayBuffer) {
         size = event.data.byteLength;
         const uint8Array = new Uint8Array(event.data);
@@ -364,18 +386,18 @@ function connect() {
       connectionTime.value = '';
 
       if (event.wasClean) {
-        addSystemMessage(`连接正常关闭 (代码: ${event.code})`);
+        addSystemMessage(t('tools.websocket-client.page.closedClean', { code: event.code }));
       } else {
-        addSystemMessage(`连接异常断开 (代码: ${event.code}, 原因: ${event.reason || '未知'})`);
+        addSystemMessage(t('tools.websocket-client.page.closedAbnormal', { code: event.code, reason: event.reason || t('tools.websocket-client.page.unknown') }));
       }
     };
 
     ws.value.onerror = (event) => {
-      addSystemMessage('连接错误');
+      addSystemMessage(t('tools.websocket-client.page.connectionError'));
       console.error('WebSocket error:', event);
     };
   } catch (error) {
-    addSystemMessage('连接失败: ' + (error as Error).message);
+    addSystemMessage(t('tools.websocket-client.page.connectFailed', { msg: (error as Error).message }));
     connectionState.value = 'CLOSED';
   }
 }
@@ -383,7 +405,7 @@ function connect() {
 function disconnect() {
   if (ws.value) {
     connectionState.value = 'CLOSING';
-    ws.value.close(1000, '用户主动断开');
+    ws.value.close(1000, t('tools.websocket-client.page.userClosed'));
   }
 }
 
@@ -397,22 +419,19 @@ function sendMessage() {
     let formatted = '';
 
     if (messageType.value === 'json') {
-      // 验证并格式化 JSON
       try {
         const parsed = JSON.parse(messageToSend.value);
         dataToSend = JSON.stringify(parsed);
         formatted = JSON.stringify(parsed, null, 2);
       } catch (error) {
-        addSystemMessage('JSON 格式错误: ' + (error as Error).message);
+        addSystemMessage(t('tools.websocket-client.page.jsonInvalid', { msg: (error as Error).message }));
         return;
       }
     } else if (messageType.value === 'binary') {
-      // 处理二进制数据
       try {
-        // 移除空格和非十六进制字符
         const hexString = messageToSend.value.replace(/[^0-9a-fA-F]/g, '');
         if (hexString.length % 2 !== 0) {
-          throw new Error('十六进制字符串长度必须是偶数');
+          throw new Error(t('tools.websocket-client.page.hexLengthEven'));
         }
 
         const bytes = new Uint8Array(hexString.length / 2);
@@ -421,23 +440,23 @@ function sendMessage() {
         }
         dataToSend = bytes.buffer;
       } catch (error) {
-        addSystemMessage('二进制数据格式错误: ' + (error as Error).message);
+        addSystemMessage(t('tools.websocket-client.page.binaryInvalid', { msg: (error as Error).message }));
         return;
       }
     }
 
-    ws.value.send(dataToSend);
+    ws.value.send(dataToSend as any);
 
     const size = typeof dataToSend === 'string' ? new Blob([dataToSend]).size : dataToSend.byteLength;
 
     addMessage('sent', messageToSend.value, formatted, size);
     messageToSend.value = '';
   } catch (error) {
-    addSystemMessage('发送失败: ' + (error as Error).message);
+    addSystemMessage(t('tools.websocket-client.page.sendFailed', { msg: (error as Error).message }));
   }
 }
 
-function addMessage(type: 'sent' | 'received', content: string, formatted?: string, size?: number) {
+function addMessage(type: 'sent' | 'received' | 'system', content: string, formatted?: string, size?: number) {
   messages.value.push({
     type,
     content,
@@ -456,7 +475,11 @@ function addMessage(type: 'sent' | 'received', content: string, formatted?: stri
 }
 
 function addSystemMessage(content: string) {
-  addMessage('system', content);
+  messages.value.push({
+    type: 'system',
+    content,
+    timestamp: new Date().toLocaleTimeString('zh-CN')
+  });
 }
 
 function clearMessages() {
@@ -469,7 +492,7 @@ function formatMessage() {
       const parsed = JSON.parse(messageToSend.value);
       messageToSend.value = JSON.stringify(parsed, null, 2);
     } catch (error) {
-      addSystemMessage('JSON 格式化失败: ' + (error as Error).message);
+      addSystemMessage(t('tools.websocket-client.page.jsonFormatFailed', { msg: (error as Error).message }));
     }
   }
 }
@@ -484,21 +507,33 @@ function toggleAutoScroll() {
 }
 
 function exportMessages() {
-  const report = `WebSocket 消息日志
-连接 URL: ${wsUrl.value}
-协议: ${protocol.value || '默认'}
-连接时间: ${connectionTime.value}
-消息总数: ${messages.value.length}
+  const header = t('tools.websocket-client.page.reportTitle');
+  const lines = [
+    header,
+    t('tools.websocket-client.page.reportUrl', { url: wsUrl.value }),
+    t('tools.websocket-client.page.reportProtocol', { protocol: protocol.value || t('tools.websocket-client.page.defaultValue') }),
+    t('tools.websocket-client.page.reportConnectionTime', { time: connectionTime.value }),
+    t('tools.websocket-client.page.reportTotal', { n: messages.value.length }),
+    '',
+    t('tools.websocket-client.page.reportDetails')
+  ];
 
-消息详情:
-${messages.value
-  .map((msg, index) => {
-    return `${index + 1}. [${msg.timestamp}] ${msg.type.toUpperCase()}: ${msg.content}${msg.size ? ` (${msg.size} bytes)` : ''}`;
-  })
-  .join('\n')}
+  const reportBody = messages.value
+    .map((msg, index) => {
+      const sizeSuffix = msg.size ? t('tools.websocket-client.page.reportSizeSuffix', { size: msg.size }) : '';
+      return t('tools.websocket-client.page.reportItem', {
+        index: index + 1,
+        timestamp: msg.timestamp,
+        type: msg.type.toUpperCase(),
+        content: msg.content,
+        size: sizeSuffix
+      });
+    })
+    .join('\n');
 
-导出时间: ${new Date().toLocaleString('zh-CN')}
-`;
+  const footer = '\n\n' + t('tools.websocket-client.page.reportExportTime', { time: new Date().toLocaleString('zh-CN') });
+
+  const report = lines.join('\n') + '\n' + reportBody + footer;
 
   const blob = new Blob([report], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);

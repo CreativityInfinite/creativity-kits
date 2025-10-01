@@ -1,23 +1,28 @@
 <template>
   <div class="space-y-4">
     <div class="flex justify-between items-center">
-      <h2 class="text-lg font-semibold">打字练习</h2>
+      <h2 class="text-lg font-semibold">{{ $t('tools.typing-practice.page.title') }}</h2>
       <div class="flex gap-2">
         <select v-model="selectedText" @change="resetPractice" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-          <option value="custom">自定义文本</option>
-          <option value="english">英文文章</option>
-          <option value="chinese">中文文章</option>
-          <option value="code">代码片段</option>
-          <option value="numbers">数字练习</option>
+          <option value="custom">{{ $t('tools.typing-practice.page.optionCustom') }}</option>
+          <option value="english">{{ $t('tools.typing-practice.page.optionEnglish') }}</option>
+          <option value="chinese">{{ $t('tools.typing-practice.page.optionChinese') }}</option>
+          <option value="code">{{ $t('tools.typing-practice.page.optionCode') }}</option>
+          <option value="numbers">{{ $t('tools.typing-practice.page.optionNumbers') }}</option>
         </select>
-        <button @click="resetPractice" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">重新开始</button>
+        <button @click="resetPractice" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.typing-practice.page.restart') }}</button>
       </div>
     </div>
 
     <div v-if="selectedText === 'custom'" class="space-y-2">
-      <label class="block text-sm font-medium">自定义练习文本</label>
-      <textarea v-model="customText" rows="4" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="输入你想要练习的文本..." />
-      <button @click="startCustomPractice" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">开始练习</button>
+      <label class="block text-sm font-medium">{{ $t('tools.typing-practice.page.customLabel') }}</label>
+      <textarea
+        v-model="customText"
+        rows="4"
+        class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        :placeholder="$t('tools.typing-practice.page.inputPlaceholder')"
+      />
+      <button @click="startCustomPractice" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">{{ $t('tools.typing-practice.page.startPractice') }}</button>
     </div>
 
     <div v-if="practiceText" class="space-y-4">
@@ -36,7 +41,7 @@
           @keydown="handleKeydown"
           :disabled="isFinished"
           class="w-full h-32 px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono resize-none"
-          placeholder="在这里输入练习文本..."
+          :placeholder="$t('tools.typing-practice.page.typingPlaceholder')"
         />
       </div>
 
@@ -47,46 +52,46 @@
         </div>
         <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center">
           <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ accuracy }}%</div>
-          <div class="text-sm text-green-800 dark:text-green-200">准确率</div>
+          <div class="text-sm text-green-800 dark:text-green-200">{{ $t('tools.typing-practice.page.accuracy') }}</div>
         </div>
         <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 text-center">
           <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ progress }}%</div>
-          <div class="text-sm text-purple-800 dark:text-purple-200">进度</div>
+          <div class="text-sm text-purple-800 dark:text-purple-200">{{ $t('tools.typing-practice.page.progress') }}</div>
         </div>
         <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-3 text-center">
           <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ formatTime(elapsedTime) }}</div>
-          <div class="text-sm text-orange-800 dark:text-orange-200">用时</div>
+          <div class="text-sm text-orange-800 dark:text-orange-200">{{ $t('tools.typing-practice.page.elapsed') }}</div>
         </div>
       </div>
 
       <div v-if="isFinished" class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-        <h3 class="font-medium text-green-900 dark:text-green-100 mb-2">练习完成！</h3>
+        <h3 class="font-medium text-green-900 dark:text-green-100 mb-2">{{ $t('tools.typing-practice.page.finishedTitle') }}</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
-            <span class="text-green-800 dark:text-green-200">最终速度：</span>
+            <span class="text-green-800 dark:text-green-200">{{ $t('tools.typing-practice.page.finalSpeed') }}</span>
             <span class="font-bold">{{ finalStats.wpm }} WPM</span>
           </div>
           <div>
-            <span class="text-green-800 dark:text-green-200">准确率：</span>
+            <span class="text-green-800 dark:text-green-200">{{ $t('tools.typing-practice.page.finalAccuracy') }}</span>
             <span class="font-bold">{{ finalStats.accuracy }}%</span>
           </div>
           <div>
-            <span class="text-green-800 dark:text-green-200">总用时：</span>
+            <span class="text-green-800 dark:text-green-200">{{ $t('tools.typing-practice.page.totalTime') }}</span>
             <span class="font-bold">{{ formatTime(finalStats.totalTime) }}</span>
           </div>
           <div>
-            <span class="text-green-800 dark:text-green-200">错误数：</span>
+            <span class="text-green-800 dark:text-green-200">{{ $t('tools.typing-practice.page.errors') }}</span>
             <span class="font-bold">{{ finalStats.errors }}</span>
           </div>
         </div>
         <div class="mt-3 flex gap-2">
-          <button @click="resetPractice" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">再次练习</button>
-          <button @click="saveResult" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">保存成绩</button>
+          <button @click="resetPractice" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.typing-practice.page.practiceAgain') }}</button>
+          <button @click="saveResult" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">{{ $t('tools.typing-practice.page.saveResult') }}</button>
         </div>
       </div>
 
       <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        <h3 class="font-medium mb-3">历史成绩</h3>
+        <h3 class="font-medium mb-3">{{ $t('tools.typing-practice.page.historyTitle') }}</h3>
         <div v-if="history.length > 0" class="space-y-2">
           <div v-for="(record, index) in history.slice(0, 5)" :key="index" class="flex justify-between items-center text-sm">
             <span>{{ new Date(record.date).toLocaleDateString() }}</span>
@@ -95,18 +100,18 @@
             <span>{{ formatTime(record.time) }}</span>
           </div>
         </div>
-        <div v-else class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">暂无历史记录</div>
+        <div v-else class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">{{ $t('tools.typing-practice.page.noHistory') }}</div>
       </div>
     </div>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">练习说明</h3>
+      <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">{{ $t('tools.typing-practice.page.guideTitle') }}</h3>
       <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-        <li>• WPM (Words Per Minute) = 每分钟输入的单词数</li>
-        <li>• 准确率 = 正确字符数 / 总字符数 × 100%</li>
-        <li>• 建议保持准确率在95%以上，然后逐步提高速度</li>
-        <li>• 正确的手指位置和姿势比速度更重要</li>
-        <li>• 定期练习可以有效提高打字速度和准确率</li>
+        <li>{{ $t('tools.typing-practice.page.tipWpm') }}</li>
+        <li>{{ $t('tools.typing-practice.page.tipAccuracy') }}</li>
+        <li>{{ $t('tools.typing-practice.page.tipAdvice') }}</li>
+        <li>{{ $t('tools.typing-practice.page.tipPosture') }}</li>
+        <li>{{ $t('tools.typing-practice.page.tipRegular') }}</li>
       </ul>
     </div>
   </div>
@@ -114,6 +119,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface TypingRecord {
   date: number;
@@ -122,6 +128,8 @@ interface TypingRecord {
   time: number;
   errors: number;
 }
+
+const { t } = useI18n();
 
 const selectedText = ref('english');
 const customText = ref('');
@@ -141,7 +149,7 @@ let timer: number | null = null;
 const sampleTexts = {
   english: `The quick brown fox jumps over the lazy dog. This pangram contains every letter of the English alphabet at least once. It is commonly used for typing practice and font testing. Regular practice with such texts can significantly improve your typing speed and accuracy.`,
 
-  chinese: `春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。这是唐代诗人孟浩然的《春晓》。通过练习中文打字，可以提高中文输入法的使用熟练度。建议从简单的诗词开始，逐步过渡到复杂的文章。`,
+  chinese: t('tools.typing-practice.page.samples.chinese'),
 
   code: `function calculateWPM(characters, minutes) {
   const words = characters / 5;

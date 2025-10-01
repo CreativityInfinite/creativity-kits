@@ -1,37 +1,37 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">音频裁剪器</h1>
-      <p class="text-gray-600 dark:text-gray-400">在浏览器中选择起止时间，导出裁剪片段为 WAV。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.audio-trimmer.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.audio-trimmer.page.description') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
-        <label class="block text-sm font-medium mb-2">选择音频</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.audio-trimmer.page.selectAudio') }}</label>
         <input type="file" accept="audio/*" @change="onFile" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">开始时间（秒）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.audio-trimmer.page.startTime') }}</label>
         <input v-model.number="startSec" type="number" min="0" step="0.1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">结束时间（秒）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.audio-trimmer.page.endTime') }}</label>
         <input v-model.number="endSec" type="number" min="0" step="0.1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
     </div>
 
     <div class="flex justify-center gap-3">
-      <button @click="trim" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">裁剪并导出 WAV</button>
-      <button v-if="outUrl" @click="download" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">下载 WAV</button>
+      <button @click="trim" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.audio-trimmer.page.trim') }}</button>
+      <button v-if="outUrl" @click="download" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.audio-trimmer.page.download') }}</button>
     </div>
 
     <div v-if="audioUrl" class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-      <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">原始音频</div>
+      <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.audio-trimmer.page.originalAudio') }}</div>
       <audio :src="audioUrl" controls class="w-full"></audio>
     </div>
 
     <div v-if="outUrl" class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-      <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">裁剪结果预览</div>
+      <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.audio-trimmer.page.resultPreview') }}</div>
       <audio :src="outUrl" controls class="w-full"></audio>
     </div>
   </div>
@@ -39,7 +39,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const file = ref<File | null>(null);
 const audioUrl = ref('');
 const outUrl = ref('');
@@ -56,7 +58,7 @@ function onFile(e: Event) {
 async function trim() {
   outUrl.value = '';
   if (!file.value) {
-    alert('请先选择音频');
+    alert(t('tools.audio-trimmer.page.alertSelectAudio'));
     return;
   }
   const arrayBuf = await file.value.arrayBuffer();

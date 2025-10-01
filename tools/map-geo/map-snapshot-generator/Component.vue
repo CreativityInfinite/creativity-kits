@@ -1,54 +1,64 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">地图快照生成器</h1>
-      <p class="text-gray-600 dark:text-gray-400">从上传的地图图片或图片 URL 生成快照，叠加标题/副标题并导出 PNG。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.map-snapshot-generator.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.map-snapshot-generator.page.subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
-        <label class="block text-sm font-medium mb-2">上传地图图片</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.map-snapshot-generator.page.uploadImage') }}</label>
         <input type="file" accept="image/*" @change="onFile" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">或图片 URL</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.map-snapshot-generator.page.orImageUrl') }}</label>
         <input v-model="imgUrl" type="url" placeholder="https://example.com/map.png" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">叠加背景色</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.map-snapshot-generator.page.overlayColor') }}</label>
         <input v-model="overlay" type="color" class="w-full h-[42px] px-2 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
 
       <div class="md:col-span-2">
-        <label class="block text-sm font-medium mb-2">标题</label>
-        <input v-model="title" type="text" placeholder="快照标题" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.map-snapshot-generator.page.titleLabel') }}</label>
+        <input
+          v-model="title"
+          type="text"
+          :placeholder="$t('tools.map-snapshot-generator.page.titlePlaceholder')"
+          class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        />
       </div>
       <div class="md:col-span-1">
-        <label class="block text-sm font-medium mb-2">是否显示日期</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.map-snapshot-generator.page.showDateLabel') }}</label>
         <select v-model="showDate" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-          <option :value="true">显示</option>
-          <option :value="false">不显示</option>
+          <option :value="true">{{ $t('tools.map-snapshot-generator.page.optionShow') }}</option>
+          <option :value="false">{{ $t('tools.map-snapshot-generator.page.optionHide') }}</option>
         </select>
       </div>
 
       <div class="md:col-span-3">
-        <label class="block text-sm font-medium mb-2">副标题</label>
-        <input v-model="subtitle" type="text" placeholder="可选副标题" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.map-snapshot-generator.page.subtitleLabel') }}</label>
+        <input
+          v-model="subtitle"
+          type="text"
+          :placeholder="$t('tools.map-snapshot-generator.page.subtitlePlaceholder')"
+          class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        />
       </div>
     </div>
 
     <div class="flex justify-center gap-3">
-      <button @click="generate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">生成快照</button>
-      <button v-if="outUrl" @click="download" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">下载 PNG</button>
+      <button @click="generate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.map-snapshot-generator.page.generate') }}</button>
+      <button v-if="outUrl" @click="download" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.map-snapshot-generator.page.downloadPng') }}</button>
     </div>
 
     <div v-if="previewUrl || outUrl" class="grid grid-cols-1 md-grid-cols-2 md:grid-cols-2 gap-4">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">源图片</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.map-snapshot-generator.page.sourceImage') }}</div>
         <img :src="previewUrl" class="max-w-full rounded-md border dark:border-gray-700" />
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border text-center">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">生成结果</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.map-snapshot-generator.page.result') }}</div>
         <img :src="outUrl" class="inline-block max-w-full rounded-md border dark:border-gray-700" />
       </div>
     </div>
@@ -57,13 +67,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const file = ref<File | null>(null);
 const imgUrl = ref('');
 const previewUrl = ref('');
 const outUrl = ref('');
 const overlay = ref('#000000');
-const title = ref('地图快照');
+const { t } = useI18n();
+const title = ref(t('tools.map-snapshot-generator.page.defaultTitle'));
 const subtitle = ref('');
 const showDate = ref(true);
 
@@ -79,7 +91,7 @@ async function loadImage(src: string) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('图片加载失败（可能跨域）'));
+    img.onerror = () => reject(new Error(t('tools.map-snapshot-generator.page.imageLoadFailed')));
     img.src = src;
   });
 }
@@ -88,7 +100,7 @@ async function generate() {
   outUrl.value = '';
   const src = previewUrl.value || imgUrl.value.trim();
   if (!src) {
-    alert('请上传图片或输入图片 URL');
+    alert(t('tools.map-snapshot-generator.page.alertNeedImageOrUrl'));
     return;
   }
   const img = await loadImage(src);

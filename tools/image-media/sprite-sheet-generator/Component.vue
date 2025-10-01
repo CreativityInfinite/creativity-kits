@@ -2,69 +2,75 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">雪碧图生成器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.sprite-sheet-generator.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">选择多张图片</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.sprite-sheet-generator.page.selectMultipleImages') }}</label>
             <input type="file" accept="image/*" multiple @change="onFiles" />
           </div>
 
           <div class="grid grid-cols-3 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">列数</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.sprite-sheet-generator.page.cols') }}</label>
               <input v-model.number="cols" type="number" min="1" step="1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">间距(px)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.sprite-sheet-generator.page.gapPx') }}</label>
               <input v-model.number="gap" type="number" min="0" step="1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">背景色</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.sprite-sheet-generator.page.background') }}</label>
               <input v-model="bg" type="color" class="w-full h-[42px] px-2 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" :disabled="!items.length" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">生成</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="process" :disabled="!items.length" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.sprite-sheet-generator.page.generate') }}
+            </button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.sprite-sheet-generator.page.clear') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.sprite-sheet-generator.page.resultTitle') }}</h3>
 
         <div v-if="outUrl" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-2">
-              <h4 class="font-medium">预览</h4>
+              <h4 class="font-medium">{{ $t('tools.sprite-sheet-generator.page.preview') }}</h4>
               <div class="flex gap-2">
-                <button @click="copyUrl" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制 DataURL</button>
-                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+                <button @click="copyUrl" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.sprite-sheet-generator.page.copyDataUrl') }}</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.sprite-sheet-generator.page.download') }}</button>
               </div>
             </div>
             <img :src="outUrl" class="max-h-96 rounded border dark:border-gray-700" alt="preview" />
-            <div class="text-xs text-gray-500 mt-2">尺寸: {{ sheetMeta }}</div>
+            <div class="text-xs text-gray-500 mt-2">{{ $t('tools.sprite-sheet-generator.page.size') }}: {{ sheetMeta }}</div>
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-2">
-              <h4 class="font-medium">Mapping JSON</h4>
+              <h4 class="font-medium">{{ $t('tools.sprite-sheet-generator.page.mappingJson') }}</h4>
               <div class="flex gap-2">
-                <button @click="copyResult" :disabled="!result" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-sm">复制</button>
-                <button @click="downloadJson" :disabled="!result" class="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">下载</button>
+                <button @click="copyResult" :disabled="!result" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-sm">
+                  {{ $t('tools.sprite-sheet-generator.page.copy') }}
+                </button>
+                <button @click="downloadJson" :disabled="!result" class="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">
+                  {{ $t('tools.sprite-sheet-generator.page.download') }}
+                </button>
               </div>
             </div>
             <textarea :value="result" readonly rows="10" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
           </div>
 
-          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.sprite-sheet-generator.page.saveToHistory') }}</button>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-3">🧩</div>
-          <div class="text-lg">选择多张图片并生成雪碧图</div>
+          <div class="text-lg">{{ $t('tools.sprite-sheet-generator.page.emptyTip') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
@@ -74,17 +80,17 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.sprite-sheet-generator.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
-            <div class="font-medium truncate">图片: {{ h.count }} · 列数: {{ h.cols }}</div>
+            <div class="font-medium truncate">{{ $t('tools.sprite-sheet-generator.page.historyItemTitle', { count: h.count, cols: h.cols }) }}</div>
             <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
           </div>
-          <div class="text-xs truncate">尺寸: {{ h.sheetMeta }}</div>
+          <div class="text-xs truncate">{{ $t('tools.sprite-sheet-generator.page.size') }}: {{ h.sheetMeta }}</div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.sprite-sheet-generator.page.load') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.sprite-sheet-generator.page.remove') }}</button>
           </div>
         </div>
       </div>
@@ -96,7 +102,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 type HistoryItem = { count: number; cols: number; sheetMeta: string; url: string; json: string; timestamp: number };
+
+const { t } = useI18n();
 
 type Item = { name: string; image: HTMLImageElement; w: number; h: number };
 const items = ref<Item[]>([]);
@@ -119,7 +128,7 @@ function clearAll() {
   error.value = '';
 }
 function copyUrl() {
-  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'));
+  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert(t('tools.sprite-sheet-generator.page.copyDataUrl')));
 }
 function downloadResult() {
   if (!outUrl.value) return;
@@ -129,7 +138,7 @@ function downloadResult() {
   a.click();
 }
 function copyResult() {
-  if (result.value) navigator.clipboard.writeText(result.value).then(() => alert('已复制到剪贴板'));
+  if (result.value) navigator.clipboard.writeText(result.value).then(() => alert(t('tools.sprite-sheet-generator.page.copy')));
 }
 function downloadJson() {
   if (!result.value) return;
@@ -171,7 +180,7 @@ function onFiles(e: Event) {
       items.value.push({ name: f.name, image: img, w: img.naturalWidth, h: img.naturalHeight });
       loaded++;
     };
-    img.onerror = () => (error.value = '有图片加载失败');
+    img.onerror = () => (error.value = t('tools.sprite-sheet-generator.page.imageLoadFailed'));
     img.src = URL.createObjectURL(f);
   }
 }
@@ -181,7 +190,7 @@ function process() {
   outUrl.value = '';
   result.value = '';
   try {
-    if (!items.value.length) throw new Error('请先选择图片');
+    if (!items.value.length) throw new Error(t('tools.sprite-sheet-generator.page.selectImagesFirst'));
     const c = Math.max(1, cols.value | 0);
     const rows = Math.ceil(items.value.length / c);
     // 采用各自尺寸，网格以单元最大宽高为准（简单策略）
@@ -215,7 +224,7 @@ function process() {
     result.value = JSON.stringify({ sheet: { width: W, height: H }, cell: { width: cellW, height: cellH, gap: gap.value, cols: c }, mapping }, null, 2);
     sheetMeta.value = `${W}x${H} (cell ${cellW}x${cellH}, cols ${c})`;
   } catch (e: any) {
-    error.value = e?.message || '生成失败';
+    error.value = e?.message || t('tools.sprite-sheet-generator.page.generateFailed');
   }
 }
 

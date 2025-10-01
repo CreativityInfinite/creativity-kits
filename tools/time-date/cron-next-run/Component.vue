@@ -2,55 +2,57 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">Cron 下一次运行</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.cron-next-run.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">表达式（5域）</label>
-            <input v-model="expr" placeholder="*/5 * * * *" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.cron-next-run.page.exprLabel') }}</label>
+            <input v-model="expr" :placeholder="$t('tools.cron-next-run.page.exprPlaceholder')" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">起始时间</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.cron-next-run.page.startTime') }}</label>
               <input v-model="startAt" type="datetime-local" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">数量</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.cron-next-run.page.count') }}</label>
               <input v-model.number="count" type="number" min="1" max="50" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">计算</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.cron-next-run.page.compute') }}
+            </button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.cron-next-run.page.clear') }}</button>
           </div>
 
-          <p class="text-xs text-gray-500">支持数字、范围、列表、步进（如 1,2,3 / 10-20 / */5）。逐分钟推进匹配，最大前进 365 天。</p>
+          <p class="text-xs text-gray-500">{{ $t('tools.cron-next-run.page.helpTip') }}</p>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.cron-next-run.page.resultTitle') }}</h3>
 
         <div v-if="result" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-2">
-              <h4 class="font-medium">接下来的 {{ parsed.count }} 次</h4>
+              <h4 class="font-medium">{{ $t('tools.cron-next-run.page.nextCount', { count: parsed.count }) }}</h4>
               <div class="flex gap-2">
-                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
-                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.cron-next-run.page.copy') }}</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.cron-next-run.page.download') }}</button>
               </div>
             </div>
             <textarea :value="result" readonly rows="10" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
-            <div class="text-xs text-gray-500 mt-2">处理时间: {{ processingTime }}ms</div>
+            <div class="text-xs text-gray-500 mt-2">{{ $t('tools.cron-next-run.page.processingTime') }}: {{ processingTime }}ms</div>
           </div>
 
-          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.cron-next-run.page.saveToHistory') }}</button>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-3">⏰</div>
-          <div class="text-lg">输入 Cron 表达式计算下一次运行时间</div>
+          <div class="text-lg">{{ $t('tools.cron-next-run.page.emptySubtitle') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
@@ -60,17 +62,19 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.cron-next-run.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
             <div class="font-medium truncate">{{ h.expr }}</div>
             <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
           </div>
-          <div class="text-xs">起点: {{ new Date(h.startAt).toLocaleString('zh-CN', { hour12: false }) }} · 取 {{ h.count }} 次</div>
+          <div class="text-xs">
+            {{ $t('tools.cron-next-run.page.startShort') }}: {{ new Date(h.startAt).toLocaleString(undefined, { hour12: false }) }} · {{ $t('tools.cron-next-run.page.takeN', { n: h.count }) }}
+          </div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.cron-next-run.page.load') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.cron-next-run.page.delete') }}</button>
           </div>
         </div>
       </div>
@@ -80,7 +84,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 type HistoryItem = { expr: string; startAt: number; count: number; result: string; timestamp: number };
+const { t } = useI18n();
 
 const expr = ref('*/5 * * * *');
 const startAt = ref('');
@@ -99,8 +105,8 @@ function clearAll() {
   error.value = '';
   processingTime.value = null;
 }
-function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
+function copyText(text: string) {
+  navigator.clipboard.writeText(text).then(() => alert(t('tools.cron-next-run.page.copied')));
 }
 function copyResult() {
   if (result.value) copyText(result.value);
@@ -135,7 +141,7 @@ function removeFromHistory(i: number) {
   localStorage.setItem('cron-next-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
+  return new Date(ts).toLocaleString(undefined, { hour12: false });
 }
 
 function parseField(f: string, min: number, max: number): Set<number> {
@@ -172,7 +178,7 @@ function parseField(f: string, min: number, max: number): Set<number> {
 }
 function parseCron(exp: string) {
   const [m, h, dom, mon, dow] = exp.trim().split(/\s+/);
-  if ([m, h, dom, mon, dow].some((x) => !x)) throw new Error('需要 5 个域：分 时 日 月 周');
+  if ([m, h, dom, mon, dow].some((x) => !x)) throw new Error(t('tools.cron-next-run.page.needFiveFields'));
   return {
     minutes: parseField(m, 0, 59),
     hours: parseField(h, 0, 23),
@@ -206,17 +212,17 @@ function process() {
     let cur = new Date(begin.getTime());
     let scanned = 0;
     while (next.length < (count.value || 5) && scanned < maxScan) {
-      if (matches(cur, cron)) next.push(cur.toLocaleString('zh-CN', { hour12: false }));
+      if (matches(cur, cron)) next.push(cur.toLocaleString(undefined, { hour12: false }));
       cur = new Date(cur.getTime() + 60 * 1000);
       scanned++;
     }
-    if (!next.length) throw new Error('未找到匹配时间（范围内）');
+    if (!next.length) throw new Error(t('tools.cron-next-run.page.noMatches'));
     const out = { expr: expr.value, start: begin.toISOString(), count: count.value || 5, next };
     parsed.value = { count: out.count };
     result.value = JSON.stringify(out, null, 2);
     processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '计算失败';
+    error.value = e?.message || t('tools.cron-next-run.page.computeFailed');
   }
 }
 

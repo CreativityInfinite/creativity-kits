@@ -2,23 +2,23 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">JSON 差异对比</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.json-diff-viewer.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">原始 JSON (左侧)</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.json-diff-viewer.page.leftLabel') }}</label>
             <textarea
               v-model="leftJson"
               rows="12"
               class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm"
-              placeholder="输入原始 JSON 数据..."
+              :placeholder="$t('tools.json-diff-viewer.page.leftPlaceholder')"
               @input="compareJson"
             />
             <div class="flex justify-between items-center mt-1">
-              <p class="text-xs text-gray-500">字符数: {{ leftJson.length }}</p>
+              <p class="text-xs text-gray-500">{{ $t('tools.json-diff-viewer.page.chars') }}: {{ leftJson.length }}</p>
               <div class="flex gap-1">
-                <button @click="formatJson('left')" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">格式化</button>
-                <button @click="minifyJson('left')" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">压缩</button>
+                <button @click="formatJson('left')" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.json-diff-viewer.page.format') }}</button>
+                <button @click="minifyJson('left')" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">{{ $t('tools.json-diff-viewer.page.minify') }}</button>
               </div>
             </div>
             <div v-if="leftError" class="text-red-500 text-xs mt-1">
@@ -27,19 +27,19 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">新版 JSON (右侧)</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.json-diff-viewer.page.rightLabel') }}</label>
             <textarea
               v-model="rightJson"
               rows="12"
               class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm"
-              placeholder="输入新版 JSON 数据..."
+              :placeholder="$t('tools.json-diff-viewer.page.rightPlaceholder')"
               @input="compareJson"
             />
             <div class="flex justify-between items-center mt-1">
-              <p class="text-xs text-gray-500">字符数: {{ rightJson.length }}</p>
+              <p class="text-xs text-gray-500">{{ $t('tools.json-diff-viewer.page.chars') }}: {{ rightJson.length }}</p>
               <div class="flex gap-1">
-                <button @click="formatJson('right')" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">格式化</button>
-                <button @click="minifyJson('right')" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">压缩</button>
+                <button @click="formatJson('right')" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.json-diff-viewer.page.format') }}</button>
+                <button @click="minifyJson('right')" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">{{ $t('tools.json-diff-viewer.page.minify') }}</button>
               </div>
             </div>
             <div v-if="rightError" class="text-red-500 text-xs mt-1">
@@ -48,24 +48,28 @@
           </div>
 
           <div class="flex gap-2">
-            <button @click="compareJson" :disabled="!leftJson || !rightJson" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">对比差异</button>
-            <button @click="swapJson" :disabled="!leftJson || !rightJson" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">交换</button>
-            <button @click="loadExample" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">示例</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="compareJson" :disabled="!leftJson || !rightJson" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.json-diff-viewer.page.compare') }}
+            </button>
+            <button @click="swapJson" :disabled="!leftJson || !rightJson" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.json-diff-viewer.page.swap') }}
+            </button>
+            <button @click="loadExample" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">{{ $t('tools.json-diff-viewer.page.example') }}</button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.json-diff-viewer.page.clear') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">差异结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.json-diff-viewer.page.resultTitle') }}</h3>
 
         <div v-if="differences.length > 0" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-3">
-              <h4 class="font-medium">发现 {{ differences.length }} 处差异</h4>
+              <h4 class="font-medium">{{ $t('tools.json-diff-viewer.page.foundDiff', { count: differences.length }) }}</h4>
               <div class="flex gap-2">
-                <button @click="copyDifferences" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制差异</button>
-                <button @click="exportReport" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">导出报告</button>
+                <button @click="copyDifferences" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.json-diff-viewer.page.copyDiff') }}</button>
+                <button @click="exportReport" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.json-diff-viewer.page.exportReport') }}</button>
               </div>
             </div>
 
@@ -78,8 +82,8 @@
                   diff.type === 'added'
                     ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
                     : diff.type === 'removed'
-                    ? 'bg-red-50 dark:bg-red-900/20 border-red-500'
-                    : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+                      ? 'bg-red-50 dark:bg-red-900/20 border-red-500'
+                      : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
                 ]"
               >
                 <div class="flex justify-between items-start mb-2">
@@ -90,26 +94,34 @@
                         diff.type === 'added'
                           ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
                           : diff.type === 'removed'
-                          ? 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
-                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
+                            ? 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
+                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
                       ]"
                     >
-                      {{ diff.type === 'added' ? '新增' : diff.type === 'removed' ? '删除' : '修改' }}
+                      {{
+                        diff.type === 'added'
+                          ? $t('tools.json-diff-viewer.page.badge.added')
+                          : diff.type === 'removed'
+                            ? $t('tools.json-diff-viewer.page.badge.removed')
+                            : $t('tools.json-diff-viewer.page.badge.changed')
+                      }}
                     </span>
                     <code class="text-sm bg-gray-100 dark:bg-gray-700 px-1 rounded">{{ diff.path }}</code>
                   </div>
-                  <button @click="copyToClipboard(formatDifference(diff))" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(formatDifference(diff))" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">
+                    {{ $t('tools.json-diff-viewer.page.copy') }}
+                  </button>
                 </div>
 
                 <div class="space-y-1 text-sm">
                   <div v-if="diff.type === 'removed' || diff.type === 'changed'" class="flex items-start gap-2">
-                    <span class="text-red-600 dark:text-red-400 font-medium">- 原值:</span>
+                    <span class="text-red-600 dark:text-red-400 font-medium">{{ $t('tools.json-diff-viewer.page.oldValue') }}</span>
                     <code class="flex-1 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">
                       {{ formatValue(diff.oldValue) }}
                     </code>
                   </div>
                   <div v-if="diff.type === 'added' || diff.type === 'changed'" class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400 font-medium">+ 新值:</span>
+                    <span class="text-green-600 dark:text-green-400 font-medium">{{ $t('tools.json-diff-viewer.page.newValue') }}</span>
                     <code class="flex-1 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded">
                       {{ formatValue(diff.newValue) }}
                     </code>
@@ -120,19 +132,19 @@
           </div>
 
           <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-            <h4 class="font-medium mb-3">统计信息</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.json-diff-viewer.page.statsTitle') }}</h4>
             <div class="grid grid-cols-3 gap-4 text-sm">
               <div class="text-center">
                 <div class="text-2xl font-bold text-green-600">{{ addedCount }}</div>
-                <div class="text-gray-600 dark:text-gray-400">新增</div>
+                <div class="text-gray-600 dark:text-gray-400">{{ $t('tools.json-diff-viewer.page.stats.added') }}</div>
               </div>
               <div class="text-center">
                 <div class="text-2xl font-bold text-red-600">{{ removedCount }}</div>
-                <div class="text-gray-600 dark:text-gray-400">删除</div>
+                <div class="text-gray-600 dark:text-gray-400">{{ $t('tools.json-diff-viewer.page.stats.removed') }}</div>
               </div>
               <div class="text-center">
                 <div class="text-2xl font-bold text-yellow-600">{{ changedCount }}</div>
-                <div class="text-gray-600 dark:text-gray-400">修改</div>
+                <div class="text-gray-600 dark:text-gray-400">{{ $t('tools.json-diff-viewer.page.stats.changed') }}</div>
               </div>
             </div>
           </div>
@@ -140,36 +152,42 @@
 
         <div v-else-if="leftJson && rightJson && !leftError && !rightError" class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">✅</div>
-          <div class="text-lg mb-2">JSON 完全相同</div>
-          <div class="text-sm">两个 JSON 对象没有任何差异</div>
+          <div class="text-lg mb-2">{{ $t('tools.json-diff-viewer.page.equalTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.json-diff-viewer.page.equalSubtitle') }}</div>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">🔍</div>
-          <div class="text-lg mb-2">JSON 差异对比器</div>
-          <div class="text-sm">输入两个 JSON 对象进行差异对比</div>
+          <div class="text-lg mb-2">{{ $t('tools.json-diff-viewer.page.heroTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.json-diff-viewer.page.heroSubtitle') }}</div>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">功能说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.json-diff-viewer.page.guideTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">支持的差异类型</h4>
+          <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">{{ $t('tools.json-diff-viewer.page.supportedTypes') }}</h4>
           <ul class="space-y-1">
-            <li>• <span class="text-green-600">新增</span> - 右侧 JSON 中新增的字段</li>
-            <li>• <span class="text-red-600">删除</span> - 左侧 JSON 中被删除的字段</li>
-            <li>• <span class="text-yellow-600">修改</span> - 值发生变化的字段</li>
+            <li>
+              • <span class="text-green-600">{{ $t('tools.json-diff-viewer.page.badge.added') }}</span> - {{ $t('tools.json-diff-viewer.page.type.added').split(' - ')[1] }}
+            </li>
+            <li>
+              • <span class="text-red-600">{{ $t('tools.json-diff-viewer.page.badge.removed') }}</span> - {{ $t('tools.json-diff-viewer.page.type.removed').split(' - ')[1] }}
+            </li>
+            <li>
+              • <span class="text-yellow-600">{{ $t('tools.json-diff-viewer.page.badge.changed') }}</span> - {{ $t('tools.json-diff-viewer.page.type.changed').split(' - ')[1] }}
+            </li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">功能特性</h4>
+          <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">{{ $t('tools.json-diff-viewer.page.featureTitle') }}</h4>
           <ul class="space-y-1">
-            <li>• 深度递归对比嵌套对象和数组</li>
-            <li>• 支持 JSON 格式化和压缩</li>
-            <li>• 提供详细的路径信息</li>
-            <li>• 可导出差异报告</li>
+            <li>• {{ $t('tools.json-diff-viewer.page.features.deep') }}</li>
+            <li>• {{ $t('tools.json-diff-viewer.page.features.fmt') }}</li>
+            <li>• {{ $t('tools.json-diff-viewer.page.features.path') }}</li>
+            <li>• {{ $t('tools.json-diff-viewer.page.features.report') }}</li>
           </ul>
         </div>
       </div>
@@ -179,6 +197,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface JsonDifference {
   type: 'added' | 'removed' | 'changed';
@@ -186,6 +205,8 @@ interface JsonDifference {
   oldValue?: any;
   newValue?: any;
 }
+
+const { t } = useI18n();
 
 const leftJson = ref('');
 const rightJson = ref('');
@@ -211,10 +232,10 @@ function compareJson() {
     differences.value = findDifferences(leftObj, rightObj, '');
   } catch (error) {
     if (!isValidJson(leftJson.value)) {
-      leftError.value = '左侧 JSON 格式错误';
+      leftError.value = t('tools.json-diff-viewer.page.errorLeft');
     }
     if (!isValidJson(rightJson.value)) {
-      rightError.value = '右侧 JSON 格式错误';
+      rightError.value = t('tools.json-diff-viewer.page.errorRight');
     }
   }
 }
@@ -357,9 +378,9 @@ function formatJson(side: 'left' | 'right') {
     compareJson();
   } catch (error) {
     if (side === 'left') {
-      leftError.value = 'JSON 格式错误，无法格式化';
+      leftError.value = t('tools.json-diff-viewer.page.formatError');
     } else {
-      rightError.value = 'JSON 格式错误，无法格式化';
+      rightError.value = t('tools.json-diff-viewer.page.formatError');
     }
   }
 }
@@ -381,9 +402,9 @@ function minifyJson(side: 'left' | 'right') {
     compareJson();
   } catch (error) {
     if (side === 'left') {
-      leftError.value = 'JSON 格式错误，无法压缩';
+      leftError.value = t('tools.json-diff-viewer.page.minifyError');
     } else {
-      rightError.value = 'JSON 格式错误，无法压缩';
+      rightError.value = t('tools.json-diff-viewer.page.minifyError');
     }
   }
 }
@@ -456,13 +477,13 @@ function formatValue(value: any): string {
 }
 
 function formatDifference(diff: JsonDifference): string {
-  let result = `路径: ${diff.path}\n类型: ${diff.type === 'added' ? '新增' : diff.type === 'removed' ? '删除' : '修改'}\n`;
+  let result = `${t('tools.json-diff-viewer.page.path')}: ${diff.path}\n${t('tools.json-diff-viewer.page.type')}: ${diff.type === 'added' ? t('tools.json-diff-viewer.page.badge.added') : diff.type === 'removed' ? t('tools.json-diff-viewer.page.badge.removed') : t('tools.json-diff-viewer.page.badge.changed')}\n`;
 
   if (diff.oldValue !== undefined) {
-    result += `原值: ${formatValue(diff.oldValue)}\n`;
+    result += `${t('tools.json-diff-viewer.page.oldValue').replace('- ', '')} ${formatValue(diff.oldValue)}\n`;
   }
   if (diff.newValue !== undefined) {
-    result += `新值: ${formatValue(diff.newValue)}\n`;
+    result += `${t('tools.json-diff-viewer.page.newValue').replace('+ ', '')} ${formatValue(diff.newValue)}\n`;
   }
 
   return result;
@@ -474,16 +495,16 @@ function copyDifferences() {
 }
 
 function exportReport() {
-  const report = `JSON 差异对比报告
-生成时间: ${new Date().toLocaleString()}
+  const report = `${t('tools.json-diff-viewer.page.reportTitle')}
+${t('tools.json-diff-viewer.page.generatedAt')}: ${new Date().toLocaleString()}
 
-统计信息:
-- 新增: ${addedCount.value} 项
-- 删除: ${removedCount.value} 项  
-- 修改: ${changedCount.value} 项
-- 总计: ${differences.value.length} 项差异
+${t('tools.json-diff-viewer.page.statsHeader')}:
+- ${t('tools.json-diff-viewer.page.countAdded', { count: addedCount.value })}
+- ${t('tools.json-diff-viewer.page.countRemoved', { count: removedCount.value })}  
+- ${t('tools.json-diff-viewer.page.countChanged', { count: changedCount.value })}
+- ${t('tools.json-diff-viewer.page.totalDiff', { count: differences.value.length })}
 
-详细差异:
+${t('tools.json-diff-viewer.page.details')}:
 ${differences.value.map((diff, index) => `${index + 1}. ${formatDifference(diff)}`).join('\n')}
 `;
 
@@ -503,7 +524,7 @@ function copyToClipboard(text: string) {
       // 可以添加成功提示
     })
     .catch((err) => {
-      console.error('复制失败:', err);
+      console.error(t('tools.json-diff-viewer.page.copyFailedLog'), err);
     });
 }
 </script>

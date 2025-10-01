@@ -2,25 +2,25 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">OAuth PKCE 助手</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.oauth-pkce-helper.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">code_verifier 长度</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.oauth-pkce-helper.page.length') }}</label>
               <input v-model.number="length" type="number" min="43" max="128" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">字符集</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.oauth-pkce-helper.page.charset') }}</label>
               <select v-model="charset" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 <option value="unreserved">RFC 3986 Unreserved</option>
-                <option value="alnum">字母数字</option>
+                <option value="alnum">{{ $t('tools.oauth-pkce-helper.page.charsetAlnum') }}</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">授权参数（可选）</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.oauth-pkce-helper.page.authParamsOptional') }}</label>
             <div class="grid grid-cols-2 gap-2">
               <input v-model="clientId" placeholder="client_id" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               <input v-model="redirectUri" placeholder="redirect_uri" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
@@ -30,33 +30,33 @@
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">生成</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="process" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.oauth-pkce-helper.page.generate') }}</button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.oauth-pkce-helper.page.clear') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.oauth-pkce-helper.page.resultTitle') }}</h3>
 
         <div v-if="result" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-3">
-              <h4 class="font-medium">PKCE</h4>
+              <h4 class="font-medium">{{ $t('tools.oauth-pkce-helper.page.pkceTitle') }}</h4>
               <div class="flex gap-2">
-                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
-                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.oauth-pkce-helper.page.copy') }}</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.oauth-pkce-helper.page.download') }}</button>
               </div>
             </div>
             <textarea :value="result" readonly rows="12" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
           </div>
 
-          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.oauth-pkce-helper.page.saveToHistory') }}</button>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-3">🔐</div>
-          <div class="text-lg">生成 code_verifier 与 code_challenge (S256)</div>
+          <div class="text-lg">{{ $t('tools.oauth-pkce-helper.page.emptySubtitle') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
@@ -66,7 +66,7 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.oauth-pkce-helper.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
@@ -74,17 +74,17 @@
             <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
           </div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.oauth-pkce-helper.page.load') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.oauth-pkce-helper.page.delete') }}</button>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">使用说明</h3>
+      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">{{ $t('tools.oauth-pkce-helper.page.guideTitle') }}</h3>
       <div class="text-sm text-yellow-800 dark:text-yellow-200 space-y-1">
-        <div>• 将 code_challenge 与 code_challenge_method=S256 作为授权请求参数；token 交换时带上 code_verifier</div>
+        <div>{{ $t('tools.oauth-pkce-helper.page.guideLine1') }}</div>
       </div>
     </div>
   </div>
@@ -92,6 +92,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type HistoryItem = { verifier: string; challenge: string; authUrl?: string; result: string; timestamp: number };
 
@@ -104,6 +105,7 @@ const scope = ref('');
 const authorizeEndpoint = ref('');
 
 const result = ref('');
+const { t } = useI18n();
 const error = ref('');
 const history = ref<HistoryItem[]>([]);
 const processingTime = ref<number | null>(null);
@@ -114,7 +116,7 @@ function clearAll() {
   processingTime.value = null;
 }
 function copyResult() {
-  if (result.value) navigator.clipboard.writeText(result.value).then(() => alert('已复制'));
+  if (result.value) navigator.clipboard.writeText(result.value).then(() => alert(t('common.copied')));
 }
 function downloadResult() {
   if (!result.value) return;
@@ -188,7 +190,7 @@ async function process() {
     result.value = JSON.stringify({ code_verifier: verifier, code_challenge: challenge, code_challenge_method: 'S256', authorize_url }, null, 2);
     processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '生成失败';
+    error.value = e?.message || t('tools.oauth-pkce-helper.page.generateFailed');
   }
 }
 

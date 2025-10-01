@@ -2,15 +2,15 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">JSON 美化工具</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.json-pretty.page.title') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">输入 JSON</h4>
+            <h4 class="font-medium">{{ $t('tools.json-pretty.page.inputTitle') }}</h4>
             <div class="flex gap-2">
-              <button @click="formatJson" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">美化</button>
-              <button @click="minifyJson" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">压缩</button>
-              <button @click="clearAll" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
+              <button @click="formatJson" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.json-pretty.page.beautify') }}</button>
+              <button @click="minifyJson" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.json-pretty.page.minify') }}</button>
+              <button @click="clearAll" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.json-pretty.page.clear') }}</button>
             </div>
           </div>
 
@@ -19,7 +19,7 @@
               <textarea
                 v-model="inputText"
                 rows="12"
-                placeholder="在此输入 JSON 内容..."
+                :placeholder="$t('tools.json-pretty.page.inputPlaceholder')"
                 class="w-full px-3 py-2 border rounded-lg font-mono text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="autoFormat"
                 @drop="handleFileDrop"
@@ -29,17 +29,17 @@
             </div>
 
             <div class="flex justify-between items-center text-sm text-gray-500">
-              <span>字符数: {{ inputText.length }}</span>
-              <span>行数: {{ inputText.split('\n').length }}</span>
+              <span>{{ $t('tools.json-pretty.page.chars') }}: {{ inputText.length }}</span>
+              <span>{{ $t('tools.json-pretty.page.lines') }}: {{ inputText.split('\n').length }}</span>
               <span v-if="isValidJson !== null">
-                {{ isValidJson ? '✅ 有效 JSON' : '❌ 无效 JSON' }}
+                {{ isValidJson ? $t('tools.json-pretty.page.valid') : $t('tools.json-pretty.page.invalid') }}
               </span>
             </div>
 
             <div v-if="error" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
               <div class="flex items-center gap-2 text-red-600 dark:text-red-400">
                 <span>⚠️</span>
-                <span class="font-medium">JSON 错误</span>
+                <span class="font-medium">{{ $t('tools.json-pretty.page.jsonError') }}</span>
               </div>
               <div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ error }}</div>
             </div>
@@ -47,46 +47,46 @@
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">格式化选项</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.json-pretty.page.optionsTitle') }}</h4>
           <div class="space-y-3">
             <div class="grid grid-cols-2 gap-3">
               <label class="flex items-center space-x-2">
                 <input v-model="options.sortKeys" type="checkbox" />
-                <span class="text-sm">排序键名</span>
+                <span class="text-sm">{{ $t('tools.json-pretty.page.sortKeys') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="options.removeComments" type="checkbox" />
-                <span class="text-sm">移除注释</span>
+                <span class="text-sm">{{ $t('tools.json-pretty.page.removeComments') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="options.escapeUnicode" type="checkbox" />
-                <span class="text-sm">转义 Unicode</span>
+                <span class="text-sm">{{ $t('tools.json-pretty.page.escapeUnicode') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="options.autoFormat" type="checkbox" />
-                <span class="text-sm">自动格式化</span>
+                <span class="text-sm">{{ $t('tools.json-pretty.page.autoFormat') }}</span>
               </label>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-2">缩进大小: {{ options.indent }}</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.json-pretty.page.indentSize') }}: {{ options.indent }}</label>
               <input v-model.number="options.indent" type="range" min="1" max="8" class="w-full" />
               <div class="flex justify-between text-xs text-gray-500 mt-1">
-                <span>1</span>
-                <span>8</span>
+                <span>{{ $t('tools.json-pretty.page.minIndent') }}</span>
+                <span>{{ $t('tools.json-pretty.page.maxIndent') }}</span>
               </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-2">缩进类型</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.json-pretty.page.indentType') }}</label>
               <div class="flex gap-4">
                 <label class="flex items-center space-x-2">
                   <input v-model="options.indentType" type="radio" value="space" />
-                  <span class="text-sm">空格</span>
+                  <span class="text-sm">{{ $t('tools.json-pretty.page.space') }}</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input v-model="options.indentType" type="radio" value="tab" />
-                  <span class="text-sm">制表符</span>
+                  <span class="text-sm">{{ $t('tools.json-pretty.page.tab') }}</span>
                 </label>
               </div>
             </div>
@@ -94,37 +94,37 @@
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">快速操作</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.json-pretty.page.quickActions') }}</h4>
           <div class="grid grid-cols-2 gap-2">
-            <button @click="loadSampleJson" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">加载示例</button>
-            <button @click="validateJson" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm">验证 JSON</button>
-            <button @click="removeEmptyValues" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">移除空值</button>
-            <button @click="flattenJson" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">扁平化</button>
+            <button @click="loadSampleJson" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.json-pretty.page.loadSample') }}</button>
+            <button @click="validateJson" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm">{{ $t('tools.json-pretty.page.validate') }}</button>
+            <button @click="removeEmptyValues" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">{{ $t('tools.json-pretty.page.removeEmpty') }}</button>
+            <button @click="flattenJson" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">{{ $t('tools.json-pretty.page.flatten') }}</button>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">文件操作</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.json-pretty.page.fileOps') }}</h4>
           <div class="grid grid-cols-2 gap-2">
             <label class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm cursor-pointer text-center">
               <input type="file" accept=".json,.txt" @change="handleFileUpload" class="hidden" />
-              上传文件
+              {{ $t('tools.json-pretty.page.uploadFile') }}
             </label>
-            <button @click="downloadResult" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载结果</button>
+            <button @click="downloadResult" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.json-pretty.page.downloadResult') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">格式化结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.json-pretty.page.outputTitle') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">输出结果</h4>
+            <h4 class="font-medium">{{ $t('tools.json-pretty.page.outputHeader') }}</h4>
             <div class="flex gap-2">
-              <button @click="copyOutput" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
+              <button @click="copyOutput" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.json-pretty.page.copy') }}</button>
               <button @click="toggleSyntaxHighlight" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">
-                {{ showSyntaxHighlight ? '关闭高亮' : '语法高亮' }}
+                {{ showSyntaxHighlight ? $t('tools.json-pretty.page.closeHighlight') : $t('tools.json-pretty.page.syntaxHighlight') }}
               </button>
             </div>
           </div>
@@ -142,12 +142,14 @@
               ></textarea>
 
               <div class="flex justify-between items-center text-sm text-gray-500">
-                <span>字符数: {{ outputText.length }}</span>
-                <span>行数: {{ outputText.split('\n').length }}</span>
-                <span v-if="compressionRatio !== null"> {{ compressionRatio > 0 ? '压缩率' : '膨胀率' }}: {{ Math.abs(compressionRatio) }}% </span>
+                <span>{{ $t('tools.json-pretty.page.chars') }}: {{ outputText.length }}</span>
+                <span>{{ $t('tools.json-pretty.page.lines') }}: {{ outputText.split('\n').length }}</span>
+                <span v-if="compressionRatio !== null">
+                  {{ compressionRatio > 0 ? $t('tools.json-pretty.page.compressRate') : $t('tools.json-pretty.page.expandRate') }}: {{ Math.abs(compressionRatio) }}%
+                </span>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500">输入 JSON 后将显示格式化结果</div>
+            <div v-else class="text-center py-8 text-gray-500">{{ $t('tools.json-pretty.page.emptyOutputTip') }}</div>
           </div>
         </div>
 
@@ -280,6 +282,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 interface Analysis {
   type: string;
@@ -392,7 +396,7 @@ function formatJson() {
     analyzeJson(parsed);
     addToHistory(input, jsonString, 'JSON 美化');
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'JSON 解析失败';
+    error.value = err instanceof Error ? err.message : t('tools.json-pretty.page.parseFailed');
     isValidJson.value = false;
     analysis.value = null;
   }
@@ -404,7 +408,7 @@ function minifyJson() {
   try {
     const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 JSON 内容';
+      error.value = t('tools.json-pretty.page.needInput');
       return;
     }
 
@@ -518,7 +522,7 @@ function analyzeJson(data: any) {
   countTypes(data, statistics);
   analysis.statistics = statistics;
 
-  this.analysis = analysis;
+  analysis.value = analysis;
 }
 
 function getDepth(obj: any, currentDepth: number = 0): number {
@@ -565,15 +569,15 @@ function validateJson() {
   try {
     const input = inputText.value.trim();
     if (!input) {
-      outputText.value = '❌ 请输入 JSON 内容';
+      outputText.value = t('tools.json-pretty.page.needInputIcon');
       return;
     }
 
     JSON.parse(input);
-    outputText.value = '✅ JSON 格式有效';
+    outputText.value = t('tools.json-pretty.page.validIcon');
     isValidJson.value = true;
   } catch (err) {
-    outputText.value = `❌ JSON 格式无效: ${err instanceof Error ? err.message : '未知错误'}`;
+    outputText.value = `${t('tools.json-pretty.page.invalidIcon')}: ${err instanceof Error ? err.message : t('tools.json-pretty.page.unknownError')}`;
     isValidJson.value = false;
   }
 }

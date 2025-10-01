@@ -2,30 +2,30 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">UUID 生成器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.uuid-generator.page.title') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">生成设置</h4>
+            <h4 class="font-medium">{{ $t('tools.uuid-generator.page.settings') }}</h4>
             <div class="flex gap-2">
-              <button @click="generateUUIDs" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">生成 UUID</button>
-              <button @click="clearAll" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
+              <button @click="generateUUIDs" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.uuid-generator.page.generateUUID') }}</button>
+              <button @click="clearAll" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.uuid-generator.page.clear') }}</button>
             </div>
           </div>
 
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium mb-2">UUID 类型</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.uuid-generator.page.typeLabel') }}</label>
               <select v-model="settings.type" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" @change="generateUUIDs">
-                <option value="v4">UUID v4 (随机)</option>
-                <option value="v1">UUID v1 (时间戳)</option>
-                <option value="nanoid">Nano ID</option>
-                <option value="custom">自定义格式</option>
+                <option value="v4">{{ $t('tools.uuid-generator.page.optionV4') }}</option>
+                <option value="v1">{{ $t('tools.uuid-generator.page.optionV1') }}</option>
+                <option value="nanoid">{{ $t('tools.uuid-generator.page.optionNanoId') }}</option>
+                <option value="custom">{{ $t('tools.uuid-generator.page.optionCustomFormat') }}</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-2"> 生成数量: {{ settings.count }} </label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.uuid-generator.page.generateCount') }}: {{ settings.count }}</label>
               <input v-model.number="settings.count" type="range" min="1" max="100" class="w-full" @input="generateUUIDs" />
               <div class="flex justify-between text-xs text-gray-500 mt-1">
                 <span>1</span>
@@ -34,7 +34,7 @@
             </div>
 
             <div v-if="settings.type === 'nanoid'">
-              <label class="block text-sm font-medium mb-2"> Nano ID 长度: {{ settings.nanoidLength }} </label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.uuid-generator.page.nanoidLength') }}: {{ settings.nanoidLength }}</label>
               <input v-model.number="settings.nanoidLength" type="range" min="6" max="64" class="w-full" @input="generateUUIDs" />
               <div class="flex justify-between text-xs text-gray-500 mt-1">
                 <span>6</span>
@@ -43,71 +43,71 @@
             </div>
 
             <div v-if="settings.type === 'nanoid'">
-              <label class="block text-sm font-medium mb-2">字符集</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.uuid-generator.page.alphabet') }}</label>
               <select v-model="settings.nanoidAlphabet" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" @change="generateUUIDs">
-                <option value="default">默认 (A-Za-z0-9_-)</option>
-                <option value="alphanumeric">字母数字 (A-Za-z0-9)</option>
-                <option value="lowercase">小写字母数字 (a-z0-9)</option>
-                <option value="uppercase">大写字母数字 (A-Z0-9)</option>
-                <option value="numbers">纯数字 (0-9)</option>
-                <option value="hex">十六进制 (0-9A-F)</option>
-                <option value="custom">自定义</option>
+                <option value="default">{{ $t('tools.uuid-generator.page.alphabetDefault') }}</option>
+                <option value="alphanumeric">{{ $t('tools.uuid-generator.page.alphabetAlphanumeric') }}</option>
+                <option value="lowercase">{{ $t('tools.uuid-generator.page.alphabetLowercase') }}</option>
+                <option value="uppercase">{{ $t('tools.uuid-generator.page.alphabetUppercase') }}</option>
+                <option value="numbers">{{ $t('tools.uuid-generator.page.alphabetNumbers') }}</option>
+                <option value="hex">{{ $t('tools.uuid-generator.page.alphabetHex') }}</option>
+                <option value="custom">{{ $t('tools.uuid-generator.page.alphabetCustom') }}</option>
               </select>
             </div>
 
             <div v-if="settings.type === 'nanoid' && settings.nanoidAlphabet === 'custom'">
-              <label class="block text-sm font-medium mb-2">自定义字符集</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.uuid-generator.page.customAlphabet') }}</label>
               <input
                 v-model="settings.customAlphabet"
                 type="text"
-                placeholder="输入自定义字符集，如：ABCDEF0123456789"
+                :placeholder="$t('tools.uuid-generator.page.customAlphabetPlaceholder')"
                 class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="generateUUIDs"
               />
             </div>
 
             <div v-if="settings.type === 'custom'">
-              <label class="block text-sm font-medium mb-2">自定义格式</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.uuid-generator.page.customFormat') }}</label>
               <input
                 v-model="settings.customFormat"
                 type="text"
-                placeholder="如：XXXX-XXXX-XXXX (X=随机字符)"
+                :placeholder="$t('tools.uuid-generator.page.customFormatPlaceholder')"
                 class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="generateUUIDs"
               />
-              <div class="text-xs text-gray-500 mt-1">使用 X 表示随机字符，其他字符保持不变</div>
+              <div class="text-xs text-gray-500 mt-1">{{ $t('tools.uuid-generator.page.customFormatTip') }}</div>
             </div>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">格式选项</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.uuid-generator.page.formatOptions') }}</h4>
           <div class="space-y-3">
             <label class="flex items-center space-x-3">
               <input v-model="settings.uppercase" type="checkbox" @change="generateUUIDs" />
-              <span class="text-sm">大写字母</span>
+              <span class="text-sm">{{ $t('tools.uuid-generator.page.uppercase') }}</span>
             </label>
 
             <label class="flex items-center space-x-3">
               <input v-model="settings.removeDashes" type="checkbox" @change="generateUUIDs" />
-              <span class="text-sm">移除连字符</span>
+              <span class="text-sm">{{ $t('tools.uuid-generator.page.removeDashes') }}</span>
             </label>
 
             <label class="flex items-center space-x-3">
               <input v-model="settings.addBraces" type="checkbox" @change="generateUUIDs" />
-              <span class="text-sm">添加大括号 {}</span>
+              <span class="text-sm">{{ $t('tools.uuid-generator.page.addBraces') }}</span>
             </label>
 
             <label class="flex items-center space-x-3">
               <input v-model="settings.addPrefix" type="checkbox" @change="generateUUIDs" />
-              <span class="text-sm">添加前缀</span>
+              <span class="text-sm">{{ $t('tools.uuid-generator.page.addPrefix') }}</span>
             </label>
 
             <div v-if="settings.addPrefix" class="ml-6">
               <input
                 v-model="settings.prefix"
                 type="text"
-                placeholder="输入前缀"
+                :placeholder="$t('tools.uuid-generator.page.prefixPlaceholder')"
                 class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="generateUUIDs"
               />
@@ -116,25 +116,25 @@
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">快速生成</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.uuid-generator.page.quickActions') }}</h4>
           <div class="grid grid-cols-2 gap-2">
-            <button @click="quickGenerate('v4', 1)" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">单个 UUID v4</button>
-            <button @click="quickGenerate('v1', 1)" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">单个 UUID v1</button>
-            <button @click="quickGenerate('nanoid', 1)" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">单个 Nano ID</button>
-            <button @click="quickGenerate('v4', 10)" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">10个 UUID v4</button>
+            <button @click="quickGenerate('v4', 1)" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.uuid-generator.page.quickV4One') }}</button>
+            <button @click="quickGenerate('v1', 1)" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.uuid-generator.page.quickV1One') }}</button>
+            <button @click="quickGenerate('nanoid', 1)" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.uuid-generator.page.quickNanoOne') }}</button>
+            <button @click="quickGenerate('v4', 10)" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">{{ $t('tools.uuid-generator.page.quickV4Ten') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">生成结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.uuid-generator.page.resultTitle') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">UUID 列表 ({{ generatedUUIDs.length }})</h4>
+            <h4 class="font-medium">{{ $t('tools.uuid-generator.page.uuidList') }} ({{ generatedUUIDs.length }})</h4>
             <div class="flex gap-2">
-              <button @click="copyAllUUIDs" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制全部</button>
-              <button @click="exportUUIDs" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">导出</button>
+              <button @click="copyAllUUIDs" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.uuid-generator.page.copyAll') }}</button>
+              <button @click="exportUUIDs" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.uuid-generator.page.export') }}</button>
             </div>
           </div>
           <div class="p-4">
@@ -142,29 +142,32 @@
               <div v-for="(uuid, index) in generatedUUIDs" :key="index" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded border">
                 <div class="flex-1 min-w-0">
                   <div class="font-mono text-sm break-all">{{ uuid.value }}</div>
-                  <div class="text-xs text-gray-500 mt-1">类型: {{ uuid.type }} | 长度: {{ uuid.value.length }} | 生成时间: {{ uuid.timestamp }}</div>
+                  <div class="text-xs text-gray-500 mt-1">
+                    {{ $t('tools.uuid-generator.page.labelType') }}: {{ uuid.type }} | {{ $t('tools.uuid-generator.page.labelLength') }}: {{ uuid.value.length }} |
+                    {{ $t('tools.uuid-generator.page.labelGeneratedAt') }}: {{ uuid.timestamp }}
+                  </div>
                 </div>
                 <div class="flex gap-1 ml-3">
-                  <button @click="copyUUID(uuid.value)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
-                  <button @click="regenerateUUID(index)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">重新生成</button>
+                  <button @click="copyUUID(uuid.value)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.uuid-generator.page.copy') }}</button>
+                  <button @click="regenerateUUID(index)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">{{ $t('tools.uuid-generator.page.regenerate') }}</button>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500">点击"生成 UUID"按钮开始生成</div>
+            <div v-else class="text-center py-8 text-gray-500">{{ $t('tools.uuid-generator.page.emptyTip') }}</div>
           </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">UUID 验证</h4>
+            <h4 class="font-medium">{{ $t('tools.uuid-generator.page.validateTitle') }}</h4>
           </div>
           <div class="p-4 space-y-3">
             <div>
-              <label class="block text-sm font-medium mb-2">输入 UUID 进行验证</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.uuid-generator.page.validateInputLabel') }}</label>
               <input
                 v-model="validationInput"
                 type="text"
-                placeholder="输入 UUID 或 Nano ID"
+                :placeholder="$t('tools.uuid-generator.page.validateInputPlaceholder')"
                 class="w-full px-3 py-2 border rounded-lg font-mono dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="validateUUID"
               />
@@ -175,14 +178,22 @@
                 <span :class="validationResult.valid ? 'text-green-500' : 'text-red-500'">
                   {{ validationResult.valid ? '✓' : '✗' }}
                 </span>
-                <span class="font-medium">{{ validationResult.valid ? '有效' : '无效' }}</span>
+                <span class="font-medium">{{ validationResult.valid ? $t('tools.uuid-generator.page.valid') : $t('tools.uuid-generator.page.invalid') }}</span>
               </div>
 
               <div v-if="validationResult.valid" class="text-sm space-y-1">
-                <div><strong>类型:</strong> {{ validationResult.type }}</div>
-                <div><strong>版本:</strong> {{ validationResult.version || 'N/A' }}</div>
-                <div><strong>格式:</strong> {{ validationResult.format }}</div>
-                <div v-if="validationResult.timestamp"><strong>时间戳:</strong> {{ validationResult.timestamp }}</div>
+                <div>
+                  <strong>{{ $t('tools.uuid-generator.page.detailType') }}:</strong> {{ validationResult.type }}
+                </div>
+                <div>
+                  <strong>{{ $t('tools.uuid-generator.page.detailVersion') }}:</strong> {{ validationResult.version || 'N/A' }}
+                </div>
+                <div>
+                  <strong>{{ $t('tools.uuid-generator.page.detailFormat') }}:</strong> {{ validationResult.format }}
+                </div>
+                <div v-if="validationResult.timestamp">
+                  <strong>{{ $t('tools.uuid-generator.page.detailTimestamp') }}:</strong> {{ validationResult.timestamp }}
+                </div>
               </div>
 
               <div v-else class="text-sm text-red-600 dark:text-red-400">
@@ -194,8 +205,8 @@
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">生成历史</h4>
-            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空历史</button>
+            <h4 class="font-medium">{{ $t('tools.uuid-generator.page.historyTitle') }}</h4>
+            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.uuid-generator.page.clearHistory') }}</button>
           </div>
           <div class="p-4">
             <div v-if="uuidHistory.length > 0" class="space-y-2 max-h-40 overflow-y-auto">
@@ -205,46 +216,48 @@
                   <div class="text-xs text-gray-500">{{ history.timestamp }} - {{ history.type }}</div>
                 </div>
                 <div class="flex gap-1">
-                  <button @click="copyUUID(history.uuid)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyUUID(history.uuid)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.uuid-generator.page.copy') }}</button>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-gray-500 text-sm">暂无生成历史</div>
+            <div v-else class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.uuid-generator.page.historyEmpty') }}</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.uuid-generator.page.guideTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">UUID 类型</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.uuid-generator.page.guideTypes') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>UUID v4:</strong> 基于随机数生成，最常用</li>
-            <li>• <strong>UUID v1:</strong> 基于时间戳和MAC地址</li>
-            <li>• <strong>Nano ID:</strong> 更短更安全的ID</li>
-            <li>• <strong>自定义:</strong> 自定义格式和字符集</li>
+            <li>• <strong>UUID v4:</strong> {{ $t('tools.uuid-generator.page.guideTypesV4') }}</li>
+            <li>• <strong>UUID v1:</strong> {{ $t('tools.uuid-generator.page.guideTypesV1') }}</li>
+            <li>• <strong>Nano ID:</strong> {{ $t('tools.uuid-generator.page.guideTypesNano') }}</li>
+            <li>
+              • <strong>{{ $t('tools.uuid-generator.page.guideTypesCustomLabel') }}:</strong> {{ $t('tools.uuid-generator.page.guideTypesCustom') }}
+            </li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">格式选项</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.uuid-generator.page.guideFormatOptions') }}</h4>
           <ul class="space-y-1">
-            <li>• 支持大小写转换</li>
-            <li>• 可移除连字符</li>
-            <li>• 可添加大括号包装</li>
-            <li>• 支持自定义前缀</li>
-            <li>• 批量生成和导出</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFormatCase') }}</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFormatRemoveDashes') }}</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFormatBraces') }}</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFormatPrefix') }}</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFormatBatch') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">实用功能</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.uuid-generator.page.guideFeatures') }}</h4>
           <ul class="space-y-1">
-            <li>• UUID 格式验证</li>
-            <li>• 生成历史记录</li>
-            <li>• 一键复制和导出</li>
-            <li>• 多种预设快速生成</li>
-            <li>• 支持自定义字符集</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFeatureValidation') }}</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFeatureHistory') }}</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFeatureCopyExport') }}</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFeaturePresets') }}</li>
+            <li>• {{ $t('tools.uuid-generator.page.guideFeatureCustomAlphabet') }}</li>
           </ul>
         </div>
       </div>
@@ -254,6 +267,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface GeneratedUUID {
   value: string;
@@ -304,6 +318,8 @@ const alphabets = {
   numbers: '0123456789',
   hex: '0123456789ABCDEF'
 };
+
+const { t } = useI18n();
 
 onMounted(() => {
   loadUUIDHistory();
@@ -413,7 +429,7 @@ function generateUUIDs() {
         break;
       case 'custom':
         uuid = generateCustomFormat(settings.value.customFormat);
-        type = '自定义格式';
+        type = t('tools.uuid-generator.page.typeCustom');
         break;
     }
 
@@ -451,7 +467,7 @@ function regenerateUUID(index: number) {
       break;
     case 'custom':
       uuid = generateCustomFormat(settings.value.customFormat);
-      type = '自定义格式';
+      type = t('tools.uuid-generator.page.typeCustom');
       break;
   }
 
@@ -501,15 +517,15 @@ function validateUUID() {
       valid: true,
       type: 'UUID',
       version: 'v4',
-      format: '标准格式 (带连字符)'
+      format: t('tools.uuid-generator.page.standardHyphenFormat')
     };
   } else if (uuidv1Regex.test(cleanInput)) {
     validationResult.value = {
       valid: true,
       type: 'UUID',
       version: 'v1',
-      format: '标准格式 (带连字符)',
-      timestamp: '包含时间戳信息'
+      format: t('tools.uuid-generator.page.standardHyphenFormat'),
+      timestamp: t('tools.uuid-generator.page.timestampInfo')
     };
   } else if (uuidRegex.test(cleanInput)) {
     const version = cleanInput.charAt(14);
@@ -517,25 +533,25 @@ function validateUUID() {
       valid: true,
       type: 'UUID',
       version: `v${version}`,
-      format: '标准格式 (带连字符)'
+      format: t('tools.uuid-generator.page.standardHyphenFormat')
     };
   } else if (uuidv4NoHyphenRegex.test(cleanInput)) {
     validationResult.value = {
       valid: true,
       type: 'UUID',
-      version: '未知',
-      format: '无连字符格式'
+      version: t('tools.uuid-generator.page.unknown'),
+      format: t('tools.uuid-generator.page.noHyphenFormat')
     };
   } else if (cleanInput.length >= 6 && /^[A-Za-z0-9_-]+$/.test(cleanInput)) {
     validationResult.value = {
       valid: true,
       type: 'Nano ID',
-      format: `长度: ${cleanInput.length} 字符`
+      format: t('tools.uuid-generator.page.nanoLengthFormat', { len: cleanInput.length })
     };
   } else {
     validationResult.value = {
       valid: false,
-      error: '不是有效的 UUID 或 Nano ID 格式'
+      error: t('tools.uuid-generator.page.notValidError')
     };
   }
 }
@@ -546,7 +562,7 @@ async function copyUUID(uuid: string) {
     await navigator.clipboard.writeText(uuid);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(t('tools.uuid-generator.page.copyFailed'), error);
   }
 }
 
@@ -556,7 +572,7 @@ async function copyAllUUIDs() {
     await navigator.clipboard.writeText(uuids);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(t('tools.uuid-generator.page.copyFailed'), error);
   }
 }
 
@@ -605,7 +621,7 @@ function loadUUIDHistory() {
       uuidHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载UUID历史失败:', error);
+    console.error(t('tools.uuid-generator.page.loadHistoryFailed'), error);
   }
 }
 
@@ -613,7 +629,7 @@ function saveUUIDHistory() {
   try {
     localStorage.setItem('uuid-generator-history', JSON.stringify(uuidHistory.value));
   } catch (error) {
-    console.error('保存UUID历史失败:', error);
+    console.error(t('tools.uuid-generator.page.saveHistoryFailed'), error);
   }
 }
 </script>

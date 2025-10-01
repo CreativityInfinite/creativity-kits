@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-4">
     <div class="flex justify-between items-center">
-      <h2 class="text-lg font-semibold">剪贴板历史管理器</h2>
+      <h2 class="text-lg font-semibold">{{ $t('tools.clipboard-manager.page.title') }}</h2>
       <div class="flex gap-2">
-        <button @click="clearHistory" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm">清空历史</button>
+        <button @click="clearHistory" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm">{{ $t('tools.clipboard-manager.page.clearHistory') }}</button>
         <button @click="toggleAutoSave" :class="['px-3 py-2 rounded-md text-sm', autoSave ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-300 hover:bg-gray-400 text-gray-700']">
-          {{ autoSave ? '自动保存：开' : '自动保存：关' }}
+          {{ autoSave ? $t('tools.clipboard-manager.page.autoSaveOn') : $t('tools.clipboard-manager.page.autoSaveOff') }}
         </button>
       </div>
     </div>
@@ -13,34 +13,38 @@
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
       <div class="flex items-center gap-2 mb-2">
         <div class="w-3 h-3 rounded-full bg-blue-500"></div>
-        <span class="text-sm font-medium text-blue-900 dark:text-blue-100">当前剪贴板内容</span>
+        <span class="text-sm font-medium text-blue-900 dark:text-blue-100">{{ $t('tools.clipboard-manager.page.currentClipboard') }}</span>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded p-3 border">
         <div v-if="currentClipboard" class="space-y-2">
           <div class="flex justify-between items-start">
             <div class="text-xs text-gray-500 dark:text-gray-400">{{ formatTime(currentClipboard.timestamp) }} | {{ currentClipboard.type }}</div>
-            <button @click="copyToClipboard(currentClipboard.content)" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">复制</button>
+            <button @click="copyToClipboard(currentClipboard.content)" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">{{ $t('tools.clipboard-manager.page.copy') }}</button>
           </div>
           <div class="text-sm font-mono bg-gray-50 dark:bg-gray-700 rounded p-2 max-h-20 overflow-y-auto">
             {{ truncateText(currentClipboard.content, 200) }}
           </div>
         </div>
-        <div v-else class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">暂无剪贴板内容</div>
+        <div v-else class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">{{ $t('tools.clipboard-manager.page.noClipboard') }}</div>
       </div>
     </div>
 
     <div class="space-y-2">
       <div class="flex justify-between items-center">
-        <h3 class="font-medium">历史记录 ({{ clipboardHistory.length }})</h3>
+        <h3 class="font-medium">{{ $t('tools.clipboard-manager.page.historyTitle') }} ({{ clipboardHistory.length }})</h3>
         <div class="flex gap-2">
           <select v-model="filterType" class="px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            <option value="all">全部类型</option>
-            <option value="text">文本</option>
-            <option value="url">链接</option>
-            <option value="email">邮箱</option>
-            <option value="number">数字</option>
+            <option value="all">{{ $t('tools.clipboard-manager.page.filter.all') }}</option>
+            <option value="text">{{ $t('tools.clipboard-manager.page.filter.text') }}</option>
+            <option value="url">{{ $t('tools.clipboard-manager.page.filter.url') }}</option>
+            <option value="email">{{ $t('tools.clipboard-manager.page.filter.email') }}</option>
+            <option value="number">{{ $t('tools.clipboard-manager.page.filter.number') }}</option>
           </select>
-          <input v-model="searchQuery" placeholder="搜索内容..." class="px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+          <input
+            v-model="searchQuery"
+            :placeholder="$t('tools.clipboard-manager.page.searchPlaceholder')"
+            class="px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
         </div>
       </div>
 
@@ -55,13 +59,15 @@
               <span class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">
                 {{ item.type }}
               </span>
-              <span class="text-xs text-gray-500 dark:text-gray-400"> {{ item.content.length }} 字符 </span>
+              <span class="text-xs text-gray-500 dark:text-gray-400"> {{ item.content.length }} {{ $t('tools.clipboard-manager.page.chars') }} </span>
             </div>
             <div class="flex gap-1">
               <button @click="copyToClipboard(item.content)" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 px-2 py-1 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                复制
+                {{ $t('tools.clipboard-manager.page.copy') }}
               </button>
-              <button @click="removeItem(index)" class="text-xs text-red-600 hover:text-red-800 dark:text-red-400 px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20">删除</button>
+              <button @click="removeItem(index)" class="text-xs text-red-600 hover:text-red-800 dark:text-red-400 px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20">
+                {{ $t('tools.clipboard-manager.page.delete') }}
+              </button>
             </div>
           </div>
           <div class="text-sm font-mono bg-gray-50 dark:bg-gray-700 rounded p-2">
@@ -71,19 +77,19 @@
 
         <div v-if="filteredHistory.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-2">📋</div>
-          <div>{{ searchQuery || filterType !== 'all' ? '没有找到匹配的记录' : '暂无历史记录' }}</div>
+          <div>{{ searchQuery || filterType !== 'all' ? $t('tools.clipboard-manager.page.empty.searchNoMatch') : $t('tools.clipboard-manager.page.empty.noHistory') }}</div>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-2">使用说明</h3>
+      <h3 class="font-medium mb-2">{{ $t('tools.clipboard-manager.page.guide.title') }}</h3>
       <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-        <li>• 开启自动保存后，每次复制内容都会自动记录到历史中</li>
-        <li>• 支持文本、链接、邮箱、数字等不同类型的内容识别</li>
-        <li>• 可以通过类型筛选和关键词搜索快速找到历史内容</li>
-        <li>• 点击复制按钮可以将历史内容重新复制到剪贴板</li>
-        <li>• 历史记录保存在本地存储中，不会上传到服务器</li>
+        <li>• {{ $t('tools.clipboard-manager.page.guide.tips.autoSave') }}</li>
+        <li>• {{ $t('tools.clipboard-manager.page.guide.tips.types') }}</li>
+        <li>• {{ $t('tools.clipboard-manager.page.guide.tips.filterSearch') }}</li>
+        <li>• {{ $t('tools.clipboard-manager.page.guide.tips.copy') }}</li>
+        <li>• {{ $t('tools.clipboard-manager.page.guide.tips.local') }}</li>
       </ul>
     </div>
   </div>
@@ -91,6 +97,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface ClipboardItem {
   content: string;
@@ -149,6 +156,7 @@ function getTypeColor(type: string): string {
   return colors[type as keyof typeof colors] || 'bg-gray-400';
 }
 
+const { t } = useI18n ? useI18n() : ({ t: (s: string) => s } as any);
 function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
   const now = new Date();
@@ -156,13 +164,13 @@ function formatTime(timestamp: number): string {
 
   if (diff < 60000) {
     // 1分钟内
-    return '刚刚';
+    return t('tools.clipboard-manager.page.time.justNow');
   } else if (diff < 3600000) {
     // 1小时内
-    return `${Math.floor(diff / 60000)}分钟前`;
+    return t('tools.clipboard-manager.page.time.minutesAgo', { n: Math.floor(diff / 60000) });
   } else if (diff < 86400000) {
     // 24小时内
-    return `${Math.floor(diff / 3600000)}小时前`;
+    return t('tools.clipboard-manager.page.time.hoursAgo', { n: Math.floor(diff / 3600000) });
   } else {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   }
@@ -207,7 +215,7 @@ async function checkClipboard() {
       saveHistory();
     }
   } catch (error) {
-    console.log('无法读取剪贴板内容');
+    console.log(t('tools.clipboard-manager.page.error.readClipboardFailed'));
   }
 }
 
@@ -222,7 +230,7 @@ async function copyToClipboard(text: string) {
       timestamp: Date.now()
     };
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(t('tools.clipboard-manager.page.error.copyFailed'), error);
   }
 }
 

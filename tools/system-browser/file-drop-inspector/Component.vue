@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-4">
-    <h3 class="font-medium text-lg">文件拖拽检查器</h3>
+    <h3 class="font-medium text-lg">{{ $t('tools.file-drop-inspector.page.title') }}</h3>
 
     <div class="border-2 border-dashed rounded-lg p-8 text-center dark:border-gray-600" @dragover.prevent @drop.prevent="onDrop">
       <div class="text-4xl mb-2">📦</div>
-      <div class="text-gray-600 dark:text-gray-300">拖拽文件到此处，或点击选择</div>
+      <div class="text-gray-600 dark:text-gray-300">{{ $t('tools.file-drop-inspector.page.dropOrClick') }}</div>
       <div class="mt-3">
         <input type="file" multiple @change="onChoose" />
       </div>
@@ -13,19 +13,22 @@
     <div v-if="items.length" class="space-y-3">
       <div v-for="(it, i) in items" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
         <div class="font-medium">{{ it.name }}</div>
-        <div class="text-xs text-gray-500 mb-2">size: {{ it.size }} | type: {{ it.type || '(unknown)' }} | lastModified: {{ formatDate(it.lastModified) }}</div>
+        <div class="text-xs text-gray-500 mb-2">
+          {{ $t('tools.file-drop-inspector.page.sizeLabel') }} {{ it.size }} | {{ $t('tools.file-drop-inspector.page.typeLabel') }} {{ it.type || $t('tools.file-drop-inspector.page.unknown') }} |
+          {{ $t('tools.file-drop-inspector.page.lastModifiedLabel') }} {{ formatDate(it.lastModified) }}
+        </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <div class="text-sm font-medium mb-1">前 64 字节（十六进制）</div>
+            <div class="text-sm font-medium mb-1">{{ $t('tools.file-drop-inspector.page.head64Hex') }}</div>
             <pre class="text-xs bg-white dark:bg-gray-900 rounded p-2 overflow-auto">{{ it.headHex }}</pre>
           </div>
           <div>
-            <div class="text-sm font-medium mb-1">图片预览/尺寸</div>
+            <div class="text-sm font-medium mb-1">{{ $t('tools.file-drop-inspector.page.previewAndSize') }}</div>
             <div v-if="it.previewUrl">
               <img :src="it.previewUrl" class="max-h-64 rounded border dark:border-gray-700" alt="preview" />
-              <div class="text-xs text-gray-500 mt-1">尺寸: {{ it.width }}x{{ it.height }}</div>
+              <div class="text-xs text-gray-500 mt-1">{{ $t('tools.file-drop-inspector.page.size') }} {{ it.width }}x{{ it.height }}</div>
             </div>
-            <div v-else class="text-xs text-gray-500">非图片或无法预览</div>
+            <div v-else class="text-xs text-gray-500">{{ $t('tools.file-drop-inspector.page.notImageOrNoPreview') }}</div>
           </div>
         </div>
       </div>
@@ -39,6 +42,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type Item = {
   name: string;
@@ -77,6 +81,8 @@ function tryImagePreview(f: File): Promise<{ url: string | null; width: number |
   });
 }
 
+const { t } = useI18n();
+
 async function handleFiles(fl: FileList | null) {
   if (!fl) return;
   error.value = '';
@@ -87,7 +93,7 @@ async function handleFiles(fl: FileList | null) {
       const prev = await tryImagePreview(f);
       list.push({ name: f.name, size: f.size, type: f.type, lastModified: f.lastModified, headHex, previewUrl: prev.url, width: prev.width, height: prev.height });
     } catch (e: any) {
-      error.value = e?.message || '解析失败';
+      error.value = e?.message || t('tools.file-drop-inspector.page.parseFailed');
     }
   }
   items.value = list;

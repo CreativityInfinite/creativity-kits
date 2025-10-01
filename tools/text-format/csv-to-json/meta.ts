@@ -2,10 +2,17 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'csv-to-json',
-  name: 'CSV ⇄ JSON 转换工具',
-  description: '强大的CSV与JSON互转工具，支持自定义分隔符、自动类型检测、表格预览和详细的数据分析，完美处理各种格式的结构化数据',
+  name: 'tools.csv-to-json.name',
+  description: 'tools.csv-to-json.desc',
   category: 'text-format',
-  tags: ['CSV', 'JSON', '数据转换', '表格数据', '结构化数据', '数据分析'],
+  tags: [
+    'tools.csv-to-json.meta.tags.csv',
+    'tools.csv-to-json.meta.tags.json',
+    'tools.csv-to-json.meta.tags.dataConversion',
+    'tools.csv-to-json.meta.tags.tableData',
+    'tools.csv-to-json.meta.tags.structuredData',
+    'tools.csv-to-json.meta.tags.dataAnalysis'
+  ],
   i18nKey: 'tools.csv-to-json',
   entry: 'tools/text-format/csv-to-json/Component.vue'
 };

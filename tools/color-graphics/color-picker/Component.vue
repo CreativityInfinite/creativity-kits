@@ -2,14 +2,14 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">颜色选择器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.color-picker.page.title') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">主颜色</h4>
+            <h4 class="font-medium">{{ $t('tools.color-picker.page.mainColorTitle') }}</h4>
             <div class="flex gap-2">
-              <button @click="randomColor" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">随机颜色</button>
-              <button @click="resetColor" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">重置</button>
+              <button @click="randomColor" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.color-picker.page.randomColor') }}</button>
+              <button @click="resetColor" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.color-picker.page.reset') }}</button>
             </div>
           </div>
 
@@ -35,7 +35,7 @@
             <!-- HSL 滑块 -->
             <div class="space-y-3">
               <div>
-                <label class="block text-sm font-medium mb-1"> 色相 (H): {{ Math.round(currentColor.hsl.h) }}° </label>
+                <label class="block text-sm font-medium mb-1"> {{ $t('tools.color-picker.page.hue') }}: {{ Math.round(currentColor.hsl.h) }}° </label>
                 <input
                   v-model.number="currentColor.hsl.h"
                   type="range"
@@ -48,7 +48,7 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium mb-1"> 饱和度 (S): {{ Math.round(currentColor.hsl.s) }}% </label>
+                <label class="block text-sm font-medium mb-1"> {{ $t('tools.color-picker.page.saturation') }}: {{ Math.round(currentColor.hsl.s) }}% </label>
                 <input
                   v-model.number="currentColor.hsl.s"
                   type="range"
@@ -61,7 +61,7 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium mb-1"> 亮度 (L): {{ Math.round(currentColor.hsl.l) }}% </label>
+                <label class="block text-sm font-medium mb-1"> {{ $t('tools.color-picker.page.lightness') }}: {{ Math.round(currentColor.hsl.l) }}% </label>
                 <input
                   v-model.number="currentColor.hsl.l"
                   type="range"
@@ -74,7 +74,7 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium mb-1"> 透明度 (A): {{ Math.round(currentColor.alpha * 100) }}% </label>
+                <label class="block text-sm font-medium mb-1"> {{ $t('tools.color-picker.page.alpha') }}: {{ Math.round(currentColor.alpha * 100) }}% </label>
                 <input
                   v-model.number="currentColor.alpha"
                   type="range"
@@ -91,10 +91,10 @@
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">颜色格式</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.color-picker.page.colorFormatsTitle') }}</h4>
           <div class="space-y-3">
             <div class="grid grid-cols-4 gap-2 text-sm">
-              <label class="font-medium">HEX:</label>
+              <label class="font-medium">{{ $t('tools.color-picker.page.HEX') }}</label>
               <input
                 v-model="colorInputs.hex"
                 type="text"
@@ -103,7 +103,7 @@
                 @blur="validateInput('hex')"
               />
 
-              <label class="font-medium">RGB:</label>
+              <label class="font-medium">{{ $t('tools.color-picker.page.RGB') }}</label>
               <div class="col-span-3 grid grid-cols-3 gap-1">
                 <input
                   v-model.number="colorInputs.rgb.r"
@@ -131,7 +131,7 @@
                 />
               </div>
 
-              <label class="font-medium">HSL:</label>
+              <label class="font-medium">{{ $t('tools.color-picker.page.HSL') }}</label>
               <div class="col-span-3 grid grid-cols-3 gap-1">
                 <input
                   v-model.number="colorInputs.hsl.h"
@@ -159,7 +159,7 @@
                 />
               </div>
 
-              <label class="font-medium">HSV:</label>
+              <label class="font-medium">{{ $t('tools.color-picker.page.HSV') }}</label>
               <div class="col-span-3 grid grid-cols-3 gap-1">
                 <input
                   v-model.number="colorInputs.hsv.h"
@@ -187,7 +187,7 @@
                 />
               </div>
 
-              <label class="font-medium">CMYK:</label>
+              <label class="font-medium">{{ $t('tools.color-picker.page.CMYK') }}</label>
               <div class="col-span-3 grid grid-cols-4 gap-1">
                 <input
                   v-model.number="colorInputs.cmyk.c"
@@ -227,33 +227,33 @@
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">CSS 格式</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.color-picker.page.cssFormatsTitle') }}</h4>
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <span class="text-sm font-mono">{{ cssFormats.hex }}</span>
-              <button @click="copyText(cssFormats.hex)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+              <button @click="copyText(cssFormats.hex)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.color-picker.page.copy') }}</button>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-sm font-mono">{{ cssFormats.rgb }}</span>
-              <button @click="copyText(cssFormats.rgb)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+              <button @click="copyText(cssFormats.rgb)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.color-picker.page.copy') }}</button>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-sm font-mono">{{ cssFormats.rgba }}</span>
-              <button @click="copyText(cssFormats.rgba)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+              <button @click="copyText(cssFormats.rgba)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.color-picker.page.copy') }}</button>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-sm font-mono">{{ cssFormats.hsl }}</span>
-              <button @click="copyText(cssFormats.hsl)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+              <button @click="copyText(cssFormats.hsl)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.color-picker.page.copy') }}</button>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-sm font-mono">{{ cssFormats.hsla }}</span>
-              <button @click="copyText(cssFormats.hsla)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+              <button @click="copyText(cssFormats.hsla)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.color-picker.page.copy') }}</button>
             </div>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">预设颜色</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.color-picker.page.presetColorsTitle') }}</h4>
           <div class="grid grid-cols-8 gap-2">
             <div
               v-for="preset in presetColors"
@@ -267,55 +267,55 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">颜色分析</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.color-picker.page.analysisTitle') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">颜色信息</h4>
+            <h4 class="font-medium">{{ $t('tools.color-picker.page.infoTitle') }}</h4>
           </div>
           <div class="p-4 space-y-3">
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <div class="text-gray-500">亮度</div>
+                <div class="text-gray-500">{{ $t('tools.color-picker.page.brightness') }}</div>
                 <div class="font-mono">{{ colorAnalysis.brightness.toFixed(2) }}</div>
               </div>
               <div>
-                <div class="text-gray-500">对比度 (vs 白色)</div>
+                <div class="text-gray-500">{{ $t('tools.color-picker.page.contrastWhite') }}</div>
                 <div class="font-mono">{{ colorAnalysis.contrastWhite.toFixed(2) }}</div>
               </div>
               <div>
-                <div class="text-gray-500">对比度 (vs 黑色)</div>
+                <div class="text-gray-500">{{ $t('tools.color-picker.page.contrastBlack') }}</div>
                 <div class="font-mono">{{ colorAnalysis.contrastBlack.toFixed(2) }}</div>
               </div>
               <div>
-                <div class="text-gray-500">色温</div>
+                <div class="text-gray-500">{{ $t('tools.color-picker.page.temperature') }}</div>
                 <div class="font-mono">{{ colorAnalysis.temperature }}</div>
               </div>
             </div>
 
             <div class="space-y-2">
-              <div class="text-sm font-medium">WCAG 可访问性</div>
+              <div class="text-sm font-medium">{{ $t('tools.color-picker.page.wcagTitle') }}</div>
               <div class="grid grid-cols-2 gap-2 text-xs">
                 <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                  <span>AA 正常文本</span>
+                  <span>{{ $t('tools.color-picker.page.aaNormal') }}</span>
                   <span :class="colorAnalysis.wcag.aa.normal ? 'text-green-500' : 'text-red-500'">
                     {{ colorAnalysis.wcag.aa.normal ? '✓' : '✗' }}
                   </span>
                 </div>
                 <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                  <span>AA 大文本</span>
+                  <span>{{ $t('tools.color-picker.page.aaLarge') }}</span>
                   <span :class="colorAnalysis.wcag.aa.large ? 'text-green-500' : 'text-red-500'">
                     {{ colorAnalysis.wcag.aa.large ? '✓' : '✗' }}
                   </span>
                 </div>
                 <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                  <span>AAA 正常文本</span>
+                  <span>{{ $t('tools.color-picker.page.aaaNormal') }}</span>
                   <span :class="colorAnalysis.wcag.aaa.normal ? 'text-green-500' : 'text-red-500'">
                     {{ colorAnalysis.wcag.aaa.normal ? '✓' : '✗' }}
                   </span>
                 </div>
                 <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                  <span>AAA 大文本</span>
+                  <span>{{ $t('tools.color-picker.page.aaaLarge') }}</span>
                   <span :class="colorAnalysis.wcag.aaa.large ? 'text-green-500' : 'text-red-500'">
                     {{ colorAnalysis.wcag.aaa.large ? '✓' : '✗' }}
                   </span>
@@ -327,23 +327,23 @@
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">调色板生成</h4>
+            <h4 class="font-medium">{{ $t('tools.color-picker.page.paletteGenTitle') }}</h4>
           </div>
           <div class="p-4 space-y-4">
             <div class="flex gap-2">
-              <button @click="generatePalette('monochromatic')" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">单色</button>
-              <button @click="generatePalette('analogous')" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">类似色</button>
-              <button @click="generatePalette('complementary')" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">互补色</button>
-              <button @click="generatePalette('triadic')" class="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">三角色</button>
+              <button @click="generatePalette('monochromatic')" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.color-picker.page.mono') }}</button>
+              <button @click="generatePalette('analogous')" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.color-picker.page.analog') }}</button>
+              <button @click="generatePalette('complementary')" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.color-picker.page.complement') }}</button>
+              <button @click="generatePalette('triadic')" class="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">{{ $t('tools.color-picker.page.triadic') }}</button>
             </div>
 
             <div v-if="generatedPalette.length > 0" class="space-y-3">
-              <div class="text-sm font-medium">{{ paletteType }} 调色板</div>
+              <div class="text-sm font-medium">{{ $t('tools.color-picker.page.paletteLabel', { type: paletteType }) }}</div>
               <div class="grid grid-cols-5 gap-2">
                 <div v-for="(color, index) in generatedPalette" :key="index" class="space-y-1">
                   <div class="w-full h-16 rounded border cursor-pointer hover:scale-105 transition-transform" :style="{ backgroundColor: color }" @click="setColor(color)"></div>
                   <div class="text-xs font-mono text-center">{{ color }}</div>
-                  <button @click="copyText(color)" class="w-full px-1 py-0.5 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyText(color)" class="w-full px-1 py-0.5 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">{{ $t('tools.color-picker.page.copy') }}</button>
                 </div>
               </div>
             </div>
@@ -352,11 +352,11 @@
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">颜色变化</h4>
+            <h4 class="font-medium">{{ $t('tools.color-picker.page.variationsTitle') }}</h4>
           </div>
           <div class="p-4 space-y-4">
             <div class="space-y-2">
-              <div class="text-sm font-medium">亮度变化</div>
+              <div class="text-sm font-medium">{{ $t('tools.color-picker.page.lightnessVar') }}</div>
               <div class="grid grid-cols-9 gap-1">
                 <div v-for="(shade, index) in colorShades" :key="index" class="space-y-1">
                   <div class="w-full h-12 rounded border cursor-pointer hover:scale-105 transition-transform" :style="{ backgroundColor: shade }" @click="setColor(shade)"></div>
@@ -366,7 +366,7 @@
             </div>
 
             <div class="space-y-2">
-              <div class="text-sm font-medium">饱和度变化</div>
+              <div class="text-sm font-medium">{{ $t('tools.color-picker.page.saturationVar') }}</div>
               <div class="grid grid-cols-9 gap-1">
                 <div v-for="(tint, index) in colorTints" :key="index" class="space-y-1">
                   <div class="w-full h-12 rounded border cursor-pointer hover:scale-105 transition-transform" :style="{ backgroundColor: tint }" @click="setColor(tint)"></div>
@@ -379,8 +379,8 @@
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">颜色历史</h4>
-            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空历史</button>
+            <h4 class="font-medium">{{ $t('tools.color-picker.page.historyTitle') }}</h4>
+            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.color-picker.page.clearHistory') }}</button>
           </div>
           <div class="p-4">
             <div v-if="colorHistory.length > 0" class="grid grid-cols-8 gap-2">
@@ -389,43 +389,43 @@
                 <div class="text-xs font-mono text-center truncate">{{ historyColor }}</div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-gray-500 text-sm">暂无颜色历史</div>
+            <div v-else class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.color-picker.page.noHistory') }}</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.color-picker.page.guideTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">颜色选择</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.color-picker.page.title') }}</h4>
           <ul class="space-y-1">
-            <li>• 点击颜色预览区域选择颜色</li>
-            <li>• 使用 HSL 滑块精确调整</li>
-            <li>• 直接输入各种格式的颜色值</li>
-            <li>• 点击预设颜色快速选择</li>
-            <li>• 支持透明度调整</li>
+            <li>{{ $t('tools.color-picker.page.guidePick') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideHsl') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideInput') }}</li>
+            <li>{{ $t('tools.color-picker.page.guidePreset') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideAlpha') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">颜色格式</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.color-picker.page.colorFormatsTitle') }}</h4>
           <ul class="space-y-1">
-            <li>• HEX: 网页常用格式</li>
-            <li>• RGB: 红绿蓝三原色</li>
-            <li>• HSL: 色相饱和度亮度</li>
-            <li>• HSV: 色相饱和度明度</li>
-            <li>• CMYK: 印刷四色模式</li>
+            <li>{{ $t('tools.color-picker.page.guideHex') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideRgb') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideHslFmt') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideHsv') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideCmyk') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">实用功能</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.color-picker.page.analysisTitle') }}</h4>
           <ul class="space-y-1">
-            <li>• 自动生成配色方案</li>
-            <li>• WCAG 可访问性检查</li>
-            <li>• 颜色对比度分析</li>
-            <li>• 亮度和饱和度变化</li>
-            <li>• 颜色历史记录</li>
+            <li>{{ $t('tools.color-picker.page.guidePalette') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideWcag') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideContrast') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideLightnessSaturation') }}</li>
+            <li>{{ $t('tools.color-picker.page.guideHistory') }}</li>
           </ul>
         </div>
       </div>
@@ -435,6 +435,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface HSL {
   h: number;
@@ -481,6 +482,7 @@ interface ColorAnalysis {
   };
 }
 
+const { t } = useI18n();
 const currentColor = ref<Color>({
   hex: '#3B82F6',
   rgb: { r: 59, g: 130, b: 246 },
@@ -586,9 +588,9 @@ const colorAnalysis = computed((): ColorAnalysis => {
   const contrastBlack = (1 + 0.05) / (brightness + 0.05);
 
   // 估算色温
-  let temperature = '中性';
-  if (rgb.r > rgb.b + 30) temperature = '暖色';
-  else if (rgb.b > rgb.r + 30) temperature = '冷色';
+  let temperature = t('tools.color-picker.page.temperatureNeutral');
+  if (rgb.r > rgb.b + 30) temperature = t('tools.color-picker.page.temperatureWarm');
+  else if (rgb.b > rgb.r + 30) temperature = t('tools.color-picker.page.temperatureCool');
 
   // WCAG 可访问性检查
   const wcag = {
@@ -934,7 +936,7 @@ function generatePalette(type: string) {
 
   switch (type) {
     case 'monochromatic':
-      paletteType.value = '单色';
+      paletteType.value = t('tools.color-picker.page.mono');
       for (let i = 0; i < 5; i++) {
         const lightness = 20 + i * 15;
         palette.push(hslToHex(baseHue, currentColor.value.hsl.s, lightness));
@@ -942,7 +944,7 @@ function generatePalette(type: string) {
       break;
 
     case 'analogous':
-      paletteType.value = '类似色';
+      paletteType.value = t('tools.color-picker.page.analog');
       for (let i = -2; i <= 2; i++) {
         const hue = (baseHue + i * 30 + 360) % 360;
         palette.push(hslToHex(hue, currentColor.value.hsl.s, currentColor.value.hsl.l));
@@ -950,7 +952,7 @@ function generatePalette(type: string) {
       break;
 
     case 'complementary':
-      paletteType.value = '互补色';
+      paletteType.value = t('tools.color-picker.page.complement');
       palette.push(currentColor.value.hex);
       palette.push(hslToHex((baseHue + 180) % 360, currentColor.value.hsl.s, currentColor.value.hsl.l));
       palette.push(hslToHex(baseHue, currentColor.value.hsl.s, Math.max(20, currentColor.value.hsl.l - 20)));
@@ -959,7 +961,7 @@ function generatePalette(type: string) {
       break;
 
     case 'triadic':
-      paletteType.value = '三角色';
+      paletteType.value = t('tools.color-picker.page.triadic');
       for (let i = 0; i < 3; i++) {
         const hue = (baseHue + i * 120) % 360;
         palette.push(hslToHex(hue, currentColor.value.hsl.s, currentColor.value.hsl.l));

@@ -1,36 +1,41 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">日历热力图生成器</h1>
-      <p class="text-gray-600 dark:text-gray-400">根据日期-数值数据生成年度热力图 SVG，可下载。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.calendar-heatmap-generator.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.calendar-heatmap-generator.page.subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
-        <label class="block text-sm font-medium mb-2">年份</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.calendar-heatmap-generator.page.year') }}</label>
         <input v-model.number="year" type="number" min="1970" max="2100" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">最大值（映射强度）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.calendar-heatmap-generator.page.maxValue') }}</label>
         <input v-model.number="maxValue" type="number" min="1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div class="flex items-end">
-        <button @click="fillRandom" class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">填充随机数据</button>
+        <button @click="fillRandom" class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.calendar-heatmap-generator.page.fillRandom') }}</button>
       </div>
 
       <div class="md:col-span-3">
-        <label class="block text-sm font-medium mb-2">日期-数值（每行：YYYY-MM-DD, value）</label>
-        <textarea v-model="raw" rows="8" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="2025-01-01, 3"></textarea>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.calendar-heatmap-generator.page.dataLabel') }}</label>
+        <textarea
+          v-model="raw"
+          rows="8"
+          class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          :placeholder="$t('tools.calendar-heatmap-generator.page.dataPlaceholder')"
+        ></textarea>
       </div>
     </div>
 
     <div class="flex justify-center gap-3">
-      <button @click="generate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">生成</button>
-      <button v-if="svg" @click="downloadSvg" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">下载 SVG</button>
+      <button @click="generate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.calendar-heatmap-generator.page.generate') }}</button>
+      <button v-if="svg" @click="downloadSvg" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.calendar-heatmap-generator.page.downloadSvg') }}</button>
     </div>
 
     <div v-if="svg" class="bg-white dark:bg-gray-800 rounded-lg p-4 border overflow-auto">
-      <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">预览</div>
+      <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.calendar-heatmap-generator.page.preview') }}</div>
       <div v-html="svg"></div>
     </div>
   </div>

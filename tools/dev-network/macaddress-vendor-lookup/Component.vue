@@ -1,37 +1,39 @@
 <template>
   <div class="space-y-6">
     <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">MAC 地址厂商查询</h1>
-      <p class="text-gray-600 dark:text-gray-400">输入 MAC（形如 44:38:39:ff:ef:57 或 443839ffee57），先本地 OUI 命中，未命中再尝试远程。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.macaddress-vendor-lookup.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.macaddress-vendor-lookup.page.description') }}</p>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 输入 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> {{ $t('tools.macaddress-vendor-lookup.page.inputLabel') }} </label>
           <textarea
             v-model="input"
             class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
+            :placeholder="$t('tools.macaddress-vendor-lookup.page.inputPlaceholder')"
           />
         </div>
 
         <div class="flex justify-center">
-          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">处理</button>
+          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">{{ $t('tools.macaddress-vendor-lookup.page.process') }}</button>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 输出 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> {{ $t('tools.macaddress-vendor-lookup.page.outputLabel') }} </label>
           <textarea
             v-model="output"
             readonly
             class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
+            :placeholder="$t('tools.macaddress-vendor-lookup.page.outputPlaceholder')"
           />
         </div>
 
         <div class="flex justify-center">
-          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">复制结果</button>
+          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">
+            {{ $t('tools.macaddress-vendor-lookup.page.copyResult') }}
+          </button>
         </div>
       </div>
     </div>
@@ -40,8 +42,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const input = ref('');
+const { t } = useI18n();
 const output = ref('');
 
 async function process() {
@@ -52,7 +56,7 @@ async function process() {
   }
   const mac = raw.replace(/[^0-9a-fA-F]/g, '').toUpperCase();
   if (mac.length !== 12) {
-    output.value = '格式错误：请提供 12 个十六进制字符的 MAC（可带 : 或 - 分隔）。';
+    output.value = t('tools.macaddress-vendor-lookup.page.formatError');
     return;
   }
   const oui = mac.slice(0, 6);
@@ -66,18 +70,19 @@ async function process() {
     D85D4C: 'Hon Hai Precision Ind. Co.,Ltd. (Foxconn)'
   };
   if (localMap[oui]) {
-    output.value = `本地命中：${localMap[oui]}`;
+    output.value = t('tools.macaddress-vendor-lookup.page.localHit', { vendor: localMap[oui] });
     return;
   }
-  output.value = '查询远程数据库中...';
+  output.value = t('tools.macaddress-vendor-lookup.page.querying');
   try {
     // macvendors.com 返回纯文本厂商名
     const res = await fetch(`https://api.macvendors.com/${mac}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const vendor = await res.text();
-    output.value = vendor || '未查询到厂商信息';
+    output.value = vendor || t('tools.macaddress-vendor-lookup.page.notFound');
   } catch (e: any) {
-    output.value = `查询失败：${e?.message || e}\n提示：可扩充本地 OUI 字典，或改用其他公共服务。`;
+    const msg = e?.message || String(e);
+    output.value = t('tools.macaddress-vendor-lookup.page.queryFailedWithHint', { msg });
   }
 }
 
@@ -85,10 +90,10 @@ async function copyToClipboard() {
   if (!output.value) return;
   try {
     await navigator.clipboard.writeText(output.value);
-    alert('已复制到剪贴板');
+    alert(t('common.copied'));
   } catch (err) {
-    console.error('复制失败:', err);
-    alert('复制失败，请重试');
+    console.error(t('tools.macaddress-vendor-lookup.page.copyFailedLog'), err);
+    alert(t('tools.macaddress-vendor-lookup.page.copyFailedRetry'));
   }
 }
 </script>

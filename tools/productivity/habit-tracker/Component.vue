@@ -1,20 +1,25 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">习惯追踪器</h1>
-      <p class="text-gray-600 dark:text-gray-400">管理日常习惯，勾选本周完成情况，查看连续打卡天数。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.habit-tracker.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.habit-tracker.page.subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="md:col-span-2">
-        <label class="block text-sm font-medium mb-2">新增习惯</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.habit-tracker.page.newHabit') }}</label>
         <div class="flex gap-2">
-          <input v-model="newHabit" type="text" placeholder="例如：早起、阅读30分钟" class="flex-1 px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-          <button @click="addHabit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">添加</button>
+          <input
+            v-model="newHabit"
+            type="text"
+            :placeholder="$t('tools.habit-tracker.page.newHabitPlaceholder')"
+            class="flex-1 px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
+          <button @click="addHabit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.habit-tracker.page.add') }}</button>
         </div>
       </div>
       <div class="md:col-span-1">
-        <label class="block text-sm font-medium mb-2">当前周起始</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.habit-tracker.page.weekStartLabel') }}</label>
         <input :value="weekStartStr" disabled class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
     </div>
@@ -23,10 +28,10 @@
       <table class="min-w-full text-sm">
         <thead>
           <tr class="text-left text-gray-600 dark:text-gray-400">
-            <th class="py-2 pr-4">习惯</th>
+            <th class="py-2 pr-4">{{ $t('tools.habit-tracker.page.headers.habit') }}</th>
             <th v-for="(d, i) in days" :key="i" class="py-2 px-3">{{ d }}</th>
-            <th class="py-2 px-3">本周完成</th>
-            <th class="py-2 px-3">连续天数</th>
+            <th class="py-2 px-3">{{ $t('tools.habit-tracker.page.headers.weekDone') }}</th>
+            <th class="py-2 px-3">{{ $t('tools.habit-tracker.page.headers.streak') }}</th>
           </tr>
         </thead>
         <tbody class="text-gray-800 dark:text-gray-200">
@@ -34,7 +39,9 @@
             <td class="py-2 pr-4">
               <div class="flex items-center gap-2">
                 <span>{{ h.name }}</span>
-                <button @click="removeHabit(idx)" class="px-2 py-1 text-xs bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 rounded border border-red-200 dark:border-red-800">删除</button>
+                <button @click="removeHabit(idx)" class="px-2 py-1 text-xs bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 rounded border border-red-200 dark:border-red-800">
+                  {{ $t('tools.habit-tracker.page.delete') }}
+                </button>
               </div>
             </td>
             <td v-for="(d, i) in 7" :key="i" class="py-2 px-3">
@@ -47,19 +54,29 @@
       </table>
     </div>
 
-    <div v-else class="text-gray-500 dark:text-gray-400 text-sm">暂无习惯，请先添加。</div>
+    <div v-else class="text-gray-500 dark:text-gray-400 text-sm">{{ $t('tools.habit-tracker.page.empty') }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type Habit = { id: string; name: string; week: boolean[]; lastHistory: string[] };
 
+const { t } = useI18n();
 const habits = ref<Habit[]>([]);
 const newHabit = ref('');
 
-const days = ['一', '二', '三', '四', '五', '六', '日'].map((d) => `周${d}`);
+const days = computed(() => [
+  t('tools.habit-tracker.page.weekdays.mon'),
+  t('tools.habit-tracker.page.weekdays.tue'),
+  t('tools.habit-tracker.page.weekdays.wed'),
+  t('tools.habit-tracker.page.weekdays.thu'),
+  t('tools.habit-tracker.page.weekdays.fri'),
+  t('tools.habit-tracker.page.weekdays.sat'),
+  t('tools.habit-tracker.page.weekdays.sun')
+]);
 const weekStart = computed(() => {
   const d = new Date();
   const day = d.getDay() || 7;

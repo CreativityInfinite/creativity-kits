@@ -1,37 +1,37 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">ASCII 艺术生成器</h1>
-      <p class="text-gray-600 dark:text-gray-400">将图片转为字符画。建议使用较小的宽度以获得清晰效果。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.ascii-art-generator.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.ascii-art-generator.page.description') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="md:col-span-1">
-        <label class="block text-sm font-medium mb-2">选择图片</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.ascii-art-generator.page.selectImage') }}</label>
         <input type="file" accept="image/*" @change="onFile" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">输出宽度（字符）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.ascii-art-generator.page.outputWidth') }}</label>
         <input v-model.number="width" type="number" min="10" max="300" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">字符集（从浅到深）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.ascii-art-generator.page.charset') }}</label>
         <input v-model="charset" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
     </div>
 
     <div class="flex justify-center gap-3">
-      <button @click="generate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">生成字符画</button>
-      <button v-if="ascii" @click="copy" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">复制</button>
+      <button @click="generate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.ascii-art-generator.page.generate') }}</button>
+      <button v-if="ascii" @click="copy" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.ascii-art-generator.page.copy') }}</button>
     </div>
 
     <div v-if="previewUrl || ascii" class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">预览图</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.ascii-art-generator.page.preview') }}</div>
         <img :src="previewUrl" alt="preview" class="max-w-full rounded-md border dark:border-gray-700" />
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border overflow-auto">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">ASCII 输出</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.ascii-art-generator.page.asciiOutput') }}</div>
         <pre class="text-xs leading-[0.9rem] whitespace-pre">{{ ascii }}</pre>
       </div>
     </div>
@@ -40,7 +40,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const file = ref<File | null>(null);
 const previewUrl = ref('');
 const width = ref(80);
@@ -70,7 +72,7 @@ async function loadImage(src: string): Promise<HTMLImageElement> {
 async function generate() {
   ascii.value = '';
   if (!previewUrl.value) {
-    alert('请先选择图片');
+    alert(t('tools.ascii-art-generator.page.alertSelectImage'));
     return;
   }
   const img = await loadImage(previewUrl.value);
@@ -109,9 +111,9 @@ async function copy() {
   if (!ascii.value) return;
   try {
     await navigator.clipboard.writeText(ascii.value);
-    alert('已复制');
+    alert(t('tools.ascii-art-generator.page.copied'));
   } catch {
-    alert('复制失败，请手动复制');
+    alert(t('tools.ascii-art-generator.page.copyFailed'));
   }
 }
 </script>

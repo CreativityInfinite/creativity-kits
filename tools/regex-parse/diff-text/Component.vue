@@ -2,43 +2,43 @@
   <div class="space-y-6">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">原始文本</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.diff-text.page.originalTitle') }}</h3>
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4 space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-2">文本 A（原始版本）</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.diff-text.page.textALabel') }}</label>
             <textarea
               v-model="textA"
               rows="12"
               class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm"
-              placeholder="输入或粘贴原始文本..."
+              :placeholder="$t('tools.diff-text.page.textAPlaceholder')"
             />
-            <div class="text-xs text-gray-500 mt-1">行数: {{ textA.split('\n').length }} | 字符数: {{ textA.length }}</div>
+            <div class="text-xs text-gray-500 mt-1">{{ $t('tools.diff-text.page.statsLine', { lines: textA.split('\n').length, chars: textA.length }) }}</div>
           </div>
 
           <div class="flex gap-2">
-            <button @click="loadFileA" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">📁 加载文件</button>
-            <button @click="pasteA" class="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">📋 粘贴</button>
+            <button @click="loadFileA" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">📁 {{ $t('tools.diff-text.page.loadFile') }}</button>
+            <button @click="pasteA" class="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">📋 {{ $t('tools.diff-text.page.paste') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">修改文本</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.diff-text.page.modifiedTitle') }}</h3>
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4 space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-2">文本 B（修改版本）</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.diff-text.page.textBLabel') }}</label>
             <textarea
               v-model="textB"
               rows="12"
               class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm"
-              placeholder="输入或粘贴修改后的文本..."
+              :placeholder="$t('tools.diff-text.page.textBPlaceholder')"
             />
-            <div class="text-xs text-gray-500 mt-1">行数: {{ textB.split('\n').length }} | 字符数: {{ textB.length }}</div>
+            <div class="text-xs text-gray-500 mt-1">{{ $t('tools.diff-text.page.statsLine', { lines: textB.split('\n').length, chars: textB.length }) }}</div>
           </div>
 
           <div class="flex gap-2">
-            <button @click="loadFileB" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">📁 加载文件</button>
-            <button @click="pasteB" class="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">📋 粘贴</button>
+            <button @click="loadFileB" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">📁 {{ $t('tools.diff-text.page.loadFileButton') }}</button>
+            <button @click="pasteB" class="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">📋 {{ $t('tools.diff-text.page.pasteButton') }}</button>
           </div>
         </div>
       </div>
@@ -46,32 +46,34 @@
 
     <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="font-medium text-lg">对比选项</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.diff-text.page.optionsTitle') }}</h3>
         <div class="flex gap-2">
-          <button @click="compare" :disabled="!textA.trim() || !textB.trim()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">🔍 开始对比</button>
-          <button @click="clear" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">🗑️ 清空</button>
+          <button @click="compare" :disabled="!textA.trim() || !textB.trim()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+            🔍 {{ $t('tools.diff-text.page.startCompare') }}
+          </button>
+          <button @click="clear" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">🗑️ {{ $t('tools.diff-text.page.clear') }}</button>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
-          <label class="block text-sm font-medium mb-2">对比模式</label>
+          <label class="block text-sm font-medium mb-2">{{ $t('tools.diff-text.page.compareModeLabel') }}</label>
           <select v-model="compareMode" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
-            <option value="line">按行对比</option>
-            <option value="word">按词对比</option>
-            <option value="char">按字符对比</option>
+            <option value="line">{{ $t('tools.diff-text.page.modeLine') }}</option>
+            <option value="word">{{ $t('tools.diff-text.page.modeWord') }}</option>
+            <option value="char">{{ $t('tools.diff-text.page.modeChar') }}</option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium mb-2">显示模式</label>
+          <label class="block text-sm font-medium mb-2">{{ $t('tools.diff-text.page.displayModeLabel') }}</label>
           <select v-model="displayMode" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
-            <option value="side-by-side">并排显示</option>
-            <option value="unified">统一显示</option>
-            <option value="inline">内联显示</option>
+            <option value="side-by-side">{{ $t('tools.diff-text.page.displaySideBySide') }}</option>
+            <option value="unified">{{ $t('tools.diff-text.page.displayUnified') }}</option>
+            <option value="inline">{{ $t('tools.diff-text.page.displayInline') }}</option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium mb-2">上下文行数</label>
+          <label class="block text-sm font-medium mb-2">{{ $t('tools.diff-text.page.contextLinesLabel') }}</label>
           <input v-model.number="contextLines" type="number" min="0" max="10" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" />
         </div>
       </div>
@@ -79,48 +81,48 @@
       <div class="flex flex-wrap gap-4 text-sm">
         <label class="flex items-center gap-2">
           <input v-model="options.ignoreWhitespace" type="checkbox" class="rounded" />
-          <span>忽略空白字符</span>
+          <span>{{ $t('tools.diff-text.page.ignoreWhitespaceLabel') }}</span>
         </label>
         <label class="flex items-center gap-2">
           <input v-model="options.ignoreCase" type="checkbox" class="rounded" />
-          <span>忽略大小写</span>
+          <span>{{ $t('tools.diff-text.page.ignoreCaseLabel') }}</span>
         </label>
         <label class="flex items-center gap-2">
           <input v-model="options.ignoreEmptyLines" type="checkbox" class="rounded" />
-          <span>忽略空行</span>
+          <span>{{ $t('tools.diff-text.page.ignoreEmptyLinesLabel') }}</span>
         </label>
         <label class="flex items-center gap-2">
           <input v-model="options.showLineNumbers" type="checkbox" class="rounded" />
-          <span>显示行号</span>
+          <span>{{ $t('tools.diff-text.page.showLineNumbersLabel') }}</span>
         </label>
       </div>
     </div>
 
     <div v-if="diffResult" class="bg-white dark:bg-gray-800 border rounded-lg">
       <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-        <h4 class="font-medium">对比结果</h4>
+        <h4 class="font-medium">{{ $t('tools.diff-text.page.resultTitle') }}</h4>
         <div class="flex gap-2">
-          <button @click="exportDiff" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">📤 导出</button>
-          <button @click="copyDiff" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">📋 复制</button>
+          <button @click="exportDiff" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">📤 {{ $t('tools.diff-text.page.export') }}</button>
+          <button @click="copyDiff" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">📋 {{ $t('tools.diff-text.page.copy') }}</button>
         </div>
       </div>
 
       <div class="p-4">
         <div v-if="diffStats" class="mb-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">添加:</span>
+            <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.diff-text.page.statsAdded') }}</span>
             <span class="text-green-600 font-medium">+{{ diffStats.additions }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">删除:</span>
+            <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.diff-text.page.statsDeleted') }}</span>
             <span class="text-red-600 font-medium">-{{ diffStats.deletions }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">修改:</span>
+            <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.diff-text.page.statsModified') }}</span>
             <span class="text-blue-600 font-medium">{{ diffStats.modifications }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">相似度:</span>
+            <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.diff-text.page.statsSimilarity') }}</span>
             <span class="font-medium">{{ diffStats.similarity }}%</span>
           </div>
         </div>
@@ -128,7 +130,7 @@
         <div class="diff-container font-mono text-sm" :class="displayMode">
           <div v-if="displayMode === 'side-by-side'" class="grid grid-cols-2 gap-4">
             <div class="border rounded">
-              <div class="bg-red-50 dark:bg-red-900/20 px-3 py-2 border-b text-red-800 dark:text-red-200 font-medium">文本 A（原始）</div>
+              <div class="bg-red-50 dark:bg-red-900/20 px-3 py-2 border-b text-red-800 dark:text-red-200 font-medium">{{ $t('tools.diff-text.page.sideLeftHeader') }}</div>
               <div class="p-3 max-h-96 overflow-auto">
                 <div v-for="(line, index) in diffResult.left" :key="index" class="diff-line" :class="line.type">
                   <span v-if="options.showLineNumbers" class="line-number">{{ line.lineNumber }}</span>
@@ -137,7 +139,7 @@
               </div>
             </div>
             <div class="border rounded">
-              <div class="bg-green-50 dark:bg-green-900/20 px-3 py-2 border-b text-green-800 dark:text-green-200 font-medium">文本 B（修改）</div>
+              <div class="bg-green-50 dark:bg-green-900/20 px-3 py-2 border-b text-green-800 dark:text-green-200 font-medium">{{ $t('tools.diff-text.page.sideRightHeader') }}</div>
               <div class="p-3 max-h-96 overflow-auto">
                 <div v-for="(line, index) in diffResult.right" :key="index" class="diff-line" :class="line.type">
                   <span v-if="options.showLineNumbers" class="line-number">{{ line.lineNumber }}</span>
@@ -148,7 +150,7 @@
           </div>
 
           <div v-else class="border rounded">
-            <div class="bg-gray-50 dark:bg-gray-700 px-3 py-2 border-b font-medium">统一对比视图</div>
+            <div class="bg-gray-50 dark:bg-gray-700 px-3 py-2 border-b font-medium">{{ $t('tools.diff-text.page.unifiedHeader') }}</div>
             <div class="p-3 max-h-96 overflow-auto">
               <div v-for="(line, index) in diffResult.unified" :key="index" class="diff-line" :class="line.type">
                 <span v-if="options.showLineNumbers" class="line-number">{{ line.lineNumber }}</span>
@@ -163,27 +165,45 @@
 
     <div v-if="!diffResult" class="text-center py-12 text-gray-500">
       <div class="text-4xl mb-4">🔍</div>
-      <div class="text-lg mb-2">文本对比工具</div>
-      <div class="text-sm">输入两个文本，点击开始对比查看差异</div>
+      <div class="text-lg mb-2">{{ $t('tools.diff-text.page.emptyTitle') }}</div>
+      <div class="text-sm">{{ $t('tools.diff-text.page.emptySubtitle') }}</div>
     </div>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.diff-text.page.guideTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800 dark:text-blue-200">
         <div>
-          <h4 class="font-medium mb-2">对比模式</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.diff-text.page.guideCompareMode') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>按行对比</strong>：逐行比较，适合代码和文档</li>
-            <li>• <strong>按词对比</strong>：逐词比较，更精细的差异</li>
-            <li>• <strong>按字符对比</strong>：字符级别比较</li>
+            <li>
+              • <strong>{{ $t('tools.diff-text.page.modeLine') }}</strong
+              >：{{ $t('tools.diff-text.page.guideLineMode') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.diff-text.page.modeWord') }}</strong
+              >：{{ $t('tools.diff-text.page.guideWordMode') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.diff-text.page.modeChar') }}</strong
+              >：{{ $t('tools.diff-text.page.guideCharMode') }}
+            </li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">显示选项</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.diff-text.page.guideDisplayOptions') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>并排显示</strong>：左右对照显示</li>
-            <li>• <strong>统一显示</strong>：类似 Git diff 格式</li>
-            <li>• <strong>内联显示</strong>：在同一行显示差异</li>
+            <li>
+              • <strong>{{ $t('tools.diff-text.page.displaySideBySide') }}</strong
+              >：{{ $t('tools.diff-text.page.guideSideBySide') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.diff-text.page.displayUnified') }}</strong
+              >：{{ $t('tools.diff-text.page.guideUnified') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.diff-text.page.displayInline') }}</strong
+              >：{{ $t('tools.diff-text.page.guideInline') }}
+            </li>
           </ul>
         </div>
       </div>
@@ -197,6 +217,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface DiffLine {
   type: 'added' | 'removed' | 'modified' | 'unchanged' | 'context';
@@ -234,6 +255,8 @@ const diffResult = ref<DiffResult | null>(null);
 const diffStats = ref<DiffStats | null>(null);
 const fileInputA = ref<HTMLInputElement>();
 const fileInputB = ref<HTMLInputElement>();
+
+const { t } = useI18n();
 
 const options = ref<CompareOptions>({
   ignoreWhitespace: false,
@@ -417,7 +440,7 @@ const pasteA = async () => {
     const text = await navigator.clipboard.readText();
     textA.value = text;
   } catch (error) {
-    console.error('无法从剪贴板读取:', error);
+    console.error(t('tools.diff-text.page.errors.clipboardReadFailed'), error);
   }
 };
 
@@ -426,7 +449,7 @@ const pasteB = async () => {
     const text = await navigator.clipboard.readText();
     textB.value = text;
   } catch (error) {
-    console.error('无法从剪贴板读取:', error);
+    console.error(t('tools.diff-text.page.errors.clipboardReadFailed'), error);
   }
 };
 

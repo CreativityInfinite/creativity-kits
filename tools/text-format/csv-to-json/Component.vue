@@ -2,43 +2,43 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">CSV ⇄ JSON 转换工具</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.csv-to-json.page.title') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">输入内容</h4>
+            <h4 class="font-medium">{{ $t('tools.csv-to-json.page.inputContent') }}</h4>
             <div class="flex gap-2">
-              <button @click="convertToJson" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">转为 JSON</button>
-              <button @click="convertToCsv" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">转为 CSV</button>
-              <button @click="clearAll" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
+              <button @click="convertToJson" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.convertToJson') }}</button>
+              <button @click="convertToCsv" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.convertToCsv') }}</button>
+              <button @click="clearAll" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.clearAll') }}</button>
             </div>
           </div>
 
           <div class="space-y-3">
             <div>
-              <label class="block text-sm font-medium mb-2">输入格式</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.csv-to-json.page.inputFormat') }}</label>
               <div class="flex gap-4">
                 <label class="flex items-center space-x-2">
                   <input v-model="inputFormat" type="radio" value="csv" @change="handleFormatChange" />
-                  <span class="text-sm">CSV</span>
+                  <span class="text-sm">{{ $t('tools.csv-to-json.page.csv') }}</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input v-model="inputFormat" type="radio" value="json" @change="handleFormatChange" />
-                  <span class="text-sm">JSON</span>
+                  <span class="text-sm">{{ $t('tools.csv-to-json.page.json') }}</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input v-model="inputFormat" type="radio" value="auto" @change="handleFormatChange" />
-                  <span class="text-sm">自动检测</span>
+                  <span class="text-sm">{{ $t('tools.csv-to-json.page.autoDetect') }}</span>
                 </label>
               </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-2">输入内容</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.csv-to-json.page.inputContent') }}</label>
               <textarea
                 v-model="inputText"
                 rows="12"
-                placeholder="在此输入 CSV 或 JSON 内容..."
+                :placeholder="$t('tools.csv-to-json.page.placeholder')"
                 class="w-full px-3 py-2 border rounded-lg font-mono text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="autoConvert"
                 @drop="handleFileDrop"
@@ -48,15 +48,15 @@
             </div>
 
             <div class="flex justify-between items-center text-sm text-gray-500">
-              <span>字符数: {{ inputText.length }}</span>
-              <span>行数: {{ inputText.split('\n').length }}</span>
-              <span v-if="detectedFormat">检测格式: {{ detectedFormat.toUpperCase() }}</span>
+              <span>{{ $t('tools.csv-to-json.page.charCount') }}: {{ inputText.length }}</span>
+              <span>{{ $t('tools.csv-to-json.page.lineCount') }}: {{ inputText.split('\n').length }}</span>
+              <span v-if="detectedFormat">{{ $t('tools.csv-to-json.page.detectedFormat') }}: {{ detectedFormat.toUpperCase() }}</span>
             </div>
 
             <div v-if="error" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
               <div class="flex items-center gap-2 text-red-600 dark:text-red-400">
                 <span>⚠️</span>
-                <span class="font-medium">转换错误</span>
+                <span class="font-medium">{{ $t('tools.csv-to-json.page.conversionError') }}</span>
               </div>
               <div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ error }}</div>
             </div>
@@ -64,42 +64,42 @@
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">CSV 解析选项</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.csv-to-json.page.csvParseOptions') }}</h4>
           <div class="space-y-3">
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-sm font-medium mb-1">分隔符</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.csv-to-json.page.delimiter') }}</label>
                 <select v-model="csvOptions.delimiter" class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                  <option value=",">逗号 (,)</option>
-                  <option value=";">分号 (;)</option>
-                  <option value="\t">制表符 (\t)</option>
-                  <option value="|">竖线 (|)</option>
-                  <option value="custom">自定义</option>
+                  <option value=",">{{ $t('tools.csv-to-json.page.comma') }}</option>
+                  <option value=";">{{ $t('tools.csv-to-json.page.semicolon') }}</option>
+                  <option value="\t">{{ $t('tools.csv-to-json.page.tab') }}</option>
+                  <option value="|">{{ $t('tools.csv-to-json.page.pipeDelimiter') }}</option>
+                  <option value="custom">{{ $t('tools.csv-to-json.page.custom') }}</option>
                 </select>
               </div>
               <div v-if="csvOptions.delimiter === 'custom'">
-                <label class="block text-sm font-medium mb-1">自定义分隔符</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.csv-to-json.page.customDelimiter') }}</label>
                 <input
                   v-model="csvOptions.customDelimiter"
                   type="text"
-                  placeholder="输入分隔符"
+                  :placeholder="$t('tools.csv-to-json.page.enterDelimiter')"
                   class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1">引号字符</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.csv-to-json.page.quoteChar') }}</label>
                 <select v-model="csvOptions.quote" class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                  <option value='"'>双引号 (")</option>
-                  <option value="'">单引号 (')</option>
-                  <option value="">无引号</option>
+                  <option value='"'>{{ $t('tools.csv-to-json.page.doubleQuote') }}</option>
+                  <option value="'">{{ $t('tools.csv-to-json.page.singleQuote') }}</option>
+                  <option value="">{{ $t('tools.csv-to-json.page.noQuote') }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1">转义字符</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.csv-to-json.page.escapeChar') }}</label>
                 <select v-model="csvOptions.escape" class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                  <option value='"'>双引号 (")</option>
-                  <option value="\\">反斜杠 (\)</option>
-                  <option value="">无转义</option>
+                  <option value='"'>{{ $t('tools.csv-to-json.page.doubleQuote') }}</option>
+                  <option value="\\">{{ $t('tools.csv-to-json.page.backslash') }}</option>
+                  <option value="">{{ $t('tools.csv-to-json.page.noEscape') }}</option>
                 </select>
               </div>
             </div>
@@ -107,48 +107,48 @@
             <div class="grid grid-cols-2 gap-3">
               <label class="flex items-center space-x-2">
                 <input v-model="csvOptions.hasHeader" type="checkbox" />
-                <span class="text-sm">包含标题行</span>
+                <span class="text-sm">{{ $t('tools.csv-to-json.page.hasHeader') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="csvOptions.skipEmptyLines" type="checkbox" />
-                <span class="text-sm">跳过空行</span>
+                <span class="text-sm">{{ $t('tools.csv-to-json.page.skipEmptyLines') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="csvOptions.trimWhitespace" type="checkbox" />
-                <span class="text-sm">去除空格</span>
+                <span class="text-sm">{{ $t('tools.csv-to-json.page.trimWhitespace') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="csvOptions.autoDetectTypes" type="checkbox" />
-                <span class="text-sm">自动类型检测</span>
+                <span class="text-sm">{{ $t('tools.csv-to-json.page.autoTypeDetection') }}</span>
               </label>
             </div>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">JSON 输出选项</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.csv-to-json.page.jsonOutputOptions') }}</h4>
           <div class="space-y-3">
             <div class="grid grid-cols-2 gap-3">
               <label class="flex items-center space-x-2">
                 <input v-model="jsonOptions.prettyPrint" type="checkbox" />
-                <span class="text-sm">格式化输出</span>
+                <span class="text-sm">{{ $t('tools.csv-to-json.page.prettyPrint') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="jsonOptions.sortKeys" type="checkbox" />
-                <span class="text-sm">排序键名</span>
+                <span class="text-sm">{{ $t('tools.csv-to-json.page.sortKeys') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="jsonOptions.arrayFormat" type="checkbox" />
-                <span class="text-sm">数组格式</span>
+                <span class="text-sm">{{ $t('tools.csv-to-json.page.arrayFormat') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="jsonOptions.autoConvert" type="checkbox" />
-                <span class="text-sm">自动转换</span>
+                <span class="text-sm">{{ $t('tools.csv-to-json.page.autoConvert') }}</span>
               </label>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-2">JSON 缩进: {{ jsonOptions.indent }}</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.csv-to-json.page.jsonIndent') }}: {{ jsonOptions.indent }}</label>
               <input v-model.number="jsonOptions.indent" type="range" min="1" max="8" class="w-full" />
               <div class="flex justify-between text-xs text-gray-500 mt-1">
                 <span>1</span>
@@ -159,36 +159,36 @@
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">快速操作</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.csv-to-json.page.quickActions') }}</h4>
           <div class="grid grid-cols-2 gap-2">
-            <button @click="loadSampleCsv" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">加载 CSV 示例</button>
-            <button @click="loadSampleJson" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm">加载 JSON 示例</button>
-            <button @click="detectDelimiter" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">自动检测分隔符</button>
-            <button @click="validateInput" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">验证格式</button>
+            <button @click="loadSampleCsv" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.loadCsvSample') }}</button>
+            <button @click="loadSampleJson" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.loadJsonSample') }}</button>
+            <button @click="detectDelimiter" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.autoDetectDelimiter') }}</button>
+            <button @click="validateInput" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.validateFormat') }}</button>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">文件操作</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.csv-to-json.page.fileOperations') }}</h4>
           <div class="grid grid-cols-2 gap-2">
             <label class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm cursor-pointer text-center">
               <input type="file" accept=".csv,.json,.txt" @change="handleFileUpload" class="hidden" />
-              上传文件
+              {{ $t('tools.csv-to-json.page.uploadFile') }}
             </label>
-            <button @click="downloadResult" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载结果</button>
+            <button @click="downloadResult" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.downloadResult') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">转换结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.csv-to-json.page.conversionResult') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">输出结果 ({{ outputFormat.toUpperCase() }})</h4>
+            <h4 class="font-medium">{{ $t('tools.csv-to-json.page.outputResult') }} ({{ outputFormat.toUpperCase() }})</h4>
             <div class="flex gap-2">
-              <button @click="copyOutput" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
-              <button @click="previewTable" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">表格预览</button>
+              <button @click="copyOutput" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.copyOutput') }}</button>
+              <button @click="previewTable" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.previewTable') }}</button>
             </div>
           </div>
           <div class="p-4">
@@ -201,19 +201,19 @@
               ></textarea>
 
               <div class="flex justify-between items-center text-sm text-gray-500">
-                <span>字符数: {{ outputText.length }}</span>
-                <span>行数: {{ outputText.split('\n').length }}</span>
-                <span v-if="compressionRatio">压缩率: {{ compressionRatio }}%</span>
+                <span>{{ $t('tools.csv-to-json.page.charCount') }}: {{ outputText.length }}</span>
+                <span>{{ $t('tools.csv-to-json.page.lineCount') }}: {{ outputText.split('\n').length }}</span>
+                <span v-if="compressionRatio">{{ $t('tools.csv-to-json.page.compressionRatio') }}: {{ compressionRatio }}%</span>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500">输入内容后将显示转换结果</div>
+            <div v-else class="text-center py-8 text-gray-500">{{ $t('tools.csv-to-json.page.inputContentToShowResult') }}</div>
           </div>
         </div>
 
         <div v-if="showTablePreview" class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">表格预览</h4>
-            <button @click="showTablePreview = false" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">关闭</button>
+            <h4 class="font-medium">{{ $t('tools.csv-to-json.page.tablePreview') }}</h4>
+            <button @click="showTablePreview = false" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.close') }}</button>
           </div>
           <div class="p-4 overflow-auto max-h-96">
             <table v-if="tableData.length > 0" class="w-full border-collapse border border-gray-300 dark:border-gray-600 text-sm">
@@ -232,37 +232,37 @@
                 </tr>
               </tbody>
             </table>
-            <div v-if="tableData.length > 100" class="mt-2 text-sm text-gray-500 text-center">显示前 100 行，共 {{ tableData.length }} 行</div>
+            <div v-if="tableData.length > 100" class="mt-2 text-sm text-gray-500 text-center">{{ $t('tools.csv-to-json.page.showingFirst100Rows', { count: tableData.length }) }}</div>
           </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">数据分析</h4>
+            <h4 class="font-medium">{{ $t('tools.csv-to-json.page.dataAnalysis') }}</h4>
           </div>
           <div class="p-4">
             <div v-if="analysis" class="space-y-3">
               <div class="grid grid-cols-2 gap-4">
                 <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
-                  <div class="text-sm text-gray-600 dark:text-gray-400">输入格式</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.csv-to-json.page.inputFormatAnalysis') }}</div>
                   <div class="font-medium">{{ analysis.inputFormat }}</div>
                 </div>
                 <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded">
-                  <div class="text-sm text-gray-600 dark:text-gray-400">输出格式</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.csv-to-json.page.outputFormatAnalysis') }}</div>
                   <div class="font-medium">{{ analysis.outputFormat }}</div>
                 </div>
                 <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded">
-                  <div class="text-sm text-gray-600 dark:text-gray-400">数据行数</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.csv-to-json.page.rowCount') }}</div>
                   <div class="font-medium">{{ analysis.rowCount }}</div>
                 </div>
                 <div class="p-3 bg-orange-50 dark:bg-orange-900/20 rounded">
-                  <div class="text-sm text-gray-600 dark:text-gray-400">列数</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.csv-to-json.page.columnCount') }}</div>
                   <div class="font-medium">{{ analysis.columnCount }}</div>
                 </div>
               </div>
 
               <div v-if="analysis.columns && analysis.columns.length > 0">
-                <div class="text-sm font-medium mb-2">列信息:</div>
+                <div class="text-sm font-medium mb-2">{{ $t('tools.csv-to-json.page.columnInfo') }}:</div>
                 <div class="space-y-2">
                   <div v-for="(column, index) in analysis.columns.slice(0, 10)" :key="index" class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded text-sm">
                     <span class="font-mono">{{ column.name }}</span>
@@ -271,40 +271,40 @@
                       <span class="text-gray-500">{{ column.sampleValue }}</span>
                     </div>
                   </div>
-                  <div v-if="analysis.columns.length > 10" class="text-center text-sm text-gray-500">+{{ analysis.columns.length - 10 }} 更多列</div>
+                  <div v-if="analysis.columns.length > 10" class="text-center text-sm text-gray-500">{{ $t('tools.csv-to-json.page.moreColumns', { count: analysis.columns.length - 10 }) }}</div>
                 </div>
               </div>
 
               <div v-if="analysis.statistics">
-                <div class="text-sm font-medium mb-2">统计信息:</div>
+                <div class="text-sm font-medium mb-2">{{ $t('tools.csv-to-json.page.statistics') }}:</div>
                 <div class="grid grid-cols-2 gap-2 text-sm">
                   <div class="flex justify-between">
-                    <span>空值数:</span>
+                    <span>{{ $t('tools.csv-to-json.page.nullCount') }}:</span>
                     <span class="font-mono">{{ analysis.statistics.nullCount }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>数字列:</span>
+                    <span>{{ $t('tools.csv-to-json.page.numericColumns') }}:</span>
                     <span class="font-mono">{{ analysis.statistics.numericColumns }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>文本列:</span>
+                    <span>{{ $t('tools.csv-to-json.page.textColumns') }}:</span>
                     <span class="font-mono">{{ analysis.statistics.textColumns }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>布尔列:</span>
+                    <span>{{ $t('tools.csv-to-json.page.booleanColumns') }}:</span>
                     <span class="font-mono">{{ analysis.statistics.booleanColumns }}</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-gray-500">输入内容后将显示分析结果</div>
+            <div v-else class="text-center py-4 text-gray-500">{{ $t('tools.csv-to-json.page.inputContentToShowAnalysis') }}</div>
           </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">转换历史</h4>
-            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空历史</button>
+            <h4 class="font-medium">{{ $t('tools.csv-to-json.page.conversionHistory') }}</h4>
+            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.csv-to-json.page.clearHistory') }}</button>
           </div>
           <div class="p-4">
             <div v-if="conversionHistory.length > 0" class="space-y-2 max-h-32 overflow-y-auto">
@@ -314,44 +314,68 @@
                   <div class="text-xs text-gray-500">{{ history.conversion }} - {{ history.timestamp }}</div>
                 </div>
                 <div class="flex gap-1">
-                  <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
+                  <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.csv-to-json.page.load') }}</button>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-gray-500 text-sm">暂无转换历史</div>
+            <div v-else class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.csv-to-json.page.noHistory') }}</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.csv-to-json.page.usageInstructions') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">CSV 转 JSON</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.csv-to-json.page.csvToJson') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>自动检测:</strong> 智能识别分隔符和格式</li>
-            <li>• <strong>标题处理:</strong> 支持有/无标题行的CSV</li>
-            <li>• <strong>类型转换:</strong> 自动识别数字、布尔值</li>
-            <li>• <strong>格式选择:</strong> 对象数组或二维数组</li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.autoDetection') }}:</strong> {{ $t('tools.csv-to-json.page.autoDetectionDesc') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.headerProcessing') }}:</strong> {{ $t('tools.csv-to-json.page.headerProcessingDesc') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.typeConversion') }}:</strong> {{ $t('tools.csv-to-json.page.typeConversionDesc') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.formatSelection') }}:</strong> {{ $t('tools.csv-to-json.page.formatSelectionDesc') }}
+            </li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">JSON 转 CSV</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.csv-to-json.page.jsonToCsv') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>扁平化:</strong> 自动处理嵌套对象</li>
-            <li>• <strong>数组处理:</strong> 支持对象数组转换</li>
-            <li>• <strong>字段映射:</strong> 保持字段名称一致</li>
-            <li>• <strong>引号处理:</strong> 自动添加必要引号</li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.flattening') }}:</strong> {{ $t('tools.csv-to-json.page.flatteningDesc') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.arrayProcessing') }}:</strong> {{ $t('tools.csv-to-json.page.arrayProcessingDesc') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.fieldMapping') }}:</strong> {{ $t('tools.csv-to-json.page.fieldMappingDesc') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.quoteHandling') }}:</strong> {{ $t('tools.csv-to-json.page.quoteHandlingDesc') }}
+            </li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">高级功能</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.csv-to-json.page.advancedFeatures') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>文件上传:</strong> 支持拖拽和选择文件</li>
-            <li>• <strong>表格预览:</strong> 可视化数据结构</li>
-            <li>• <strong>数据分析:</strong> 统计列类型和数据</li>
-            <li>• <strong>批量处理:</strong> 支持大文件转换</li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.fileUpload') }}:</strong> {{ $t('tools.csv-to-json.page.fileUploadDesc') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.tablePreview') }}:</strong> {{ $t('tools.csv-to-json.page.tablePreviewDesc') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.dataAnalysis') }}:</strong> {{ $t('tools.csv-to-json.page.dataAnalysisDesc') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.csv-to-json.page.batchProcessing') }}:</strong> {{ $t('tools.csv-to-json.page.batchProcessingDesc') }}
+            </li>
           </ul>
         </div>
       </div>
@@ -507,7 +531,7 @@ function convertToJson() {
   try {
     const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 CSV 内容';
+      error.value = $t('tools.csv-to-json.page.enterCsvContent');
       return;
     }
 
@@ -574,14 +598,14 @@ function convertToCsv() {
   try {
     const input = inputText.value.trim();
     if (!input) {
-      error.value = '请输入 JSON 内容';
+      error.value = $t('tools.csv-to-json.page.enterJsonContent');
       return;
     }
 
     const parsed = JSON.parse(input);
 
     if (!Array.isArray(parsed)) {
-      error.value = 'JSON 必须是数组格式';
+      error.value = $t('tools.csv-to-json.page.jsonMustBeArray');
       return;
     }
 
@@ -600,7 +624,7 @@ function convertToCsv() {
     analyzeData(csvData, 'json', 'csv');
     addToHistory(input, csvString, 'JSON → CSV');
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'JSON 解析失败';
+    error.value = err instanceof Error ? err.message : $t('tools.csv-to-json.page.jsonParseFailed');
   }
 }
 
@@ -864,23 +888,23 @@ function validateInput() {
     try {
       const parsed = JSON.parse(inputText.value);
       if (Array.isArray(parsed)) {
-        outputText.value = '✅ JSON 格式有效，包含 ' + parsed.length + ' 个项目';
+        outputText.value = $t('tools.csv-to-json.page.jsonValidWithItems', { count: parsed.length });
       } else {
-        outputText.value = '⚠️ JSON 格式有效，但不是数组格式';
+        outputText.value = $t('tools.csv-to-json.page.jsonValidButNotArray');
       }
     } catch (err) {
-      outputText.value = `❌ JSON 格式无效: ${err instanceof Error ? err.message : '未知错误'}`;
+      outputText.value = $t('tools.csv-to-json.page.jsonInvalid', { error: err instanceof Error ? err.message : $t('tools.csv-to-json.page.unknownError') });
     }
   } else if (format === 'csv') {
     try {
       const delimiter = csvOptions.value.delimiter === 'custom' ? csvOptions.value.customDelimiter : csvOptions.value.delimiter;
       const parsed = parseCsv(inputText.value, delimiter);
-      outputText.value = `✅ CSV 格式有效，包含 ${parsed.length} 行 ${parsed[0]?.length || 0} 列`;
+      outputText.value = $t('tools.csv-to-json.page.csvValidWithDimensions', { rows: parsed.length, cols: parsed[0]?.length || 0 });
     } catch (err) {
-      outputText.value = `❌ CSV 格式无效: ${err instanceof Error ? err.message : '未知错误'}`;
+      outputText.value = $t('tools.csv-to-json.page.csvInvalid', { error: err instanceof Error ? err.message : $t('tools.csv-to-json.page.unknownError') });
     }
   } else {
-    outputText.value = '❌ 无法识别输入格式';
+    outputText.value = $t('tools.csv-to-json.page.unrecognizedInputFormat');
   }
 }
 

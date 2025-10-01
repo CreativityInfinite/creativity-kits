@@ -2,10 +2,17 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'base64-encode',
-  name: 'Base64 编码',
-  description: '强大的Base64处理工具，支持文本、文件和URL的编码解码，提供预览、验证和多种格式选项',
+  name: 'tools.base64-encode.meta.name',
+  description: 'tools.base64-encode.meta.description',
   category: 'text-format',
-  tags: ['Base64', '编码', '解码', '文件处理', 'Data URL', '格式转换'],
+  tags: [
+    'Base64',
+    'tools.base64-encode.meta.tags.encode',
+    'tools.base64-encode.meta.tags.decode',
+    'tools.base64-encode.meta.tags.fileProcessing',
+    'Data URL',
+    'tools.base64-encode.meta.tags.formatConversion'
+  ],
   color: 'linear-gradient(135deg,#10b981,#3b82f6)',
   icon: 'mdi:code-braces',
   i18nKey: 'tools.base64-encode',

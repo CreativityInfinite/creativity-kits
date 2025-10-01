@@ -1,23 +1,23 @@
 <template>
   <div class="space-y-6">
     <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">ZIP 压缩解压</h1>
-      <p class="text-gray-600 dark:text-gray-400">在浏览器本地进行 ZIP 压缩/解压（不上传）</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.zip-unzip.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.zip-unzip.page.subtitle') }}</p>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 模式与文件 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('tools.zip-unzip.page.modeAndFiles') }}</label>
           <div class="grid grid-cols-2 gap-2">
             <div class="flex items-center h-[42px] px-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <input id="modeZip" type="radio" value="zip" v-model="mode" class="mr-2" />
-              <label for="modeZip" class="text-sm">压缩</label>
+              <label for="modeZip" class="text-sm">{{ $t('tools.zip-unzip.page.zip') }}</label>
               <input id="modeUnzip" type="radio" value="unzip" v-model="mode" class="ml-4 mr-2" />
-              <label for="modeUnzip" class="text-sm">解压</label>
+              <label for="modeUnzip" class="text-sm">{{ $t('tools.zip-unzip.page.unzip') }}</label>
             </div>
             <div>
-              <label class="block text-xs text-gray-500 mb-1">ZIP 名称（压缩时）</label>
+              <label class="block text-xs text-gray-500 mb-1">{{ $t('tools.zip-unzip.page.zipNameLabel') }}</label>
               <input v-model="zipName" placeholder="archive.zip" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
@@ -40,33 +40,35 @@
           <div v-if="files.length && mode === 'zip'" class="space-y-2 mt-3">
             <div v-for="(f, i) in files" :key="i" class="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-700 rounded px-3 py-2">
               <div class="truncate">{{ f.name }}（{{ formatSize(f.size) }}）</div>
-              <button @click="removeAt(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">移除</button>
+              <button @click="removeAt(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.zip-unzip.page.remove') }}</button>
             </div>
           </div>
         </div>
 
         <div class="flex justify-center">
-          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">处理</button>
+          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">{{ $t('tools.zip-unzip.page.process') }}</button>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 输出 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('tools.zip-unzip.page.output') }}</label>
           <textarea
             :value="output"
             readonly
             class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
+            :placeholder="$t('tools.zip-unzip.page.resultPlaceholder')"
           />
           <div v-if="outFiles.length" class="space-y-2 mt-3">
             <div v-for="(it, i) in outFiles" :key="i" class="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-700 rounded px-3 py-2">
               <div class="truncate">{{ it.name }}（{{ formatSize(it.size) }}）</div>
-              <button @click="downloadOut(i)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">下载</button>
+              <button @click="downloadOut(i)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.zip-unzip.page.download') }}</button>
             </div>
           </div>
         </div>
 
         <div class="flex justify-center">
-          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">复制结果</button>
+          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">
+            {{ $t('tools.zip-unzip.page.copyResult') }}
+          </button>
         </div>
       </div>
     </div>
@@ -75,6 +77,7 @@
 
 <script setup lang="ts">
 import { onUnmounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const mode = ref<'zip' | 'unzip'>('zip');
 const files = ref<File[]>([]);
@@ -82,6 +85,7 @@ const zipFile = ref<File | null>(null);
 const zipName = ref('archive.zip');
 
 const output = ref('');
+const { t } = useI18n();
 const outFiles = ref<{ name: string; blob: Blob; size: number }[]>([]);
 const urls = new Set<string>();
 
@@ -98,12 +102,12 @@ function clearOutputs() {
 function onFiles(e: Event) {
   files.value = Array.from((e.target as HTMLInputElement).files || []);
   clearOutputs();
-  output.value = files.value.length ? `已选择 ${files.value.length} 个文件` : '';
+  output.value = files.value.length ? t('tools.zip-unzip.page.selectedFiles', { n: files.value.length }) : '';
 }
 function onZip(e: Event) {
   zipFile.value = (e.target as HTMLInputElement).files?.[0] || null;
   clearOutputs();
-  output.value = zipFile.value ? `已选择：${zipFile.value.name}` : '';
+  output.value = zipFile.value ? t('tools.zip-unzip.page.selectedZip', { name: zipFile.value.name }) : '';
 }
 function removeAt(i: number) {
   const arr = files.value.slice();
@@ -119,14 +123,16 @@ async function process() {
   try {
     let JSZip: any;
     try {
+      // @ts-ignore
       JSZip = (await import('https://esm.sh/jszip@3.10.1?bundle')).default;
     } catch {
+      // @ts-ignore
       JSZip = (await import('https://cdn.skypack.dev/jszip@3.10.1')).default;
     }
 
     if (mode.value === 'zip') {
       if (!files.value.length) {
-        output.value = '请先选择需要压缩的文件';
+        output.value = t('tools.zip-unzip.page.alertChooseFiles');
         return;
       }
       const zip = new JSZip();
@@ -134,10 +140,10 @@ async function process() {
       const blob = await zip.generateAsync({ type: 'blob' });
       outFiles.value.push({ name: zipName.value || 'archive.zip', blob, size: blob.size });
       const ms = Math.round(performance.now() - t0);
-      output.value = `压缩完成：${files.value.length} 个文件 → ${formatSize(blob.size)}，用时 ${ms}ms`;
+      output.value = t('tools.zip-unzip.page.zipDone', { count: files.value.length, size: formatSize(blob.size), ms });
     } else {
       if (!zipFile.value) {
-        output.value = '请先选择 ZIP 文件';
+        output.value = t('tools.zip-unzip.page.alertChooseZip');
         return;
       }
       const zip = await JSZip.loadAsync(await zipFile.value.arrayBuffer());
@@ -149,11 +155,11 @@ async function process() {
         outFiles.value.push({ name, blob, size: blob.size });
       }
       const ms = Math.round(performance.now() - t0);
-      output.value = `解压完成：${entries.length} 个条目，导出文件 ${outFiles.value.length} 个，用时 ${ms}ms`;
+      output.value = t('tools.zip-unzip.page.unzipDone', { entries: entries.length, count: outFiles.value.length, ms });
     }
   } catch (e: any) {
     console.error(e);
-    output.value = (mode.value === 'zip' ? '压缩失败：' : '解压失败：') + (e?.message || String(e));
+    output.value = (mode.value === 'zip' ? t('tools.zip-unzip.page.zipFailedPrefix') : t('tools.zip-unzip.page.unzipFailedPrefix')) + (e?.message || String(e));
   }
 }
 
@@ -172,10 +178,10 @@ async function copyToClipboard() {
   if (!output.value) return;
   try {
     await navigator.clipboard.writeText(output.value);
-    alert('已复制到剪贴板');
+    alert(t('tools.zip-unzip.page.copied'));
   } catch (err) {
-    console.error('复制失败:', err);
-    alert('复制失败，请手动复制');
+    console.error(t('tools.zip-unzip.page.copyFailedLog'), err);
+    alert(t('tools.zip-unzip.page.copyFailed'));
   }
 }
 

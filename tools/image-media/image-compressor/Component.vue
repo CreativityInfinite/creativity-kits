@@ -2,58 +2,58 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">图片压缩</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.image-compressor.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">选择图片</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.image-compressor.page.selectImage') }}</label>
             <input type="file" accept="image/*" @change="onFile" />
           </div>
           <div class="grid grid-cols-3 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">质量 (0.1-1)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.image-compressor.page.qualityLabel') }}</label>
               <input v-model.number="quality" type="number" min="0.1" max="1" step="0.05" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">最大宽</label>
-              <input v-model.number="maxW" type="number" min="1" placeholder="如 1920" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.image-compressor.page.maxWidth') }}</label>
+              <input v-model.number="maxW" type="number" min="1" :placeholder="$t('tools.image-compressor.page.placeholderWidth')" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">最大高</label>
-              <input v-model.number="maxH" type="number" min="1" placeholder="如 1080" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.image-compressor.page.maxHeight') }}</label>
+              <input v-model.number="maxH" type="number" min="1" :placeholder="$t('tools.image-compressor.page.placeholderHeight')" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" :disabled="!file" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">压缩</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="process" :disabled="!file" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">{{ $t('tools.image-compressor.page.compress') }}</button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.image-compressor.page.clear') }}</button>
           </div>
-          <p class="text-xs text-gray-500">说明：基于 Canvas 进行重采样与压缩，导出为 JPEG/PNG（取决于原图透明度）。</p>
+          <p class="text-xs text-gray-500">{{ $t('tools.image-compressor.page.note') }}</p>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.image-compressor.page.resultTitle') }}</h3>
 
         <div v-if="outUrl" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-2">
-              <h4 class="font-medium">预览</h4>
+              <h4 class="font-medium">{{ $t('tools.image-compressor.page.preview') }}</h4>
               <div class="flex gap-2">
-                <button @click="copyUrl" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制 DataURL</button>
-                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+                <button @click="copyUrl" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.image-compressor.page.copyDataUrl') }}</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.image-compressor.page.download') }}</button>
               </div>
             </div>
             <img :src="outUrl" class="max-h-80 rounded border dark:border-gray-700" alt="preview" />
-            <div class="text-xs text-gray-500 mt-2">输入: {{ inMeta }} · 输出: {{ outMeta }}</div>
+            <div class="text-xs text-gray-500 mt-2">{{ $t('tools.image-compressor.page.inOutMeta', { in: inMeta, out: outMeta }) }}</div>
           </div>
 
-          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.image-compressor.page.saveToHistory') }}</button>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-3">🖼️</div>
-          <div class="text-lg">上传图片并设置参数进行压缩</div>
+          <div class="text-lg">{{ $t('tools.image-compressor.page.emptyTip') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
@@ -63,17 +63,17 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.image-compressor.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
-            <div class="font-medium truncate">质量 {{ h.quality }}</div>
+            <div class="font-medium truncate">{{ $t('tools.image-compressor.page.quality') }} {{ h.quality }}</div>
             <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
           </div>
-          <div class="text-xs truncate">输入: {{ h.inMeta }} · 输出: {{ h.outMeta }}</div>
+          <div class="text-xs truncate">{{ $t('tools.image-compressor.page.inOutMeta', { in: h.inMeta, out: h.outMeta }) }}</div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.image-compressor.page.load') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.image-compressor.page.remove') }}</button>
           </div>
         </div>
       </div>
@@ -85,11 +85,14 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 type HistoryItem = { quality: number; inMeta: string; outMeta: string; url: string; timestamp: number };
 
 const file = ref<File | null>(null);
 const imgEl = ref<HTMLImageElement | null>(null);
 const cv = ref<HTMLCanvasElement | null>(null);
+
+const { t } = useI18n();
 
 const quality = ref(0.8);
 const maxW = ref<number | null>(null);
@@ -110,7 +113,7 @@ function clearAll() {
   error.value = '';
 }
 function copyUrl() {
-  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert('已复制 DataURL'));
+  if (outUrl.value) navigator.clipboard.writeText(outUrl.value).then(() => alert(t('tools.image-compressor.page.copied')));
 }
 function downloadResult() {
   if (!outUrl.value) return;
@@ -146,7 +149,7 @@ function onFile(e: Event) {
     imgEl.value = img;
     inMeta.value = `${img.naturalWidth}x${img.naturalHeight}`;
   };
-  img.onerror = () => (error.value = '图片加载失败');
+  img.onerror = () => (error.value = t('tools.image-compressor.page.imageLoadFailed'));
   img.src = URL.createObjectURL(file.value);
 }
 
@@ -175,13 +178,13 @@ function resizeDraw(img: HTMLImageElement) {
 function process() {
   error.value = '';
   try {
-    if (!imgEl.value) throw new Error('请先选择图片');
+    if (!imgEl.value) throw new Error(t('tools.image-compressor.page.selectImageFirst'));
     const { w, h } = resizeDraw(imgEl.value);
     const mime = hasAlpha(imgEl.value) ? 'image/png' : 'image/jpeg';
     outUrl.value = (cv.value as HTMLCanvasElement).toDataURL(mime, Math.min(1, Math.max(0.1, quality.value || 0.8)));
     outMeta.value = `${w}x${h}`;
   } catch (e: any) {
-    error.value = e?.message || '压缩失败';
+    error.value = e?.message || t('tools.image-compressor.page.compressFailed');
   }
 }
 

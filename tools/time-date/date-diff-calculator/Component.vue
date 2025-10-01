@@ -2,32 +2,32 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium mb-2">开始日期</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.date-diff-calculator.page.startDate') }}</label>
         <input v-model="startDate" type="date" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">结束日期</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.date-diff-calculator.page.endDate') }}</label>
         <input v-model="endDate" type="date" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
     </div>
 
     <div v-if="result" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h3 class="font-medium mb-2">时间差</h3>
+      <h3 class="font-medium mb-2">{{ $t('tools.date-diff-calculator.page.resultTitle') }}</h3>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
         <div>
-          <span class="text-gray-600 dark:text-gray-400">天数:</span>
+          <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.date-diff-calculator.page.days') }}:</span>
           <span class="ml-1 font-mono">{{ result.days }}</span>
         </div>
         <div>
-          <span class="text-gray-600 dark:text-gray-400">小时:</span>
+          <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.date-diff-calculator.page.hours') }}:</span>
           <span class="ml-1 font-mono">{{ result.hours }}</span>
         </div>
         <div>
-          <span class="text-gray-600 dark:text-gray-400">分钟:</span>
+          <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.date-diff-calculator.page.minutes') }}:</span>
           <span class="ml-1 font-mono">{{ result.minutes }}</span>
         </div>
         <div>
-          <span class="text-gray-600 dark:text-gray-400">秒:</span>
+          <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.date-diff-calculator.page.seconds') }}:</span>
           <span class="ml-1 font-mono">{{ result.seconds }}</span>
         </div>
       </div>

@@ -1,17 +1,17 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">色盲模拟器</h1>
-      <p class="text-gray-600 dark:text-gray-400">模拟常见色觉缺陷（原理近似矩阵），用于快速检视配色可访问性。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.color-blindness-simulator.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.color-blindness-simulator.page.description') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
-        <label class="block text-sm font-medium mb-2">选择图片</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.color-blindness-simulator.page.selectImage') }}</label>
         <input type="file" accept="image/*" @change="onFile" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">缺陷类型</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.color-blindness-simulator.page.defectType') }}</label>
         <select v-model="mode" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
           <option value="protanopia">Protanopia（红弱/红色盲）</option>
           <option value="deuteranopia">Deuteranopia（绿弱/绿色盲）</option>
@@ -19,22 +19,22 @@
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">强度（0-1）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.color-blindness-simulator.page.intensity') }}</label>
         <input v-model.number="intensity" type="number" step="0.1" min="0" max="1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
     </div>
 
     <div class="flex justify-center">
-      <button @click="simulate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">开始模拟</button>
+      <button @click="simulate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.color-blindness-simulator.page.simulate') }}</button>
     </div>
 
     <div v-if="previewUrl || outUrl" class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">原图</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.color-blindness-simulator.page.originalImage') }}</div>
         <img :src="previewUrl" alt="original" class="max-w-full rounded-md border dark:border-gray-700" />
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">模拟结果</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.color-blindness-simulator.page.simulatedResult') }}</div>
         <img :src="outUrl" alt="simulated" class="max-w-full rounded-md border dark:border-gray-700" />
       </div>
     </div>
@@ -43,7 +43,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const file = ref<File | null>(null);
 const previewUrl = ref('');
 const outUrl = ref('');
@@ -61,7 +63,7 @@ function onFile(e: Event) {
 async function simulate() {
   outUrl.value = '';
   if (!previewUrl.value) {
-    alert('请先选择图片');
+    alert(t('tools.color-blindness-simulator.page.alertSelectImage'));
     return;
   }
   const img = await loadImage(previewUrl.value);

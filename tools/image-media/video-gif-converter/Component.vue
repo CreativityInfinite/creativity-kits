@@ -1,54 +1,56 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">视频转 GIF</h1>
-      <p class="text-gray-600 dark:text-gray-400">在浏览器中从视频抽帧并编码为 GIF（较长视频可能较慢）。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.video-gif-converter.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.video-gif-converter.page.description') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
-        <label class="block text-sm font-medium mb-2">选择视频</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.video-gif-converter.page.selectVideo') }}</label>
         <input type="file" accept="video/*" @change="onFile" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">帧率 FPS</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.video-gif-converter.page.fps') }}</label>
         <input v-model.number="fps" type="number" min="1" max="30" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">宽度（像素）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.video-gif-converter.page.width') }}</label>
         <input v-model.number="outWidth" type="number" min="64" max="800" step="1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
 
       <div>
-        <label class="block text-sm font-medium mb-2">开始时间（秒）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.video-gif-converter.page.startTime') }}</label>
         <input v-model.number="startSec" type="number" min="0" step="0.1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">结束时间（秒，留空为视频末尾）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.video-gif-converter.page.endTime') }}</label>
         <input v-model.number="endSec" type="number" min="0" step="0.1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">质量（0-1）</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.video-gif-converter.page.quality') }}</label>
         <input v-model.number="quality" type="number" min="0" max="1" step="0.05" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
     </div>
 
     <div class="flex justify-center gap-3">
-      <button @click="convert" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md" :disabled="loading">{{ loading ? '处理中…' : '开始转换' }}</button>
-      <button v-if="gifUrl" @click="download" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">下载 GIF</button>
+      <button @click="convert" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md" :disabled="loading">
+        {{ loading ? $t('tools.video-gif-converter.page.processing') : $t('tools.video-gif-converter.page.start') }}
+      </button>
+      <button v-if="gifUrl" @click="download" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.video-gif-converter.page.downloadGif') }}</button>
     </div>
 
     <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 text-red-700 dark:text-red-200 text-sm">{{ error }}</div>
 
     <div v-if="videoUrl || gifUrl" class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">原视频</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.video-gif-converter.page.originalVideo') }}</div>
         <video :src="videoUrl" controls class="w-full rounded-md"></video>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border text-center">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">GIF 结果</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.video-gif-converter.page.gifResult') }}</div>
         <img v-if="gifUrl" :src="gifUrl" class="inline-block max-w-full rounded-md border dark:border-gray-700" />
-        <div v-else class="text-gray-500 text-sm">暂无</div>
+        <div v-else class="text-gray-500 text-sm">{{ $t('tools.video-gif-converter.page.empty') }}</div>
       </div>
     </div>
   </div>
@@ -56,6 +58,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const file = ref<File | null>(null);
 const videoUrl = ref('');
@@ -68,9 +71,11 @@ const quality = ref(0.8);
 const loading = ref(false);
 const error = ref('');
 
+const { t } = useI18n();
+
 function onFile(e: Event) {
-  const t = e.target as HTMLInputElement;
-  file.value = t.files?.[0] || null;
+  const target = e.target as HTMLInputElement;
+  file.value = target.files?.[0] || null;
   videoUrl.value = file.value ? URL.createObjectURL(file.value) : '';
   gifUrl.value = '';
   error.value = '';
@@ -80,7 +85,7 @@ async function convert() {
   error.value = '';
   gifUrl.value = '';
   if (!file.value) {
-    error.value = '请先选择视频';
+    error.value = t('tools.video-gif-converter.page.selectVideoFirst');
     return;
   }
   loading.value = true;
@@ -125,12 +130,12 @@ async function convert() {
 
     const blob: Blob = await new Promise((resolve, reject) => {
       gif.on('finished', (b: Blob) => resolve(b));
-      gif.on('abort', () => reject(new Error('GIF 生成被中止')));
+      gif.on('abort', () => reject(new Error(t('tools.video-gif-converter.page.gifAborted'))));
       gif.render();
     });
     gifUrl.value = URL.createObjectURL(blob);
   } catch (e: any) {
-    error.value = e?.message || '转换失败';
+    error.value = e?.message || t('tools.video-gif-converter.page.convertFailed');
   } finally {
     loading.value = false;
   }

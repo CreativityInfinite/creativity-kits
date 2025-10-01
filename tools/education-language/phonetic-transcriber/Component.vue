@@ -2,51 +2,58 @@
   <div class="space-y-6">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">音标转换器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.phonetic-transcriber.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-2">输入语言</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.phonetic-transcriber.page.inputLanguage') }}</label>
             <select v-model="inputLanguage" @change="transcribe" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-              <option value="en">英语 (English)</option>
-              <option value="zh">中文 (Chinese)</option>
+              <option value="en">{{ $t('tools.phonetic-transcriber.page.lang.en') }}</option>
+              <option value="zh">{{ $t('tools.phonetic-transcriber.page.lang.zh') }}</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-2">音标类型</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.phonetic-transcriber.page.phoneticType') }}</label>
             <select v-model="phoneticType" @change="transcribe" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-              <option v-if="inputLanguage === 'en'" value="ipa">国际音标 (IPA)</option>
-              <option v-if="inputLanguage === 'en'" value="ame">美式音标</option>
-              <option v-if="inputLanguage === 'zh'" value="pinyin">拼音</option>
-              <option v-if="inputLanguage === 'zh'" value="zhuyin">注音符号</option>
+              <option v-if="inputLanguage === 'en'" value="ipa">{{ $t('tools.phonetic-transcriber.page.type.ipa') }}</option>
+              <option v-if="inputLanguage === 'en'" value="ame">{{ $t('tools.phonetic-transcriber.page.type.ame') }}</option>
+              <option v-if="inputLanguage === 'zh'" value="pinyin">{{ $t('tools.phonetic-transcriber.page.type.pinyin') }}</option>
+              <option v-if="inputLanguage === 'zh'" value="zhuyin">{{ $t('tools.phonetic-transcriber.page.type.zhuyin') }}</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-2">输入文本</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.phonetic-transcriber.page.inputText') }}</label>
             <textarea
               v-model="inputText"
               rows="8"
               class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="输入要转换音标的文本..."
+              :placeholder="$t('tools.phonetic-transcriber.page.inputTextPlaceholder')"
               @input="transcribe"
             />
           </div>
 
           <div class="flex gap-2">
-            <button @click="transcribe" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">转换</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded">清空</button>
-            <button @click="loadSample" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded">示例</button>
+            <button @click="transcribe" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">{{ $t('tools.phonetic-transcriber.page.actions.transcribe') }}</button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded">{{ $t('tools.phonetic-transcriber.page.actions.clear') }}</button>
+            <button @click="loadSample" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded">{{ $t('tools.phonetic-transcriber.page.actions.sample') }}</button>
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">批量转换</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.phonetic-transcriber.page.batch.title') }}</h4>
             <div class="space-y-2">
-              <textarea v-model="batchInput" rows="4" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" placeholder="每行一个单词或句子..." />
+              <textarea
+                v-model="batchInput"
+                rows="4"
+                class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
+                :placeholder="$t('tools.phonetic-transcriber.page.batch.placeholder')"
+              />
               <div class="flex gap-2">
-                <button @click="batchTranscribe" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">批量转换</button>
-                <button @click="exportBatch" :disabled="batchResults.length === 0" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded text-sm">导出结果</button>
+                <button @click="batchTranscribe" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.phonetic-transcriber.page.batch.run') }}</button>
+                <button @click="exportBatch" :disabled="batchResults.length === 0" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded text-sm">
+                  {{ $t('tools.phonetic-transcriber.page.batch.export') }}
+                </button>
               </div>
             </div>
           </div>
@@ -54,20 +61,20 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">转换结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.phonetic-transcriber.page.results.title') }}</h3>
 
         <div v-if="result" class="space-y-4">
           <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
             <div class="flex justify-between items-center mb-3">
-              <h4 class="font-medium">音标结果</h4>
-              <button @click="copyResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">复制</button>
+              <h4 class="font-medium">{{ $t('tools.phonetic-transcriber.page.results.phoneticTitle') }}</h4>
+              <button @click="copyResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.phonetic-transcriber.page.copy') }}</button>
             </div>
             <div class="space-y-3">
               <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded font-mono text-lg">
                 {{ result.phonetic }}
               </div>
               <div v-if="result.breakdown && result.breakdown.length > 0" class="space-y-2">
-                <h5 class="font-medium text-sm">逐词分解</h5>
+                <h5 class="font-medium text-sm">{{ $t('tools.phonetic-transcriber.page.results.breakdownTitle') }}</h5>
                 <div class="space-y-1">
                   <div v-for="(item, index) in result.breakdown" :key="index" class="flex justify-between text-sm p-2 bg-gray-50 dark:bg-gray-700 rounded">
                     <span>{{ item.word }}</span>
@@ -79,23 +86,23 @@
           </div>
 
           <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
-            <h4 class="font-medium mb-3">统计信息</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.phonetic-transcriber.page.stats.title') }}</h4>
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">总字符数:</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.phonetic-transcriber.page.stats.totalChars') }}</span>
                 <span>{{ result.stats.totalChars }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">单词数:</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.phonetic-transcriber.page.stats.wordCount') }}</span>
                 <span>{{ result.stats.wordCount }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">音节数:</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.phonetic-transcriber.page.stats.syllableCount') }}</span>
                 <span>{{ result.stats.syllableCount }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">语言:</span>
-                <span>{{ inputLanguage === 'en' ? '英语' : '中文' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.phonetic-transcriber.page.stats.language') }}</span>
+                <span>{{ inputLanguage === 'en' ? $t('tools.phonetic-transcriber.page.language.en') : $t('tools.phonetic-transcriber.page.language.zh') }}</span>
               </div>
             </div>
           </div>
@@ -103,16 +110,16 @@
 
         <div v-else class="text-center py-12 text-gray-500">
           <div class="text-4xl mb-4">🔤</div>
-          <div class="text-lg mb-2">音标转换</div>
-          <div class="text-sm">输入文本后将显示音标转换结果</div>
+          <div class="text-lg mb-2">{{ $t('tools.phonetic-transcriber.page.emptyTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.phonetic-transcriber.page.emptySubtitle') }}</div>
         </div>
       </div>
     </div>
 
     <div v-if="batchResults.length > 0" class="bg-white dark:bg-gray-800 border rounded-lg">
       <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-        <h4 class="font-medium">批量转换结果 ({{ batchResults.length }})</h4>
-        <button @click="clearBatchResults" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空结果</button>
+        <h4 class="font-medium">{{ $t('tools.phonetic-transcriber.page.batchResultsTitle') }} ({{ batchResults.length }})</h4>
+        <button @click="clearBatchResults" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.phonetic-transcriber.page.clearBatch') }}</button>
       </div>
       <div class="p-4">
         <div class="space-y-2 max-h-64 overflow-y-auto">
@@ -126,8 +133,8 @@
 
     <div class="bg-white dark:bg-gray-800 border rounded-lg">
       <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-        <h4 class="font-medium">转换历史</h4>
-        <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空历史</button>
+        <h4 class="font-medium">{{ $t('tools.phonetic-transcriber.page.history.title') }}</h4>
+        <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.phonetic-transcriber.page.history.clear') }}</button>
       </div>
       <div class="p-4">
         <div v-if="history.length > 0" class="space-y-2 max-h-32 overflow-y-auto">
@@ -137,30 +144,30 @@
               <div class="text-xs text-gray-500">{{ item.timestamp }}</div>
             </div>
             <div class="flex gap-1">
-              <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
+              <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.phonetic-transcriber.page.history.load') }}</button>
             </div>
           </div>
         </div>
-        <div v-else class="text-center py-4 text-gray-500 text-sm">暂无转换历史</div>
+        <div v-else class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.phonetic-transcriber.page.history.empty') }}</div>
       </div>
     </div>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h3 class="font-medium mb-3">音标说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.phonetic-transcriber.page.info.title') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800 dark:text-blue-200">
         <div>
-          <h4 class="font-medium mb-2">国际音标 (IPA)</h4>
-          <p class="mb-2">国际音标是一套用来标音的系统，主要用于语言学研究。</p>
-          <p>适用于准确表示各种语言的发音。</p>
+          <h4 class="font-medium mb-2">{{ $t('tools.phonetic-transcriber.page.info.ipaTitle') }}</h4>
+          <p class="mb-2">{{ $t('tools.phonetic-transcriber.page.info.ipaDesc1') }}</p>
+          <p>{{ $t('tools.phonetic-transcriber.page.info.ipaDesc2') }}</p>
         </div>
         <div>
-          <h4 class="font-medium mb-2">使用说明</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.phonetic-transcriber.page.info.guideTitle') }}</h4>
           <ul class="space-y-1">
-            <li>• 支持英语和中文转换</li>
-            <li>• 提供发音指导</li>
-            <li>• 支持批量处理</li>
-            <li>• 音节统计分析</li>
-            <li>• 历史记录管理</li>
+            <li>• {{ $t('tools.phonetic-transcriber.page.info.guide.supportEnZh') }}</li>
+            <li>• {{ $t('tools.phonetic-transcriber.page.info.guide.pronGuide') }}</li>
+            <li>• {{ $t('tools.phonetic-transcriber.page.info.guide.batch') }}</li>
+            <li>• {{ $t('tools.phonetic-transcriber.page.info.guide.syllableStats') }}</li>
+            <li>• {{ $t('tools.phonetic-transcriber.page.info.guide.history') }}</li>
           </ul>
         </div>
       </div>
@@ -170,6 +177,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface TranscriptionResult {
   phonetic: string;
@@ -197,6 +205,7 @@ interface BatchResult {
   phonetic: string;
 }
 
+const { t } = useI18n();
 const inputText = ref('');
 const batchInput = ref('');
 const inputLanguage = ref('en');
@@ -704,7 +713,7 @@ const copyResult = async () => {
     await navigator.clipboard.writeText(result.value.phonetic);
     // 这里可以添加成功提示
   } catch (err) {
-    console.error('复制失败:', err);
+    console.error(t('tools.phonetic-transcriber.page.copyFailedLog'), err);
   }
 };
 
@@ -719,7 +728,7 @@ const loadSample = () => {
   if (inputLanguage.value === 'en') {
     inputText.value = 'Hello world! How are you today?';
   } else {
-    inputText.value = '你好世界！你今天好吗？';
+    inputText.value = t('tools.phonetic-transcriber.page.samples.zh');
   }
   transcribe();
 };
@@ -770,7 +779,7 @@ onMounted(() => {
     try {
       history.value = JSON.parse(savedHistory);
     } catch (err) {
-      console.error('加载历史记录失败:', err);
+      console.error(t('tools.phonetic-transcriber.page.loadHistoryFailedLog'), err);
     }
   }
 });

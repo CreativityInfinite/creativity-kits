@@ -2,15 +2,15 @@
   <div class="space-y-6">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">User Agent 解析器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.user-agent-parser.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="flex justify-between items-center">
-            <label class="block text-sm font-medium">User Agent 字符串</label>
+            <label class="block text-sm font-medium">{{ $t('tools.user-agent-parser.page.uaLabel') }}</label>
             <div class="flex gap-2">
-              <button @click="useCurrentUA" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">使用当前浏览器</button>
-              <button @click="loadSample" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">加载示例</button>
-              <button @click="clearInput" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
+              <button @click="useCurrentUA" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.user-agent-parser.page.useCurrent') }}</button>
+              <button @click="loadSample" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.user-agent-parser.page.loadSample') }}</button>
+              <button @click="clearInput" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.user-agent-parser.page.clear') }}</button>
             </div>
           </div>
 
@@ -18,36 +18,36 @@
             v-model="userAgent"
             rows="4"
             class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm"
-            placeholder="在此输入 User Agent 字符串..."
+            :placeholder="$t('tools.user-agent-parser.page.uaPlaceholder')"
             @input="parseUserAgent"
           />
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">常见 User Agent 示例</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.user-agent-parser.page.samplesTitle') }}</h4>
             <div class="space-y-2">
               <div v-for="(sample, index) in sampleUserAgents" :key="index" class="flex items-center justify-between text-sm">
                 <div class="flex-1 min-w-0">
                   <div class="font-medium">{{ sample.name }}</div>
                   <div class="text-xs text-gray-500 truncate">{{ sample.ua }}</div>
                 </div>
-                <button @click="loadSampleUA(sample.ua)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs ml-2">使用</button>
+                <button @click="loadSampleUA(sample.ua)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs ml-2">{{ $t('tools.user-agent-parser.page.use') }}</button>
               </div>
             </div>
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">批量解析</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.user-agent-parser.page.batchTitle') }}</h4>
             <div class="space-y-2">
               <textarea
                 v-model="batchInput"
                 rows="3"
                 class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm"
-                placeholder="每行一个 User Agent 字符串..."
+                :placeholder="$t('tools.user-agent-parser.page.batchPlaceholder')"
               />
               <div class="flex gap-2">
-                <button @click="parseBatch" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">批量解析</button>
+                <button @click="parseBatch" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.user-agent-parser.page.batchParse') }}</button>
                 <button @click="exportBatchResults" :disabled="batchResults.length === 0" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded text-sm">
-                  导出结果
+                  {{ $t('tools.user-agent-parser.page.exportResults') }}
                 </button>
               </div>
             </div>
@@ -56,30 +56,30 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">解析结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.user-agent-parser.page.resultTitle') }}</h3>
 
         <div v-if="parsedResult" class="space-y-4">
           <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
             <h4 class="font-medium mb-3 flex items-center">
               <span class="text-2xl mr-2">{{ getBrowserIcon(parsedResult.browser.name) }}</span>
-              浏览器信息
+              {{ $t('tools.user-agent-parser.page.browserInfo') }}
             </h4>
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">名称:</span>
-                <span class="font-mono">{{ parsedResult.browser.name || '未知' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.name') }}</span>
+                <span class="font-mono">{{ parsedResult.browser.name || $t('tools.user-agent-parser.page.unknown') }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">版本:</span>
-                <span class="font-mono">{{ parsedResult.browser.version || '未知' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.version') }}</span>
+                <span class="font-mono">{{ parsedResult.browser.version || $t('tools.user-agent-parser.page.unknown') }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">主版本:</span>
-                <span class="font-mono">{{ parsedResult.browser.major || '未知' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.major') }}</span>
+                <span class="font-mono">{{ parsedResult.browser.major || $t('tools.user-agent-parser.page.unknown') }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">引擎:</span>
-                <span class="font-mono">{{ parsedResult.engine.name || '未知' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.engine') }}</span>
+                <span class="font-mono">{{ parsedResult.engine.name || $t('tools.user-agent-parser.page.unknown') }}</span>
               </div>
             </div>
           </div>
@@ -87,16 +87,16 @@
           <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
             <h4 class="font-medium mb-3 flex items-center">
               <span class="text-2xl mr-2">{{ getOSIcon(parsedResult.os.name) }}</span>
-              操作系统
+              {{ $t('tools.user-agent-parser.page.osTitle') }}
             </h4>
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">名称:</span>
-                <span class="font-mono">{{ parsedResult.os.name || '未知' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.name') }}</span>
+                <span class="font-mono">{{ parsedResult.os.name || $t('tools.user-agent-parser.page.unknown') }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">版本:</span>
-                <span class="font-mono">{{ parsedResult.os.version || '未知' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.version') }}</span>
+                <span class="font-mono">{{ parsedResult.os.version || $t('tools.user-agent-parser.page.unknown') }}</span>
               </div>
             </div>
           </div>
@@ -104,54 +104,54 @@
           <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
             <h4 class="font-medium mb-3 flex items-center">
               <span class="text-2xl mr-2">{{ getDeviceIcon(parsedResult.device.type) }}</span>
-              设备信息
+              {{ $t('tools.user-agent-parser.page.deviceInfo') }}
             </h4>
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">类型:</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.type') }}</span>
                 <span class="font-mono">{{ parsedResult.device.type || 'desktop' }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">厂商:</span>
-                <span class="font-mono">{{ parsedResult.device.vendor || '未知' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.vendor') }}</span>
+                <span class="font-mono">{{ parsedResult.device.vendor || $t('tools.user-agent-parser.page.unknown') }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">型号:</span>
-                <span class="font-mono">{{ parsedResult.device.model || '未知' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.model') }}</span>
+                <span class="font-mono">{{ parsedResult.device.model || $t('tools.user-agent-parser.page.unknown') }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">CPU:</span>
-                <span class="font-mono">{{ parsedResult.cpu.architecture || '未知' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.cpu') }}</span>
+                <span class="font-mono">{{ parsedResult.cpu.architecture || $t('tools.user-agent-parser.page.unknown') }}</span>
               </div>
             </div>
           </div>
 
           <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
-            <h4 class="font-medium mb-3">特征检测</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.user-agent-parser.page.featuresTitle') }}</h4>
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">移动设备:</span>
-                <span class="font-mono">{{ parsedResult.device.type === 'mobile' ? '是' : '否' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.isMobile') }}</span>
+                <span class="font-mono">{{ parsedResult.device.type === 'mobile' ? $t('tools.user-agent-parser.page.yes') : $t('tools.user-agent-parser.page.no') }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">平板设备:</span>
-                <span class="font-mono">{{ parsedResult.device.type === 'tablet' ? '是' : '否' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.isTablet') }}</span>
+                <span class="font-mono">{{ parsedResult.device.type === 'tablet' ? $t('tools.user-agent-parser.page.yes') : $t('tools.user-agent-parser.page.no') }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">爬虫/机器人:</span>
-                <span class="font-mono">{{ isBot(userAgent) ? '是' : '否' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.isBot') }}</span>
+                <span class="font-mono">{{ isBot(userAgent) ? $t('tools.user-agent-parser.page.yes') : $t('tools.user-agent-parser.page.no') }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">WebView:</span>
-                <span class="font-mono">{{ isWebView(userAgent) ? '是' : '否' }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.user-agent-parser.page.isWebView') }}</span>
+                <span class="font-mono">{{ isWebView(userAgent) ? $t('tools.user-agent-parser.page.yes') : $t('tools.user-agent-parser.page.no') }}</span>
               </div>
             </div>
           </div>
 
           <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
             <div class="flex justify-between items-center mb-3">
-              <h4 class="font-medium">JSON 格式</h4>
-              <button @click="copyResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">复制</button>
+              <h4 class="font-medium">{{ $t('tools.user-agent-parser.page.jsonTitle') }}</h4>
+              <button @click="copyResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.user-agent-parser.page.copy') }}</button>
             </div>
             <pre class="bg-gray-50 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto"><code>{{ JSON.stringify(parsedResult, null, 2) }}</code></pre>
           </div>
@@ -159,16 +159,16 @@
 
         <div v-else class="text-center py-12 text-gray-500">
           <div class="text-4xl mb-4">🔍</div>
-          <div class="text-lg mb-2">User Agent 解析</div>
-          <div class="text-sm">输入 User Agent 字符串后将显示解析结果</div>
+          <div class="text-lg mb-2">{{ $t('tools.user-agent-parser.page.emptyTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.user-agent-parser.page.emptySubtitle') }}</div>
         </div>
       </div>
     </div>
 
     <div v-if="batchResults.length > 0" class="bg-white dark:bg-gray-800 border rounded-lg">
       <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-        <h4 class="font-medium">批量解析结果 ({{ batchResults.length }})</h4>
-        <button @click="clearBatchResults" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空结果</button>
+        <h4 class="font-medium">{{ $t('tools.user-agent-parser.page.batchResultsTitle') }} ({{ batchResults.length }})</h4>
+        <button @click="clearBatchResults" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.user-agent-parser.page.clearResults') }}</button>
       </div>
       <div class="p-4">
         <div class="space-y-3 max-h-64 overflow-y-auto">
@@ -185,8 +185,8 @@
 
     <div class="bg-white dark:bg-gray-800 border rounded-lg">
       <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-        <h4 class="font-medium">解析历史</h4>
-        <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空历史</button>
+        <h4 class="font-medium">{{ $t('tools.user-agent-parser.page.historyTitle') }}</h4>
+        <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.user-agent-parser.page.clearHistory') }}</button>
       </div>
       <div class="p-4">
         <div v-if="parseHistory.length > 0" class="space-y-2 max-h-32 overflow-y-auto">
@@ -196,30 +196,30 @@
               <div class="text-xs text-gray-500">{{ history.timestamp }}</div>
             </div>
             <div class="flex gap-1">
-              <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
+              <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.user-agent-parser.page.load') }}</button>
             </div>
           </div>
         </div>
-        <div v-else class="text-center py-4 text-gray-500 text-sm">暂无解析历史</div>
+        <div v-else class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.user-agent-parser.page.noHistory') }}</div>
       </div>
     </div>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h3 class="font-medium mb-3">User Agent 说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.user-agent-parser.page.introTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800 dark:text-blue-200">
         <div>
-          <h4 class="font-medium mb-2">什么是 User Agent</h4>
-          <p class="mb-2">User Agent 是浏览器向服务器发送的标识字符串，包含浏览器类型、版本、操作系统等信息。</p>
-          <p>服务器可以根据这些信息提供适配的内容和功能。</p>
+          <h4 class="font-medium mb-2">{{ $t('tools.user-agent-parser.page.whatIsUa') }}</h4>
+          <p class="mb-2">{{ $t('tools.user-agent-parser.page.whatIsUaP1') }}</p>
+          <p>{{ $t('tools.user-agent-parser.page.whatIsUaP2') }}</p>
         </div>
         <div>
-          <h4 class="font-medium mb-2">常见用途</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.user-agent-parser.page.commonUses') }}</h4>
           <ul class="space-y-1">
-            <li>• 网站兼容性检测</li>
-            <li>• 移动端适配</li>
-            <li>• 统计分析</li>
-            <li>• 安全防护</li>
-            <li>• 功能特性检测</li>
+            <li>{{ $t('tools.user-agent-parser.page.useCompatibility') }}</li>
+            <li>{{ $t('tools.user-agent-parser.page.useMobile') }}</li>
+            <li>{{ $t('tools.user-agent-parser.page.useAnalytics') }}</li>
+            <li>{{ $t('tools.user-agent-parser.page.useSecurity') }}</li>
+            <li>{{ $t('tools.user-agent-parser.page.useFeatureDetect') }}</li>
           </ul>
         </div>
       </div>
@@ -229,6 +229,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface ParsedUA {
   browser: {
@@ -266,6 +267,7 @@ interface BatchResult extends ParsedUA {
   originalUA: string;
 }
 
+const i18n = useI18n();
 const userAgent = ref('');
 const batchInput = ref('');
 const parsedResult = ref<ParsedUA | null>(null);
@@ -526,7 +528,7 @@ async function copyResult() {
   try {
     await navigator.clipboard.writeText(JSON.stringify(parsedResult.value, null, 2));
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(i18n.t('tools.user-agent-parser.page.copyFailedLog'), error);
   }
 }
 
@@ -595,7 +597,7 @@ function saveHistory() {
   try {
     localStorage.setItem('ua-parse-history', JSON.stringify(parseHistory.value));
   } catch (error) {
-    console.error('保存历史记录失败:', error);
+    console.error(i18n.t('tools.user-agent-parser.page.saveHistoryFailedLog'), error);
   }
 }
 
@@ -606,7 +608,7 @@ function loadHistory() {
       parseHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载历史记录失败:', error);
+    console.error(i18n.t('tools.user-agent-parser.page.loadHistoryFailedLog'), error);
   }
 }
 

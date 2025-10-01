@@ -2,16 +2,20 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">2FA TOTP 生成器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.twofa-totp-generator.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">密钥（Base32 或 otpauth URI）</label>
-              <input v-model="secretInput" placeholder="JBSWY3DPEHPK3PXP 或 otpauth://totp/..." class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.twofa-totp-generator.page.secretLabel') }}</label>
+              <input
+                v-model="secretInput"
+                :placeholder="$t('tools.twofa-totp-generator.page.secretPlaceholder')"
+                class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">位数</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.twofa-totp-generator.page.digits') }}</label>
               <select v-model.number="digits" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 <option :value="6">6</option>
                 <option :value="8">8</option>
@@ -20,11 +24,11 @@
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">时间步长(s)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.twofa-totp-generator.page.period') }}</label>
               <input type="number" v-model.number="period" min="15" max="120" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">算法</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.twofa-totp-generator.page.algo') }}</label>
               <select v-model="algo" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 <option>SHA-1</option>
               </select>
@@ -32,46 +36,52 @@
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">生成</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
-            <button @click="swapView" :disabled="!code" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">交换视图</button>
+            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.twofa-totp-generator.page.generate') }}
+            </button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">
+              {{ $t('tools.twofa-totp-generator.page.clear') }}
+            </button>
+            <button @click="swapView" :disabled="!code" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.twofa-totp-generator.page.swapView') }}
+            </button>
           </div>
-          <p class="text-xs text-gray-500">本地计算，不会上传你的密钥。</p>
+          <p class="text-xs text-gray-500">{{ $t('tools.twofa-totp-generator.page.localCalc') }}</p>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">当前代码</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.twofa-totp-generator.page.currentCodeTitle') }}</h3>
 
         <div v-if="code" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex items-center justify-between">
               <div class="text-4xl font-mono tracking-widest">{{ code }}</div>
-              <div class="text-sm text-gray-500">剩余 {{ remaining }}s</div>
+              <div class="text-sm text-gray-500">{{ $t('tools.twofa-totp-generator.page.remaining', { s: remaining }) }}</div>
             </div>
             <div class="mt-3 flex gap-2">
-              <button @click="copyCode" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
-              <button @click="saveToHistory" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">保存</button>
+              <button @click="copyCode" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.twofa-totp-generator.page.copy') }}</button>
+              <button @click="saveToHistory" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.twofa-totp-generator.page.save') }}</button>
             </div>
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-2">参数与 URI</h4>
+            <h4 class="font-medium mb-2">{{ $t('tools.twofa-totp-generator.page.paramsAndUri') }}</h4>
             <textarea :value="metaText" readonly rows="6" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-xs" />
           </div>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">🔐</div>
-          <div class="text-lg mb-2">TOTP 生成器</div>
-          <div class="text-sm">输入 Base32 秘钥或 otpauth URI</div>
+          <div class="text-lg mb-2">{{ $t('tools.twofa-totp-generator.page.blankTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.twofa-totp-generator.page.blankSubtitle') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
           <div class="flex items-center gap-2 text-red-800 dark:text-red-200">
             <span class="text-lg">⚠️</span>
             <div>
-              <div class="font-medium">失败</div>
+              <div class="font-medium">{{ $t('tools.twofa-totp-generator.page.errorTitle') }}</div>
               <div class="text-sm mt-1 break-all">{{ error }}</div>
             </div>
           </div>
@@ -80,7 +90,7 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.twofa-totp-generator.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(item, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
@@ -89,8 +99,8 @@
           </div>
           <div class="text-xs mt-1 break-all">{{ item.label }}</div>
           <div class="flex gap-2 mt-2">
-            <button @click="copyText(item.code)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">复制代码</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="copyText(item.code)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">{{ $t('tools.twofa-totp-generator.page.copyCode') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.twofa-totp-generator.page.delete') }}</button>
           </div>
         </div>
       </div>
@@ -100,8 +110,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type HistoryItem = { code: string; label: string; timestamp: number };
+
+const { t } = useI18n();
 
 const secretInput = ref('');
 const digits = ref(6);
@@ -127,8 +140,8 @@ function clearAll() {
 function swapView() {
   if (code.value) copyCode();
 }
-function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制'));
+function copyText(tstr: string) {
+  navigator.clipboard.writeText(tstr).then(() => alert(t('tools.twofa-totp-generator.page.copied')));
 }
 function copyCode() {
   if (code.value) copyText(code.value);
@@ -166,7 +179,10 @@ function parseOtpauth(uri: string) {
     if (u.protocol !== 'otpauth:') return null;
     const type = u.hostname; // totp
     const label = decodeURIComponent(u.pathname.slice(1));
-    const params = Object.fromEntries(u.searchParams.entries());
+    const params: Record<string, string> = {};
+    u.searchParams.forEach((value, key) => {
+      params[key] = value;
+    });
     return { type, label, params };
   } catch {
     return null;
@@ -216,7 +232,7 @@ function startTimer(secret: Uint8Array) {
       const c = await computeTOTP(secret, step, now);
       code.value = c;
     } catch (e: any) {
-      error.value = e?.message || '计算失败';
+      error.value = e?.message || t('tools.twofa-totp-generator.page.computeFailed');
       stopTimer();
     }
   };
@@ -239,11 +255,11 @@ function process() {
       label = parsed.label || '';
     }
     const secretBytes = base32Decode(sec);
-    if (!secretBytes.length) throw new Error('无效的 Base32 密钥');
+    if (!secretBytes.length) throw new Error(t('tools.twofa-totp-generator.page.invalidBase32'));
     metaText.value = JSON.stringify({ digits: digits.value, period: period.value, algo: algo.value, label }, null, 2);
     startTimer(secretBytes);
   } catch (e: any) {
-    error.value = e?.message || '解析失败';
+    error.value = e?.message || t('tools.twofa-totp-generator.page.parseFailed');
   }
 }
 

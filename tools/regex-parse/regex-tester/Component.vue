@@ -2,13 +2,13 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">正则表达式测试器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.regex-tester.page.title') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">正则表达式</h4>
+            <h4 class="font-medium">{{ $t('tools.regex-tester.page.regex') }}</h4>
             <div class="flex gap-2">
-              <button @click="clearRegex" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
+              <button @click="clearRegex" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.clear') }}</button>
             </div>
           </div>
 
@@ -17,7 +17,7 @@
               <input
                 v-model="regexPattern"
                 type="text"
-                placeholder="输入正则表达式..."
+                :placeholder="$t('tools.regex-tester.page.regexPlaceholder')"
                 class="w-full px-3 py-2 border rounded-lg text-sm font-mono dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="testRegex"
               />
@@ -26,77 +26,77 @@
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-sm font-medium mb-2">标志</label>
+                <label class="block text-sm font-medium mb-2">{{ $t('tools.regex-tester.page.flags') }}</label>
                 <div class="space-y-2">
                   <label class="flex items-center space-x-2">
                     <input v-model="flags.global" type="checkbox" @change="updateFlags" />
-                    <span class="text-sm">g - 全局匹配</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.flagGlobal') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="flags.ignoreCase" type="checkbox" @change="updateFlags" />
-                    <span class="text-sm">i - 忽略大小写</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.flagIgnoreCase') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="flags.multiline" type="checkbox" @change="updateFlags" />
-                    <span class="text-sm">m - 多行模式</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.flagMultiline') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="flags.dotAll" type="checkbox" @change="updateFlags" />
-                    <span class="text-sm">s - 单行模式</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.flagDotAll') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="flags.unicode" type="checkbox" @change="updateFlags" />
-                    <span class="text-sm">u - Unicode</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.flagUnicode') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="flags.sticky" type="checkbox" @change="updateFlags" />
-                    <span class="text-sm">y - 粘性匹配</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.flagSticky') }}</span>
                   </label>
                 </div>
               </div>
 
               <div>
-                <label class="block text-sm font-medium mb-2">测试模式</label>
+                <label class="block text-sm font-medium mb-2">{{ $t('tools.regex-tester.page.testMode') }}</label>
                 <div class="space-y-2">
                   <label class="flex items-center space-x-2">
                     <input v-model="options.testMode" type="radio" value="match" />
-                    <span class="text-sm">匹配测试</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.modeMatch') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="options.testMode" type="radio" value="replace" />
-                    <span class="text-sm">替换测试</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.modeReplace') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="options.testMode" type="radio" value="split" />
-                    <span class="text-sm">分割测试</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.modeSplit') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="options.testMode" type="radio" value="extract" />
-                    <span class="text-sm">提取测试</span>
+                    <span class="text-sm">{{ $t('tools.regex-tester.page.modeExtract') }}</span>
                   </label>
                 </div>
               </div>
             </div>
 
             <div v-if="options.testMode === 'replace'" class="space-y-2">
-              <label class="block text-sm font-medium">替换文本</label>
+              <label class="block text-sm font-medium">{{ $t('tools.regex-tester.page.replaceText') }}</label>
               <input
                 v-model="replaceText"
                 type="text"
-                placeholder="输入替换文本..."
+                :placeholder="$t('tools.regex-tester.page.replacePlaceholder')"
                 class="w-full px-3 py-2 border rounded-lg text-sm font-mono dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="testRegex"
               />
-              <div class="text-xs text-gray-500">支持捕获组引用：$1, $2, $&（完整匹配）, $`（匹配前）, $'（匹配后）</div>
+              <div class="text-xs text-gray-500">{{ $t('tools.regex-tester.page.replaceHint') }}</div>
             </div>
           </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">测试文本</h4>
+            <h4 class="font-medium">{{ $t('tools.regex-tester.page.testText') }}</h4>
             <div class="flex gap-2">
-              <button @click="clearText" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
+              <button @click="clearText" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.clear') }}</button>
             </div>
           </div>
 
@@ -105,7 +105,7 @@
               <textarea
                 v-model="testText"
                 rows="8"
-                placeholder="在此输入要测试的文本..."
+                :placeholder="$t('tools.regex-tester.page.testTextPlaceholder')"
                 class="w-full px-3 py-2 border rounded-lg text-sm font-mono dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="testRegex"
                 @drop="handleFileDrop"
@@ -115,88 +115,88 @@
             </div>
 
             <div class="flex justify-between items-center text-sm text-gray-500">
-              <span>字符数: {{ testText.length }}</span>
-              <span>行数: {{ testText.split('\n').length }}</span>
-              <span>字节数: {{ getByteLength(testText) }}</span>
+              <span>{{ $t('tools.regex-tester.page.charCount') }}: {{ testText.length }}</span>
+              <span>{{ $t('tools.regex-tester.page.lineCount') }}: {{ testText.split('\n').length }}</span>
+              <span>{{ $t('tools.regex-tester.page.byteCount') }}: {{ getByteLength(testText) }}</span>
             </div>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">快速操作</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.regex-tester.page.quickActions') }}</h4>
           <div class="grid grid-cols-2 gap-2">
-            <button @click="loadSampleRegex" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">加载示例</button>
-            <button @click="testManually" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">手动测试</button>
-            <button @click="explainRegex" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">解释正则</button>
-            <button @click="validateRegex" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">验证语法</button>
+            <button @click="loadSampleRegex" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.loadSample') }}</button>
+            <button @click="testManually" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.testManually') }}</button>
+            <button @click="explainRegex" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.explainRegex') }}</button>
+            <button @click="validateRegex" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.validateSyntax') }}</button>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">常用正则</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.regex-tester.page.commonRegex') }}</h4>
           <div class="grid grid-cols-1 gap-2">
-            <button v-for="(pattern, name) in commonPatterns" :key="name" @click="loadPattern(pattern, name)" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm text-left">
-              <div class="font-medium">{{ name }}</div>
+            <button v-for="(pattern, key) in commonPatterns" :key="key" @click="loadPattern(pattern, key)" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm text-left">
+              <div class="font-medium">{{ $t(`tools.regex-tester.page.commonPatternNames.${key}`) }}</div>
               <div class="text-xs opacity-75 font-mono">{{ pattern.regex }}</div>
             </button>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">文件操作</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.regex-tester.page.fileOps') }}</h4>
           <div class="grid grid-cols-2 gap-2">
             <label class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm cursor-pointer text-center">
               <input type="file" accept=".txt,.log,.csv,.json" @change="handleFileUpload" class="hidden" />
-              上传文件
+              {{ $t('tools.regex-tester.page.uploadFile') }}
             </label>
-            <button @click="downloadResults" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载结果</button>
+            <button @click="downloadResults" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.downloadResults') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">测试结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.regex-tester.page.testResults') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">匹配结果</h4>
+            <h4 class="font-medium">{{ $t('tools.regex-tester.page.matchResults') }}</h4>
             <div class="flex gap-2">
-              <button @click="copyResults" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制结果</button>
-              <button @click="highlightMatches" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">高亮显示</button>
+              <button @click="copyResults" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.copyResults') }}</button>
+              <button @click="highlightMatches" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.highlight') }}</button>
             </div>
           </div>
           <div class="p-4">
             <div v-if="testResult" class="space-y-3">
               <div class="flex justify-between items-center text-sm">
-                <span class="font-medium">匹配状态:</span>
+                <span class="font-medium">{{ $t('tools.regex-tester.page.matchStatus') }}:</span>
                 <span :class="testResult.isMatch ? 'text-green-600' : 'text-red-600'">
-                  {{ testResult.isMatch ? '匹配成功' : '无匹配' }}
+                  {{ testResult.isMatch ? $t('tools.regex-tester.page.matchSuccess') : $t('tools.regex-tester.page.noMatch') }}
                 </span>
               </div>
 
               <div v-if="testResult.isMatch" class="space-y-3">
                 <div class="flex justify-between items-center text-sm">
-                  <span>匹配数量: {{ testResult.matchCount }}</span>
-                  <span>总字符数: {{ testResult.totalChars }}</span>
+                  <span>{{ $t('tools.regex-tester.page.matchCount') }}: {{ testResult.matchCount }}</span>
+                  <span>{{ $t('tools.regex-tester.page.totalChars') }}: {{ testResult.totalChars }}</span>
                 </div>
 
                 <div v-if="options.testMode === 'match' && testResult.matches.length > 0" class="space-y-2">
-                  <h5 class="font-medium text-sm">匹配详情:</h5>
+                  <h5 class="font-medium text-sm">{{ $t('tools.regex-tester.page.matchDetails') }}:</h5>
                   <div class="max-h-64 overflow-y-auto space-y-2">
                     <div v-for="(match, index) in testResult.matches" :key="index" class="p-2 bg-gray-50 dark:bg-gray-700 rounded text-sm">
                       <div class="flex justify-between items-center mb-1">
-                        <span class="font-medium">匹配 {{ index + 1 }}</span>
-                        <span class="text-xs text-gray-500">位置: {{ match.index }}-{{ match.index + match.match.length }}</span>
+                        <span class="font-medium">{{ $t('tools.regex-tester.page.matchItem') }} {{ index + 1 }}</span>
+                        <span class="text-xs text-gray-500">{{ $t('tools.regex-tester.page.position') }}: {{ match.index }}-{{ match.index + match.match.length }}</span>
                       </div>
                       <div class="font-mono bg-white dark:bg-gray-800 p-2 rounded break-all">
                         {{ match.match }}
                       </div>
                       <div v-if="match.groups && match.groups.length > 0" class="mt-2">
-                        <div class="text-xs font-medium mb-1">捕获组:</div>
+                        <div class="text-xs font-medium mb-1">{{ $t('tools.regex-tester.page.captureGroups') }}:</div>
                         <div class="space-y-1">
                           <div v-for="(group, groupIndex) in match.groups" :key="groupIndex" class="flex justify-between text-xs">
-                            <span>组 {{ groupIndex + 1 }}:</span>
-                            <span class="font-mono">{{ group || '(空)' }}</span>
+                            <span>{{ $t('tools.regex-tester.page.group') }} {{ groupIndex + 1 }}:</span>
+                            <span class="font-mono">{{ group || $t('tools.regex-tester.page.empty') }}</span>
                           </div>
                         </div>
                       </div>
@@ -205,29 +205,29 @@
                 </div>
 
                 <div v-if="options.testMode === 'replace' && testResult.replaceResult" class="space-y-2">
-                  <h5 class="font-medium text-sm">替换结果:</h5>
+                  <h5 class="font-medium text-sm">{{ $t('tools.regex-tester.page.replaceResult') }}:</h5>
                   <div class="bg-gray-50 dark:bg-gray-700 rounded p-3 text-sm font-mono max-h-64 overflow-y-auto break-all">
                     <pre>{{ testResult.replaceResult }}</pre>
                   </div>
                 </div>
 
                 <div v-if="options.testMode === 'split' && testResult.splitResult" class="space-y-2">
-                  <h5 class="font-medium text-sm">分割结果 ({{ testResult.splitResult.length }} 部分):</h5>
+                  <h5 class="font-medium text-sm">{{ $t('tools.regex-tester.page.splitResult') }} ({{ testResult.splitResult.length }} {{ $t('tools.regex-tester.page.parts') }}):</h5>
                   <div class="max-h-64 overflow-y-auto space-y-1">
                     <div v-for="(part, index) in testResult.splitResult" :key="index" class="p-2 bg-gray-50 dark:bg-gray-700 rounded text-sm">
                       <div class="flex justify-between items-center mb-1">
-                        <span class="font-medium">部分 {{ index + 1 }}</span>
-                        <span class="text-xs text-gray-500">长度: {{ part.length }}</span>
+                        <span class="font-medium">{{ $t('tools.regex-tester.page.part') }} {{ index + 1 }}</span>
+                        <span class="text-xs text-gray-500">{{ $t('tools.regex-tester.page.length') }}: {{ part.length }}</span>
                       </div>
                       <div class="font-mono bg-white dark:bg-gray-800 p-2 rounded break-all">
-                        {{ part || '(空)' }}
+                        {{ part || $t('tools.regex-tester.page.empty') }}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div v-if="options.testMode === 'extract' && testResult.extractResult" class="space-y-2">
-                  <h5 class="font-medium text-sm">提取结果 ({{ testResult.extractResult.length }} 项):</h5>
+                  <h5 class="font-medium text-sm">{{ $t('tools.regex-tester.page.extractResult') }} ({{ testResult.extractResult.length }} {{ $t('tools.regex-tester.page.items') }}):</h5>
                   <div class="max-h-64 overflow-y-auto space-y-1">
                     <div v-for="(item, index) in testResult.extractResult" :key="index" class="p-2 bg-gray-50 dark:bg-gray-700 rounded text-sm font-mono break-all">
                       {{ item }}
@@ -237,16 +237,16 @@
               </div>
             </div>
             <div v-else-if="regexError" class="text-center py-8">
-              <div class="text-red-600 mb-2">正则表达式错误</div>
+              <div class="text-red-600 mb-2">{{ $t('tools.regex-tester.page.regexError') }}</div>
               <div class="text-sm text-gray-500">{{ regexError }}</div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500">输入正则表达式和测试文本后将显示结果</div>
+            <div v-else class="text-center py-8 text-gray-500">{{ $t('tools.regex-tester.page.noResultYet') }}</div>
           </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg" v-if="highlightedText">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">高亮显示</h4>
+            <h4 class="font-medium">{{ $t('tools.regex-tester.page.highlight') }}</h4>
           </div>
           <div class="p-4">
             <div class="bg-gray-50 dark:bg-gray-700 rounded p-3 text-sm font-mono max-h-64 overflow-y-auto break-all">
@@ -257,7 +257,7 @@
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg" v-if="regexExplanation">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">正则表达式解释</h4>
+            <h4 class="font-medium">{{ $t('tools.regex-tester.page.regexExplanation') }}</h4>
           </div>
           <div class="p-4">
             <div class="space-y-2 text-sm">
@@ -273,59 +273,67 @@
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">测试历史</h4>
-            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空历史</button>
+            <h4 class="font-medium">{{ $t('tools.regex-tester.page.testHistory') }}</h4>
+            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.regex-tester.page.clearHistory') }}</button>
           </div>
           <div class="p-4">
             <div v-if="testHistory.length > 0" class="space-y-2 max-h-32 overflow-y-auto">
               <div v-for="(history, index) in testHistory.slice(0, 5)" :key="index" class="flex items-center justify-between text-sm p-2 bg-gray-50 dark:bg-gray-700 rounded">
                 <div class="flex-1 min-w-0">
                   <div class="font-mono text-xs truncate">{{ history.pattern }}</div>
-                  <div class="text-xs text-gray-500">{{ history.timestamp }} - {{ history.matches }} 匹配</div>
+                  <div class="text-xs text-gray-500">{{ history.timestamp }} - {{ history.matches }} {{ $t('tools.regex-tester.page.historyMatched') }}</div>
                 </div>
                 <div class="flex gap-1">
-                  <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
+                  <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.regex-tester.page.load') }}</button>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-gray-500 text-sm">暂无测试历史</div>
+            <div v-else class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.regex-tester.page.noHistory') }}</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.regex-tester.page.usage') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">正则标志</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.regex-tester.page.flags') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>g:</strong> 全局匹配，查找所有匹配项</li>
-            <li>• <strong>i:</strong> 忽略大小写</li>
-            <li>• <strong>m:</strong> 多行模式，^ 和 $ 匹配行首行尾</li>
-            <li>• <strong>s:</strong> 单行模式，. 匹配换行符</li>
-            <li>• <strong>u:</strong> Unicode 模式</li>
-            <li>• <strong>y:</strong> 粘性匹配</li>
+            <li>• <strong>g:</strong> {{ $t('tools.regex-tester.page.flagDescriptions.global') }}</li>
+            <li>• <strong>i:</strong> {{ $t('tools.regex-tester.page.flagDescriptions.ignoreCase') }}</li>
+            <li>• <strong>m:</strong> {{ $t('tools.regex-tester.page.flagDescriptions.multiline') }}</li>
+            <li>• <strong>s:</strong> {{ $t('tools.regex-tester.page.flagDescriptions.dotAll') }}</li>
+            <li>• <strong>u:</strong> {{ $t('tools.regex-tester.page.flagDescriptions.unicode') }}</li>
+            <li>• <strong>y:</strong> {{ $t('tools.regex-tester.page.flagDescriptions.sticky') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">测试模式</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.regex-tester.page.testMode') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>匹配测试:</strong> 查找所有匹配项和捕获组</li>
-            <li>• <strong>替换测试:</strong> 使用正则进行文本替换</li>
-            <li>• <strong>分割测试:</strong> 使用正则分割文本</li>
-            <li>• <strong>提取测试:</strong> 提取所有匹配的文本</li>
+            <li>
+              • <strong>{{ $t('tools.regex-tester.page.modeMatch') }}:</strong> {{ $t('tools.regex-tester.page.modeDescriptions.match') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.regex-tester.page.modeReplace') }}:</strong> {{ $t('tools.regex-tester.page.modeDescriptions.replace') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.regex-tester.page.modeSplit') }}:</strong> {{ $t('tools.regex-tester.page.modeDescriptions.split') }}
+            </li>
+            <li>
+              • <strong>{{ $t('tools.regex-tester.page.modeExtract') }}:</strong> {{ $t('tools.regex-tester.page.modeDescriptions.extract') }}
+            </li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">特殊字符</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.regex-tester.page.specialChars') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>.</strong> 匹配任意字符（除换行符）</li>
-            <li>• <strong>*</strong> 匹配 0 次或多次</li>
-            <li>• <strong>+</strong> 匹配 1 次或多次</li>
-            <li>• <strong>?</strong> 匹配 0 次或 1 次</li>
-            <li>• <strong>^</strong> 匹配行首</li>
-            <li>• <strong>$</strong> 匹配行尾</li>
+            <li>• <strong>.</strong> {{ $t('tools.regex-tester.page.specialCharDescriptions.dot') }}</li>
+            <li>• <strong>*</strong> {{ $t('tools.regex-tester.page.specialCharDescriptions.star') }}</li>
+            <li>• <strong>+</strong> {{ $t('tools.regex-tester.page.specialCharDescriptions.plus') }}</li>
+            <li>• <strong>?</strong> {{ $t('tools.regex-tester.page.specialCharDescriptions.question') }}</li>
+            <li>• <strong>^</strong> {{ $t('tools.regex-tester.page.specialCharDescriptions.caret') }}</li>
+            <li>• <strong>$</strong> {{ $t('tools.regex-tester.page.specialCharDescriptions.dollar') }}</li>
           </ul>
         </div>
       </div>
@@ -335,6 +343,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface TestOptions {
   testMode: 'match' | 'replace' | 'split' | 'extract';
@@ -385,6 +394,7 @@ interface CommonPattern {
   sample: string;
 }
 
+const { t } = useI18n();
 const regexPattern = ref('');
 const testText = ref('');
 const replaceText = ref('');
@@ -420,49 +430,49 @@ const regexFlags = computed(() => {
 });
 
 const commonPatterns: Record<string, CommonPattern> = {
-  邮箱地址: {
+  email: {
     regex: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
     flags: 'i',
     description: '匹配标准邮箱地址格式',
     sample: 'user@example.com'
   },
-  手机号码: {
+  phone: {
     regex: '^1[3-9]\\d{9}$',
     flags: '',
     description: '匹配中国大陆手机号码',
     sample: '13812345678'
   },
-  URL地址: {
+  url: {
     regex: 'https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)',
     flags: 'gi',
     description: '匹配HTTP/HTTPS URL',
     sample: 'https://www.example.com'
   },
-  IP地址: {
+  ip: {
     regex: '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$',
     flags: '',
     description: '匹配IPv4地址',
     sample: '192.168.1.1'
   },
-  身份证号: {
+  idCard: {
     regex: '^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$',
     flags: '',
     description: '匹配18位身份证号码',
     sample: '110101199001011234'
   },
-  中文字符: {
+  chinese: {
     regex: '[\\u4e00-\\u9fa5]+',
     flags: 'g',
     description: '匹配中文字符',
     sample: '你好世界'
   },
-  数字: {
+  number: {
     regex: '-?\\d+(\\.\\d+)?',
     flags: 'g',
     description: '匹配整数和小数',
     sample: '123.45'
   },
-  日期格式: {
+  date: {
     regex: '\\d{4}[-/]\\d{1,2}[-/]\\d{1,2}',
     flags: 'g',
     description: '匹配YYYY-MM-DD或YYYY/MM/DD格式日期',

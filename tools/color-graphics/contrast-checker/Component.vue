@@ -2,16 +2,16 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">颜色对比度检查 (WCAG)</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.contrast-checker.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">前景色</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.contrast-checker.page.foreground') }}</label>
               <input v-model="fg" placeholder="#222222" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">背景色</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.contrast-checker.page.background') }}</label>
               <input v-model="bg" placeholder="#ffffff" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
@@ -19,51 +19,57 @@
           <div class="grid grid-cols-2 gap-2">
             <div class="flex items-center h-[42px] px-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <input id="largeText" v-model="largeText" type="checkbox" class="rounded mr-2" />
-              <label for="largeText" class="text-sm">大号文本(≥18pt或加粗≥14pt)</label>
+              <label for="largeText" class="text-sm">{{ $t('tools.contrast-checker.page.largeText') }}</label>
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">样本文字</label>
-              <input v-model="sampleText" placeholder="示例文本 Sample" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.contrast-checker.page.sampleText') }}</label>
+              <input
+                v-model="sampleText"
+                :placeholder="$t('tools.contrast-checker.page.samplePlaceholder')"
+                class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">检查</button>
-            <button @click="swapColors" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">交换颜色</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.contrast-checker.page.check') }}
+            </button>
+            <button @click="swapColors" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.contrast-checker.page.swap') }}</button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.contrast-checker.page.clear') }}</button>
           </div>
 
           <div class="rounded-md overflow-hidden border dark:border-gray-700">
             <div class="p-4" :style="{ color: fg, background: bg }">
-              <div :class="['font-medium', largeText ? 'text-2xl' : 'text-base']">{{ sampleText || '示例文本 Sample' }}</div>
-              <div class="text-xs opacity-70 mt-2">前景 {{ fg }} · 背景 {{ bg }}</div>
+              <div :class="['font-medium', largeText ? 'text-2xl' : 'text-base']">{{ sampleText || $t('tools.contrast-checker.page.samplePlaceholder') }}</div>
+              <div class="text-xs opacity-70 mt-2">{{ $t('tools.contrast-checker.page.fgShort') }} {{ fg }} · {{ $t('tools.contrast-checker.page.bgShort') }} {{ bg }}</div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.contrast-checker.page.resultTitle') }}</h3>
 
         <div v-if="result" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-2">
-              <h4 class="font-medium">对比度与合规</h4>
+              <h4 class="font-medium">{{ $t('tools.contrast-checker.page.contrastAndCompliance') }}</h4>
               <div class="flex gap-2">
-                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
-                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.contrast-checker.page.copy') }}</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.contrast-checker.page.download') }}</button>
               </div>
             </div>
             <textarea :value="result" readonly rows="10" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
-            <div class="text-xs text-gray-500 mt-2">处理时间: {{ processingTime }}ms</div>
+            <div class="text-xs text-gray-500 mt-2">{{ $t('tools.contrast-checker.page.processingTime') }}: {{ processingTime }}ms</div>
           </div>
 
-          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.contrast-checker.page.saveToHistory') }}</button>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-3">🎨</div>
-          <div class="text-lg">输入颜色进行对比检查</div>
+          <div class="text-lg">{{ $t('tools.contrast-checker.page.emptyTip') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
@@ -73,28 +79,28 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.contrast-checker.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
-            <div class="font-medium">对比度 {{ h.ratio }}</div>
+            <div class="font-medium">{{ $t('tools.contrast-checker.page.ratio') }} {{ h.ratio }}</div>
             <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
           </div>
-          <div class="text-xs">fg {{ h.fg }} / bg {{ h.bg }}</div>
+          <div class="text-xs">{{ $t('tools.contrast-checker.page.fgShort') }} {{ h.fg }} / {{ $t('tools.contrast-checker.page.bgShort') }} {{ h.bg }}</div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="copyText(h.result)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">复制</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.contrast-checker.page.load') }}</button>
+            <button @click="copyText(h.result)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">{{ $t('tools.contrast-checker.page.copy') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.contrast-checker.page.remove') }}</button>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">标准说明</h3>
+      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">{{ $t('tools.contrast-checker.page.standardTitle') }}</h3>
       <div class="text-sm text-yellow-800 dark:text-yellow-200 space-y-1">
-        <div>• WCAG AA 正文 ≥ 4.5:1；大文本 ≥ 3:1</div>
-        <div>• WCAG AAA 正文 ≥ 7:1；大文本 ≥ 4.5:1</div>
+        <div>{{ $t('tools.contrast-checker.page.standardLine1') }}</div>
+        <div>{{ $t('tools.contrast-checker.page.standardLine2') }}</div>
       </div>
     </div>
   </div>
@@ -102,13 +108,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type HistoryItem = { fg: string; bg: string; ratio: string; result: string; timestamp: number };
 
 const fg = ref('#222222');
 const bg = ref('#ffffff');
 const largeText = ref(false);
-const sampleText = ref('示例文本 Sample');
+const { t } = useI18n();
+const sampleText = ref(t('tools.contrast-checker.page.samplePlaceholder'));
 
 const result = ref('');
 const error = ref('');
@@ -123,12 +131,12 @@ function clearAll() {
   processingTime.value = null;
 }
 function swapColors() {
-  const t = fg.value;
+  const tmp = fg.value;
   fg.value = bg.value;
-  bg.value = t;
+  bg.value = tmp;
 }
-function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
+function copyText(text: string) {
+  navigator.clipboard.writeText(text).then(() => alert(t('tools.contrast-checker.page.copied')));
 }
 function copyResult() {
   if (result.value) copyText(result.value);
@@ -162,7 +170,7 @@ function removeFromHistory(i: number) {
   localStorage.setItem('contrast-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
+  return new Date(ts).toLocaleString(undefined, { hour12: false });
 }
 
 function parseColor(hex: string) {
@@ -197,7 +205,7 @@ function process() {
   try {
     const f = parseColor(fg.value);
     const b = parseColor(bg.value);
-    if (!f || !b) throw new Error('颜色格式需为 #RGB 或 #RRGGBB');
+    if (!f || !b) throw new Error(t('tools.contrast-checker.page.invalidColorFormat'));
     const ratioNum = contrastRatio(f, b);
     const ratio = ratioNum.toFixed(2);
     const isLarge = !!largeText.value;
@@ -206,7 +214,7 @@ function process() {
     result.value = JSON.stringify({ input: { fg: fg.value, bg: bg.value, largeText: isLarge }, ratio, wcag: { AA: passAA, AAA: passAAA } }, null, 2);
     processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '计算失败';
+    error.value = e?.message || t('tools.contrast-checker.page.calcFailed');
   }
 }
 

@@ -2,11 +2,11 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">单位转换</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.unit-converter.page.leftTitle') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-2">转换类型</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.unit-converter.page.typeLabel') }}</label>
             <select v-model="selectedCategory" @change="resetValues" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.name }}
@@ -15,40 +15,42 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">输入数值</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.unit-converter.page.inputLabel') }}</label>
             <input
               v-model="inputValue"
               type="number"
               step="any"
               class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="输入要转换的数值"
+              :placeholder="$t('tools.unit-converter.page.inputPlaceholder')"
               @input="convert"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">从单位</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.unit-converter.page.fromUnit') }}</label>
             <select v-model="fromUnit" @change="convert" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <option v-for="unit in currentUnits" :key="unit.id" :value="unit.id">{{ unit.name }} ({{ unit.symbol }})</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">到单位</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.unit-converter.page.toUnit') }}</label>
             <select v-model="toUnit" @change="convert" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <option v-for="unit in currentUnits" :key="unit.id" :value="unit.id">{{ unit.name }} ({{ unit.symbol }})</option>
             </select>
           </div>
 
           <div class="flex gap-2">
-            <button @click="swapUnits" :disabled="!fromUnit || !toUnit" class="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">交换单位</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="swapUnits" :disabled="!fromUnit || !toUnit" class="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.unit-converter.page.swapUnits') }}
+            </button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.unit-converter.page.clear') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">转换结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.unit-converter.page.rightTitle') }}</h3>
 
         <div v-if="result !== null" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
@@ -61,67 +63,69 @@
 
             <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
               <div class="flex justify-between items-center text-sm">
-                <span class="text-gray-600 dark:text-gray-400">转换公式:</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.unit-converter.page.formulaLabel') }}</span>
                 <span class="font-mono">{{ getConversionFormula() }}</span>
               </div>
             </div>
 
             <div class="mt-3 flex gap-2">
-              <button @click="copyResult" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm">复制结果</button>
-              <button @click="saveToHistory" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm">保存记录</button>
+              <button @click="copyResult" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm">{{ $t('tools.unit-converter.page.copyResult') }}</button>
+              <button @click="saveToHistory" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm">{{ $t('tools.unit-converter.page.saveRecord') }}</button>
             </div>
           </div>
 
           <div v-if="selectedCategory === 'temperature'" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-            <h4 class="font-medium mb-3">温度对照表</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.unit-converter.page.temperatureTable') }}</h4>
             <div class="grid grid-cols-1 gap-2 text-sm">
               <div class="flex justify-between">
-                <span>摄氏度 (°C):</span>
+                <span>{{ $t('tools.unit-converter.page.celsius') }}</span>
                 <span class="font-mono">{{ getTemperatureValue('celsius').toFixed(2) }}°C</span>
               </div>
               <div class="flex justify-between">
-                <span>华氏度 (°F):</span>
+                <span>{{ $t('tools.unit-converter.page.fahrenheit') }}</span>
                 <span class="font-mono">{{ getTemperatureValue('fahrenheit').toFixed(2) }}°F</span>
               </div>
               <div class="flex justify-between">
-                <span>开尔文 (K):</span>
+                <span>{{ $t('tools.unit-converter.page.kelvin') }}</span>
                 <span class="font-mono">{{ getTemperatureValue('kelvin').toFixed(2) }}K</span>
               </div>
               <div class="flex justify-between">
-                <span>兰氏度 (°R):</span>
+                <span>{{ $t('tools.unit-converter.page.rankine') }}</span>
                 <span class="font-mono">{{ getTemperatureValue('rankine').toFixed(2) }}°R</span>
               </div>
             </div>
           </div>
 
           <div v-if="showAllConversions" class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-            <h4 class="font-medium mb-3">所有单位转换</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.unit-converter.page.allUnitsConversion') }}</h4>
             <div class="grid grid-cols-1 gap-2 text-sm max-h-48 overflow-y-auto">
               <div v-for="unit in currentUnits" :key="unit.id" class="flex justify-between items-center">
-                <span>{{ unit.name }}:</span>
+                <span>{{ getUnitDisplayName(unit.id) }}:</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono">{{ formatNumber(convertToUnit(unit.id)) }} {{ unit.symbol }}</span>
-                  <button @click="copyToClipboard(`${formatNumber(convertToUnit(unit.id))} ${unit.symbol}`)" class="px-1 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(`${formatNumber(convertToUnit(unit.id))} ${unit.symbol}`)" class="px-1 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">
+                    {{ $t('tools.unit-converter.page.copyButton') }}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
           <button @click="showAllConversions = !showAllConversions" class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm">
-            {{ showAllConversions ? '隐藏' : '显示' }}所有单位转换
+            {{ showAllConversions ? $t('tools.unit-converter.page.hideAllConversions') : $t('tools.unit-converter.page.showAllConversions') }}
           </button>
         </div>
 
         <div v-if="result === null" class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">📏</div>
-          <div class="text-lg mb-2">单位转换器</div>
-          <div class="text-sm">输入数值进行单位转换</div>
+          <div class="text-lg mb-2">{{ $t('tools.unit-converter.page.emptyTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.unit-converter.page.emptySubtitle') }}</div>
         </div>
       </div>
     </div>
 
     <div v-if="history.length > 0" class="space-y-2">
-      <h3 class="font-medium">转换历史</h3>
+      <h3 class="font-medium">{{ $t('tools.unit-converter.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(item, index) in history" :key="index" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between items-start mb-2">
@@ -134,19 +138,21 @@
             </div>
           </div>
           <div class="flex gap-2">
-            <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="copyToClipboard(`${formatNumber(item.result)} ${item.toSymbol}`)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">复制结果</button>
-            <button @click="removeFromHistory(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.unit-converter.page.load') }}</button>
+            <button @click="copyToClipboard(`${formatNumber(item.result)} ${item.toSymbol}`)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">
+              {{ $t('tools.unit-converter.page.copyResult') }}
+            </button>
+            <button @click="removeFromHistory(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.unit-converter.page.delete') }}</button>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">支持的转换类型</h3>
+      <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">{{ $t('tools.unit-converter.page.supportedTypesTitle') }}</h3>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-blue-800 dark:text-blue-200">
         <div v-for="category in categories" :key="category.id">
-          <strong>{{ category.name }}:</strong> {{ category.units.length }} 个单位
+          <strong>{{ category.name }}:</strong> {{ category.units.length }} {{ $t('tools.unit-converter.page.unitsCount') }}
         </div>
       </div>
     </div>
@@ -155,6 +161,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface Unit {
   id: string;
@@ -183,6 +190,8 @@ interface HistoryItem {
   timestamp: number;
 }
 
+const { t } = useI18n();
+
 const selectedCategory = ref('length');
 const inputValue = ref('');
 const fromUnit = ref('');
@@ -194,86 +203,86 @@ const history = ref<HistoryItem[]>([]);
 const categories: Category[] = [
   {
     id: 'length',
-    name: '长度',
+    name: t('tools.unit-converter.page.categories.length'),
     baseUnit: 'meter',
     units: [
-      { id: 'millimeter', name: '毫米', symbol: 'mm', toBase: 0.001 },
-      { id: 'centimeter', name: '厘米', symbol: 'cm', toBase: 0.01 },
-      { id: 'meter', name: '米', symbol: 'm', toBase: 1 },
-      { id: 'kilometer', name: '千米', symbol: 'km', toBase: 1000 },
-      { id: 'inch', name: '英寸', symbol: 'in', toBase: 0.0254 },
-      { id: 'foot', name: '英尺', symbol: 'ft', toBase: 0.3048 },
-      { id: 'yard', name: '码', symbol: 'yd', toBase: 0.9144 },
-      { id: 'mile', name: '英里', symbol: 'mi', toBase: 1609.344 },
-      { id: 'nautical_mile', name: '海里', symbol: 'nmi', toBase: 1852 }
+      { id: 'millimeter', name: t('tools.unit-converter.page.units.millimeter'), symbol: 'mm', toBase: 0.001 },
+      { id: 'centimeter', name: t('tools.unit-converter.page.units.centimeter'), symbol: 'cm', toBase: 0.01 },
+      { id: 'meter', name: t('tools.unit-converter.page.units.meter'), symbol: 'm', toBase: 1 },
+      { id: 'kilometer', name: t('tools.unit-converter.page.units.kilometer'), symbol: 'km', toBase: 1000 },
+      { id: 'inch', name: t('tools.unit-converter.page.units.inch'), symbol: 'in', toBase: 0.0254 },
+      { id: 'foot', name: t('tools.unit-converter.page.units.foot'), symbol: 'ft', toBase: 0.3048 },
+      { id: 'yard', name: t('tools.unit-converter.page.units.yard'), symbol: 'yd', toBase: 0.9144 },
+      { id: 'mile', name: t('tools.unit-converter.page.units.mile'), symbol: 'mi', toBase: 1609.344 },
+      { id: 'nautical_mile', name: t('tools.unit-converter.page.units.nautical_mile'), symbol: 'nmi', toBase: 1852 }
     ]
   },
   {
     id: 'weight',
-    name: '重量',
+    name: t('tools.unit-converter.page.categories.weight'),
     baseUnit: 'gram',
     units: [
-      { id: 'milligram', name: '毫克', symbol: 'mg', toBase: 0.001 },
-      { id: 'gram', name: '克', symbol: 'g', toBase: 1 },
-      { id: 'kilogram', name: '千克', symbol: 'kg', toBase: 1000 },
-      { id: 'ton', name: '吨', symbol: 't', toBase: 1000000 },
-      { id: 'ounce', name: '盎司', symbol: 'oz', toBase: 28.3495 },
-      { id: 'pound', name: '磅', symbol: 'lb', toBase: 453.592 },
-      { id: 'stone', name: '英石', symbol: 'st', toBase: 6350.29 }
+      { id: 'milligram', name: t('tools.unit-converter.page.units.milligram'), symbol: 'mg', toBase: 0.001 },
+      { id: 'gram', name: t('tools.unit-converter.page.units.gram'), symbol: 'g', toBase: 1 },
+      { id: 'kilogram', name: t('tools.unit-converter.page.units.kilogram'), symbol: 'kg', toBase: 1000 },
+      { id: 'ton', name: t('tools.unit-converter.page.units.ton'), symbol: 't', toBase: 1000000 },
+      { id: 'ounce', name: t('tools.unit-converter.page.units.ounce'), symbol: 'oz', toBase: 28.3495 },
+      { id: 'pound', name: t('tools.unit-converter.page.units.pound'), symbol: 'lb', toBase: 453.592 },
+      { id: 'stone', name: t('tools.unit-converter.page.units.stone'), symbol: 'st', toBase: 6350.29 }
     ]
   },
   {
     id: 'temperature',
-    name: '温度',
+    name: t('tools.unit-converter.page.categories.temperature'),
     baseUnit: 'celsius',
     units: [
-      { id: 'celsius', name: '摄氏度', symbol: '°C', toBase: 1, offset: 0 },
-      { id: 'fahrenheit', name: '华氏度', symbol: '°F', toBase: 5 / 9, offset: -32 },
-      { id: 'kelvin', name: '开尔文', symbol: 'K', toBase: 1, offset: -273.15 },
-      { id: 'rankine', name: '兰氏度', symbol: '°R', toBase: 5 / 9, offset: -459.67 }
+      { id: 'celsius', name: t('tools.unit-converter.page.units.celsius'), symbol: '°C', toBase: 1, offset: 0 },
+      { id: 'fahrenheit', name: t('tools.unit-converter.page.units.fahrenheit'), symbol: '°F', toBase: 5 / 9, offset: -32 },
+      { id: 'kelvin', name: t('tools.unit-converter.page.units.kelvin'), symbol: 'K', toBase: 1, offset: -273.15 },
+      { id: 'rankine', name: t('tools.unit-converter.page.units.rankine'), symbol: '°R', toBase: 5 / 9, offset: -459.67 }
     ]
   },
   {
     id: 'area',
-    name: '面积',
+    name: t('tools.unit-converter.page.categories.area'),
     baseUnit: 'square_meter',
     units: [
-      { id: 'square_millimeter', name: '平方毫米', symbol: 'mm²', toBase: 0.000001 },
-      { id: 'square_centimeter', name: '平方厘米', symbol: 'cm²', toBase: 0.0001 },
-      { id: 'square_meter', name: '平方米', symbol: 'm²', toBase: 1 },
-      { id: 'square_kilometer', name: '平方千米', symbol: 'km²', toBase: 1000000 },
-      { id: 'hectare', name: '公顷', symbol: 'ha', toBase: 10000 },
-      { id: 'acre', name: '英亩', symbol: 'ac', toBase: 4046.86 },
-      { id: 'square_inch', name: '平方英寸', symbol: 'in²', toBase: 0.00064516 },
-      { id: 'square_foot', name: '平方英尺', symbol: 'ft²', toBase: 0.092903 }
+      { id: 'square_millimeter', name: t('tools.unit-converter.page.units.square_millimeter'), symbol: 'mm²', toBase: 0.000001 },
+      { id: 'square_centimeter', name: t('tools.unit-converter.page.units.square_centimeter'), symbol: 'cm²', toBase: 0.0001 },
+      { id: 'square_meter', name: t('tools.unit-converter.page.units.square_meter'), symbol: 'm²', toBase: 1 },
+      { id: 'square_kilometer', name: t('tools.unit-converter.page.units.square_kilometer'), symbol: 'km²', toBase: 1000000 },
+      { id: 'hectare', name: t('tools.unit-converter.page.units.hectare'), symbol: 'ha', toBase: 10000 },
+      { id: 'acre', name: t('tools.unit-converter.page.units.acre'), symbol: 'ac', toBase: 4046.86 },
+      { id: 'square_inch', name: t('tools.unit-converter.page.units.square_inch'), symbol: 'in²', toBase: 0.00064516 },
+      { id: 'square_foot', name: t('tools.unit-converter.page.units.square_foot'), symbol: 'ft²', toBase: 0.092903 }
     ]
   },
   {
     id: 'volume',
-    name: '体积',
+    name: t('tools.unit-converter.page.categories.volume'),
     baseUnit: 'liter',
     units: [
-      { id: 'milliliter', name: '毫升', symbol: 'ml', toBase: 0.001 },
-      { id: 'liter', name: '升', symbol: 'L', toBase: 1 },
-      { id: 'cubic_meter', name: '立方米', symbol: 'm³', toBase: 1000 },
-      { id: 'gallon_us', name: '美制加仑', symbol: 'gal', toBase: 3.78541 },
-      { id: 'gallon_uk', name: '英制加仑', symbol: 'gal', toBase: 4.54609 },
-      { id: 'quart', name: '夸脱', symbol: 'qt', toBase: 0.946353 },
-      { id: 'pint', name: '品脱', symbol: 'pt', toBase: 0.473176 },
-      { id: 'cup', name: '杯', symbol: 'cup', toBase: 0.236588 },
-      { id: 'fluid_ounce', name: '液体盎司', symbol: 'fl oz', toBase: 0.0295735 }
+      { id: 'milliliter', name: t('tools.unit-converter.page.units.milliliter'), symbol: 'ml', toBase: 0.001 },
+      { id: 'liter', name: t('tools.unit-converter.page.units.liter'), symbol: 'L', toBase: 1 },
+      { id: 'cubic_meter', name: t('tools.unit-converter.page.units.cubic_meter'), symbol: 'm³', toBase: 1000 },
+      { id: 'gallon_us', name: t('tools.unit-converter.page.units.gallon_us'), symbol: 'gal', toBase: 3.78541 },
+      { id: 'gallon_uk', name: t('tools.unit-converter.page.units.gallon_uk'), symbol: 'gal', toBase: 4.54609 },
+      { id: 'quart', name: t('tools.unit-converter.page.units.quart'), symbol: 'qt', toBase: 0.946353 },
+      { id: 'pint', name: t('tools.unit-converter.page.units.pint'), symbol: 'pt', toBase: 0.473176 },
+      { id: 'cup', name: t('tools.unit-converter.page.units.cup'), symbol: 'cup', toBase: 0.236588 },
+      { id: 'fluid_ounce', name: t('tools.unit-converter.page.units.fluid_ounce'), symbol: 'fl oz', toBase: 0.0295735 }
     ]
   },
   {
     id: 'speed',
-    name: '速度',
+    name: t('tools.unit-converter.page.categories.speed'),
     baseUnit: 'meter_per_second',
     units: [
-      { id: 'meter_per_second', name: '米/秒', symbol: 'm/s', toBase: 1 },
-      { id: 'kilometer_per_hour', name: '千米/小时', symbol: 'km/h', toBase: 0.277778 },
-      { id: 'mile_per_hour', name: '英里/小时', symbol: 'mph', toBase: 0.44704 },
-      { id: 'foot_per_second', name: '英尺/秒', symbol: 'ft/s', toBase: 0.3048 },
-      { id: 'knot', name: '节', symbol: 'kn', toBase: 0.514444 }
+      { id: 'meter_per_second', name: t('tools.unit-converter.page.units.meter_per_second'), symbol: 'm/s', toBase: 1 },
+      { id: 'kilometer_per_hour', name: t('tools.unit-converter.page.units.kilometer_per_hour'), symbol: 'km/h', toBase: 0.277778 },
+      { id: 'mile_per_hour', name: t('tools.unit-converter.page.units.mile_per_hour'), symbol: 'mph', toBase: 0.44704 },
+      { id: 'foot_per_second', name: t('tools.unit-converter.page.units.foot_per_second'), symbol: 'ft/s', toBase: 0.3048 },
+      { id: 'knot', name: t('tools.unit-converter.page.units.knot'), symbol: 'kn', toBase: 0.514444 }
     ]
   }
 ];
@@ -396,6 +405,10 @@ function getUnitInfo(unitId: string): Unit | undefined {
   return currentUnits.value.find((u) => u.id === unitId);
 }
 
+function getUnitDisplayName(unitId: string): string {
+  return t(`tools.unit-converter.page.units.${unitId}`);
+}
+
 function getConversionFormula(): string {
   if (!fromUnit.value || !toUnit.value) return '';
 
@@ -471,7 +484,7 @@ function copyResult() {
 
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text).then(() => {
-    alert('已复制到剪贴板');
+    alert(t('tools.unit-converter.page.copied'));
   });
 }
 
@@ -537,7 +550,7 @@ function loadHistoryFromStorage() {
     try {
       history.value = JSON.parse(saved);
     } catch (error) {
-      console.error('加载历史记录失败:', error);
+      console.error(t('tools.unit-converter.page.loadHistoryFailed'), error);
     }
   }
 }

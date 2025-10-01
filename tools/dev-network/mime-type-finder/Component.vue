@@ -2,42 +2,48 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">MIME 类型查询</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.mime-type-finder.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">文件名或扩展名</label>
-            <input v-model="name" placeholder="例如：photo.jpg 或 .json 或 readme.md" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.mime-type-finder.page.fileOrExt') }}</label>
+            <input v-model="name" :placeholder="$t('tools.mime-type-finder.page.namePlaceholder')" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">或上传文件</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.mime-type-finder.page.orUpload') }}</label>
             <input type="file" @change="onFile" />
           </div>
 
           <div class="grid grid-cols-2 gap-2">
-            <button @click="process" :disabled="!canProcess" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">处理</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="process" :disabled="!canProcess" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.mime-type-finder.page.process') }}
+            </button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.mime-type-finder.page.clear') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.mime-type-finder.page.resultTitle') }}</h3>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <div class="flex justify-between items-center mb-2">
-            <h4 class="font-medium">输出</h4>
+            <h4 class="font-medium">{{ $t('tools.mime-type-finder.page.output') }}</h4>
             <div class="flex gap-2">
-              <button @click="copyResult" :disabled="!result" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-sm">复制</button>
-              <button @click="downloadResult" :disabled="!result" class="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">下载</button>
+              <button @click="copyResult" :disabled="!result" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-sm">
+                {{ $t('tools.mime-type-finder.page.copy') }}
+              </button>
+              <button @click="downloadResult" :disabled="!result" class="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">
+                {{ $t('tools.mime-type-finder.page.download') }}
+              </button>
             </div>
           </div>
           <textarea :value="result" readonly rows="12" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
-          <div class="text-xs text-gray-500 mt-2" v-if="processingTime">处理时间: {{ processingTime }}ms</div>
+          <div class="text-xs text-gray-500 mt-2" v-if="processingTime">{{ $t('tools.mime-type-finder.page.processingTime') }}: {{ processingTime }}ms</div>
         </div>
 
-        <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+        <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.mime-type-finder.page.saveToHistory') }}</button>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 mt-2">
           <div class="text-red-800 dark:text-red-200 text-sm break-all">{{ error }}</div>
@@ -46,7 +52,7 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.mime-type-finder.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
@@ -55,8 +61,8 @@
           </div>
           <div class="text-xs truncate">{{ h.summary }}</div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.mime-type-finder.page.load') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.mime-type-finder.page.delete') }}</button>
           </div>
         </div>
       </div>
@@ -66,6 +72,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 type HistoryItem = { query: string; summary: string; result: string; timestamp: number };
 
 const name = ref('');
@@ -75,6 +82,7 @@ const result = ref('');
 const error = ref('');
 const processingTime = ref<number | null>(null);
 const history = ref<HistoryItem[]>([]);
+const { t } = useI18n();
 
 const canProcess = computed(() => name.value.trim().length > 0 || !!file.value);
 
@@ -84,8 +92,8 @@ function clearAll() {
   processingTime.value = null;
   file.value = null;
 }
-function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
+function copyText(text: string) {
+  navigator.clipboard.writeText(text).then(() => alert(t('common.copied')));
 }
 function copyResult() {
   if (result.value) copyText(result.value);
@@ -192,7 +200,7 @@ async function process() {
     result.value = JSON.stringify({ input: { name: name.value || null, hasFile: !!file.value }, inferred, file: fileInfo }, null, 2);
     processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '处理失败';
+    error.value = e?.message || t('tools.mime-type-finder.page.processFailed');
   }
 }
 

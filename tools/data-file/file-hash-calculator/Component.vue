@@ -2,11 +2,11 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">文件哈希计算器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.file-hash-calculator.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">文件选择</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.file-hash-calculator.page.fileSelect') }}</h4>
             <div class="space-y-3">
               <div
                 @drop="handleDrop"
@@ -16,21 +16,21 @@
                 :class="{ 'border-blue-400 bg-blue-50 dark:bg-blue-900/20': isDragging }"
               >
                 <div class="text-4xl mb-4">📁</div>
-                <div class="text-lg mb-2">拖拽文件到此处</div>
-                <div class="text-sm text-gray-500 mb-4">或点击下方按钮选择文件</div>
+                <div class="text-lg mb-2">{{ $t('tools.file-hash-calculator.page.dragHere') }}</div>
+                <div class="text-sm text-gray-500 mb-4">{{ $t('tools.file-hash-calculator.page.clickBelowToChoose') }}</div>
                 <input ref="fileInput" type="file" multiple class="hidden" @change="handleFileSelect" />
-                <button @click="$refs.fileInput?.click()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">选择文件</button>
+                <button @click="$refs.fileInput?.click()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.file-hash-calculator.page.chooseFiles') }}</button>
               </div>
 
               <div v-if="selectedFiles.length > 0" class="space-y-2">
-                <h5 class="font-medium">已选择的文件 ({{ selectedFiles.length }})</h5>
+                <h5 class="font-medium">{{ $t('tools.file-hash-calculator.page.selectedFiles', { count: selectedFiles.length }) }}</h5>
                 <div class="max-h-32 overflow-y-auto space-y-1">
                   <div v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between p-2 bg-white dark:bg-gray-700 rounded border text-sm">
                     <div class="flex-1 min-w-0">
                       <div class="font-medium truncate">{{ file.name }}</div>
                       <div class="text-gray-500">{{ formatFileSize(file.size) }}</div>
                     </div>
-                    <button @click="removeFile(index)" class="ml-2 px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">移除</button>
+                    <button @click="removeFile(index)" class="ml-2 px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.file-hash-calculator.page.remove') }}</button>
                   </div>
                 </div>
               </div>
@@ -38,7 +38,7 @@
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">哈希算法选择</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.file-hash-calculator.page.algorithmSelect') }}</h4>
             <div class="space-y-2">
               <div class="grid grid-cols-2 gap-2">
                 <label v-for="algorithm in algorithms" :key="algorithm" class="flex items-center space-x-2">
@@ -47,8 +47,8 @@
                 </label>
               </div>
               <div class="flex gap-2 mt-3">
-                <button @click="selectAllAlgorithms" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">全选</button>
-                <button @click="clearAlgorithms" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
+                <button @click="selectAllAlgorithms" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.file-hash-calculator.page.selectAll') }}</button>
+                <button @click="clearAlgorithms" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.file-hash-calculator.page.clear') }}</button>
               </div>
             </div>
           </div>
@@ -59,15 +59,15 @@
               :disabled="selectedFiles.length === 0 || selectedAlgorithms.length === 0 || isCalculating"
               class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md"
             >
-              {{ isCalculating ? '计算中...' : '计算哈希值' }}
+              {{ isCalculating ? $t('tools.file-hash-calculator.page.calculating') : $t('tools.file-hash-calculator.page.calculate') }}
             </button>
-            <button @click="clearAll" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">清空全部</button>
+            <button @click="clearAll" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">{{ $t('tools.file-hash-calculator.page.clearAll') }}</button>
           </div>
 
           <div v-if="isCalculating" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
             <div class="flex items-center gap-2 text-blue-800 dark:text-blue-200">
               <div class="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
-              <span class="text-sm">正在计算哈希值... {{ progress.current }}/{{ progress.total }}</span>
+              <span class="text-sm">{{ $t('tools.file-hash-calculator.page.progressText', { current: progress.current, total: progress.total }) }}</span>
             </div>
             <div class="mt-2 w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
               <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="{ width: `${(progress.current / progress.total) * 100}%` }" />
@@ -77,16 +77,16 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">计算结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.file-hash-calculator.page.resultTitle') }}</h3>
 
         <div v-if="results.length > 0" class="space-y-4">
           <div class="bg-white dark:bg-gray-800 border rounded-lg">
             <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
               <div class="flex justify-between items-center">
-                <span class="font-medium text-sm">哈希结果 ({{ results.length }} 个文件)</span>
+                <span class="font-medium text-sm">{{ $t('tools.file-hash-calculator.page.hashResultHeader', { count: results.length }) }}</span>
                 <div class="flex gap-2">
-                  <button @click="exportResults" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">导出</button>
-                  <button @click="copyAllResults" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">复制全部</button>
+                  <button @click="exportResults" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.file-hash-calculator.page.export') }}</button>
+                  <button @click="copyAllResults" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.file-hash-calculator.page.copyAll') }}</button>
                 </div>
               </div>
             </div>
@@ -108,7 +108,7 @@
                     <div v-for="(hash, algorithm) in result.hashes" :key="algorithm" class="bg-gray-50 dark:bg-gray-700 rounded p-3">
                       <div class="flex items-center justify-between mb-1">
                         <span class="text-sm font-medium">{{ algorithm }}</span>
-                        <button @click="copyHash(hash)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                        <button @click="copyHash(hash)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.file-hash-calculator.page.copy') }}</button>
                       </div>
                       <div class="font-mono text-xs break-all text-gray-700 dark:text-gray-300">
                         {{ hash }}
@@ -121,15 +121,15 @@
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">哈希值验证</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.file-hash-calculator.page.verifyTitle') }}</h4>
             <div class="space-y-3">
               <div>
-                <label class="block text-sm font-medium mb-1">输入已知哈希值进行验证</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.file-hash-calculator.page.verifyInputLabel') }}</label>
                 <input
                   v-model="verificationHash"
                   type="text"
                   class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono"
-                  placeholder="输入要验证的哈希值..."
+                  :placeholder="$t('tools.file-hash-calculator.page.verifyPlaceholder')"
                 />
               </div>
 
@@ -140,7 +140,7 @@
                     <div v-for="(hash, algorithm) in result.hashes" :key="algorithm" class="flex items-center justify-between text-sm">
                       <span>{{ algorithm }}:</span>
                       <span :class="hash.toLowerCase() === verificationHash.toLowerCase() ? 'text-green-600 font-medium' : 'text-gray-500'">
-                        {{ hash.toLowerCase() === verificationHash.toLowerCase() ? '✓ 匹配' : '✗ 不匹配' }}
+                        {{ hash.toLowerCase() === verificationHash.toLowerCase() ? $t('tools.file-hash-calculator.page.match') : $t('tools.file-hash-calculator.page.notMatch') }}
                       </span>
                     </div>
                   </div>
@@ -152,33 +152,33 @@
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">🔐</div>
-          <div class="text-lg mb-2">文件哈希计算器</div>
-          <div class="text-sm">选择文件并计算哈希值</div>
+          <div class="text-lg mb-2">{{ $t('tools.file-hash-calculator.page.emptyTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.file-hash-calculator.page.emptySubtitle') }}</div>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.file-hash-calculator.page.guideTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">支持的哈希算法</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.file-hash-calculator.page.supportedAlgos') }}</h4>
           <ul class="space-y-1">
-            <li>• MD5: 128位，快速但不够安全</li>
-            <li>• SHA-1: 160位，已被破解</li>
-            <li>• SHA-256: 256位，安全性高</li>
-            <li>• SHA-384: 384位，高安全性</li>
-            <li>• SHA-512: 512位，最高安全性</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.algoMd5') }}</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.algoSha1') }}</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.algoSha256') }}</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.algoSha384') }}</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.algoSha512') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">使用场景</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.file-hash-calculator.page.useCases') }}</h4>
           <ul class="space-y-1">
-            <li>• 文件完整性验证</li>
-            <li>• 下载文件校验</li>
-            <li>• 重复文件检测</li>
-            <li>• 数字签名验证</li>
-            <li>• 安全审计</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.caseIntegrity') }}</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.caseDownloadCheck') }}</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.caseDuplicate') }}</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.caseSignature') }}</li>
+            <li>• {{ $t('tools.file-hash-calculator.page.caseAudit') }}</li>
           </ul>
         </div>
       </div>
@@ -188,6 +188,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 interface HashResult {
   fileName: string;
@@ -321,7 +323,7 @@ async function calculateFileHash(file: File, algorithm: string): Promise<string>
 
   // 如果是MD5请求但实际使用SHA-256，添加标注
   if (algorithm === 'MD5' && hashAlgorithm === 'SHA-256') {
-    return `${hashHex} (使用SHA-256代替MD5)`;
+    return `${hashHex} (${t('tools.file-hash-calculator.page.useShaInstead', { sha: 'SHA-256', md5: 'MD5' })})`;
   }
 
   return hashHex;
@@ -342,7 +344,7 @@ async function copyHash(hash: string) {
     await navigator.clipboard.writeText(hash);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(t('tools.file-hash-calculator.page.copyFailedLog'), error);
   }
 }
 
@@ -353,7 +355,7 @@ async function copyAllResults() {
         .map(([algorithm, hash]) => `${algorithm}: ${hash}`)
         .join('\n');
 
-      return `文件: ${result.fileName}\n大小: ${formatFileSize(result.fileSize)}\n${hashLines}\n`;
+      return `${t('tools.file-hash-calculator.page.reportIndexName')}: ${result.fileName}\n${t('tools.file-hash-calculator.page.reportSize')}: ${formatFileSize(result.fileSize)}\n${hashLines}\n`;
     })
     .join('\n');
 
@@ -361,15 +363,15 @@ async function copyAllResults() {
     await navigator.clipboard.writeText(text);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(t('tools.file-hash-calculator.page.copyFailedLog'), error);
   }
 }
 
 function exportResults() {
-  const report = `文件哈希计算报告
-生成时间: ${new Date().toLocaleString('zh-CN')}
-文件数量: ${results.value.length}
-算法: ${selectedAlgorithms.value.join(', ')}
+  const report = `${t('tools.file-hash-calculator.page.reportTitle')}
+${t('tools.file-hash-calculator.page.reportGeneratedAt')}: ${new Date().toLocaleString('zh-CN')}
+${t('tools.file-hash-calculator.page.reportFileCount')}: ${results.value.length}
+${t('tools.file-hash-calculator.page.reportAlgorithms')}: ${selectedAlgorithms.value.join(', ')}
 
 ${results.value
   .map((result, index) => {
@@ -377,15 +379,15 @@ ${results.value
       .map(([algorithm, hash]) => `  ${algorithm}: ${hash}`)
       .join('\n');
 
-    return `${index + 1}. 文件名: ${result.fileName}
-   大小: ${formatFileSize(result.fileSize)}
-   时间: ${new Date(result.timestamp).toLocaleString('zh-CN')}
-   哈希值:
+    return `${index + 1}. ${t('tools.file-hash-calculator.page.reportIndexName')}: ${result.fileName}
+   ${t('tools.file-hash-calculator.page.reportSize')}: ${formatFileSize(result.fileSize)}
+   ${t('tools.file-hash-calculator.page.reportTime')}: ${new Date(result.timestamp).toLocaleString('zh-CN')}
+   ${t('tools.file-hash-calculator.page.reportHashes')}:
 ${hashLines}`;
   })
   .join('\n\n')}
 
-报告生成时间: ${new Date().toLocaleString('zh-CN')}
+${t('tools.file-hash-calculator.page.reportFooterGeneratedAt')}: ${new Date().toLocaleString('zh-CN')}
 `;
 
   const blob = new Blob([report], { type: 'text/plain' });

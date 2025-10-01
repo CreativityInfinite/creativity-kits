@@ -2,22 +2,22 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">分数与小数转换器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.fraction-decimal-converter.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">小数转分数</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.fraction-decimal-converter.page.decToFrac') }}</h4>
             <div class="space-y-3">
               <div>
-                <label class="block text-sm font-medium mb-1">输入小数</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.fraction-decimal-converter.page.inputDecimal') }}</label>
                 <input
                   v-model="decimalInput"
                   type="text"
                   class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono"
-                  placeholder="如: 0.75, 3.14159, 0.333..."
+                  :placeholder="$t('tools.fraction-decimal-converter.page.decimalPlaceholder')"
                   @input="convertDecimalToFraction"
                 />
-                <p class="text-xs text-gray-500 mt-1">支持有限小数和循环小数</p>
+                <p class="text-xs text-gray-500 mt-1">{{ $t('tools.fraction-decimal-converter.page.supportNote') }}</p>
               </div>
 
               <div v-if="decimalResult.isValid" class="space-y-2">
@@ -34,11 +34,11 @@
 
                 <div class="grid grid-cols-2 gap-3 text-sm">
                   <div class="bg-blue-50 dark:bg-blue-900/20 rounded p-2">
-                    <div class="font-medium text-blue-800 dark:text-blue-200">最简分数</div>
+                    <div class="font-medium text-blue-800 dark:text-blue-200">{{ $t('tools.fraction-decimal-converter.page.simplestFraction') }}</div>
                     <div class="font-mono">{{ decimalResult.simplified }}</div>
                   </div>
                   <div class="bg-green-50 dark:bg-green-900/20 rounded p-2">
-                    <div class="font-medium text-green-800 dark:text-green-200">验证</div>
+                    <div class="font-medium text-green-800 dark:text-green-200">{{ $t('tools.fraction-decimal-converter.page.verification') }}</div>
                     <div class="font-mono">{{ decimalResult.verification }}</div>
                   </div>
                 </div>
@@ -51,11 +51,11 @@
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">分数转小数</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.fraction-decimal-converter.page.fracToDec') }}</h4>
             <div class="space-y-3">
               <div class="grid grid-cols-3 gap-2">
                 <div>
-                  <label class="block text-sm font-medium mb-1">整数部分</label>
+                  <label class="block text-sm font-medium mb-1">{{ $t('tools.fraction-decimal-converter.page.wholeLabel') }}</label>
                   <input
                     v-model="wholeNumber"
                     type="number"
@@ -65,7 +65,7 @@
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium mb-1">分子</label>
+                  <label class="block text-sm font-medium mb-1">{{ $t('tools.fraction-decimal-converter.page.numeratorLabel') }}</label>
                   <input
                     v-model="numerator"
                     type="number"
@@ -75,7 +75,7 @@
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium mb-1">分母</label>
+                  <label class="block text-sm font-medium mb-1">{{ $t('tools.fraction-decimal-converter.page.denominatorLabel') }}</label>
                   <input
                     v-model="denominator"
                     type="number"
@@ -92,18 +92,20 @@
                     <div class="text-2xl font-mono text-blue-600">
                       {{ fractionResult.decimal }}
                     </div>
-                    <div v-if="fractionResult.isRepeating" class="text-sm text-gray-600 mt-1">循环小数: {{ fractionResult.repeatingDecimal }}</div>
+                    <div v-if="fractionResult.isRepeating" class="text-sm text-gray-600 mt-1">
+                      {{ $t('tools.fraction-decimal-converter.page.repeatingDecimal') }}: {{ fractionResult.repeatingDecimal }}
+                    </div>
                   </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 text-sm">
                   <div class="bg-purple-50 dark:bg-purple-900/20 rounded p-2">
-                    <div class="font-medium text-purple-800 dark:text-purple-200">类型</div>
+                    <div class="font-medium text-purple-800 dark:text-purple-200">{{ $t('tools.fraction-decimal-converter.page.typeLabel') }}</div>
                     <div>{{ fractionResult.type }}</div>
                   </div>
                   <div class="bg-orange-50 dark:bg-orange-900/20 rounded p-2">
-                    <div class="font-medium text-orange-800 dark:text-orange-200">精度</div>
-                    <div>{{ fractionResult.precision }} 位小数</div>
+                    <div class="font-medium text-orange-800 dark:text-orange-200">{{ $t('tools.fraction-decimal-converter.page.precisionLabel') }}</div>
+                    <div>{{ fractionResult.precision }} {{ $t('tools.fraction-decimal-converter.page.decimalsSuffix') }}</div>
                   </div>
                 </div>
               </div>
@@ -117,13 +119,13 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">转换历史</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.fraction-decimal-converter.page.historyTitle') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
             <div class="flex justify-between items-center">
-              <span class="font-medium text-sm">转换记录</span>
-              <button @click="clearHistory" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm">清空历史</button>
+              <span class="font-medium text-sm">{{ $t('tools.fraction-decimal-converter.page.historyListTitle') }}</span>
+              <button @click="clearHistory" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm">{{ $t('tools.fraction-decimal-converter.page.clearHistory') }}</button>
             </div>
           </div>
 
@@ -134,19 +136,19 @@
                   <div class="font-mono text-sm">{{ record.input }} → {{ record.output }}</div>
                   <div class="text-xs text-gray-500 mt-1">{{ record.type }} | {{ record.timestamp }}</div>
                 </div>
-                <button @click="useHistoryRecord(record)" class="ml-2 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">使用</button>
+                <button @click="useHistoryRecord(record)" class="ml-2 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.fraction-decimal-converter.page.use') }}</button>
               </div>
             </div>
 
             <div v-if="history.length === 0" class="p-8 text-center text-gray-500">
               <div class="text-2xl mb-2">📊</div>
-              <div>暂无转换记录</div>
+              <div>{{ $t('tools.fraction-decimal-converter.page.noHistory') }}</div>
             </div>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">常用分数</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.fraction-decimal-converter.page.commonFractions') }}</h4>
           <div class="grid grid-cols-2 gap-2">
             <button
               v-for="common in commonFractions"
@@ -161,21 +163,23 @@
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">批量转换</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.fraction-decimal-converter.page.batchTitle') }}</h4>
           <div class="space-y-3">
             <textarea
               v-model="batchInput"
               class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono"
               rows="4"
-              placeholder="输入多个数值，每行一个&#10;如:&#10;0.5&#10;1/3&#10;2.75&#10;3/8"
+              :placeholder="$t('tools.fraction-decimal-converter.page.batchPlaceholder')"
             />
             <div class="flex gap-2">
-              <button @click="processBatch" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">批量转换</button>
-              <button @click="exportBatch" :disabled="batchResults.length === 0" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">导出结果</button>
+              <button @click="processBatch" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">{{ $t('tools.fraction-decimal-converter.page.batchConvert') }}</button>
+              <button @click="exportBatch" :disabled="batchResults.length === 0" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+                {{ $t('tools.fraction-decimal-converter.page.exportResults') }}
+              </button>
             </div>
 
             <div v-if="batchResults.length > 0" class="bg-white dark:bg-gray-700 rounded border p-3">
-              <h5 class="font-medium mb-2">批量转换结果</h5>
+              <h5 class="font-medium mb-2">{{ $t('tools.fraction-decimal-converter.page.batchResultsTitle') }}</h5>
               <div class="space-y-1 max-h-32 overflow-y-auto">
                 <div v-for="(result, index) in batchResults" :key="index" class="text-sm font-mono">{{ result.input }} → {{ result.output }}</div>
               </div>
@@ -186,24 +190,24 @@
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.fraction-decimal-converter.page.usageTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">小数转分数</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.fraction-decimal-converter.page.usageDecToFracTitle') }}</h4>
           <ul class="space-y-1">
-            <li>• 支持有限小数 (如 0.75 = 3/4)</li>
-            <li>• 支持循环小数 (如 0.333... = 1/3)</li>
-            <li>• 自动化简为最简分数</li>
-            <li>• 提供验证计算</li>
+            <li>{{ $t('tools.fraction-decimal-converter.page.usageDecLine1') }}</li>
+            <li>{{ $t('tools.fraction-decimal-converter.page.usageDecLine2') }}</li>
+            <li>{{ $t('tools.fraction-decimal-converter.page.usageDecLine3') }}</li>
+            <li>{{ $t('tools.fraction-decimal-converter.page.usageDecLine4') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">分数转小数</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.fraction-decimal-converter.page.usageFracToDecTitle') }}</h4>
           <ul class="space-y-1">
-            <li>• 支持真分数和假分数</li>
-            <li>• 自动识别循环小数</li>
-            <li>• 显示小数类型和精度</li>
-            <li>• 支持带整数部分的分数</li>
+            <li>{{ $t('tools.fraction-decimal-converter.page.usageFracLine1') }}</li>
+            <li>{{ $t('tools.fraction-decimal-converter.page.usageFracLine2') }}</li>
+            <li>{{ $t('tools.fraction-decimal-converter.page.usageFracLine3') }}</li>
+            <li>{{ $t('tools.fraction-decimal-converter.page.usageFracLine4') }}</li>
           </ul>
         </div>
       </div>
@@ -213,6 +217,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 interface DecimalResult {
   isValid: boolean;
@@ -320,12 +326,12 @@ function decimalToFraction(decimal: string): DecimalResult {
 
   // 检查是否为有效数字
   if (!/^-?\d*\.?\d+$/.test(decimal)) {
-    throw new Error('无效的小数格式');
+    throw new Error(t('tools.fraction-decimal-converter.page.errInvalidDecimalFormat'));
   }
 
   const num = parseFloat(decimal);
   if (isNaN(num)) {
-    throw new Error('无效的数字');
+    throw new Error(t('tools.fraction-decimal-converter.page.errInvalidNumber'));
   }
 
   // 处理整数
@@ -392,7 +398,7 @@ function decimalToFraction(decimal: string): DecimalResult {
 
 function fractionToDecimal(whole: number, num: number, den: number): FractionResult {
   if (den === 0) {
-    throw new Error('分母不能为零');
+    throw new Error(t('tools.fraction-decimal-converter.page.errDenominatorZero'));
   }
 
   // 计算总的分子
@@ -417,7 +423,7 @@ function longDivision(numerator: number, denominator: number): FractionResult {
     return {
       isValid: true,
       decimal,
-      type: '有限小数',
+      type: t('tools.fraction-decimal-converter.page.typeFinite'),
       precision: 0,
       isRepeating: false
     };
@@ -441,11 +447,11 @@ function longDivision(numerator: number, denominator: number): FractionResult {
   }
 
   let decimalStr = decimalParts.join('');
-  let type = '有限小数';
+  let type = t('tools.fraction-decimal-converter.page.typeFinite');
   let repeatingDecimal: string | undefined;
 
   if (repeatingStart !== -1) {
-    type = '循环小数';
+    type = t('tools.fraction-decimal-converter.page.typeRepeating');
     const nonRepeating = decimalParts.slice(0, repeatingStart).join('');
     const repeating = decimalParts.slice(repeatingStart).join('');
     decimalStr = nonRepeating + repeating;
@@ -472,7 +478,7 @@ function convertDecimalToFraction() {
   try {
     const result = decimalToFraction(decimalInput.value);
     if (result.isValid) {
-      addToHistory(decimalInput.value, result.simplified, '小数转分数');
+      addToHistory(decimalInput.value, result.simplified, t('tools.fraction-decimal-converter.page.opDecToFrac'));
     }
   } catch (error) {
     decimalError.value = (error as Error).message;
@@ -487,7 +493,7 @@ function convertFractionToDecimal() {
   const whole = parseInt(wholeNumber.value) || 0;
 
   if (den === 0) {
-    fractionError.value = '分母不能为零';
+    fractionError.value = t('tools.fraction-decimal-converter.page.errDenominatorZero');
     return;
   }
 
@@ -495,7 +501,7 @@ function convertFractionToDecimal() {
     const result = fractionToDecimal(whole, num, den);
     if (result.isValid) {
       const fractionStr = whole > 0 ? `${whole} ${num}/${den}` : `${num}/${den}`;
-      addToHistory(fractionStr, result.decimal, '分数转小数');
+      addToHistory(fractionStr, result.decimal, t('tools.fraction-decimal-converter.page.opFracToDec'));
     }
   } catch (error) {
     fractionError.value = (error as Error).message;
@@ -521,7 +527,7 @@ function clearHistory() {
 }
 
 function useHistoryRecord(record: ConversionRecord) {
-  if (record.type === '小数转分数') {
+  if (record.type === t('tools.fraction-decimal-converter.page.opDecToFrac')) {
     decimalInput.value = record.input;
     convertDecimalToFraction();
   } else {
@@ -575,7 +581,7 @@ function processBatch() {
         batchResults.value.push({
           input,
           output: result.decimal,
-          type: '分数转小数',
+          type: t('tools.fraction-decimal-converter.page.opFracToDec'),
           timestamp: new Date().toLocaleTimeString('zh-CN')
         });
       } else {
@@ -585,15 +591,15 @@ function processBatch() {
         batchResults.value.push({
           input,
           output: result.simplified,
-          type: '小数转分数',
+          type: t('tools.fraction-decimal-converter.page.opDecToFrac'),
           timestamp: new Date().toLocaleTimeString('zh-CN')
         });
       }
     } catch (error) {
       batchResults.value.push({
         input,
-        output: '转换失败: ' + (error as Error).message,
-        type: '错误',
+        output: t('tools.fraction-decimal-converter.page.batchConvertFailedPrefix') + (error as Error).message,
+        type: t('tools.fraction-decimal-converter.page.errorLabel'),
         timestamp: new Date().toLocaleTimeString('zh-CN')
       });
     }
@@ -601,18 +607,18 @@ function processBatch() {
 }
 
 function exportBatch() {
-  const report = `分数小数转换批量结果
-转换时间: ${new Date().toLocaleString('zh-CN')}
-转换数量: ${batchResults.value.length}
+  const report = `${t('tools.fraction-decimal-converter.page.reportTitle')}
+${t('tools.fraction-decimal-converter.page.reportTime')}: ${new Date().toLocaleString('zh-CN')}
+${t('tools.fraction-decimal-converter.page.reportCount')}: ${batchResults.value.length}
 
-转换结果:
+${t('tools.fraction-decimal-converter.page.reportResults')}:
 ${batchResults.value
   .map((result, index) => {
     return `${index + 1}. ${result.input} → ${result.output} (${result.type})`;
   })
   .join('\n')}
 
-生成时间: ${new Date().toLocaleString('zh-CN')}
+${t('tools.fraction-decimal-converter.page.reportGeneratedAt')}: ${new Date().toLocaleString('zh-CN')}
 `;
 
   const blob = new Blob([report], { type: 'text/plain' });

@@ -2,19 +2,19 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">CSV 合并/拆分</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.csv-merge-split.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">操作</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.csv-merge-split.page.operation') }}</label>
               <select v-model="mode" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="merge">合并（按表头并集）</option>
-                <option value="split">拆分（按行数）</option>
+                <option value="merge">{{ $t('tools.csv-merge-split.page.mergeOption') }}</option>
+                <option value="split">{{ $t('tools.csv-merge-split.page.splitOption') }}</option>
               </select>
             </div>
             <div v-if="mode === 'split'">
-              <label class="block text-sm font-medium mb-1">每文件行数</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.csv-merge-split.page.rowsPerFile') }}</label>
               <input v-model.number="chunkSize" type="number" min="1" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
@@ -22,44 +22,50 @@
           <div class="grid grid-cols-2 gap-2">
             <div class="flex items-center h-[42px] px-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <input id="hasHeader" v-model="hasHeader" type="checkbox" class="rounded mr-2" />
-              <label for="hasHeader" class="text-sm">首行表头</label>
+              <label for="hasHeader" class="text-sm">{{ $t('tools.csv-merge-split.page.hasHeader') }}</label>
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">分隔符</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.csv-merge-split.page.separator') }}</label>
               <select v-model="sep" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value=",">逗号 ,</option>
-                <option value="\t">制表符 \t</option>
-                <option value=";">分号 ;</option>
+                <option value=",">{{ $t('tools.csv-merge-split.page.comma') }}</option>
+                <option value="\t">{{ $t('tools.csv-merge-split.page.tab') }}</option>
+                <option value=";">{{ $t('tools.csv-merge-split.page.semicolon') }}</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">上传 CSV（可多选）</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.csv-merge-split.page.uploadCSV') }}</label>
             <input type="file" multiple accept=".csv,text/csv" @change="onFiles" />
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">处理</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.csv-merge-split.page.process') }}
+            </button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.csv-merge-split.page.clearAll') }}</button>
           </div>
-          <p class="text-xs text-gray-500">合并：按所有表头并集对齐，缺失字段置空；拆分：按行数切片为多个文件。</p>
+          <p class="text-xs text-gray-500">{{ $t('tools.csv-merge-split.page.note') }}</p>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.csv-merge-split.page.result') }}</h3>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
           <div class="flex justify-between items-center">
-            <h4 class="font-medium">输出</h4>
+            <h4 class="font-medium">{{ $t('tools.csv-merge-split.page.output') }}</h4>
             <div class="flex gap-2">
-              <button @click="copyResult" :disabled="!result" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-sm">复制</button>
-              <button @click="downloadResult" :disabled="!result" class="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">下载</button>
+              <button @click="copyResult" :disabled="!result" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-sm">
+                {{ $t('tools.csv-merge-split.page.copy') }}
+              </button>
+              <button @click="downloadResult" :disabled="!result" class="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">
+                {{ $t('tools.csv-merge-split.page.download') }}
+              </button>
             </div>
           </div>
           <textarea :value="result" readonly rows="10" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
-          <div class="text-xs text-gray-500" v-if="processingTime">处理时间: {{ processingTime }}ms</div>
+          <div class="text-xs text-gray-500" v-if="processingTime">{{ $t('tools.csv-merge-split.page.processingTime') }}: {{ processingTime }}ms</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
@@ -69,17 +75,17 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.csv-merge-split.page.history') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
             <div class="font-medium truncate">{{ h.mode }}</div>
             <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
           </div>
-          <div class="text-xs truncate">文件数: {{ h.files }} · 摘要: {{ h.summary }}</div>
+          <div class="text-xs truncate">{{ $t('tools.csv-merge-split.page.filesCount') }}: {{ h.files }} · {{ $t('tools.csv-merge-split.page.summary') }}: {{ h.summary }}</div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.csv-merge-split.page.load') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.csv-merge-split.page.remove') }}</button>
           </div>
         </div>
       </div>
@@ -89,6 +95,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 type HistoryItem = { mode: string; files: number; summary: string; result: string; timestamp: number };
 
 const mode = ref<'merge' | 'split'>('merge');
@@ -110,8 +118,8 @@ function clearAll() {
   processingTime.value = null;
   files.value = [];
 }
-function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
+function copyText(text: string) {
+  navigator.clipboard.writeText(text).then(() => alert(t('tools.csv-merge-split.page.copied')));
 }
 function copyResult() {
   if (result.value) copyText(result.value);
@@ -143,7 +151,7 @@ function removeFromHistory(i: number) {
   localStorage.setItem('csvms-history', JSON.stringify(history.value));
 }
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false });
+  return new Date(ts).toLocaleString(undefined, { hour12: false });
 }
 
 function onFiles(e: Event) {
@@ -215,7 +223,7 @@ async function doMerge() {
     const rows = parseCSV(txt, sep.value === '\\t' ? '\t' : sep.value);
     if (rows.length) tables.push(rows);
   }
-  if (!tables.length) throw new Error('无有效数据');
+  if (!tables.length) throw new Error(t('tools.csv-merge-split.page.noValidData'));
   const headersSet = new Set<string>();
   if (hasHeader.value) {
     for (const t of tables) {
@@ -268,7 +276,7 @@ async function doSplit() {
     chunks.push({ index: chunks.length + 1, csv: toCSV(data, sepChar) });
   }
   result.value = JSON.stringify(
-    { count: chunks.length, note: '逐个保存以下 CSV 字符串即可', files: chunks.map((c) => ({ index: c.index, size: c.csv.split('\n').length })), first: chunks[0]?.csv || '' },
+    { count: chunks.length, note: t('tools.csv-merge-split.page.saveChunksNote'), files: chunks.map((c) => ({ index: c.index, size: c.csv.split('\n').length })), first: chunks[0]?.csv || '' },
     null,
     2
   );
@@ -284,7 +292,7 @@ async function process() {
     else await doSplit();
     processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '处理失败';
+    error.value = e?.message || t('tools.csv-merge-split.page.processingFailed');
   }
 }
 

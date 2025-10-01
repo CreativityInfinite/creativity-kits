@@ -2,37 +2,63 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">坐标输入</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.coordinates-converter.page.inputTitle') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-2">输入格式</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.coordinates-converter.page.inputFormat') }}</label>
             <select v-model="inputFormat" @change="clearInputs" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-              <option value="decimal">十进制度数 (DD)</option>
-              <option value="dms">度分秒 (DMS)</option>
-              <option value="dm">度分 (DM)</option>
+              <option value="decimal">{{ $t('tools.coordinates-converter.page.decimal') }}</option>
+              <option value="dms">{{ $t('tools.coordinates-converter.page.dms') }}</option>
+              <option value="dm">{{ $t('tools.coordinates-converter.page.dm') }}</option>
             </select>
           </div>
 
           <div v-if="inputFormat === 'decimal'" class="space-y-3">
             <div>
-              <label class="block text-sm font-medium mb-1">纬度 (Latitude)</label>
-              <input v-model="decimal.lat" type="number" step="any" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="例如: 39.9042" />
-              <p class="text-xs text-gray-500 mt-1">范围: -90 到 90</p>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.coordinates-converter.page.latLabel') }}</label>
+              <input
+                v-model="decimal.lat"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                :placeholder="$t('tools.coordinates-converter.page.latPlaceholder')"
+              />
+              <p class="text-xs text-gray-500 mt-1">{{ $t('tools.coordinates-converter.page.latRange') }}</p>
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">经度 (Longitude)</label>
-              <input v-model="decimal.lng" type="number" step="any" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="例如: 116.4074" />
-              <p class="text-xs text-gray-500 mt-1">范围: -180 到 180</p>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.coordinates-converter.page.lngLabel') }}</label>
+              <input
+                v-model="decimal.lng"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                :placeholder="$t('tools.coordinates-converter.page.lngPlaceholder')"
+              />
+              <p class="text-xs text-gray-500 mt-1">{{ $t('tools.coordinates-converter.page.lngRange') }}</p>
             </div>
           </div>
 
           <div v-if="inputFormat === 'dms'" class="space-y-3">
             <div>
-              <label class="block text-sm font-medium mb-1">纬度 (度分秒)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.coordinates-converter.page.latDmsLabel') }}</label>
               <div class="grid grid-cols-4 gap-2">
-                <input v-model="dms.lat.degrees" type="number" min="0" max="90" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="度" />
-                <input v-model="dms.lat.minutes" type="number" min="0" max="59" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="分" />
+                <input
+                  v-model="dms.lat.degrees"
+                  type="number"
+                  min="0"
+                  max="90"
+                  class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.coordinates-converter.page.deg')"
+                />
+                <input
+                  v-model="dms.lat.minutes"
+                  type="number"
+                  min="0"
+                  max="59"
+                  class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.coordinates-converter.page.min')"
+                />
                 <input
                   v-model="dms.lat.seconds"
                   type="number"
@@ -40,7 +66,7 @@
                   max="59.999"
                   step="any"
                   class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  placeholder="秒"
+                  :placeholder="$t('tools.coordinates-converter.page.sec')"
                 />
                 <select v-model="dms.lat.direction" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <option value="N">N</option>
@@ -49,10 +75,24 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">经度 (度分秒)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.coordinates-converter.page.lngDmsLabel') }}</label>
               <div class="grid grid-cols-4 gap-2">
-                <input v-model="dms.lng.degrees" type="number" min="0" max="180" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="度" />
-                <input v-model="dms.lng.minutes" type="number" min="0" max="59" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="分" />
+                <input
+                  v-model="dms.lng.degrees"
+                  type="number"
+                  min="0"
+                  max="180"
+                  class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.coordinates-converter.page.deg')"
+                />
+                <input
+                  v-model="dms.lng.minutes"
+                  type="number"
+                  min="0"
+                  max="59"
+                  class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.coordinates-converter.page.min')"
+                />
                 <input
                   v-model="dms.lng.seconds"
                   type="number"
@@ -60,7 +100,7 @@
                   max="59.999"
                   step="any"
                   class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  placeholder="秒"
+                  :placeholder="$t('tools.coordinates-converter.page.sec')"
                 />
                 <select v-model="dms.lng.direction" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <option value="E">E</option>
@@ -72,10 +112,25 @@
 
           <div v-if="inputFormat === 'dm'" class="space-y-3">
             <div>
-              <label class="block text-sm font-medium mb-1">纬度 (度分)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.coordinates-converter.page.latDmLabel') }}</label>
               <div class="grid grid-cols-3 gap-2">
-                <input v-model="dm.lat.degrees" type="number" min="0" max="90" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="度" />
-                <input v-model="dm.lat.minutes" type="number" min="0" max="59.999" step="any" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="分" />
+                <input
+                  v-model="dm.lat.degrees"
+                  type="number"
+                  min="0"
+                  max="90"
+                  class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.coordinates-converter.page.deg')"
+                />
+                <input
+                  v-model="dm.lat.minutes"
+                  type="number"
+                  min="0"
+                  max="59.999"
+                  step="any"
+                  class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.coordinates-converter.page.min')"
+                />
                 <select v-model="dm.lat.direction" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <option value="N">N</option>
                   <option value="S">S</option>
@@ -83,10 +138,25 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">经度 (度分)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.coordinates-converter.page.lngDmLabel') }}</label>
               <div class="grid grid-cols-3 gap-2">
-                <input v-model="dm.lng.degrees" type="number" min="0" max="180" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="度" />
-                <input v-model="dm.lng.minutes" type="number" min="0" max="59.999" step="any" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="分" />
+                <input
+                  v-model="dm.lng.degrees"
+                  type="number"
+                  min="0"
+                  max="180"
+                  class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.coordinates-converter.page.deg')"
+                />
+                <input
+                  v-model="dm.lng.minutes"
+                  type="number"
+                  min="0"
+                  max="59.999"
+                  step="any"
+                  class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.coordinates-converter.page.min')"
+                />
                 <select v-model="dm.lng.direction" class="px-2 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <option value="E">E</option>
                   <option value="W">W</option>
@@ -96,127 +166,149 @@
           </div>
 
           <div class="flex gap-2">
-            <button @click="convert" :disabled="!canConvert" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">转换坐标</button>
-            <button @click="loadExample" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">示例</button>
-            <button @click="clearAll" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">清空</button>
+            <button @click="convert" :disabled="!canConvert" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.coordinates-converter.page.convert') }}
+            </button>
+            <button @click="loadExample" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.coordinates-converter.page.example') }}</button>
+            <button @click="clearAll" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">{{ $t('tools.coordinates-converter.page.clear') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">转换结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.coordinates-converter.page.resultTitle') }}</h3>
 
         <div v-if="result" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">十进制度数 (DD)</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.coordinates-converter.page.resultDD') }}</h4>
             <div class="space-y-2">
               <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600 dark:text-gray-400">纬度:</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.coordinates-converter.page.resultLat') }}</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono">{{ result.decimal.lat }}</span>
-                  <button @click="copyToClipboard(result.decimal.lat.toString())" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(result.decimal.lat.toString())" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600 dark:text-gray-400">经度:</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.coordinates-converter.page.resultLng') }}</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono">{{ result.decimal.lng }}</span>
-                  <button @click="copyToClipboard(result.decimal.lng.toString())" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(result.decimal.lng.toString())" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600 dark:text-gray-400">坐标对:</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.coordinates-converter.page.resultPair') }}</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono">{{ result.decimal.lat }}, {{ result.decimal.lng }}</span>
-                  <button @click="copyToClipboard(`${result.decimal.lat}, ${result.decimal.lng}`)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(`${result.decimal.lat}, ${result.decimal.lng}`)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">度分秒 (DMS)</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.coordinates-converter.page.dms') }}</h4>
             <div class="space-y-2">
               <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600 dark:text-gray-400">纬度:</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.coordinates-converter.page.resultLat') }}</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono">{{ formatDMS(result.dms.lat) }}</span>
-                  <button @click="copyToClipboard(formatDMS(result.dms.lat))" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(formatDMS(result.dms.lat))" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600 dark:text-gray-400">经度:</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.coordinates-converter.page.resultLng') }}</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono">{{ formatDMS(result.dms.lng) }}</span>
-                  <button @click="copyToClipboard(formatDMS(result.dms.lng))" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(formatDMS(result.dms.lng))" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">度分 (DM)</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.coordinates-converter.page.dm') }}</h4>
             <div class="space-y-2">
               <div class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 dark:text-gray-400">纬度:</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono">{{ formatDM(result.dm.lat) }}</span>
-                  <button @click="copyToClipboard(formatDM(result.dm.lat))" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(formatDM(result.dm.lat))" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 dark:text-gray-400">经度:</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono">{{ formatDM(result.dm.lng) }}</span>
-                  <button @click="copyToClipboard(formatDM(result.dm.lng))" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(formatDM(result.dm.lng))" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-            <h4 class="font-medium mb-3">其他格式</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.coordinates-converter.page.otherFormats') }}</h4>
             <div class="space-y-2 text-sm">
               <div class="flex justify-between items-center">
-                <span class="text-gray-600 dark:text-gray-400">Google Maps:</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.coordinates-converter.page.googleMaps') }}</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono text-xs">{{ result.decimal.lat }},{{ result.decimal.lng }}</span>
-                  <button @click="copyToClipboard(`${result.decimal.lat},${result.decimal.lng}`)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(`${result.decimal.lat},${result.decimal.lng}`)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-gray-600 dark:text-gray-400">GeoJSON:</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.coordinates-converter.page.geojson') }}</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono text-xs">[{{ result.decimal.lng }}, {{ result.decimal.lat }}]</span>
-                  <button @click="copyToClipboard(`[${result.decimal.lng}, ${result.decimal.lat}]`)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(`[${result.decimal.lng}, ${result.decimal.lat}]`)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-gray-600 dark:text-gray-400">WKT Point:</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.coordinates-converter.page.wktPoint') }}</span>
                 <div class="flex items-center gap-2">
                   <span class="font-mono text-xs">POINT({{ result.decimal.lng }} {{ result.decimal.lat }})</span>
-                  <button @click="copyToClipboard(`POINT(${result.decimal.lng} ${result.decimal.lat})`)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">复制</button>
+                  <button @click="copyToClipboard(`POINT(${result.decimal.lng} ${result.decimal.lat})`)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    {{ $t('tools.coordinates-converter.page.copy') }}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button @click="openInMaps" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">在地图中查看</button>
-            <button @click="saveToHistory" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史</button>
+            <button @click="openInMaps" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">{{ $t('tools.coordinates-converter.page.viewInMaps') }}</button>
+            <button @click="saveToHistory" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.coordinates-converter.page.saveToHistory') }}</button>
           </div>
         </div>
 
         <div v-if="!result" class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">🗺️</div>
-          <div class="text-lg mb-2">坐标转换工具</div>
-          <div class="text-sm">输入坐标进行格式转换</div>
+          <div class="text-lg mb-2">{{ $t('tools.coordinates-converter.page.emptyTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.coordinates-converter.page.emptySubtitle') }}</div>
         </div>
       </div>
     </div>
 
     <div v-if="history.length > 0" class="space-y-2">
-      <h3 class="font-medium">转换历史</h3>
+      <h3 class="font-medium">{{ $t('tools.coordinates-converter.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(item, index) in history" :key="index" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between items-start mb-2">
@@ -224,21 +316,31 @@
             <div class="text-xs text-gray-500">{{ formatDate(item.timestamp) }}</div>
           </div>
           <div class="flex gap-2">
-            <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="copyToClipboard(`${item.decimal.lat}, ${item.decimal.lng}`)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">复制</button>
-            <button @click="removeFromHistory(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.coordinates-converter.page.load') }}</button>
+            <button @click="copyToClipboard(`${item.decimal.lat}, ${item.decimal.lng}`)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">
+              {{ $t('tools.coordinates-converter.page.copy') }}
+            </button>
+            <button @click="removeFromHistory(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.coordinates-converter.page.delete') }}</button>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">坐标格式说明</h3>
+      <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">{{ $t('tools.coordinates-converter.page.specsTitle') }}</h3>
       <div class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-        <div><strong>十进制度数 (DD):</strong> 39.9042, 116.4074</div>
-        <div><strong>度分秒 (DMS):</strong> 39°54'15.12"N, 116°24'26.64"E</div>
-        <div><strong>度分 (DM):</strong> 39°54.252'N, 116°24.444'E</div>
-        <div><strong>注意:</strong> 纬度范围 -90° 到 90°，经度范围 -180° 到 180°</div>
+        <div>
+          <strong>{{ $t('tools.coordinates-converter.page.specDD') }}</strong> 39.9042, 116.4074
+        </div>
+        <div>
+          <strong>{{ $t('tools.coordinates-converter.page.specDMS') }}</strong> 39°54'15.12"N, 116°24'26.64"E
+        </div>
+        <div>
+          <strong>{{ $t('tools.coordinates-converter.page.specDM') }}</strong> 39°54.252'N, 116°24.444'E
+        </div>
+        <div>
+          <strong>{{ $t('tools.coordinates-converter.page.note') }}</strong> {{ $t('tools.coordinates-converter.page.noteRange') }}
+        </div>
       </div>
     </div>
   </div>
@@ -246,6 +348,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 interface DMSCoordinate {
   degrees: number;
@@ -345,7 +449,7 @@ function convert() {
 
   // 验证坐标范围
   if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-    alert('坐标超出有效范围！纬度: -90° 到 90°，经度: -180° 到 180°');
+    alert(t('tools.coordinates-converter.page.alertRange'));
     return;
   }
 
@@ -462,7 +566,7 @@ function loadExample() {
 
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text).then(() => {
-    alert('已复制到剪贴板');
+    alert(t('tools.coordinates-converter.page.copied'));
   });
 }
 
@@ -518,7 +622,7 @@ function removeFromHistory(index: number) {
 }
 
 function formatDate(timestamp: number): string {
-  return new Date(timestamp).toLocaleDateString('zh-CN', {
+  return new Date(timestamp).toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
@@ -536,7 +640,7 @@ function loadHistoryFromStorage() {
     try {
       history.value = JSON.parse(saved);
     } catch (error) {
-      console.error('加载历史记录失败:', error);
+      console.error(t('tools.coordinates-converter.page.loadHistoryFailed'), error);
     }
   }
 }

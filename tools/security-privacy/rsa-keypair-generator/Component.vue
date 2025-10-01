@@ -2,18 +2,18 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">RSA 密钥对生成器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.rsa-keypair-generator.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">参数</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.rsa-keypair-generator.page.paramsTitle') }}</label>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs text-gray-500 mb-1">模数长度</label>
+                <label class="block text-xs text-gray-500 mb-1">{{ $t('tools.rsa-keypair-generator.page.modulusLength') }}</label>
                 <input v-model.number="modulusLength" type="number" min="1024" max="8192" step="256" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               </div>
               <div>
-                <label class="block text-xs text-gray-500 mb-1">哈希算法</label>
+                <label class="block text-xs text-gray-500 mb-1">{{ $t('tools.rsa-keypair-generator.page.hashAlgo') }}</label>
                 <select v-model="hash" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <option value="SHA-256">SHA-256</option>
                   <option value="SHA-384">SHA-384</option>
@@ -24,81 +24,97 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">输出格式</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.rsa-keypair-generator.page.outputFormat') }}</label>
             <div class="flex gap-2">
               <button
                 @click="outputFormat = 'pem'"
                 :class="['flex-1 px-3 py-2 rounded-md text-sm', outputFormat === 'pem' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300']"
               >
-                PEM
+                {{ $t('tools.rsa-keypair-generator.page.outputPem') }}
               </button>
               <button
                 @click="outputFormat = 'jwk'"
                 :class="['flex-1 px-3 py-2 rounded-md text-sm', outputFormat === 'jwk' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300']"
               >
-                JWK
+                {{ $t('tools.rsa-keypair-generator.page.outputJwk') }}
               </button>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">备注（可选，将随历史保存）</label>
-            <textarea v-model="notes" rows="3" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="用于标记用途或环境..." />
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.rsa-keypair-generator.page.notesLabel') }}</label>
+            <textarea
+              v-model="notes"
+              rows="3"
+              class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              :placeholder="$t('tools.rsa-keypair-generator.page.notesPlaceholder')"
+            />
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">生成</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
-            <button @click="swapView" :disabled="!result" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">交换视图</button>
+            <button @click="process" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.rsa-keypair-generator.page.generate') }}</button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.rsa-keypair-generator.page.clear') }}</button>
+            <button @click="swapView" :disabled="!result" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.rsa-keypair-generator.page.swapView') }}
+            </button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">处理结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.rsa-keypair-generator.page.resultTitle') }}</h3>
 
         <div v-if="result" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-3">
-              <h4 class="font-medium">{{ outputFormat === 'pem' ? 'PEM 文本' : 'JWK JSON' }}</h4>
+              <h4 class="font-medium">{{ outputFormat === 'pem' ? $t('tools.rsa-keypair-generator.page.pemText') : $t('tools.rsa-keypair-generator.page.jwkJson') }}</h4>
               <div class="flex gap-2">
-                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
-                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.rsa-keypair-generator.page.copy') }}</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.rsa-keypair-generator.page.download') }}</button>
               </div>
             </div>
 
             <textarea :value="result" readonly rows="10" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
 
             <div class="mt-3 text-xs text-gray-500 space-y-1">
-              <div>输出长度: {{ result.length }} 字符</div>
-              <div v-if="processingTime">处理时间: {{ processingTime }}ms</div>
-              <div>参数: modulusLength={{ modulusLength }} · hash={{ hash }}</div>
+              <div>{{ $t('tools.rsa-keypair-generator.page.outputLength', { n: result.length }) }}</div>
+              <div v-if="processingTime">{{ $t('tools.rsa-keypair-generator.page.processingTime', { ms: processingTime }) }}</div>
+              <div>{{ $t('tools.rsa-keypair-generator.page.paramsSummary', { modulusLength, hash }) }}</div>
             </div>
           </div>
 
           <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-            <h4 class="font-medium mb-3">密钥信息</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.rsa-keypair-generator.page.keyInfoTitle') }}</h4>
             <div class="space-y-1 text-sm">
-              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">算法:</span><span class="font-mono">RSA-OAEP</span></div>
-              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">可导出:</span><span class="font-mono">是</span></div>
-              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">用途:</span><span class="font-mono">encrypt/decrypt</span></div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.rsa-keypair-generator.page.algo') }}</span
+                ><span class="font-mono">RSA-OAEP</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.rsa-keypair-generator.page.exportable') }}</span
+                ><span class="font-mono">{{ $t('tools.rsa-keypair-generator.page.yes') }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.rsa-keypair-generator.page.usages') }}</span
+                ><span class="font-mono">{{ $t('tools.rsa-keypair-generator.page.usagesValue') }}</span>
+              </div>
             </div>
           </div>
 
-          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.rsa-keypair-generator.page.saveToHistory') }}</button>
         </div>
 
         <div v-if="!result" class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">🔑</div>
-          <div class="text-lg mb-2">RSA 密钥对生成器</div>
-          <div class="text-sm">生成 RSA-OAEP 密钥对，导出 PEM 或 JWK</div>
+          <div class="text-lg mb-2">{{ $t('tools.rsa-keypair-generator.page.emptyTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.rsa-keypair-generator.page.emptySubtitle') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
           <div class="flex items-center gap-2 text-red-800 dark:text-red-200">
             <span class="text-lg">⚠️</span>
             <div>
-              <div class="font-medium">处理失败</div>
+              <div class="font-medium">{{ $t('tools.rsa-keypair-generator.page.errorTitle') }}</div>
               <div class="text-sm mt-1">{{ error }}</div>
             </div>
           </div>
@@ -107,32 +123,32 @@
     </div>
 
     <div v-if="history.length > 0" class="space-y-2">
-      <h3 class="font-medium">操作历史</h3>
+      <h3 class="font-medium">{{ $t('tools.rsa-keypair-generator.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(item, index) in history" :key="index" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between items-start mb-2">
             <div>
-              <div class="font-medium">modulus {{ item.modulusLength }} · {{ item.hash }}</div>
+              <div class="font-medium">{{ $t('tools.rsa-keypair-generator.page.history.itemHeader', { modulusLength: item.modulusLength, hash: item.hash }) }}</div>
               <div class="text-xs text-gray-500 mt-1">{{ formatDate(item.timestamp) }}</div>
             </div>
             <div class="text-right">
-              <div class="text-xs text-gray-500">{{ item.outputFormat.toUpperCase() }} · {{ item.outputLength }} 字符</div>
+              <div class="text-xs text-gray-500">{{ $t('tools.rsa-keypair-generator.page.history.itemMeta', { format: item.outputFormat.toUpperCase(), length: item.outputLength }) }}</div>
             </div>
           </div>
           <div class="flex gap-2">
-            <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="copyText(item.result)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">复制结果</button>
-            <button @click="removeFromHistory(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.rsa-keypair-generator.page.history.load') }}</button>
+            <button @click="copyText(item.result)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">{{ $t('tools.rsa-keypair-generator.page.history.copyResult') }}</button>
+            <button @click="removeFromHistory(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.rsa-keypair-generator.page.history.delete') }}</button>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">安全提示</h3>
+      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">{{ $t('tools.rsa-keypair-generator.page.securityTipsTitle') }}</h3>
       <div class="text-sm text-yellow-800 dark:text-yellow-200 space-y-1">
-        <div>• 所有操作在本地浏览器进行，不会上传到服务器</div>
-        <div>• 生成的私钥请谨慎保存，避免泄露</div>
+        <div>{{ $t('tools.rsa-keypair-generator.page.securityTips.local') }}</div>
+        <div>{{ $t('tools.rsa-keypair-generator.page.securityTips.privateCare') }}</div>
       </div>
     </div>
   </div>
@@ -140,6 +156,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type HistoryItem = {
   modulusLength: number;
@@ -150,6 +167,8 @@ type HistoryItem = {
   outputLength: number;
   timestamp: number;
 };
+
+const { t } = useI18n();
 
 const modulusLength = ref(2048);
 const hash = ref<'SHA-256' | 'SHA-384' | 'SHA-512'>('SHA-256');
@@ -176,7 +195,13 @@ function swapView() {
 }
 
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
+  navigator.clipboard.writeText(text).then(() => {
+    // 替换 alert，避免阻塞
+    // 可根据项目 UI 统一提示，这里先简单使用原生提示
+    // 仅使用本地化文案
+    // eslint-disable-next-line no-alert
+    alert(t('tools.rsa-keypair-generator.page.copiedToClipboard'));
+  });
 }
 
 function copyResult() {
@@ -252,7 +277,6 @@ async function process() {
     const kp = await crypto.subtle.generateKey(alg, true, ['encrypt', 'decrypt']);
     if (outputFormat.value === 'pem') {
       const [spki, pkcs8] = await Promise.all([crypto.subtle.exportKey('spki', kp.publicKey), crypto.subtle.exportKey('pkcs8', kp.privateKey)]);
-      // to base64
       const toB64 = (buf: ArrayBuffer) => {
         const bytes = new Uint8Array(buf);
         let bin = '';
@@ -268,7 +292,7 @@ async function process() {
     }
     processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '生成失败';
+    error.value = e?.message || t('tools.rsa-keypair-generator.page.generateFailed');
   }
 }
 

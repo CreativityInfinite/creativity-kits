@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-4">
     <div>
-      <label class="block text-sm font-medium mb-2">输入文本</label>
+      <label class="block text-sm font-medium mb-2">{{ $t('tools.hash-generator.page.inputLabel') }}</label>
       <textarea
         v-model="input"
         @input="generateHashes"
         rows="4"
         class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        placeholder="请输入要计算哈希值的文本..."
+        :placeholder="$t('tools.hash-generator.page.inputPlaceholder')"
       />
     </div>
 
@@ -15,24 +15,24 @@
       <div class="space-y-3">
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="text-sm font-medium">MD5</label>
-            <button @click="copyHash('md5')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">复制</button>
+            <label class="text-sm font-medium">{{ $t('tools.hash-generator.page.algo.md5') }}</label>
+            <button @click="copyHash('md5')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">{{ $t('tools.hash-generator.page.copy') }}</button>
           </div>
           <input v-model="hashes.md5" readonly class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white font-mono text-sm" />
         </div>
 
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="text-sm font-medium">SHA-1</label>
-            <button @click="copyHash('sha1')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">复制</button>
+            <label class="text-sm font-medium">{{ $t('tools.hash-generator.page.algo.sha1') }}</label>
+            <button @click="copyHash('sha1')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">{{ $t('tools.hash-generator.page.copy') }}</button>
           </div>
           <input v-model="hashes.sha1" readonly class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white font-mono text-sm" />
         </div>
 
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="text-sm font-medium">SHA-256</label>
-            <button @click="copyHash('sha256')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">复制</button>
+            <label class="text-sm font-medium">{{ $t('tools.hash-generator.page.algo.sha256') }}</label>
+            <button @click="copyHash('sha256')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">{{ $t('tools.hash-generator.page.copy') }}</button>
           </div>
           <input v-model="hashes.sha256" readonly class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white font-mono text-sm" />
         </div>
@@ -41,24 +41,24 @@
       <div class="space-y-3">
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="text-sm font-medium">SHA-384</label>
-            <button @click="copyHash('sha384')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">复制</button>
+            <label class="text-sm font-medium">{{ $t('tools.hash-generator.page.algo.sha384') }}</label>
+            <button @click="copyHash('sha384')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">{{ $t('tools.hash-generator.page.copy') }}</button>
           </div>
           <input v-model="hashes.sha384" readonly class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white font-mono text-sm" />
         </div>
 
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="text-sm font-medium">SHA-512</label>
-            <button @click="copyHash('sha512')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">复制</button>
+            <label class="text-sm font-medium">{{ $t('tools.hash-generator.page.algo.sha512') }}</label>
+            <button @click="copyHash('sha512')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">{{ $t('tools.hash-generator.page.copy') }}</button>
           </div>
           <input v-model="hashes.sha512" readonly class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white font-mono text-sm" />
         </div>
 
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="text-sm font-medium">Base64</label>
-            <button @click="copyHash('base64')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">复制</button>
+            <label class="text-sm font-medium">{{ $t('tools.hash-generator.page.algo.base64') }}</label>
+            <button @click="copyHash('base64')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">{{ $t('tools.hash-generator.page.copy') }}</button>
           </div>
           <input v-model="hashes.base64" readonly class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white font-mono text-sm" />
         </div>
@@ -66,11 +66,11 @@
     </div>
 
     <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">说明</h3>
+      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">{{ $t('tools.hash-generator.page.tipsTitle') }}</h3>
       <ul class="text-sm text-yellow-800 dark:text-yellow-200 space-y-1">
-        <li>• 所有哈希计算都在浏览器本地完成，不会上传到服务器</li>
-        <li>• MD5 和 SHA-1 已不推荐用于安全用途，仅供兼容性使用</li>
-        <li>• 推荐使用 SHA-256 或更高版本的 SHA 算法</li>
+        <li>• {{ $t('tools.hash-generator.page.tips.local') }}</li>
+        <li>• {{ $t('tools.hash-generator.page.tips.md5sha1') }}</li>
+        <li>• {{ $t('tools.hash-generator.page.tips.recommend') }}</li>
       </ul>
     </div>
   </div>
@@ -78,6 +78,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const input = ref('Hello World');
 const hashes = ref({
@@ -120,7 +122,7 @@ async function generateHashes() {
     // MD5 需要自实现（简化版本）
     hashes.value.md5 = simpleMD5(input.value);
   } catch (error) {
-    console.error('哈希计算失败:', error);
+    console.error(t('tools.hash-generator.page.hashFailedLog'), error);
   }
 }
 
@@ -279,7 +281,7 @@ async function copyHash(type: keyof typeof hashes.value) {
   try {
     await navigator.clipboard.writeText(value);
   } catch (err) {
-    console.error('复制失败:', err);
+    console.error(t('tools.hash-generator.page.copyFailedLog'), err);
   }
 }
 

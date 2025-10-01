@@ -1,14 +1,14 @@
 <template>
   <div class="space-y-6">
     <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Excel 转 CSV</h1>
-      <p class="text-gray-600 dark:text-gray-400">选择 Excel 文件（.xlsx/.xls），浏览器解析为 CSV（不上传）</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.excel-to-csv.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.excel-to-csv.page.description') }}</p>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 选择 Excel 文件 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('tools.excel-to-csv.page.selectExcelFile') }}</label>
           <input
             type="file"
             accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
@@ -17,38 +17,45 @@
           />
           <div class="grid grid-cols-2 gap-2 mt-3">
             <div>
-              <label class="block text-xs text-gray-500 mb-1">分隔符</label>
-              <input v-model="sep" maxlength="2" placeholder="," class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-xs text-gray-500 mb-1">{{ $t('tools.excel-to-csv.page.separator') }}</label>
+              <input
+                v-model="sep"
+                maxlength="2"
+                :placeholder="$t('tools.excel-to-csv.page.separator') + ' ,'"
+                class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
             </div>
             <div class="flex items-center h-[42px] px-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <input id="bom" v-model="withBOM" type="checkbox" class="rounded mr-2" />
-              <label for="bom" class="text-sm">含 UTF-8 BOM</label>
+              <label for="bom" class="text-sm">{{ $t('tools.excel-to-csv.page.bomLabel') }}</label>
             </div>
           </div>
         </div>
 
         <div class="flex justify-center">
-          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">处理</button>
+          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">{{ $t('tools.excel-to-csv.page.process') }}</button>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 输出 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('tools.excel-to-csv.page.output') }}</label>
           <textarea
             :value="output"
             readonly
             class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
+            :placeholder="$t('tools.excel-to-csv.page.resultPlaceholder')"
           />
           <div v-if="csvFiles.length" class="space-y-2 mt-3">
             <div v-for="(it, i) in csvFiles" :key="i" class="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-700 rounded px-3 py-2">
               <div class="truncate">{{ it.name }}（{{ formatSize(it.size) }}）</div>
-              <button @click="downloadCSV(i)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">下载</button>
+              <button @click="downloadCSV(i)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.excel-to-csv.page.download') }}</button>
             </div>
           </div>
         </div>
 
         <div class="flex justify-center">
-          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">复制结果</button>
+          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">
+            {{ $t('tools.excel-to-csv.page.copyResult') }}
+          </button>
         </div>
       </div>
     </div>
@@ -57,7 +64,9 @@
 
 <script setup lang="ts">
 import { onUnmounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const file = ref<File | null>(null);
 const sep = ref(',');
 const withBOM = ref(false);
@@ -69,7 +78,7 @@ function onFile(e: Event) {
   const f = (e.target as HTMLInputElement).files?.[0] || null;
   file.value = f;
   clearOutputs();
-  output.value = f ? `已选择：${f.name}` : '';
+  output.value = f ? t('tools.excel-to-csv.page.selectedFile', { name: f.name }) : '';
 }
 function clearOutputs() {
   csvFiles.value = [];
@@ -94,7 +103,7 @@ async function process() {
   clearOutputs();
   output.value = '';
   if (!file.value) {
-    output.value = '请先选择 Excel 文件';
+    output.value = t('tools.excel-to-csv.page.selectFileFirst');
     return;
   }
   const t0 = performance.now();
@@ -117,10 +126,10 @@ async function process() {
       csvFiles.value.push({ name: `${name}.csv`, blob, size: blob.size });
     }
     const ms = Math.round(performance.now() - t0);
-    output.value = `转换完成：工作表 ${sheets.length} 个，用时 ${ms}ms`;
+    output.value = t('tools.excel-to-csv.page.convertSuccess', { count: sheets.length, ms });
   } catch (e: any) {
     console.error(e);
-    output.value = '转换失败：' + (e?.message || String(e));
+    output.value = t('tools.excel-to-csv.page.convertFailedPrefix') + (e?.message || String(e));
   }
 }
 
@@ -139,10 +148,10 @@ async function copyToClipboard() {
   if (!output.value) return;
   try {
     await navigator.clipboard.writeText(output.value);
-    alert('已复制到剪贴板');
+    alert(t('tools.excel-to-csv.page.copied'));
   } catch (err) {
-    console.error('复制失败:', err);
-    alert('复制失败，请手动复制');
+    console.error(t('tools.excel-to-csv.page.copyFailedLog'), err);
+    alert(t('tools.excel-to-csv.page.copyFailed'));
   }
 }
 

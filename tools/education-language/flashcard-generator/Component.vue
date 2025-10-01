@@ -1,33 +1,45 @@
 <template>
   <div class="space-y-4">
     <div class="flex justify-between items-center">
-      <h2 class="text-lg font-semibold">闪卡生成器</h2>
+      <h2 class="text-lg font-semibold">{{ $t('tools.flashcard-generator.page.title') }}</h2>
       <div class="flex gap-2">
-        <button @click="importCards" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm">导入卡片</button>
-        <button @click="exportCards" :disabled="cards.length === 0" class="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md text-sm">导出卡片</button>
+        <button @click="importCards" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm">{{ $t('tools.flashcard-generator.page.importCards') }}</button>
+        <button @click="exportCards" :disabled="cards.length === 0" class="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md text-sm">
+          {{ $t('tools.flashcard-generator.page.exportCards') }}
+        </button>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium">创建新卡片</h3>
+        <h3 class="font-medium">{{ $t('tools.flashcard-generator.page.createNew') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">正面内容</label>
-            <textarea v-model="newCard.front" rows="3" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="输入问题或提示..." />
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.flashcard-generator.page.frontLabel') }}</label>
+            <textarea
+              v-model="newCard.front"
+              rows="3"
+              class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              :placeholder="$t('tools.flashcard-generator.page.frontPlaceholder')"
+            />
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">背面内容</label>
-            <textarea v-model="newCard.back" rows="3" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="输入答案或解释..." />
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.flashcard-generator.page.backLabel') }}</label>
+            <textarea
+              v-model="newCard.back"
+              rows="3"
+              class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              :placeholder="$t('tools.flashcard-generator.page.backPlaceholder')"
+            />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-sm font-medium mb-1">分类</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.flashcard-generator.page.category') }}</label>
               <select v-model="newCard.category" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="">选择分类</option>
+                <option value="">{{ $t('tools.flashcard-generator.page.selectCategory') }}</option>
                 <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
               </select>
               <input
@@ -35,56 +47,65 @@
                 v-model="customCategory"
                 type="text"
                 class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-2"
-                placeholder="自定义分类"
+                :placeholder="$t('tools.flashcard-generator.page.customCategoryPlaceholder')"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">难度</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.flashcard-generator.page.difficulty') }}</label>
               <select v-model="newCard.difficulty" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="easy">简单</option>
-                <option value="medium">中等</option>
-                <option value="hard">困难</option>
+                <option value="easy">{{ $t('tools.flashcard-generator.page.diff.easy') }}</option>
+                <option value="medium">{{ $t('tools.flashcard-generator.page.diff.medium') }}</option>
+                <option value="hard">{{ $t('tools.flashcard-generator.page.diff.hard') }}</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">标签 (用逗号分隔)</label>
-            <input v-model="newCard.tags" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="英语, 单词, 基础" />
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.flashcard-generator.page.tagsLabel') }}</label>
+            <input
+              v-model="newCard.tags"
+              type="text"
+              class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              :placeholder="$t('tools.flashcard-generator.page.tagsPlaceholder')"
+            />
           </div>
 
           <div class="flex gap-2">
-            <button @click="addCard" :disabled="!canAddCard" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">添加卡片</button>
-            <button @click="clearForm" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="addCard" :disabled="!canAddCard" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.flashcard-generator.page.addCard') }}
+            </button>
+            <button @click="clearForm" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.flashcard-generator.page.clear') }}</button>
           </div>
         </div>
 
         <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-          <h4 class="font-medium mb-2">批量创建</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.flashcard-generator.page.bulkCreate') }}</h4>
           <textarea
             v-model="bulkInput"
             rows="6"
             class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
-            placeholder="格式: 问题|答案|分类|难度&#10;例如:&#10;What is Vue.js?|A progressive JavaScript framework|前端|medium&#10;CSS是什么?|层叠样式表|前端|easy"
+            :placeholder="$t('tools.flashcard-generator.page.bulkPlaceholder')"
           />
-          <button @click="processBulkInput" :disabled="!bulkInput.trim()" class="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md text-sm">批量添加</button>
+          <button @click="processBulkInput" :disabled="!bulkInput.trim()" class="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md text-sm">
+            {{ $t('tools.flashcard-generator.page.bulkAdd') }}
+          </button>
         </div>
       </div>
 
       <div class="space-y-4">
         <div class="flex justify-between items-center">
-          <h3 class="font-medium">卡片库 ({{ filteredCards.length }})</h3>
+          <h3 class="font-medium">{{ $t('tools.flashcard-generator.page.libraryTitle') }} ({{ filteredCards.length }})</h3>
           <div class="flex gap-2">
             <select v-model="filterCategory" class="px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
-              <option value="">全部分类</option>
+              <option value="">{{ $t('tools.flashcard-generator.page.allCategories') }}</option>
               <option v-for="cat in usedCategories" :key="cat" :value="cat">{{ cat }}</option>
             </select>
             <select v-model="filterDifficulty" class="px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
-              <option value="">全部难度</option>
-              <option value="easy">简单</option>
-              <option value="medium">中等</option>
-              <option value="hard">困难</option>
+              <option value="">{{ $t('tools.flashcard-generator.page.allDifficulties') }}</option>
+              <option value="easy">{{ $t('tools.flashcard-generator.page.diff.easy') }}</option>
+              <option value="medium">{{ $t('tools.flashcard-generator.page.diff.medium') }}</option>
+              <option value="hard">{{ $t('tools.flashcard-generator.page.diff.hard') }}</option>
             </select>
           </div>
         </div>
@@ -101,18 +122,18 @@
                 </span>
               </div>
               <div class="flex gap-1">
-                <button @click="editCard(index)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">编辑</button>
-                <button @click="deleteCard(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+                <button @click="editCard(index)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.flashcard-generator.page.edit') }}</button>
+                <button @click="deleteCard(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.flashcard-generator.page.delete') }}</button>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <div class="font-medium text-gray-600 dark:text-gray-400 mb-1">正面</div>
+                <div class="font-medium text-gray-600 dark:text-gray-400 mb-1">{{ $t('tools.flashcard-generator.page.frontShort') }}</div>
                 <div class="bg-gray-50 dark:bg-gray-700 rounded p-2">{{ card.front }}</div>
               </div>
               <div>
-                <div class="font-medium text-gray-600 dark:text-gray-400 mb-1">背面</div>
+                <div class="font-medium text-gray-600 dark:text-gray-400 mb-1">{{ $t('tools.flashcard-generator.page.backShort') }}</div>
                 <div class="bg-gray-50 dark:bg-gray-700 rounded p-2">{{ card.back }}</div>
               </div>
             </div>
@@ -127,26 +148,26 @@
 
         <div v-if="filteredCards.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">📚</div>
-          <div class="text-lg mb-2">暂无卡片</div>
-          <div class="text-sm">创建你的第一张闪卡吧</div>
+          <div class="text-lg mb-2">{{ $t('tools.flashcard-generator.page.emptyTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.flashcard-generator.page.emptySubtitle') }}</div>
         </div>
       </div>
     </div>
 
     <div v-if="cards.length > 0" class="space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="font-medium">学习模式</h3>
+        <h3 class="font-medium">{{ $t('tools.flashcard-generator.page.studyMode') }}</h3>
         <div class="flex gap-2">
-          <button @click="startStudy('sequential')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">顺序学习</button>
-          <button @click="startStudy('random')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">随机学习</button>
-          <button @click="startStudy('spaced')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md">间隔重复</button>
+          <button @click="startStudy('sequential')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">{{ $t('tools.flashcard-generator.page.studySequential') }}</button>
+          <button @click="startStudy('random')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.flashcard-generator.page.studyRandom') }}</button>
+          <button @click="startStudy('spaced')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md">{{ $t('tools.flashcard-generator.page.studySpaced') }}</button>
         </div>
       </div>
 
       <div v-if="studyMode" class="bg-white dark:bg-gray-800 rounded-lg border p-6">
         <div class="flex justify-between items-center mb-4">
           <div class="text-sm text-gray-600 dark:text-gray-400">{{ currentCardIndex + 1 }} / {{ studyCards.length }}</div>
-          <button @click="exitStudy" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">退出学习</button>
+          <button @click="exitStudy" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.flashcard-generator.page.exitStudy') }}</button>
         </div>
 
         <div class="text-center">
@@ -160,14 +181,14 @@
               </div>
             </div>
             <div class="mt-2 text-sm text-gray-500">
-              {{ showAnswer ? '点击查看正面' : '点击查看答案' }}
+              {{ showAnswer ? $t('tools.flashcard-generator.page.toggleHintFront') : $t('tools.flashcard-generator.page.toggleHintBack') }}
             </div>
           </div>
 
           <div v-if="showAnswer" class="flex justify-center gap-3">
-            <button @click="markCard('hard')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">困难 😰</button>
-            <button @click="markCard('medium')" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md">一般 😐</button>
-            <button @click="markCard('easy')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">简单 😊</button>
+            <button @click="markCard('hard')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">{{ $t('tools.flashcard-generator.page.markHard') }}</button>
+            <button @click="markCard('medium')" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md">{{ $t('tools.flashcard-generator.page.markMedium') }}</button>
+            <button @click="markCard('easy')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">{{ $t('tools.flashcard-generator.page.markEasy') }}</button>
           </div>
 
           <div class="mt-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -177,35 +198,35 @@
       </div>
 
       <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        <h4 class="font-medium mb-2">统计信息</h4>
+        <h4 class="font-medium mb-2">{{ $t('tools.flashcard-generator.page.statsTitle') }}</h4>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
             <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ cards.length }}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">总卡片</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.flashcard-generator.page.totalCards') }}</div>
           </div>
           <div>
             <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ usedCategories.length }}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">分类数</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.flashcard-generator.page.categoryCount') }}</div>
           </div>
           <div>
             <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ studyStats.totalStudied }}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">已学习</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.flashcard-generator.page.studied') }}</div>
           </div>
           <div>
             <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ Math.round(studyStats.accuracy) }}%</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">准确率</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.flashcard-generator.page.accuracy') }}</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">使用说明</h3>
+      <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">{{ $t('tools.flashcard-generator.page.guideTitle') }}</h3>
       <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-        <li>• 创建卡片：填写正面和背面内容，可添加分类和标签</li>
-        <li>• 批量导入：使用 "问题|答案|分类|难度" 格式，每行一张卡片</li>
-        <li>• 学习模式：顺序学习、随机学习或间隔重复算法</li>
-        <li>• 导入导出：支持JSON格式的卡片数据导入导出</li>
+        <li>{{ $t('tools.flashcard-generator.page.guideLine1') }}</li>
+        <li>{{ $t('tools.flashcard-generator.page.guideLine2') }}</li>
+        <li>{{ $t('tools.flashcard-generator.page.guideLine3') }}</li>
+        <li>{{ $t('tools.flashcard-generator.page.guideLine4') }}</li>
       </ul>
     </div>
   </div>
@@ -213,6 +234,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface FlashCard {
   id: string;
@@ -232,6 +254,7 @@ interface StudyStats {
   accuracy: number;
 }
 
+const { t } = useI18n();
 const cards = ref<FlashCard[]>([]);
 const newCard = ref({
   front: '',
@@ -249,7 +272,19 @@ const studyCards = ref<FlashCard[]>([]);
 const currentCardIndex = ref(0);
 const showAnswer = ref(false);
 
-const categories = ['英语', '数学', '历史', '地理', '科学', '编程', '医学', '法律', '艺术', '音乐', 'custom'];
+const categories = computed(() => [
+  t('tools.flashcard-generator.page.cat.english'),
+  t('tools.flashcard-generator.page.cat.math'),
+  t('tools.flashcard-generator.page.cat.history'),
+  t('tools.flashcard-generator.page.cat.geography'),
+  t('tools.flashcard-generator.page.cat.science'),
+  t('tools.flashcard-generator.page.cat.programming'),
+  t('tools.flashcard-generator.page.cat.medicine'),
+  t('tools.flashcard-generator.page.cat.law'),
+  t('tools.flashcard-generator.page.cat.art'),
+  t('tools.flashcard-generator.page.cat.music'),
+  'custom'
+]);
 
 const canAddCard = computed(() => {
   return newCard.value.front.trim() && newCard.value.back.trim();
@@ -354,7 +389,7 @@ function processBulkInput() {
   if (addedCount > 0) {
     bulkInput.value = '';
     saveCards();
-    alert(`成功添加 ${addedCount} 张卡片`);
+    alert(t('tools.flashcard-generator.page.alerts.addedCount', { n: addedCount }));
   }
 }
 
@@ -362,9 +397,9 @@ function editCard(index: number) {
   const card = filteredCards.value[index];
   const originalIndex = cards.value.findIndex((c) => c.id === card.id);
 
-  const front = prompt('编辑正面内容:', card.front);
+  const front = prompt(t('tools.flashcard-generator.page.alerts.editFront'), card.front);
   if (front !== null) {
-    const back = prompt('编辑背面内容:', card.back);
+    const back = prompt(t('tools.flashcard-generator.page.alerts.editBack'), card.back);
     if (back !== null) {
       cards.value[originalIndex].front = front.trim();
       cards.value[originalIndex].back = back.trim();
@@ -377,7 +412,7 @@ function deleteCard(index: number) {
   const card = filteredCards.value[index];
   const originalIndex = cards.value.findIndex((c) => c.id === card.id);
 
-  if (confirm('确定要删除这张卡片吗？')) {
+  if (confirm(t('tools.flashcard-generator.page.alerts.confirmDelete'))) {
     cards.value.splice(originalIndex, 1);
     saveCards();
   }
@@ -399,19 +434,19 @@ function getDifficultyClass(difficulty: string): string {
 function getDifficultyLabel(difficulty: string): string {
   switch (difficulty) {
     case 'easy':
-      return '简单';
+      return t('tools.flashcard-generator.page.diff.easy');
     case 'medium':
-      return '中等';
+      return t('tools.flashcard-generator.page.diff.medium');
     case 'hard':
-      return '困难';
+      return t('tools.flashcard-generator.page.diff.hard');
     default:
-      return '未知';
+      return t('tools.flashcard-generator.page.diff.unknown');
   }
 }
 
 function startStudy(mode: 'sequential' | 'random' | 'spaced') {
   if (filteredCards.value.length === 0) {
-    alert('没有可学习的卡片');
+    alert(t('tools.flashcard-generator.page.alerts.noCardsToStudy'));
     return;
   }
 
@@ -469,7 +504,7 @@ function markCard(performance: 'easy' | 'medium' | 'hard') {
     showAnswer.value = false;
   } else {
     // 学习完成
-    alert('恭喜！你已经完成了所有卡片的学习');
+    alert(t('tools.flashcard-generator.page.alerts.studyFinished'));
     exitStudy();
   }
 
@@ -490,10 +525,10 @@ function importCards() {
           if (Array.isArray(imported)) {
             cards.value.push(...imported);
             saveCards();
-            alert(`成功导入 ${imported.length} 张卡片`);
+            alert(t('tools.flashcard-generator.page.alerts.importSuccess', { n: imported.length }));
           }
         } catch (error) {
-          alert('导入失败：文件格式错误');
+          alert(t('tools.flashcard-generator.page.alerts.importFailed'));
         }
       };
       reader.readAsText(file);
@@ -525,7 +560,7 @@ function loadCards() {
     try {
       cards.value = JSON.parse(saved);
     } catch (error) {
-      console.error('加载卡片失败:', error);
+      console.error(t('tools.flashcard-generator.page.alerts.loadFailedLog'), error);
     }
   }
 }

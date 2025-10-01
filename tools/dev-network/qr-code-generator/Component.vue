@@ -2,44 +2,44 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">二维码生成器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.qr-code-generator.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">内容设置</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.qr-code-generator.page.contentSettings') }}</h4>
             <div class="space-y-3">
               <div>
-                <label class="block text-sm font-medium mb-1">内容类型</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.contentType') }}</label>
                 <select v-model="contentType" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" @change="updateContent">
-                  <option value="text">纯文本</option>
-                  <option value="url">网址链接</option>
-                  <option value="email">电子邮件</option>
-                  <option value="phone">电话号码</option>
-                  <option value="sms">短信</option>
-                  <option value="wifi">WiFi配置</option>
-                  <option value="vcard">联系人名片</option>
-                  <option value="location">地理位置</option>
+                  <option value="text">{{ $t('tools.qr-code-generator.page.contentTypes.text') }}</option>
+                  <option value="url">{{ $t('tools.qr-code-generator.page.contentTypes.url') }}</option>
+                  <option value="email">{{ $t('tools.qr-code-generator.page.contentTypes.email') }}</option>
+                  <option value="phone">{{ $t('tools.qr-code-generator.page.contentTypes.phone') }}</option>
+                  <option value="sms">{{ $t('tools.qr-code-generator.page.contentTypes.sms') }}</option>
+                  <option value="wifi">{{ $t('tools.qr-code-generator.page.contentTypes.wifi') }}</option>
+                  <option value="vcard">{{ $t('tools.qr-code-generator.page.contentTypes.vcard') }}</option>
+                  <option value="location">{{ $t('tools.qr-code-generator.page.contentTypes.location') }}</option>
                 </select>
               </div>
 
               <div v-if="contentType === 'text'">
-                <label class="block text-sm font-medium mb-1">文本内容</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.textContent') }}</label>
                 <textarea
                   v-model="content"
                   class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   rows="4"
-                  placeholder="输入要生成二维码的文本内容..."
+                  :placeholder="$t('tools.qr-code-generator.page.textPlaceholder')"
                   @input="generateQRCode"
                 />
               </div>
 
               <div v-else-if="contentType === 'url'">
-                <label class="block text-sm font-medium mb-1">网址</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.url') }}</label>
                 <input
                   v-model="urlData.url"
                   type="url"
                   class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  placeholder="https://example.com"
+                  :placeholder="$t('tools.qr-code-generator.page.urlPlaceholder')"
                   @input="updateUrlContent"
                 />
               </div>
@@ -47,32 +47,32 @@
               <div v-else-if="contentType === 'email'">
                 <div class="space-y-2">
                   <div>
-                    <label class="block text-sm font-medium mb-1">邮箱地址</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.emailAddress') }}</label>
                     <input
                       v-model="emailData.email"
                       type="email"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="example@email.com"
+                      :placeholder="$t('tools.qr-code-generator.page.emailPlaceholder')"
                       @input="updateEmailContent"
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-1">主题 (可选)</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.subject') }}</label>
                     <input
                       v-model="emailData.subject"
                       type="text"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="邮件主题"
+                      :placeholder="$t('tools.qr-code-generator.page.subjectPlaceholder')"
                       @input="updateEmailContent"
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-1">内容 (可选)</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.content') }}</label>
                     <textarea
                       v-model="emailData.body"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       rows="3"
-                      placeholder="邮件内容"
+                      :placeholder="$t('tools.qr-code-generator.page.contentPlaceholder')"
                       @input="updateEmailContent"
                     />
                   </div>
@@ -80,12 +80,12 @@
               </div>
 
               <div v-else-if="contentType === 'phone'">
-                <label class="block text-sm font-medium mb-1">电话号码</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.phoneNumber') }}</label>
                 <input
                   v-model="phoneData.number"
                   type="tel"
                   class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  placeholder="+86 138 0013 8000"
+                  :placeholder="$t('tools.qr-code-generator.page.phonePlaceholder')"
                   @input="updatePhoneContent"
                 />
               </div>
@@ -93,22 +93,22 @@
               <div v-else-if="contentType === 'sms'">
                 <div class="space-y-2">
                   <div>
-                    <label class="block text-sm font-medium mb-1">手机号码</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.mobileNumber') }}</label>
                     <input
                       v-model="smsData.number"
                       type="tel"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="+86 138 0013 8000"
+                      :placeholder="$t('tools.qr-code-generator.page.phonePlaceholder')"
                       @input="updateSmsContent"
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-1">短信内容</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.smsContent') }}</label>
                     <textarea
                       v-model="smsData.message"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       rows="3"
-                      placeholder="短信内容"
+                      :placeholder="$t('tools.qr-code-generator.page.smsPlaceholder')"
                       @input="updateSmsContent"
                     />
                   </div>
@@ -118,36 +118,36 @@
               <div v-else-if="contentType === 'wifi'">
                 <div class="space-y-2">
                   <div>
-                    <label class="block text-sm font-medium mb-1">网络名称 (SSID)</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.networkName') }}</label>
                     <input
                       v-model="wifiData.ssid"
                       type="text"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="WiFi网络名称"
+                      :placeholder="$t('tools.qr-code-generator.page.networkPlaceholder')"
                       @input="updateWifiContent"
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-1">密码</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.password') }}</label>
                     <input
                       v-model="wifiData.password"
                       type="password"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="WiFi密码"
+                      :placeholder="$t('tools.qr-code-generator.page.passwordPlaceholder')"
                       @input="updateWifiContent"
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-1">加密类型</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.encryptionType') }}</label>
                     <select v-model="wifiData.security" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" @change="updateWifiContent">
-                      <option value="WPA">WPA/WPA2</option>
-                      <option value="WEP">WEP</option>
-                      <option value="nopass">无密码</option>
+                      <option value="WPA">{{ $t('tools.qr-code-generator.page.encryptionWPA') }}</option>
+                      <option value="WEP">{{ $t('tools.qr-code-generator.page.encryptionWEP') }}</option>
+                      <option value="nopass">{{ $t('tools.qr-code-generator.page.encryptionNone') }}</option>
                     </select>
                   </div>
                   <div class="flex items-center space-x-2">
                     <input v-model="wifiData.hidden" type="checkbox" class="rounded" @change="updateWifiContent" />
-                    <label class="text-sm">隐藏网络</label>
+                    <label class="text-sm">{{ $t('tools.qr-code-generator.page.hiddenNetwork') }}</label>
                   </div>
                 </div>
               </div>
@@ -156,65 +156,65 @@
                 <div class="space-y-2">
                   <div class="grid grid-cols-2 gap-2">
                     <div>
-                      <label class="block text-sm font-medium mb-1">姓名</label>
+                      <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.name') }}</label>
                       <input
                         v-model="vcardData.name"
                         type="text"
                         class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="张三"
+                        :placeholder="$t('tools.qr-code-generator.page.namePlaceholder')"
                         @input="updateVcardContent"
                       />
                     </div>
                     <div>
-                      <label class="block text-sm font-medium mb-1">公司</label>
+                      <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.company') }}</label>
                       <input
                         v-model="vcardData.organization"
                         type="text"
                         class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="公司名称"
+                        :placeholder="$t('tools.qr-code-generator.page.companyPlaceholder')"
                         @input="updateVcardContent"
                       />
                     </div>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-1">职位</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.position') }}</label>
                     <input
                       v-model="vcardData.title"
                       type="text"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="职位"
+                      :placeholder="$t('tools.qr-code-generator.page.positionPlaceholder')"
                       @input="updateVcardContent"
                     />
                   </div>
                   <div class="grid grid-cols-2 gap-2">
                     <div>
-                      <label class="block text-sm font-medium mb-1">电话</label>
+                      <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.phone') }}</label>
                       <input
                         v-model="vcardData.phone"
                         type="tel"
                         class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="138 0013 8000"
+                        :placeholder="$t('tools.qr-code-generator.page.phonePlaceholder')"
                         @input="updateVcardContent"
                       />
                     </div>
                     <div>
-                      <label class="block text-sm font-medium mb-1">邮箱</label>
+                      <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.email') }}</label>
                       <input
                         v-model="vcardData.email"
                         type="email"
                         class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="example@email.com"
+                        :placeholder="$t('tools.qr-code-generator.page.emailPlaceholder')"
                         @input="updateVcardContent"
                       />
                     </div>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-1">网址</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.website') }}</label>
                     <input
                       v-model="vcardData.url"
                       type="url"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="https://example.com"
+                      :placeholder="$t('tools.qr-code-generator.page.websitePlaceholder')"
                       @input="updateVcardContent"
                     />
                   </div>
@@ -225,35 +225,35 @@
                 <div class="space-y-2">
                   <div class="grid grid-cols-2 gap-2">
                     <div>
-                      <label class="block text-sm font-medium mb-1">纬度</label>
+                      <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.latitude') }}</label>
                       <input
                         v-model="locationData.latitude"
                         type="number"
                         step="any"
                         class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="39.9042"
+                        :placeholder="$t('tools.qr-code-generator.page.latitudePlaceholder')"
                         @input="updateLocationContent"
                       />
                     </div>
                     <div>
-                      <label class="block text-sm font-medium mb-1">经度</label>
+                      <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.longitude') }}</label>
                       <input
                         v-model="locationData.longitude"
                         type="number"
                         step="any"
                         class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="116.4074"
+                        :placeholder="$t('tools.qr-code-generator.page.longitudePlaceholder')"
                         @input="updateLocationContent"
                       />
                     </div>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-1">地点名称 (可选)</label>
+                    <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.locationName') }}</label>
                     <input
                       v-model="locationData.name"
                       type="text"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="天安门广场"
+                      :placeholder="$t('tools.qr-code-generator.page.locationPlaceholder')"
                       @input="updateLocationContent"
                     />
                   </div>
@@ -262,9 +262,9 @@
 
               <div class="bg-blue-50 dark:bg-blue-900/20 rounded p-3">
                 <div class="text-sm">
-                  <div class="font-medium text-blue-800 dark:text-blue-200 mb-1">当前内容</div>
+                  <div class="font-medium text-blue-800 dark:text-blue-200 mb-1">{{ $t('tools.qr-code-generator.page.currentContent') }}</div>
                   <div class="text-blue-700 dark:text-blue-300 font-mono text-xs break-all">
-                    {{ content || '请输入内容' }}
+                    {{ content || $t('tools.qr-code-generator.page.pleaseEnterContent') }}
                   </div>
                 </div>
               </div>
@@ -272,11 +272,11 @@
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">样式设置</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.qr-code-generator.page.styleSettings') }}</h4>
             <div class="space-y-3">
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-sm font-medium mb-1">尺寸</label>
+                  <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.size') }}</label>
                   <select v-model="qrOptions.size" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" @change="generateQRCode">
                     <option :value="128">128x128</option>
                     <option :value="256">256x256</option>
@@ -285,19 +285,19 @@
                   </select>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium mb-1">容错级别</label>
+                  <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.errorCorrectionLevel') }}</label>
                   <select v-model="qrOptions.errorCorrectionLevel" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" @change="generateQRCode">
-                    <option value="L">低 (7%)</option>
-                    <option value="M">中 (15%)</option>
-                    <option value="Q">较高 (25%)</option>
-                    <option value="H">高 (30%)</option>
+                    <option value="L">{{ $t('tools.qr-code-generator.page.errorLevels.L') }}</option>
+                    <option value="M">{{ $t('tools.qr-code-generator.page.errorLevels.M') }}</option>
+                    <option value="Q">{{ $t('tools.qr-code-generator.page.errorLevels.Q') }}</option>
+                    <option value="H">{{ $t('tools.qr-code-generator.page.errorLevels.H') }}</option>
                   </select>
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-sm font-medium mb-1">前景色</label>
+                  <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.foregroundColor') }}</label>
                   <div class="flex gap-2">
                     <input v-model="qrOptions.color.dark" type="color" class="w-12 h-10 border rounded cursor-pointer" @change="generateQRCode" />
                     <input
@@ -309,7 +309,7 @@
                   </div>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium mb-1">背景色</label>
+                  <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.backgroundColor') }}</label>
                   <div class="flex gap-2">
                     <input v-model="qrOptions.color.light" type="color" class="w-12 h-10 border rounded cursor-pointer" @change="generateQRCode" />
                     <input
@@ -323,14 +323,14 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium mb-1">边距 ({{ qrOptions.margin }})</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.margin') }} ({{ qrOptions.margin }})</label>
                 <input v-model="qrOptions.margin" type="range" min="0" max="10" class="w-full" @input="generateQRCode" />
               </div>
 
               <div class="flex gap-2">
-                <button @click="resetOptions" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">重置样式</button>
-                <button @click="loadPreset('minimal')" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">简约风格</button>
-                <button @click="loadPreset('colorful')" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">彩色风格</button>
+                <button @click="resetOptions" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.qr-code-generator.page.resetStyle') }}</button>
+                <button @click="loadPreset('minimal')" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.qr-code-generator.page.minimalStyle') }}</button>
+                <button @click="loadPreset('colorful')" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.qr-code-generator.page.colorfulStyle') }}</button>
               </div>
             </div>
           </div>
@@ -338,7 +338,7 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">二维码预览</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.qr-code-generator.page.preview') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-6">
           <div v-if="qrCodeDataUrl" class="text-center">
@@ -347,70 +347,73 @@
             </div>
 
             <div class="mt-4 space-y-2">
-              <div class="text-sm text-gray-600 dark:text-gray-400">尺寸: {{ qrOptions.size }}x{{ qrOptions.size }} | 容错: {{ qrOptions.errorCorrectionLevel }}</div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">
+                {{ $t('tools.qr-code-generator.page.imageSize') }} {{ qrOptions.size }}x{{ qrOptions.size }} | {{ $t('tools.qr-code-generator.page.errorCorrection') }}
+                {{ qrOptions.errorCorrectionLevel }}
+              </div>
 
               <div class="flex gap-2 justify-center">
-                <button @click="downloadQRCode('png')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">下载 PNG</button>
-                <button @click="downloadQRCode('svg')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">下载 SVG</button>
-                <button @click="copyQRCode" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">复制图片</button>
+                <button @click="downloadQRCode('png')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.qr-code-generator.page.downloadPNG') }}</button>
+                <button @click="downloadQRCode('svg')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">{{ $t('tools.qr-code-generator.page.downloadSVG') }}</button>
+                <button @click="copyQRCode" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.qr-code-generator.page.copyImage') }}</button>
               </div>
             </div>
           </div>
 
           <div v-else-if="isGenerating" class="text-center py-12">
             <div class="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <div class="text-gray-500">正在生成二维码...</div>
+            <div class="text-gray-500">{{ $t('tools.qr-code-generator.page.generating') }}</div>
           </div>
 
           <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
             <div class="text-4xl mb-4">📱</div>
-            <div class="text-lg mb-2">二维码生成器</div>
-            <div class="text-sm">输入内容开始生成</div>
+            <div class="text-lg mb-2">{{ $t('tools.qr-code-generator.page.emptyState') }}</div>
+            <div class="text-sm">{{ $t('tools.qr-code-generator.page.emptySubtitle') }}</div>
           </div>
         </div>
 
         <div v-if="qrCodeDataUrl" class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">二维码信息</h4>
+            <h4 class="font-medium">{{ $t('tools.qr-code-generator.page.qrInfo') }}</h4>
           </div>
           <div class="p-4 space-y-2 text-sm">
             <div class="flex justify-between">
-              <span class="font-medium">内容类型:</span>
+              <span class="font-medium">{{ $t('tools.qr-code-generator.page.contentTypeLabel') }}</span>
               <span>{{ getContentTypeLabel(contentType) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium">内容长度:</span>
-              <span>{{ content.length }} 字符</span>
+              <span class="font-medium">{{ $t('tools.qr-code-generator.page.contentLength') }}</span>
+              <span>{{ content.length }} {{ $t('tools.qr-code-generator.page.characters') }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium">图片尺寸:</span>
+              <span class="font-medium">{{ $t('tools.qr-code-generator.page.imageSize') }}</span>
               <span>{{ qrOptions.size }}x{{ qrOptions.size }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium">容错级别:</span>
+              <span class="font-medium">{{ $t('tools.qr-code-generator.page.errorCorrection') }}</span>
               <span>{{ getErrorCorrectionLabel(qrOptions.errorCorrectionLevel) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium">估计文件大小:</span>
+              <span class="font-medium">{{ $t('tools.qr-code-generator.page.estimatedFileSize') }}</span>
               <span>{{ estimatedFileSize }}</span>
             </div>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">批量生成</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.qr-code-generator.page.batchGenerate') }}</h4>
           <div class="space-y-3">
             <div>
-              <label class="block text-sm font-medium mb-1">批量内容 (每行一个)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.qr-code-generator.page.batchContent') }}</label>
               <textarea
                 v-model="batchContent"
                 class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 rows="4"
-                placeholder="输入多行内容，每行生成一个二维码&#10;例如：&#10;https://example1.com&#10;https://example2.com&#10;联系电话：138 0013 8000"
+                :placeholder="$t('tools.qr-code-generator.page.batchPlaceholder')"
               />
             </div>
             <button @click="generateBatchQRCodes" :disabled="!batchContent.trim()" class="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white rounded-md">
-              批量生成并下载
+              {{ $t('tools.qr-code-generator.page.batchGenerateAndDownload') }}
             </button>
           </div>
         </div>
@@ -418,37 +421,37 @@
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.qr-code-generator.page.usageInstructions') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">支持的内容类型</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.qr-code-generator.page.supportedContentTypes') }}</h4>
           <ul class="space-y-1">
-            <li>• 纯文本和网址链接</li>
-            <li>• 电子邮件和电话号码</li>
-            <li>• WiFi配置信息</li>
-            <li>• 联系人名片 (vCard)</li>
-            <li>• 地理位置坐标</li>
-            <li>• 短信内容</li>
+            <li>{{ $t('tools.qr-code-generator.page.supportedList.textAndUrl') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.supportedList.emailAndPhone') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.supportedList.wifiConfig') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.supportedList.vcard') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.supportedList.location') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.supportedList.sms') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">样式自定义</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.qr-code-generator.page.styleCustomization') }}</h4>
           <ul class="space-y-1">
-            <li>• 多种尺寸选择</li>
-            <li>• 自定义颜色方案</li>
-            <li>• 容错级别调整</li>
-            <li>• 边距设置</li>
-            <li>• 预设样式模板</li>
+            <li>{{ $t('tools.qr-code-generator.page.styleList.multipleSize') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.styleList.customColor') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.styleList.errorLevel') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.styleList.marginSetting') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.styleList.presetStyles') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">导出功能</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.qr-code-generator.page.exportFeatures') }}</h4>
           <ul class="space-y-1">
-            <li>• PNG 和 SVG 格式</li>
-            <li>• 高质量图片下载</li>
-            <li>• 批量生成功能</li>
-            <li>• 剪贴板复制</li>
-            <li>• 自定义文件名</li>
+            <li>{{ $t('tools.qr-code-generator.page.exportList.pngSvg') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.exportList.highQuality') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.exportList.batchGeneration') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.exportList.clipboard') }}</li>
+            <li>{{ $t('tools.qr-code-generator.page.exportList.customFilename') }}</li>
           </ul>
         </div>
       </div>
@@ -458,6 +461,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface QROptions {
   size: number;
@@ -509,6 +513,8 @@ interface LocationData {
   longitude: string;
   name: string;
 }
+
+const { t } = useI18n();
 
 const contentType = ref('text');
 const content = ref('');
@@ -742,7 +748,7 @@ async function generateQRCode() {
     // 生成SVG版本
     generateSVGQRCode();
   } catch (error) {
-    console.error('生成二维码失败:', error);
+    console.error(t('tools.qr-code-generator.page.generateFailedLog'), error);
   } finally {
     isGenerating.value = false;
   }
@@ -853,7 +859,7 @@ async function copyQRCode() {
 
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(t('tools.qr-code-generator.page.copyFailedLog'), error);
   }
 }
 
@@ -890,26 +896,12 @@ async function generateBatchQRCodes() {
 }
 
 function getContentTypeLabel(type: string): string {
-  const labels: { [key: string]: string } = {
-    text: '纯文本',
-    url: '网址链接',
-    email: '电子邮件',
-    phone: '电话号码',
-    sms: '短信',
-    wifi: 'WiFi配置',
-    vcard: '联系人名片',
-    location: '地理位置'
-  };
-  return labels[type] || type;
+  const key = `tools.qr-code-generator.page.contentTypes.${type}`;
+  return t(key);
 }
 
 function getErrorCorrectionLabel(level: string): string {
-  const labels: { [key: string]: string } = {
-    L: '低 (7%)',
-    M: '中 (15%)',
-    Q: '较高 (25%)',
-    H: '高 (30%)'
-  };
-  return labels[level] || level;
+  const key = `tools.qr-code-generator.page.errorLevels.${level}`;
+  return t(key);
 }
 </script>

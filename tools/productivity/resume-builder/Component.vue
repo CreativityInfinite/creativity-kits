@@ -1,37 +1,39 @@
 <template>
   <div class="space-y-6">
     <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">简历生成器</h1>
-      <p class="text-gray-600 dark:text-gray-400">输入简历 JSON，生成可复制的 Markdown 简历（支持基本信息/技能/经历/教育）。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.resume-builder.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.resume-builder.page.subtitle') }}</p>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 输入 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('tools.resume-builder.page.input') }}</label>
           <textarea
             v-model="input"
             class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
+            :placeholder="$t('tools.resume-builder.page.inputPlaceholder')"
           />
         </div>
 
         <div class="flex justify-center">
-          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">处理</button>
+          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">{{ $t('tools.resume-builder.page.process') }}</button>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 输出 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('tools.resume-builder.page.output') }}</label>
           <textarea
             v-model="output"
             readonly
             class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white"
-            placeholder="处理结果将显示在这里..."
+            :placeholder="$t('tools.resume-builder.page.outputPlaceholder')"
           />
         </div>
 
         <div class="flex justify-center">
-          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">复制结果</button>
+          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">
+            {{ $t('tools.resume-builder.page.copyResult') }}
+          </button>
         </div>
       </div>
     </div>
@@ -40,9 +42,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const input = ref('');
 const output = ref('');
+const { t } = useI18n();
 
 function process() {
   const src = input.value.trim();
@@ -67,46 +71,46 @@ function process() {
     lines.push('');
 
     if (data.contact && (data.contact.email || data.contact.phone || data.contact.website)) {
-      lines.push('**联系方式**');
-      if (data.contact.email) lines.push(`- 邮箱：${data.contact.email}`);
-      if (data.contact.phone) lines.push(`- 电话：${data.contact.phone}`);
-      if (data.contact.website) lines.push(`- 网站：${data.contact.website}`);
+      lines.push(`**${t('tools.resume-builder.page.sectionContact')}**`);
+      if (data.contact.email) lines.push(`- ${t('tools.resume-builder.page.email')}：${data.contact.email}`);
+      if (data.contact.phone) lines.push(`- ${t('tools.resume-builder.page.phone')}：${data.contact.phone}`);
+      if (data.contact.website) lines.push(`- ${t('tools.resume-builder.page.website')}：${data.contact.website}`);
       lines.push('');
     }
 
     if (data.summary) {
-      lines.push('## 概要');
+      lines.push(`## ${t('tools.resume-builder.page.sectionSummary')}`);
       lines.push(data.summary);
       lines.push('');
     }
 
     if (Array.isArray(data.skills) && data.skills.length) {
-      lines.push('## 技能');
-      lines.push(data.skills.map((s) => `- ${s}`).join('\n'));
+      lines.push(`## ${t('tools.resume-builder.page.sectionSkills')}`);
+      lines.push(data.skills.map((s) => `- ${s}`).join('\\n'));
       lines.push('');
     }
 
     if (Array.isArray(data.experience) && data.experience.length) {
-      lines.push('## 工作经历');
+      lines.push(`## ${t('tools.resume-builder.page.sectionExperience')}`);
       for (const exp of data.experience) {
         const title = [exp.company, exp.role].filter(Boolean).join(' | ');
-        const period = exp.period ? `（${exp.period}）` : '';
+        const period = exp.period ? t('tools.resume-builder.page.periodParen', { period: exp.period }) : '';
         lines.push(`- ${title}${period}`);
         if (Array.isArray(exp.details) && exp.details.length) {
-          lines.push(exp.details.map((d) => `  - ${d}`).join('\n'));
+          lines.push(exp.details.map((d) => `  - ${d}`).join('\\n'));
         }
       }
       lines.push('');
     }
 
     if (Array.isArray(data.education) && data.education.length) {
-      lines.push('## 教育经历');
+      lines.push(`## ${t('tools.resume-builder.page.sectionEducation')}`);
       for (const edu of data.education) {
         const title = [edu.school, edu.degree].filter(Boolean).join(' | ');
-        const period = edu.period ? `（${edu.period}）` : '';
+        const period = edu.period ? t('tools.resume-builder.page.periodParen', { period: edu.period }) : '';
         lines.push(`- ${title}${period}`);
         if (Array.isArray(edu.details) && edu.details.length) {
-          lines.push(edu.details.map((d) => `  - ${d}`).join('\n'));
+          lines.push(edu.details.map((d) => `  - ${d}`).join('\\n'));
         }
       }
       lines.push('');
@@ -114,20 +118,7 @@ function process() {
 
     output.value = lines.join('\n').trim();
   } catch (e: any) {
-    output.value = `解析失败：请提供有效的 JSON。示例：
-{
-  "name": "张三",
-  "title": "前端工程师",
-  "contact": { "email": "a@b.com", "phone": "123456", "website": "https://xx.com" },
-  "summary": "X 年经验，熟悉 Vue/React。",
-  "skills": ["JavaScript", "Vue", "Node.js"],
-  "experience": [
-    { "company": "某公司", "role": "前端工程师", "period": "2022-至今", "details": ["负责组件库", "性能优化"] }
-  ],
-  "education": [
-    { "school": "某大学", "degree": "学士", "period": "2016-2020", "details": ["主修计算机科学"] }
-  ]
-}`;
+    output.value = t('tools.resume-builder.page.parseFailedExample');
   }
 }
 
@@ -135,10 +126,10 @@ async function copyToClipboard() {
   if (!output.value) return;
   try {
     await navigator.clipboard.writeText(output.value);
-    alert('已复制到剪贴板');
+    alert(t('tools.resume-builder.page.copied'));
   } catch (err) {
-    console.error('复制失败:', err);
-    alert('复制失败，请重试');
+    console.error(t('tools.resume-builder.page.copyFailedLog'), err);
+    alert(t('tools.resume-builder.page.copyFailedRetry'));
   }
 }
 </script>

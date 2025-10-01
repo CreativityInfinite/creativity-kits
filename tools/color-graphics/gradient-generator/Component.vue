@@ -2,110 +2,118 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">渐变生成器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.gradient-generator.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">参数</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.gradient-generator.page.params') }}</label>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs text-gray-500 mb-1">角度（度）</label>
+                <label class="block text-xs text-gray-500 mb-1">{{ $t('tools.gradient-generator.page.angle') }}</label>
                 <input v-model.number="angle" type="number" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="0" />
               </div>
               <div>
-                <label class="block text-xs text-gray-500 mb-1">步数（采样色个数）</label>
+                <label class="block text-xs text-gray-500 mb-1">{{ $t('tools.gradient-generator.page.steps') }}</label>
                 <input v-model.number="steps" type="number" min="2" max="64" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="8" />
               </div>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">颜色列表（至少两种，逗号分隔，支持 #RGB/#RRGGBB）</label>
-            <input v-model="colorsText" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="#ff7e5f, #feb47b" />
-            <p class="text-xs text-gray-500 mt-1">示例：#ff7e5f, #feb47b, #4facfe</p>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.gradient-generator.page.colorsLabel') }}</label>
+            <input
+              v-model="colorsText"
+              class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              :placeholder="$t('tools.gradient-generator.page.colorsPlaceholder')"
+            />
+            <p class="text-xs text-gray-500 mt-1">{{ $t('tools.gradient-generator.page.sampleTip') }}</p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">输出格式</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.gradient-generator.page.outputFormat') }}</label>
             <div class="flex gap-2">
               <button
                 @click="outputFormat = 'css'"
                 :class="['flex-1 px-3 py-2 rounded-md text-sm', outputFormat === 'css' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300']"
               >
-                CSS
+                {{ $t('tools.gradient-generator.page.fmtCss') }}
               </button>
               <button
                 @click="outputFormat = 'json'"
                 :class="['flex-1 px-3 py-2 rounded-md text-sm', outputFormat === 'json' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300']"
               >
-                JSON 调色板
+                {{ $t('tools.gradient-generator.page.fmtJson') }}
               </button>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">输入（可选：kv 参数 + 颜色，每行一项）</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.gradient-generator.page.inputLabel') }}</label>
             <textarea
               v-model="inputText"
               rows="6"
               class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="可留空；或示例：&#10;angle=45&#10;steps=10&#10;#ff7e5f&#10;#feb47b"
+              :placeholder="$t('tools.gradient-generator.page.inputPlaceholder')"
             />
-            <p class="text-xs text-gray-500 mt-1">留空时使用上方参数与颜色；若提供输入，解析其中的 kv 参数与颜色行。</p>
+            <p class="text-xs text-gray-500 mt-1">{{ $t('tools.gradient-generator.page.inputExplain') }}</p>
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">生成</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
-            <button @click="swapView" :disabled="!result" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">交换视图</button>
+            <button @click="process" :disabled="!canProcess" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.gradient-generator.page.generate') }}
+            </button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.gradient-generator.page.clear') }}</button>
+            <button @click="swapView" :disabled="!result" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.gradient-generator.page.swapView') }}
+            </button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">处理结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.gradient-generator.page.resultTitle') }}</h3>
 
         <div v-if="result" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-3">
-              <h4 class="font-medium">{{ outputFormat === 'css' ? 'CSS 代码' : '调色板 JSON' }}</h4>
+              <h4 class="font-medium">{{ outputFormat === 'css' ? $t('tools.gradient-generator.page.codeTitleCss') : $t('tools.gradient-generator.page.codeTitleJson') }}</h4>
               <div class="flex gap-2">
-                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
-                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.gradient-generator.page.copy') }}</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.gradient-generator.page.download') }}</button>
               </div>
             </div>
 
             <textarea :value="result" readonly rows="8" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
 
             <div class="mt-3 text-xs text-gray-500 space-y-1">
-              <div>输出长度: {{ result.length }} 字符</div>
-              <div v-if="processingTime">处理时间: {{ processingTime }}ms</div>
-              <div>角度: {{ lastInfo.angle }}° | 步数: {{ lastInfo.steps }}</div>
+              <div>{{ $t('tools.gradient-generator.page.outputLength') }}: {{ result.length }} {{ $t('tools.gradient-generator.page.codeTitleJson').includes('JSON') ? '' : $t('tools.gradient-generator.page.chars') }}</div>
+              <div v-if="processingTime">{{ $t('tools.gradient-generator.page.processingTime') }}: {{ processingTime }}ms</div>
+              <div>{{ $t('tools.gradient-generator.page.angleShort') }}: {{ lastInfo.angle }}° | {{ $t('tools.gradient-generator.page.stepsShort') }}: {{ lastInfo.steps }}</div>
             </div>
           </div>
 
           <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-            <h4 class="font-medium mb-3">预览</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.gradient-generator.page.previewTitle') }}</h4>
             <div class="h-32 w-full rounded-md border dark:border-gray-700" :style="{ background: previewCss }"></div>
             <div class="mt-3 grid grid-cols-8 gap-1">
               <div v-for="(c, i) in palette" :key="i" class="h-6 rounded border dark:border-gray-700" :title="c" :style="{ background: c }"></div>
             </div>
           </div>
 
-          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.gradient-generator.page.saveToHistory') }}</button>
         </div>
 
         <div v-if="!result" class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">🎨</div>
-          <div class="text-lg mb-2">渐变生成器</div>
-          <div class="text-sm">设置角度与颜色，生成 CSS 渐变和调色板</div>
+          <div class="text-lg mb-2">{{ $t('tools.gradient-generator.page.emptyTitle') }}</div>
+          <div class="text-sm">{{ $t('tools.gradient-generator.page.emptySubtitle') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
           <div class="flex items-center gap-2 text-red-800 dark:text-red-200">
             <span class="text-lg">⚠️</span>
             <div>
-              <div class="font-medium">处理失败</div>
+              <div class="font-medium">{{ $t('tools.gradient-generator.page.errorPanelTitle') }}</div>
               <div class="text-sm mt-1">{{ error }}</div>
             </div>
           </div>
@@ -114,32 +122,34 @@
     </div>
 
     <div v-if="history.length > 0" class="space-y-2">
-      <h3 class="font-medium">操作历史</h3>
+      <h3 class="font-medium">{{ $t('tools.gradient-generator.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(item, index) in history" :key="index" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between items-start mb-2">
             <div>
-              <div class="font-medium">角度 {{ item.angle }}° · 步数 {{ item.steps }}</div>
+              <div class="font-medium">{{ $t('tools.gradient-generator.page.historyAngleSteps', { angle: item.angle, steps: item.steps }) }}</div>
               <div class="text-xs text-gray-500 mt-1">{{ formatDate(item.timestamp) }}</div>
             </div>
             <div class="text-right">
-              <div class="text-xs text-gray-500">{{ item.outputFormat.toUpperCase() }} · {{ item.outputLength }} 字符</div>
+              <div class="text-xs text-gray-500">
+                {{ item.outputFormat.toUpperCase() }} · {{ item.outputLength }} {{ $t('tools.gradient-generator.page.codeTitleJson').includes('JSON') ? '' : $t('tools.gradient-generator.page.chars') }}
+              </div>
             </div>
           </div>
           <div class="flex gap-2">
-            <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="copyText(item.result)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">复制结果</button>
-            <button @click="removeFromHistory(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.gradient-generator.page.load') }}</button>
+            <button @click="copyText(item.result)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">{{ $t('tools.gradient-generator.page.copyResult') }}</button>
+            <button @click="removeFromHistory(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.gradient-generator.page.remove') }}</button>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">提示</h3>
+      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">{{ $t('tools.gradient-generator.page.tipsTitle') }}</h3>
       <div class="text-sm text-yellow-800 dark:text-yellow-200 space-y-1">
-        <div>• 支持多段颜色插值；步数越大，调色板越细腻</div>
-        <div>• 可复制 CSS 或下载 .css 文件用于项目</div>
+        <div>{{ $t('tools.gradient-generator.page.tip1') }}</div>
+        <div>{{ $t('tools.gradient-generator.page.tip2') }}</div>
       </div>
     </div>
   </div>
@@ -147,6 +157,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type HistoryItem = {
   angle: number;
@@ -164,6 +175,7 @@ const colorsText = ref('#ff7e5f, #feb47b');
 const inputText = ref('');
 const outputFormat = ref<'css' | 'json'>('css');
 
+const { t } = useI18n();
 const result = ref('');
 const error = ref('');
 const processingTime = ref<number | null>(null);
@@ -300,7 +312,7 @@ function clearAll() {
 }
 
 function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
+  navigator.clipboard.writeText(text).then(() => alert(t('tools.gradient-generator.page.copied')));
 }
 
 function copyResult() {
@@ -368,7 +380,7 @@ function process() {
     parseKvFromInput();
 
     if (!canProcess.value) {
-      throw new Error('请至少提供两种颜色，且步数 >= 2');
+      throw new Error(t('tools.gradient-generator.page.needAtLeastTwoColors'));
     }
     const cols = colors.value;
     const pal = interpolatePalette(cols, Math.max(2, Math.min(64, steps.value)));
@@ -382,7 +394,7 @@ function process() {
     }
     processingTime.value = Math.round(performance.now() - start);
   } catch (e: any) {
-    error.value = e?.message || '处理失败';
+    error.value = e?.message || t('tools.gradient-generator.page.processFailed');
   }
 }
 

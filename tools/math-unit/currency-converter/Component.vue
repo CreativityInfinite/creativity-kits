@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium mb-2">从</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.currency-converter.page.from') }}</label>
         <div class="flex gap-2">
           <input
             v-model.number="fromAmount"
@@ -10,7 +10,7 @@
             type="number"
             step="0.01"
             class="flex-1 px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            placeholder="输入金额"
+            :placeholder="$t('tools.currency-converter.page.inputPlaceholder')"
           />
           <select v-model="fromCurrency" @change="convert" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             <option v-for="currency in currencies" :key="currency.code" :value="currency.code">{{ currency.code }} - {{ currency.name }}</option>
@@ -19,9 +19,14 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium mb-2">到</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.currency-converter.page.to') }}</label>
         <div class="flex gap-2">
-          <input v-model="toAmount" readonly class="flex-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white font-mono" placeholder="转换结果" />
+          <input
+            v-model="toAmount"
+            readonly
+            class="flex-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white font-mono"
+            :placeholder="$t('tools.currency-converter.page.resultPlaceholder')"
+          />
           <select v-model="toCurrency" @change="convert" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             <option v-for="currency in currencies" :key="currency.code" :value="currency.code">{{ currency.code }} - {{ currency.name }}</option>
           </select>
@@ -30,22 +35,22 @@
     </div>
 
     <div class="flex justify-center">
-      <button @click="swapCurrencies" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">⇄ 交换货币</button>
+      <button @click="swapCurrencies" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">{{ $t('tools.currency-converter.page.swapCurrencies') }}</button>
     </div>
 
     <div v-if="exchangeRate" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
       <div class="text-sm text-blue-800 dark:text-blue-200">
-        <p>汇率: 1 {{ fromCurrency }} = {{ exchangeRate }} {{ toCurrency }}</p>
-        <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">* 汇率仅供参考，实际交易请以银行汇率为准</p>
+        <p>{{ $t('tools.currency-converter.page.ratePrefix') }} 1 {{ fromCurrency }} = {{ exchangeRate }} {{ toCurrency }}</p>
+        <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">{{ $t('tools.currency-converter.page.rateDisclaimer') }}</p>
       </div>
     </div>
 
     <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">注意事项</h3>
+      <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">{{ $t('tools.currency-converter.page.notesTitle') }}</h3>
       <ul class="text-sm text-yellow-800 dark:text-yellow-200 space-y-1">
-        <li>• 汇率数据来源于公开API，可能存在延迟</li>
-        <li>• 仅供参考，实际兑换请咨询银行</li>
-        <li>• 支持主要国际货币</li>
+        <li>{{ $t('tools.currency-converter.page.noteDataSource') }}</li>
+        <li>{{ $t('tools.currency-converter.page.noteDisclaimer') }}</li>
+        <li>{{ $t('tools.currency-converter.page.noteSupported') }}</li>
       </ul>
     </div>
   </div>

@@ -3,14 +3,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium mb-2">矩阵 A</label>
+          <label class="block text-sm font-medium mb-2">{{ $t('tools.matrix-calculator.page.matrixALabel') }}</label>
           <div class="space-y-2">
             <div class="flex gap-2">
               <select v-model="matrixA.rows" @change="resizeMatrix('A')" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option v-for="n in 5" :key="n" :value="n">{{ n }} 行</option>
+                <option v-for="n in 5" :key="n" :value="n">{{ $t('tools.matrix-calculator.page.rowsOption', { n }) }}</option>
               </select>
               <select v-model="matrixA.cols" @change="resizeMatrix('A')" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option v-for="n in 5" :key="n" :value="n">{{ n }} 列</option>
+                <option v-for="n in 5" :key="n" :value="n">{{ $t('tools.matrix-calculator.page.colsOption', { n }) }}</option>
               </select>
             </div>
 
@@ -28,14 +28,14 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-2">矩阵 B</label>
+          <label class="block text-sm font-medium mb-2">{{ $t('tools.matrix-calculator.page.matrixBLabel') }}</label>
           <div class="space-y-2">
             <div class="flex gap-2">
               <select v-model="matrixB.rows" @change="resizeMatrix('B')" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option v-for="n in 5" :key="n" :value="n">{{ n }} 行</option>
+                <option v-for="n in 5" :key="n" :value="n">{{ $t('tools.matrix-calculator.page.rowsOption', { n }) }}</option>
               </select>
               <select v-model="matrixB.cols" @change="resizeMatrix('B')" class="px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option v-for="n in 5" :key="n" :value="n">{{ n }} 列</option>
+                <option v-for="n in 5" :key="n" :value="n">{{ $t('tools.matrix-calculator.page.colsOption', { n }) }}</option>
               </select>
             </div>
 
@@ -53,24 +53,32 @@
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <button @click="calculate('add')" :disabled="!canAddSubtract" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">A + B</button>
-          <button @click="calculate('subtract')" :disabled="!canAddSubtract" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md">A - B</button>
-          <button @click="calculate('multiply')" :disabled="!canMultiply" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">A × B</button>
-          <button @click="calculate('determinant')" :disabled="!isSquareA" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white rounded-md">det(A)</button>
+          <button @click="calculate('add')" :disabled="!canAddSubtract" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+            {{ $t('tools.matrix-calculator.page.opAdd') }}
+          </button>
+          <button @click="calculate('subtract')" :disabled="!canAddSubtract" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md">
+            {{ $t('tools.matrix-calculator.page.opSubtract') }}
+          </button>
+          <button @click="calculate('multiply')" :disabled="!canMultiply" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white rounded-md">
+            {{ $t('tools.matrix-calculator.page.opMultiply') }}
+          </button>
+          <button @click="calculate('determinant')" :disabled="!isSquareA" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white rounded-md">
+            {{ $t('tools.matrix-calculator.page.opDeterminant') }}
+          </button>
         </div>
 
         <div class="flex gap-2">
-          <button @click="fillRandom('A')" class="flex-1 px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm">随机填充A</button>
-          <button @click="fillRandom('B')" class="flex-1 px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm">随机填充B</button>
-          <button @click="clearMatrices" class="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm">清空</button>
+          <button @click="fillRandom('A')" class="flex-1 px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm">{{ $t('tools.matrix-calculator.page.randomFillA') }}</button>
+          <button @click="fillRandom('B')" class="flex-1 px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm">{{ $t('tools.matrix-calculator.page.randomFillB') }}</button>
+          <button @click="clearMatrices" class="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm">{{ $t('tools.matrix-calculator.page.clear') }}</button>
         </div>
       </div>
 
       <div class="space-y-4">
         <div v-if="result">
-          <h3 class="font-medium mb-2">计算结果</h3>
+          <h3 class="font-medium mb-2">{{ $t('tools.matrix-calculator.page.resultTitle') }}</h3>
           <div v-if="result.type === 'matrix'" class="space-y-2">
-            <div class="text-sm text-gray-600 dark:text-gray-400">{{ result.rows }} × {{ result.cols }} 矩阵</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.matrix-calculator.page.matrixSize', { rows: result.rows, cols: result.cols }) }}</div>
             <div class="bg-gray-50 dark:bg-gray-800 rounded p-3">
               <div class="grid gap-1" :style="{ gridTemplateColumns: `repeat(${result.cols}, 1fr)` }">
                 <div v-for="(value, index) in result.data" :key="index" class="w-16 h-12 flex items-center justify-center bg-white dark:bg-gray-700 border rounded text-sm font-mono">
@@ -81,7 +89,7 @@
           </div>
 
           <div v-else-if="result.type === 'scalar'" class="space-y-2">
-            <div class="text-sm text-gray-600 dark:text-gray-400">标量结果</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.matrix-calculator.page.scalarTitle') }}</div>
             <div class="bg-gray-50 dark:bg-gray-800 rounded p-4 text-center">
               <div class="text-2xl font-mono font-bold">{{ formatNumber(result.value) }}</div>
             </div>
@@ -93,21 +101,25 @@
         </div>
 
         <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-          <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">操作说明</h3>
+          <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">{{ $t('tools.matrix-calculator.page.guideTitle') }}</h3>
           <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-            <li>• 加法/减法：矩阵必须同型（相同行列数）</li>
-            <li>• 乘法：A的列数必须等于B的行数</li>
-            <li>• 行列式：只能计算方阵（行数=列数）</li>
-            <li>• 支持小数运算，结果自动格式化</li>
+            <li>{{ $t('tools.matrix-calculator.page.guideAddSub') }}</li>
+            <li>{{ $t('tools.matrix-calculator.page.guideMul') }}</li>
+            <li>{{ $t('tools.matrix-calculator.page.guideDet') }}</li>
+            <li>{{ $t('tools.matrix-calculator.page.guideFloat') }}</li>
           </ul>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h3 class="text-sm font-medium mb-2">矩阵信息</h3>
+          <h3 class="text-sm font-medium mb-2">{{ $t('tools.matrix-calculator.page.infoTitle') }}</h3>
           <div class="text-sm space-y-1">
-            <div>矩阵A: {{ matrixA.rows }}×{{ matrixA.cols }} {{ isSquareA ? '(方阵)' : '' }}</div>
-            <div>矩阵B: {{ matrixB.rows }}×{{ matrixB.cols }} {{ isSquareB ? '(方阵)' : '' }}</div>
-            <div class="text-gray-600 dark:text-gray-400">可加减: {{ canAddSubtract ? '是' : '否' }} | 可相乘: {{ canMultiply ? '是' : '否' }}</div>
+            <div>{{ $t('tools.matrix-calculator.page.matrixAInfo', { rows: matrixA.rows, cols: matrixA.cols, square: isSquareA ? $t('tools.matrix-calculator.page.square') : '' }) }}</div>
+            <div>{{ $t('tools.matrix-calculator.page.matrixBInfo', { rows: matrixB.rows, cols: matrixB.cols, square: isSquareB ? $t('tools.matrix-calculator.page.square') : '' }) }}</div>
+            <div class="text-gray-600 dark:text-gray-400">
+              {{ $t('tools.matrix-calculator.page.canAddSubtract', { v: canAddSubtract ? $t('tools.matrix-calculator.page.yes') : $t('tools.matrix-calculator.page.no') }) }}
+              |
+              {{ $t('tools.matrix-calculator.page.canMultiply', { v: canMultiply ? $t('tools.matrix-calculator.page.yes') : $t('tools.matrix-calculator.page.no') }) }}
+            </div>
           </div>
         </div>
       </div>
@@ -117,6 +129,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface Matrix {
   rows: number;
@@ -137,6 +150,7 @@ const matrixB = ref<Matrix>({
 });
 
 const result = ref<any>(null);
+const { t } = useI18n();
 
 const canAddSubtract = computed(() => {
   return matrixA.value.rows === matrixB.value.rows && matrixA.value.cols === matrixB.value.cols;
@@ -190,7 +204,7 @@ function calculate(operation: string) {
 
 function addMatrices(a: Matrix, b: Matrix): any {
   if (a.rows !== b.rows || a.cols !== b.cols) {
-    throw new Error('矩阵维度不匹配');
+    throw new Error(t('tools.matrix-calculator.page.errDimMismatch'));
   }
 
   const data = a.data.map((val, index) => val + b.data[index]);
@@ -205,7 +219,7 @@ function addMatrices(a: Matrix, b: Matrix): any {
 
 function subtractMatrices(a: Matrix, b: Matrix): any {
   if (a.rows !== b.rows || a.cols !== b.cols) {
-    throw new Error('矩阵维度不匹配');
+    throw new Error(t('tools.matrix-calculator.page.errDimMismatch'));
   }
 
   const data = a.data.map((val, index) => val - b.data[index]);
@@ -220,7 +234,7 @@ function subtractMatrices(a: Matrix, b: Matrix): any {
 
 function multiplyMatrices(a: Matrix, b: Matrix): any {
   if (a.cols !== b.rows) {
-    throw new Error('矩阵维度不匹配：A的列数必须等于B的行数');
+    throw new Error(t('tools.matrix-calculator.page.errDimMismatchMul'));
   }
 
   const result = [];
@@ -245,7 +259,7 @@ function multiplyMatrices(a: Matrix, b: Matrix): any {
 
 function calculateDeterminant(matrix: Matrix): any {
   if (matrix.rows !== matrix.cols) {
-    throw new Error('只能计算方阵的行列式');
+    throw new Error(t('tools.matrix-calculator.page.errDetSquareOnly'));
   }
 
   const n = matrix.rows;
@@ -265,7 +279,7 @@ function calculateDeterminant(matrix: Matrix): any {
     return { type: 'scalar', value: det };
   }
 
-  throw new Error('暂不支持4×4以上矩阵的行列式计算');
+  throw new Error(t('tools.matrix-calculator.page.errDetTooLarge'));
 }
 
 function fillRandom(matrix: 'A' | 'B') {

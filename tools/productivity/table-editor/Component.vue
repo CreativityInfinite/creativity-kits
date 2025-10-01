@@ -1,27 +1,32 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">表格编辑器</h1>
-      <p class="text-gray-600 dark:text-gray-400">将 CSV 文本解析为表格进行简单编辑，支持分隔符选择与导出。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.table-editor.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.table-editor.page.subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="md:col-span-2">
-        <label class="block text-sm font-medium mb-2">CSV 文本</label>
-        <textarea v-model="csv" rows="8" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="name,age\nAlice,30"></textarea>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.table-editor.page.csvLabel') }}</label>
+        <textarea
+          v-model="csv"
+          rows="8"
+          class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          :placeholder="$t('tools.table-editor.page.csvPlaceholder')"
+        ></textarea>
       </div>
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium mb-2">分隔符</label>
+          <label class="block text-sm font-medium mb-2">{{ $t('tools.table-editor.page.separator') }}</label>
           <select v-model="sep" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            <option value=",">逗号 (,)</option>
-            <option value=";">分号 (;)</option>
-            <option value="\t">制表符 (Tab)</option>
-            <option value="|">竖线 (|)</option>
+            <option value=",">{{ $t('tools.table-editor.page.optionComma') }}</option>
+            <option value=";">{{ $t('tools.table-editor.page.optionSemicolon') }}</option>
+            <option value="\t">{{ $t('tools.table-editor.page.optionTab') }}</option>
+            <option value="|">{{ $t('tools.table-editor.page.optionPipe') }}</option>
           </select>
         </div>
         <div class="flex items-end">
-          <button @click="parse" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">解析</button>
+          <button @click="parse" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.table-editor.page.parse') }}</button>
         </div>
       </div>
     </div>
@@ -44,8 +49,8 @@
     </div>
 
     <div v-if="rows.length" class="flex justify-center gap-3">
-      <button @click="addRow" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">新增一行</button>
-      <button @click="downloadCsv" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md">下载 CSV</button>
+      <button @click="addRow" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.table-editor.page.addRow') }}</button>
+      <button @click="downloadCsv" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md">{{ $t('tools.table-editor.page.downloadCsv') }}</button>
     </div>
   </div>
 </template>

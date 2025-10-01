@@ -1,22 +1,27 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">社交媒体发布计划器</h1>
-      <p class="text-gray-600 dark:text-gray-400">创建计划条目（内容、时间、平台），保存在本地并可导出 JSON。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.social-post-scheduler.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.social-post-scheduler.page.subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="md:col-span-2">
-        <label class="block text-sm font-medium mb-2">内容</label>
-        <textarea v-model="content" rows="4" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="要发布的内容"></textarea>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.social-post-scheduler.page.contentLabel') }}</label>
+        <textarea
+          v-model="content"
+          rows="4"
+          class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          :placeholder="$t('tools.social-post-scheduler.page.contentPlaceholder')"
+        ></textarea>
       </div>
       <div>
-        <label class="block text-sm font-medium mb-2">发布时间</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.social-post-scheduler.page.timeLabel') }}</label>
         <input v-model="when" type="datetime-local" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
       </div>
 
       <div class="md:col-span-3">
-        <label class="block text-sm font-medium mb-2">平台</label>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.social-post-scheduler.page.platformsLabel') }}</label>
         <div class="flex flex-wrap gap-3">
           <label class="inline-flex items-center gap-2"><input type="checkbox" v-model="platforms" value="X/Twitter" /> X/Twitter</label>
           <label class="inline-flex items-center gap-2"><input type="checkbox" v-model="platforms" value="Facebook" /> Facebook</label>
@@ -28,28 +33,28 @@
     </div>
 
     <div class="flex justify-center gap-3">
-      <button @click="add" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">添加计划</button>
-      <button v-if="items.length" @click="copyJson" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">复制 JSON</button>
-      <button v-if="items.length" @click="clearAll" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">清空</button>
+      <button @click="add" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.social-post-scheduler.page.addPlan') }}</button>
+      <button v-if="items.length" @click="copyJson" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.social-post-scheduler.page.copyJson') }}</button>
+      <button v-if="items.length" @click="clearAll" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">{{ $t('tools.social-post-scheduler.page.clear') }}</button>
     </div>
 
     <div v-if="items.length" class="space-y-4">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white dark:bg-gray-800 rounded-lg p-4 text-center border">
           <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ items.length }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">计划条目</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.social-post-scheduler.page.cardTotalPlans') }}</div>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-4 text-center border">
           <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ upcoming }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">未到时间</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.social-post-scheduler.page.cardUpcoming') }}</div>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-4 text-center border">
           <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ distinctPlatforms }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">覆盖平台</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.social-post-scheduler.page.cardDistinctPlatforms') }}</div>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-4 text-center border">
           <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ todayCount }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">今日计划</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">{{ $t('tools.social-post-scheduler.page.cardTodayPlans') }}</div>
         </div>
       </div>
 
@@ -57,10 +62,10 @@
         <table class="min-w-full text-sm">
           <thead>
             <tr class="text-left text-gray-600 dark:text-gray-400">
-              <th class="py-2 px-3">时间</th>
-              <th class="py-2 px-3">平台</th>
-              <th class="py-2 px-3">内容</th>
-              <th class="py-2 px-3">操作</th>
+              <th class="py-2 px-3">{{ $t('tools.social-post-scheduler.page.table.time') }}</th>
+              <th class="py-2 px-3">{{ $t('tools.social-post-scheduler.page.table.platform') }}</th>
+              <th class="py-2 px-3">{{ $t('tools.social-post-scheduler.page.table.content') }}</th>
+              <th class="py-2 px-3">{{ $t('tools.social-post-scheduler.page.table.actions') }}</th>
             </tr>
           </thead>
           <tbody class="text-gray-800 dark:text-gray-200">
@@ -69,7 +74,9 @@
               <td class="py-2 px-3">{{ it.platforms.join(', ') }}</td>
               <td class="py-2 px-3 max-w-[480px] truncate" :title="it.content">{{ it.content }}</td>
               <td class="py-2 px-3">
-                <button @click="remove(i)" class="px-2 py-1 text-xs bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 rounded border border-red-200 dark:border-red-800">删除</button>
+                <button @click="remove(i)" class="px-2 py-1 text-xs bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 rounded border border-red-200 dark:border-red-800">
+                  {{ $t('tools.social-post-scheduler.page.table.delete') }}
+                </button>
               </td>
             </tr>
           </tbody>
@@ -81,6 +88,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type Item = { id: string; content: string; when: string; platforms: string[] };
 
@@ -88,6 +96,7 @@ const content = ref('');
 const when = ref('');
 const platforms = ref<string[]>([]);
 const items = ref<Item[]>([]);
+const { t } = useI18n();
 
 function add() {
   const c = content.value.trim();
@@ -134,15 +143,15 @@ async function copyJson() {
   const json = JSON.stringify(items.value, null, 2);
   try {
     await navigator.clipboard.writeText(json);
-    alert('已复制 JSON');
+    alert(t('tools.social-post-scheduler.page.alertCopied'));
   } catch {
-    alert('复制失败，请手动复制');
+    alert(t('tools.social-post-scheduler.page.alertCopyFailed'));
   }
 }
 
 function clearAll() {
   if (!items.value.length) return;
-  if (!confirm('确定清空所有计划？')) return;
+  if (!confirm(t('tools.social-post-scheduler.page.confirmClear'))) return;
   items.value = [];
   save();
 }

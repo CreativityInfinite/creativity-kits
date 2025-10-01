@@ -2,53 +2,59 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">方程求解器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.equation-solver.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="grid grid-cols-3 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">类型</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.equation-solver.page.typeLabel') }}</label>
               <select v-model="type" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="linear">一次：ax + b = 0</option>
-                <option value="quadratic">二次：ax² + bx + c = 0</option>
-                <option value="linear2">二元一次：A x + B y = C; D x + E y = F</option>
+                <option value="linear">{{ $t('tools.equation-solver.page.optLinear') }}</option>
+                <option value="quadratic">{{ $t('tools.equation-solver.page.optQuadratic') }}</option>
+                <option value="linear2">{{ $t('tools.equation-solver.page.optLinear2') }}</option>
               </select>
             </div>
             <div class="col-span-2">
-              <label class="block text-sm font-medium mb-1">参数</label>
-              <input v-model="params" placeholder="线性: a,b; 二次: a,b,c; 二元: A,B,C,D,E,F" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.equation-solver.page.paramsLabel') }}</label>
+              <input
+                v-model="params"
+                :placeholder="$t('tools.equation-solver.page.paramsPlaceholder')"
+                class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" :disabled="!params.trim()" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">求解</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="process" :disabled="!params.trim()" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              {{ $t('tools.equation-solver.page.solve') }}
+            </button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.equation-solver.page.clear') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.equation-solver.page.resultTitle') }}</h3>
 
         <div v-if="result" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-2">
-              <h4 class="font-medium">解</h4>
+              <h4 class="font-medium">{{ $t('tools.equation-solver.page.solutionTitle') }}</h4>
               <div class="flex gap-2">
-                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
-                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.equation-solver.page.copy') }}</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.equation-solver.page.download') }}</button>
               </div>
             </div>
             <textarea :value="result" readonly rows="10" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
-            <div class="text-xs text-gray-500 mt-2" v-if="processingTime">处理时间: {{ processingTime }}ms</div>
+            <div class="text-xs text-gray-500 mt-2" v-if="processingTime">{{ $t('tools.equation-solver.page.processingTime') }}: {{ processingTime }}ms</div>
           </div>
 
-          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.equation-solver.page.saveToHistory') }}</button>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-3">📐</div>
-          <div class="text-lg">输入系数，计算方程解</div>
+          <div class="text-lg">{{ $t('tools.equation-solver.page.emptySubtitle') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
@@ -58,17 +64,17 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.equation-solver.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
-            <div class="font-medium">类型 {{ h.type }}</div>
+            <div class="font-medium">{{ $t('tools.equation-solver.page.typeShort') }} {{ h.type }}</div>
             <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
           </div>
-          <div class="text-xs truncate">参数: {{ h.params }}</div>
+          <div class="text-xs truncate">{{ $t('tools.equation-solver.page.paramShort') }} {{ h.params }}</div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.equation-solver.page.load') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.equation-solver.page.delete') }}</button>
           </div>
         </div>
       </div>
@@ -78,7 +84,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 type HistoryItem = { type: string; params: string; result: string; timestamp: number };
+const { t } = useI18n();
 
 const type = ref<'linear' | 'quadratic' | 'linear2'>('linear');
 const params = ref('');
@@ -93,8 +101,8 @@ function clearAll() {
   error.value = '';
   processingTime.value = null;
 }
-function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
+function copyText(text: string) {
+  navigator.clipboard.writeText(text).then(() => alert(t('common.copied')));
 }
 function copyResult() {
   if (result.value) copyText(result.value);
@@ -168,19 +176,19 @@ function process() {
       .filter((n) => Number.isFinite(n));
     let out: any;
     if (type.value === 'linear') {
-      if (nums.length < 2) throw new Error('一次方程需参数 a,b');
+      if (nums.length < 2) throw new Error(t('tools.equation-solver.page.errLinearParams'));
       out = solveLinear(nums[0], nums[1]);
     } else if (type.value === 'quadratic') {
-      if (nums.length < 3) throw new Error('二次方程需参数 a,b,c');
+      if (nums.length < 3) throw new Error(t('tools.equation-solver.page.errQuadraticParams'));
       out = solveQuadratic(nums[0], nums[1], nums[2]);
     } else {
-      if (nums.length < 6) throw new Error('二元一次需参数 A,B,C,D,E,F');
+      if (nums.length < 6) throw new Error(t('tools.equation-solver.page.errLinear2Params'));
       out = solveLinear2(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5]);
     }
     result.value = JSON.stringify({ type: type.value, params: nums, solution: out }, null, 2);
     processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '求解失败';
+    error.value = e?.message || t('tools.equation-solver.page.solveFailed');
   }
 }
 

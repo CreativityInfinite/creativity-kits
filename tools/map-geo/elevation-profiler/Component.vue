@@ -1,33 +1,35 @@
 <template>
   <div class="space-y-6">
     <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">海拔剖面图</h1>
-      <p class="text-gray-600 dark:text-gray-400">输入多行经纬度 lon,lat，生成示意高程剖面（本地模拟），支持导出 CSV</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.elevation-profiler.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.elevation-profiler.page.subtitle') }}</p>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 输入 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> {{ $t('tools.elevation-profiler.page.inputLabel') }} </label>
           <textarea
             v-model="input"
             class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            placeholder="请输入内容..."
+            :placeholder="$t('tools.elevation-profiler.page.inputPlaceholder')"
           />
         </div>
 
         <div class="flex justify-center gap-2">
-          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">处理</button>
-          <button @click="downloadCSV" :disabled="!csv" class="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">下载 CSV</button>
+          <button @click="process" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">{{ $t('tools.elevation-profiler.page.process') }}</button>
+          <button @click="downloadCSV" :disabled="!csv" class="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">
+            {{ $t('tools.elevation-profiler.page.downloadCsv') }}
+          </button>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 输出 </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> {{ $t('tools.elevation-profiler.page.outputLabel') }} </label>
           <textarea
             :value="output"
             readonly
             class="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 dark:text-white font-mono text-sm"
-            placeholder="处理结果将显示在这里..."
+            :placeholder="$t('tools.elevation-profiler.page.outputPlaceholder')"
           />
           <div class="mt-3">
             <canvas ref="canvasRef" class="w-full bg-white dark:bg-gray-800 rounded border dark:border-gray-700" height="160"></canvas>
@@ -35,7 +37,9 @@
         </div>
 
         <div class="flex justify-center">
-          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">复制结果</button>
+          <button @click="copyToClipboard" :disabled="!output" class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md transition-colors">
+            {{ $t('tools.elevation-profiler.page.copyResult') }}
+          </button>
         </div>
       </div>
     </div>
@@ -44,6 +48,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const input = ref('');
 const output = ref('');
@@ -70,7 +76,7 @@ async function process() {
     })
     .filter(Boolean) as { lon: number; lat: number }[];
   if (pts.length < 2) {
-    output.value = '至少提供两点经纬度 lon,lat';
+    output.value = t('tools.elevation-profiler.page.needAtLeastTwoPoints');
     csv.value = '';
     draw([]);
     return;
@@ -98,7 +104,7 @@ async function process() {
 
   // 输出 JSON 与 CSV
   const arr = xs.map((d, i) => ({ distance_m: Math.round(d), elevation_m: es[i] }));
-  output.value = JSON.stringify({ total_distance_m: Math.round(maxX), profile: arr, note: '演示版：本地模拟高程' }, null, 2);
+  output.value = JSON.stringify({ total_distance_m: Math.round(maxX), profile: arr, note: t('tools.elevation-profiler.page.jsonNoteDemo') }, null, 2);
   csv.value = 'distance_m,elevation_m\n' + arr.map((r) => `${r.distance_m},${r.elevation_m}`).join('\n');
 
   draw(arr);
@@ -166,10 +172,10 @@ async function copyToClipboard() {
   if (!output.value) return;
   try {
     await navigator.clipboard.writeText(output.value);
-    alert('结果已复制');
+    alert(t('tools.elevation-profiler.page.copied'));
   } catch (err) {
     console.error('复制失败:', err);
-    alert('复制失败');
+    alert(t('tools.elevation-profiler.page.copyFailed'));
   }
 }
 </script>

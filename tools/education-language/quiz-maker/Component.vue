@@ -1,49 +1,35 @@
 <template>
   <div class="space-y-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">测验制作器</h1>
-      <p class="text-gray-600 dark:text-gray-400">将结构化文本解析成题目 JSON。支持题干、选项、题型与答案。</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('tools.quiz-maker.page.title') }}</h1>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('tools.quiz-maker.page.subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="md:col-span-2">
-        <label class="block text-sm font-medium mb-2">输入格式示例</label>
-        <pre class="text-xs p-3 rounded-md border bg-gray-50 dark:bg-gray-800 dark:text-gray-100 overflow-auto">
-Q: 世界上最高的山？
-A) 珠穆朗玛峰
-B) 乔戈里峰
-C) 干城章嘉峰
-type=single
-answer=A
-
-Q: 下面哪些是编程语言？
-- JavaScript
-- Python
-- HTML
-type=multi
-answer=JavaScript,Python
-        </pre>
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.quiz-maker.page.sampleLabel') }}</label>
+        <pre class="text-xs p-3 rounded-md border bg-gray-50 dark:bg-gray-800 dark:text-gray-100 overflow-auto">{{ $t('tools.quiz-maker.page.sampleInput') }}</pre>
       </div>
 
       <div class="md:col-span-2">
-        <label class="block text-sm font-medium mb-2">题库文本</label>
-        <textarea v-model="raw" rows="10" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="粘贴/编写题库..." />
+        <label class="block text-sm font-medium mb-2">{{ $t('tools.quiz-maker.page.inputLabel') }}</label>
+        <textarea v-model="raw" rows="10" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" :placeholder="$t('tools.quiz-maker.page.placeholder')" />
       </div>
     </div>
 
     <div class="flex justify-center gap-3">
-      <button @click="parseQuiz" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">解析为 JSON</button>
-      <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+      <button @click="parseQuiz" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.quiz-maker.page.parseBtn') }}</button>
+      <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.quiz-maker.page.clear') }}</button>
     </div>
 
     <div v-if="jsonOut" class="space-y-4">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">解析结果</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ $t('tools.quiz-maker.page.resultTitle') }}</div>
         <textarea readonly rows="12" class="w-full px-3 py-2 border rounded-md dark:bg-gray-900 dark:border-gray-700 dark:text-white">{{ jsonOut }}</textarea>
       </div>
       <div class="flex justify-center gap-3">
-        <button @click="copy" class="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md">复制</button>
-        <button @click="download" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md">下载 JSON</button>
+        <button @click="copy" class="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md">{{ $t('tools.quiz-maker.page.copy') }}</button>
+        <button @click="download" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md">{{ $t('tools.quiz-maker.page.downloadJson') }}</button>
       </div>
     </div>
   </div>
@@ -51,6 +37,9 @@ answer=JavaScript,Python
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const raw = ref('');
 const items = ref<Array<{ question: string; options: string[]; answer: string | string[]; type: 'single' | 'multi' }>>([]);
@@ -109,9 +98,9 @@ async function copy() {
   if (!jsonOut.value) return;
   try {
     await navigator.clipboard.writeText(jsonOut.value);
-    alert('已复制');
+    alert(t('tools.quiz-maker.page.copiedAlert'));
   } catch {
-    alert('复制失败，请手动复制');
+    alert(t('tools.quiz-maker.page.copyFailedAlert'));
   }
 }
 

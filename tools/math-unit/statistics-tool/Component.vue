@@ -2,28 +2,28 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">统计计算器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.statistics-tool.page.title') }}</h3>
 
         <div class="space-y-3">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">数据输入</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.statistics-tool.page.dataInputTitle') }}</h4>
             <div class="space-y-3">
               <div>
-                <label class="block text-sm font-medium mb-1">输入数据</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.statistics-tool.page.inputLabel') }}</label>
                 <textarea
                   v-model="dataInput"
                   class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono"
                   rows="6"
-                  placeholder="输入数字，支持多种格式：&#10;1, 2, 3, 4, 5&#10;1 2 3 4 5&#10;1&#10;2&#10;3&#10;4&#10;5"
+                  :placeholder="$t('tools.statistics-tool.page.inputPlaceholder')"
                   @input="parseData"
                 />
-                <p class="text-xs text-gray-500 mt-1">支持逗号、空格、换行分隔的数字</p>
+                <p class="text-xs text-gray-500 mt-1">{{ $t('tools.statistics-tool.page.inputSupportTip') }}</p>
               </div>
 
               <div class="flex gap-2">
-                <button @click="loadSampleData" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">加载示例数据</button>
-                <button @click="clearData" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空数据</button>
-                <button @click="generateRandomData" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">生成随机数据</button>
+                <button @click="loadSampleData" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.statistics-tool.page.btnLoadSample') }}</button>
+                <button @click="clearData" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.statistics-tool.page.btnClear') }}</button>
+                <button @click="generateRandomData" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.statistics-tool.page.btnGenerateRandom') }}</button>
               </div>
 
               <div v-if="parseError" class="text-red-500 text-sm">
@@ -32,18 +32,21 @@
 
               <div v-if="data.length > 0" class="bg-blue-50 dark:bg-blue-900/20 rounded p-3">
                 <div class="text-sm">
-                  <div class="font-medium text-blue-800 dark:text-blue-200 mb-1">数据概览</div>
-                  <div class="text-blue-700 dark:text-blue-300">数据点数: {{ data.length }} | 范围: {{ Math.min(...data).toFixed(2) }} ~ {{ Math.max(...data).toFixed(2) }}</div>
+                  <div class="font-medium text-blue-800 dark:text-blue-200 mb-1">{{ $t('tools.statistics-tool.page.overviewTitle') }}</div>
+                  <div class="text-blue-700 dark:text-blue-300">
+                    {{ $t('tools.statistics-tool.page.dataPoints') }} {{ data.length }} | {{ $t('tools.statistics-tool.page.rangeShort') }} {{ Math.min(...data).toFixed(2) }} ~
+                    {{ Math.max(...data).toFixed(2) }}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           <div v-if="data.length > 0" class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h4 class="font-medium mb-3">数据可视化</h4>
+            <h4 class="font-medium mb-3">{{ $t('tools.statistics-tool.page.vizTitle') }}</h4>
             <div class="space-y-3">
               <div class="bg-white dark:bg-gray-700 rounded p-3">
-                <h5 class="text-sm font-medium mb-2">数据分布直方图</h5>
+                <h5 class="text-sm font-medium mb-2">{{ $t('tools.statistics-tool.page.histogramTitle') }}</h5>
                 <div class="space-y-1">
                   <div v-for="(bin, index) in histogram" :key="index" class="flex items-center gap-2 text-xs">
                     <span class="w-16 text-right">{{ bin.range }}</span>
@@ -58,30 +61,30 @@
               </div>
 
               <div class="bg-white dark:bg-gray-700 rounded p-3">
-                <h5 class="text-sm font-medium mb-2">箱线图信息</h5>
+                <h5 class="text-sm font-medium mb-2">{{ $t('tools.statistics-tool.page.boxplotTitle') }}</h5>
                 <div class="space-y-2 text-sm">
                   <div class="flex justify-between">
-                    <span>最小值:</span>
+                    <span>{{ $t('tools.statistics-tool.page.minLabel') }}</span>
                     <span class="font-mono">{{ statistics.min.toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>第一四分位数 (Q1):</span>
+                    <span>{{ $t('tools.statistics-tool.page.q1Label') }}</span>
                     <span class="font-mono">{{ statistics.q1.toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>中位数 (Q2):</span>
+                    <span>{{ $t('tools.statistics-tool.page.medianQ2Label') }}</span>
                     <span class="font-mono">{{ statistics.median.toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>第三四分位数 (Q3):</span>
+                    <span>{{ $t('tools.statistics-tool.page.q3Label') }}</span>
                     <span class="font-mono">{{ statistics.q3.toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>最大值:</span>
+                    <span>{{ $t('tools.statistics-tool.page.maxLabel') }}</span>
                     <span class="font-mono">{{ statistics.max.toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>四分位距 (IQR):</span>
+                    <span>{{ $t('tools.statistics-tool.page.iqrLabel') }}</span>
                     <span class="font-mono">{{ statistics.iqr.toFixed(4) }}</span>
                   </div>
                 </div>
@@ -92,64 +95,64 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">统计结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.statistics-tool.page.resultsTitle') }}</h3>
 
         <div v-if="data.length > 0" class="space-y-4">
           <div class="bg-white dark:bg-gray-800 border rounded-lg">
             <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-              <h4 class="font-medium">基本统计量</h4>
+              <h4 class="font-medium">{{ $t('tools.statistics-tool.page.basicStatsTitle') }}</h4>
             </div>
             <div class="p-4 space-y-3">
               <div class="grid grid-cols-2 gap-4 text-sm">
                 <div class="space-y-2">
                   <div class="flex justify-between">
-                    <span>样本数量:</span>
+                    <span>{{ $t('tools.statistics-tool.page.countLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.count }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>算术平均数:</span>
+                    <span>{{ $t('tools.statistics-tool.page.meanLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.mean.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>几何平均数:</span>
+                    <span>{{ $t('tools.statistics-tool.page.geometricMeanLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.geometricMean.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>调和平均数:</span>
+                    <span>{{ $t('tools.statistics-tool.page.harmonicMeanLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.harmonicMean.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>中位数:</span>
+                    <span>{{ $t('tools.statistics-tool.page.medianLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.median.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>众数:</span>
+                    <span>{{ $t('tools.statistics-tool.page.modeLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.mode.join(', ') }}</span>
                   </div>
                 </div>
                 <div class="space-y-2">
                   <div class="flex justify-between">
-                    <span>最小值:</span>
+                    <span>{{ $t('tools.statistics-tool.page.minLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.min.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>最大值:</span>
+                    <span>{{ $t('tools.statistics-tool.page.maxLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.max.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>极差:</span>
+                    <span>{{ $t('tools.statistics-tool.page.rangeLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.range.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>总和:</span>
+                    <span>{{ $t('tools.statistics-tool.page.sumLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.sum.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>平方和:</span>
+                    <span>{{ $t('tools.statistics-tool.page.sumOfSquaresLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.sumOfSquares.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>平均绝对偏差:</span>
+                    <span>{{ $t('tools.statistics-tool.page.meanAbsDevLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.meanAbsoluteDeviation.toFixed(6) }}</span>
                   </div>
                 </div>
@@ -159,43 +162,43 @@
 
           <div class="bg-white dark:bg-gray-800 border rounded-lg">
             <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-              <h4 class="font-medium">离散程度</h4>
+              <h4 class="font-medium">{{ $t('tools.statistics-tool.page.dispersionTitle') }}</h4>
             </div>
             <div class="p-4 space-y-3">
               <div class="grid grid-cols-2 gap-4 text-sm">
                 <div class="space-y-2">
                   <div class="flex justify-between">
-                    <span>样本方差:</span>
+                    <span>{{ $t('tools.statistics-tool.page.sampleVarianceLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.sampleVariance.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>总体方差:</span>
+                    <span>{{ $t('tools.statistics-tool.page.populationVarianceLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.populationVariance.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>样本标准差:</span>
+                    <span>{{ $t('tools.statistics-tool.page.sampleStdDevLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.sampleStdDev.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>总体标准差:</span>
+                    <span>{{ $t('tools.statistics-tool.page.populationStdDevLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.populationStdDev.toFixed(6) }}</span>
                   </div>
                 </div>
                 <div class="space-y-2">
                   <div class="flex justify-between">
-                    <span>变异系数:</span>
+                    <span>{{ $t('tools.statistics-tool.page.cvLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.coefficientOfVariation.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>偏度:</span>
+                    <span>{{ $t('tools.statistics-tool.page.skewnessLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.skewness.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>峰度:</span>
+                    <span>{{ $t('tools.statistics-tool.page.kurtosisLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.kurtosis.toFixed(6) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>标准误差:</span>
+                    <span>{{ $t('tools.statistics-tool.page.standardErrorLabel') }}</span>
                     <span class="font-mono font-medium">{{ statistics.standardError.toFixed(6) }}</span>
                   </div>
                 </div>
@@ -205,49 +208,49 @@
 
           <div class="bg-white dark:bg-gray-800 border rounded-lg">
             <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-              <h4 class="font-medium">分位数</h4>
+              <h4 class="font-medium">{{ $t('tools.statistics-tool.page.quantilesTitle') }}</h4>
             </div>
             <div class="p-4">
               <div class="grid grid-cols-3 gap-4 text-sm">
                 <div class="space-y-2">
                   <div class="flex justify-between">
-                    <span>5%:</span>
+                    <span>{{ $t('tools.statistics-tool.page.p5Label') }}</span>
                     <span class="font-mono">{{ getPercentile(5).toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>10%:</span>
+                    <span>{{ $t('tools.statistics-tool.page.p10Label') }}</span>
                     <span class="font-mono">{{ getPercentile(10).toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>25% (Q1):</span>
+                    <span>{{ $t('tools.statistics-tool.page.p25Label') }}</span>
                     <span class="font-mono">{{ statistics.q1.toFixed(4) }}</span>
                   </div>
                 </div>
                 <div class="space-y-2">
                   <div class="flex justify-between">
-                    <span>50% (中位数):</span>
+                    <span>{{ $t('tools.statistics-tool.page.p50Label') }}</span>
                     <span class="font-mono">{{ statistics.median.toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>75% (Q3):</span>
+                    <span>{{ $t('tools.statistics-tool.page.p75Label') }}</span>
                     <span class="font-mono">{{ statistics.q3.toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>90%:</span>
+                    <span>{{ $t('tools.statistics-tool.page.p90Label') }}</span>
                     <span class="font-mono">{{ getPercentile(90).toFixed(4) }}</span>
                   </div>
                 </div>
                 <div class="space-y-2">
                   <div class="flex justify-between">
-                    <span>95%:</span>
+                    <span>{{ $t('tools.statistics-tool.page.p95Label') }}</span>
                     <span class="font-mono">{{ getPercentile(95).toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>99%:</span>
+                    <span>{{ $t('tools.statistics-tool.page.p99Label') }}</span>
                     <span class="font-mono">{{ getPercentile(99).toFixed(4) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span>99.9%:</span>
+                    <span>{{ $t('tools.statistics-tool.page.p999Label') }}</span>
                     <span class="font-mono">{{ getPercentile(99.9).toFixed(4) }}</span>
                   </div>
                 </div>
@@ -258,7 +261,7 @@
           <div class="bg-white dark:bg-gray-800 border rounded-lg">
             <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
               <div class="flex justify-between items-center">
-                <h4 class="font-medium">置信区间 (95%)</h4>
+                <h4 class="font-medium">{{ $t('tools.statistics-tool.page.ciTitle') }} ({{ confidenceLevel }}%)</h4>
                 <select v-model="confidenceLevel" class="px-2 py-1 border rounded text-sm dark:bg-gray-600 dark:border-gray-500">
                   <option value="90">90%</option>
                   <option value="95">95%</option>
@@ -269,19 +272,19 @@
             <div class="p-4">
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
-                  <span>置信水平:</span>
+                  <span>{{ $t('tools.statistics-tool.page.confidenceLevelLabel') }}</span>
                   <span class="font-mono">{{ confidenceLevel }}%</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>下限:</span>
+                  <span>{{ $t('tools.statistics-tool.page.lowerLabel') }}</span>
                   <span class="font-mono">{{ confidenceInterval.lower.toFixed(6) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>上限:</span>
+                  <span>{{ $t('tools.statistics-tool.page.upperLabel') }}</span>
                   <span class="font-mono">{{ confidenceInterval.upper.toFixed(6) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>误差范围:</span>
+                  <span>{{ $t('tools.statistics-tool.page.marginLabel') }}</span>
                   <span class="font-mono">± {{ confidenceInterval.margin.toFixed(6) }}</span>
                 </div>
               </div>
@@ -289,40 +292,40 @@
           </div>
 
           <div class="flex gap-2">
-            <button @click="exportResults" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">导出统计报告</button>
-            <button @click="copyResults" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">复制结果</button>
+            <button @click="exportResults" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.statistics-tool.page.btnExportReport') }}</button>
+            <button @click="copyResults" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">{{ $t('tools.statistics-tool.page.btnCopyResults') }}</button>
           </div>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-4">📊</div>
-          <div class="text-lg mb-2">统计计算器</div>
-          <div class="text-sm">输入数据开始统计分析</div>
+          <div class="text-lg mb-2">{{ $t('tools.statistics-tool.page.title') }}</div>
+          <div class="text-sm">{{ $t('tools.statistics-tool.page.emptySubtitle') }}</div>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.statistics-tool.page.instructionsTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">支持的统计量</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.statistics-tool.page.supportedStatsTitle') }}</h4>
           <ul class="space-y-1">
-            <li>• 集中趋势: 均值、中位数、众数</li>
-            <li>• 离散程度: 方差、标准差、极差</li>
-            <li>• 分布形状: 偏度、峰度</li>
-            <li>• 分位数: 四分位数、百分位数</li>
-            <li>• 置信区间: 90%、95%、99%</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletCentralTendency') }}</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletDispersion') }}</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletShape') }}</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletQuantiles') }}</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletCI') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">数据输入格式</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.statistics-tool.page.inputFormatTitle') }}</h4>
           <ul class="space-y-1">
-            <li>• 逗号分隔: 1,2,3,4,5</li>
-            <li>• 空格分隔: 1 2 3 4 5</li>
-            <li>• 换行分隔: 每行一个数字</li>
-            <li>• 混合格式: 支持多种分隔符</li>
-            <li>• 自动过滤无效数据</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletCommaSep') }}</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletSpaceSep') }}</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletNewlineSep') }}</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletMixed') }}</li>
+            <li>{{ $t('tools.statistics-tool.page.bulletAutoFilter') }}</li>
           </ul>
         </div>
       </div>
@@ -332,6 +335,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 interface Statistics {
   count: number;
@@ -586,13 +591,13 @@ function parseData() {
       .map((str) => {
         const num = parseFloat(str);
         if (isNaN(num)) {
-          throw new Error(`无效数字: "${str}"`);
+          throw new Error(t('tools.statistics-tool.page.invalidNumber', { str }));
         }
         return num;
       });
 
     if (numbers.length === 0) {
-      throw new Error('未找到有效数字');
+      throw new Error(t('tools.statistics-tool.page.noValidNumbers'));
     }
 
     data.value = numbers;
@@ -653,49 +658,49 @@ function generateRandomData() {
 
 function exportResults() {
   const stats = statistics.value;
-  const report = `统计分析报告
-生成时间: ${new Date().toLocaleString('zh-CN')}
-数据点数: ${stats.count}
+  const report = `${t('tools.statistics-tool.page.reportTitle')}
+${t('tools.statistics-tool.page.generatedAt')} ${new Date().toLocaleString('zh-CN')}
+${t('tools.statistics-tool.page.dataPointCount')} ${stats.count}
 
-=== 基本统计量 ===
-算术平均数: ${stats.mean.toFixed(6)}
-几何平均数: ${stats.geometricMean.toFixed(6)}
-调和平均数: ${stats.harmonicMean.toFixed(6)}
-中位数: ${stats.median.toFixed(6)}
-众数: ${stats.mode.join(', ')}
-最小值: ${stats.min.toFixed(6)}
-最大值: ${stats.max.toFixed(6)}
-极差: ${stats.range.toFixed(6)}
-总和: ${stats.sum.toFixed(6)}
+${t('tools.statistics-tool.page.sectionBasicStats')}
+${t('tools.statistics-tool.page.meanLabel')} ${stats.mean.toFixed(6)}
+${t('tools.statistics-tool.page.geometricMeanLabel')} ${stats.geometricMean.toFixed(6)}
+${t('tools.statistics-tool.page.harmonicMeanLabel')} ${stats.harmonicMean.toFixed(6)}
+${t('tools.statistics-tool.page.medianLabel')} ${stats.median.toFixed(6)}
+${t('tools.statistics-tool.page.modeLabel')} ${stats.mode.join(', ')}
+${t('tools.statistics-tool.page.minLabel')} ${stats.min.toFixed(6)}
+${t('tools.statistics-tool.page.maxLabel')} ${stats.max.toFixed(6)}
+${t('tools.statistics-tool.page.rangeLabel')} ${stats.range.toFixed(6)}
+${t('tools.statistics-tool.page.sumLabel')} ${stats.sum.toFixed(6)}
 
-=== 离散程度 ===
-样本方差: ${stats.sampleVariance.toFixed(6)}
-总体方差: ${stats.populationVariance.toFixed(6)}
-样本标准差: ${stats.sampleStdDev.toFixed(6)}
-总体标准差: ${stats.populationStdDev.toFixed(6)}
-变异系数: ${stats.coefficientOfVariation.toFixed(6)}
-标准误差: ${stats.standardError.toFixed(6)}
-平均绝对偏差: ${stats.meanAbsoluteDeviation.toFixed(6)}
+${t('tools.statistics-tool.page.sectionDispersion')}
+${t('tools.statistics-tool.page.sampleVarianceLabel')} ${stats.sampleVariance.toFixed(6)}
+${t('tools.statistics-tool.page.populationVarianceLabel')} ${stats.populationVariance.toFixed(6)}
+${t('tools.statistics-tool.page.sampleStdDevLabel')} ${stats.sampleStdDev.toFixed(6)}
+${t('tools.statistics-tool.page.populationStdDevLabel')} ${stats.populationStdDev.toFixed(6)}
+${t('tools.statistics-tool.page.cvLabel')} ${stats.coefficientOfVariation.toFixed(6)}
+${t('tools.statistics-tool.page.standardErrorLabel')} ${stats.standardError.toFixed(6)}
+${t('tools.statistics-tool.page.meanAbsDevLabel')} ${stats.meanAbsoluteDeviation.toFixed(6)}
 
-=== 分布形状 ===
-偏度: ${stats.skewness.toFixed(6)}
-峰度: ${stats.kurtosis.toFixed(6)}
+${t('tools.statistics-tool.page.sectionShape')}
+${t('tools.statistics-tool.page.skewnessLabel')} ${stats.skewness.toFixed(6)}
+${t('tools.statistics-tool.page.kurtosisLabel')} ${stats.kurtosis.toFixed(6)}
 
-=== 四分位数 ===
-第一四分位数 (Q1): ${stats.q1.toFixed(6)}
-第二四分位数 (Q2/中位数): ${stats.median.toFixed(6)}
-第三四分位数 (Q3): ${stats.q3.toFixed(6)}
-四分位距 (IQR): ${stats.iqr.toFixed(6)}
+${t('tools.statistics-tool.page.sectionQuartiles')}
+${t('tools.statistics-tool.page.q1Label')} ${stats.q1.toFixed(6)}
+${t('tools.statistics-tool.page.medianQ2Label')} ${stats.median.toFixed(6)}
+${t('tools.statistics-tool.page.q3Label')} ${stats.q3.toFixed(6)}
+${t('tools.statistics-tool.page.iqrLabel')} ${stats.iqr.toFixed(6)}
 
-=== 置信区间 (${confidenceLevel.value}%) ===
-下限: ${confidenceInterval.value.lower.toFixed(6)}
-上限: ${confidenceInterval.value.upper.toFixed(6)}
-误差范围: ± ${confidenceInterval.value.margin.toFixed(6)}
+${t('tools.statistics-tool.page.sectionCI', { level: confidenceLevel.value })}
+${t('tools.statistics-tool.page.lowerLabel')} ${confidenceInterval.value.lower.toFixed(6)}
+${t('tools.statistics-tool.page.upperLabel')} ${confidenceInterval.value.upper.toFixed(6)}
+${t('tools.statistics-tool.page.marginLabel')} ± ${confidenceInterval.value.margin.toFixed(6)}
 
-=== 原始数据 ===
+${t('tools.statistics-tool.page.sectionRawData')}
 ${data.value.join(', ')}
 
-报告生成时间: ${new Date().toLocaleString('zh-CN')}
+${t('tools.statistics-tool.page.reportGeneratedAt')} ${new Date().toLocaleString('zh-CN')}
 `;
 
   const blob = new Blob([report], { type: 'text/plain' });
@@ -709,18 +714,18 @@ ${data.value.join(', ')}
 
 async function copyResults() {
   const stats = statistics.value;
-  const summary = `统计摘要 (n=${stats.count})
-均值: ${stats.mean.toFixed(4)} ± ${stats.standardError.toFixed(4)}
-中位数: ${stats.median.toFixed(4)}
-标准差: ${stats.sampleStdDev.toFixed(4)}
-范围: ${stats.min.toFixed(4)} - ${stats.max.toFixed(4)}
-${confidenceLevel.value}% 置信区间: [${confidenceInterval.value.lower.toFixed(4)}, ${confidenceInterval.value.upper.toFixed(4)}]`;
+  const summary = `${t('tools.statistics-tool.page.summaryTitle', { n: stats.count })}
+${t('tools.statistics-tool.page.summaryMean')} ${stats.mean.toFixed(4)} ${t('tools.statistics-tool.page.summaryPlusMinus')} ${stats.standardError.toFixed(4)}
+${t('tools.statistics-tool.page.summaryMedian')} ${stats.median.toFixed(4)}
+${t('tools.statistics-tool.page.summaryStdDev')} ${stats.sampleStdDev.toFixed(4)}
+${t('tools.statistics-tool.page.summaryRange')} ${stats.min.toFixed(4)} - ${stats.max.toFixed(4)}
+${confidenceLevel.value}% ${t('tools.statistics-tool.page.summaryCI')} [${confidenceInterval.value.lower.toFixed(4)}, ${confidenceInterval.value.upper.toFixed(4)}]`;
 
   try {
     await navigator.clipboard.writeText(summary);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(t('tools.statistics-tool.page.copyFailedLog'), error);
   }
 }
 </script>

@@ -2,115 +2,143 @@
   <div class="space-y-6">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">大数计算器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.big-number-calculator.page.title') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4 space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-2">数字 A</label>
-            <textarea v-model="numberA" rows="3" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono" placeholder="输入第一个大数..." />
-            <div class="text-xs text-gray-500 mt-1">长度: {{ numberA.length }} 位</div>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.big-number-calculator.page.numberA') }}</label>
+            <textarea
+              v-model="numberA"
+              rows="3"
+              class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono"
+              :placeholder="$t('tools.big-number-calculator.page.placeholderA')"
+            />
+            <div class="text-xs text-gray-500 mt-1">{{ $t('tools.big-number-calculator.page.lengthN', { n: numberA.length }) }}</div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-2">运算符</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.big-number-calculator.page.operator') }}</label>
             <select v-model="operator" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-              <option value="+">加法 (+)</option>
-              <option value="-">减法 (-)</option>
-              <option value="*">乘法 (×)</option>
-              <option value="/">除法 (÷)</option>
-              <option value="%">取模 (%)</option>
-              <option value="**">幂运算 (^)</option>
-              <option value="gcd">最大公约数 (GCD)</option>
-              <option value="lcm">最小公倍数 (LCM)</option>
+              <option value="+">{{ $t('tools.big-number-calculator.page.opAdd') }}</option>
+              <option value="-">{{ $t('tools.big-number-calculator.page.opSubtract') }}</option>
+              <option value="*">{{ $t('tools.big-number-calculator.page.opMultiply') }}</option>
+              <option value="/">{{ $t('tools.big-number-calculator.page.opDivide') }}</option>
+              <option value="%">{{ $t('tools.big-number-calculator.page.opMod') }}</option>
+              <option value="**">{{ $t('tools.big-number-calculator.page.opPower') }}</option>
+              <option value="gcd">{{ $t('tools.big-number-calculator.page.opGcd') }}</option>
+              <option value="lcm">{{ $t('tools.big-number-calculator.page.opLcm') }}</option>
             </select>
           </div>
 
           <div v-if="needsSecondNumber">
-            <label class="block text-sm font-medium mb-2">数字 B</label>
-            <textarea v-model="numberB" rows="3" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono" placeholder="输入第二个大数..." />
-            <div class="text-xs text-gray-500 mt-1">长度: {{ numberB.length }} 位</div>
+            <label class="block text-sm font-medium mb-2">{{ $t('tools.big-number-calculator.page.numberB') }}</label>
+            <textarea
+              v-model="numberB"
+              rows="3"
+              class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono"
+              :placeholder="$t('tools.big-number-calculator.page.placeholderB')"
+            />
+            <div class="text-xs text-gray-500 mt-1">{{ $t('tools.big-number-calculator.page.lengthN', { n: numberB.length }) }}</div>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
-            <button @click="calculate" :disabled="!canCalculate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">🧮 计算</button>
-            <button @click="clear" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">🗑️ 清空</button>
+            <button @click="calculate" :disabled="!canCalculate" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md">
+              🧮 {{ $t('tools.big-number-calculator.page.calculate') }}
+            </button>
+            <button @click="clear" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">🗑️ {{ $t('tools.big-number-calculator.page.clear') }}</button>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
-            <button @click="loadExample" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm">📝 示例</button>
-            <button @click="swapNumbers" :disabled="!numberA || !numberB" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white rounded-md text-sm">🔄 交换</button>
+            <button @click="loadExample" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm">📝 {{ $t('tools.big-number-calculator.page.example') }}</button>
+            <button @click="swapNumbers" :disabled="!numberA || !numberB" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white rounded-md text-sm">
+              🔄 {{ $t('tools.big-number-calculator.page.swap') }}
+            </button>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">单数运算</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.big-number-calculator.page.unaryOps') }}</h4>
           <div class="grid grid-cols-2 gap-2">
-            <button @click="factorial" :disabled="!numberA || !isValidForFactorial" class="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">n! 阶乘</button>
-            <button @click="isPrime" :disabled="!numberA" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white rounded text-sm">质数检测</button>
-            <button @click="fibonacci" :disabled="!numberA || !isValidForFibonacci" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 disabled:bg-gray-400 text-white rounded text-sm">斐波那契</button>
-            <button @click="digitSum" :disabled="!numberA" class="px-3 py-2 bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white rounded text-sm">数字和</button>
+            <button @click="factorial" :disabled="!numberA || !isValidForFactorial" class="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">
+              {{ $t('tools.big-number-calculator.page.opFactorial') }}
+            </button>
+            <button @click="isPrime" :disabled="!numberA" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white rounded text-sm">
+              {{ $t('tools.big-number-calculator.page.opPrimeCheck') }}
+            </button>
+            <button @click="fibonacci" :disabled="!numberA || !isValidForFibonacci" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 disabled:bg-gray-400 text-white rounded text-sm">
+              {{ $t('tools.big-number-calculator.page.opFibonacci') }}
+            </button>
+            <button @click="digitSum" :disabled="!numberA" class="px-3 py-2 bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white rounded text-sm">
+              {{ $t('tools.big-number-calculator.page.opDigitSum') }}
+            </button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">计算结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.big-number-calculator.page.resultTitle') }}</h3>
 
         <div v-if="result" class="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <div class="space-y-4">
             <div>
               <div class="flex justify-between items-center mb-2">
-                <h4 class="font-medium">结果</h4>
-                <button @click="copyResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">📋 复制</button>
+                <h4 class="font-medium">{{ $t('tools.big-number-calculator.page.result') }}</h4>
+                <button @click="() => copyResult()" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">📋 {{ $t('tools.big-number-calculator.page.copy') }}</button>
               </div>
               <div class="bg-gray-50 dark:bg-gray-700 rounded p-3 font-mono text-sm break-all">
                 {{ result.value }}
               </div>
               <div class="text-xs text-gray-500 mt-1">
-                长度: {{ result.value.length }} 位
-                <span v-if="result.executionTime"> | 计算时间: {{ result.executionTime }}ms</span>
+                {{ $t('tools.big-number-calculator.page.lengthN', { n: result.value.length }) }}
+                <span v-if="result.executionTime"> | {{ $t('tools.big-number-calculator.page.execTimeMs', { ms: result.executionTime }) }}</span>
               </div>
             </div>
 
             <div v-if="result.formatted" class="space-y-2">
-              <h5 class="font-medium text-sm">格式化显示</h5>
+              <h5 class="font-medium text-sm">{{ $t('tools.big-number-calculator.page.formattedTitle') }}</h5>
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-gray-600 dark:text-gray-400">千分位:</span>
+                  <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.big-number-calculator.page.withCommas') }}</span>
                   <span class="font-mono">{{ result.formatted.withCommas }}</span>
                 </div>
                 <div v-if="result.formatted.scientific" class="flex justify-between">
-                  <span class="text-gray-600 dark:text-gray-400">科学计数法:</span>
+                  <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.big-number-calculator.page.scientific') }}</span>
                   <span class="font-mono">{{ result.formatted.scientific }}</span>
                 </div>
                 <div v-if="result.formatted.binary" class="flex justify-between">
-                  <span class="text-gray-600 dark:text-gray-400">二进制:</span>
+                  <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.big-number-calculator.page.binary') }}</span>
                   <span class="font-mono text-xs break-all">{{ result.formatted.binary }}</span>
                 </div>
                 <div v-if="result.formatted.hex" class="flex justify-between">
-                  <span class="text-gray-600 dark:text-gray-400">十六进制:</span>
+                  <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.big-number-calculator.page.hex') }}</span>
                   <span class="font-mono">{{ result.formatted.hex }}</span>
                 </div>
               </div>
             </div>
 
             <div v-if="result.properties" class="space-y-2">
-              <h5 class="font-medium text-sm">数字属性</h5>
+              <h5 class="font-medium text-sm">{{ $t('tools.big-number-calculator.page.numberProps') }}</h5>
               <div class="grid grid-cols-2 gap-2 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-gray-600 dark:text-gray-400">奇偶性:</span>
-                  <span>{{ result.properties.isEven ? '偶数' : '奇数' }}</span>
+                  <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.big-number-calculator.page.parity') }}</span>
+                  <span>{{ result.properties.isEven ? $t('tools.big-number-calculator.page.even') : $t('tools.big-number-calculator.page.odd') }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600 dark:text-gray-400">正负性:</span>
-                  <span>{{ result.properties.isPositive ? '正数' : result.properties.isNegative ? '负数' : '零' }}</span>
+                  <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.big-number-calculator.page.sign') }}</span>
+                  <span>{{
+                    result.properties.isPositive
+                      ? $t('tools.big-number-calculator.page.positive')
+                      : result.properties.isNegative
+                        ? $t('tools.big-number-calculator.page.negative')
+                        : $t('tools.big-number-calculator.page.zero')
+                  }}</span>
                 </div>
                 <div v-if="result.properties.isPrime !== undefined" class="flex justify-between">
-                  <span class="text-gray-600 dark:text-gray-400">质数:</span>
-                  <span>{{ result.properties.isPrime ? '是' : '否' }}</span>
+                  <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.big-number-calculator.page.prime') }}</span>
+                  <span>{{ result.properties.isPrime ? $t('tools.big-number-calculator.page.yes') : $t('tools.big-number-calculator.page.no') }}</span>
                 </div>
                 <div v-if="result.properties.digitCount" class="flex justify-between">
-                  <span class="text-gray-600 dark:text-gray-400">位数:</span>
+                  <span class="text-gray-600 dark:text-gray-400">{{ $t('tools.big-number-calculator.page.digitCount') }}</span>
                   <span>{{ result.properties.digitCount }}</span>
                 </div>
               </div>
@@ -122,7 +150,7 @@
           <div class="flex items-center gap-2 text-red-800 dark:text-red-200">
             <span class="text-lg">⚠️</span>
             <div>
-              <div class="font-medium">计算错误</div>
+              <div class="font-medium">{{ $t('tools.big-number-calculator.page.calcError') }}</div>
               <div class="text-sm">{{ error }}</div>
             </div>
           </div>
@@ -130,16 +158,16 @@
 
         <div v-if="!result && !error" class="text-center py-12 text-gray-500">
           <div class="text-4xl mb-4">🧮</div>
-          <div class="text-lg mb-2">大数计算器</div>
-          <div class="text-sm">支持任意精度的大数运算</div>
+          <div class="text-lg mb-2">{{ $t('tools.big-number-calculator.page.title') }}</div>
+          <div class="text-sm">{{ $t('tools.big-number-calculator.page.subtitle') }}</div>
         </div>
       </div>
     </div>
 
     <div v-if="history.length > 0" class="bg-white dark:bg-gray-800 border rounded-lg">
       <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-        <h4 class="font-medium">计算历史 ({{ history.length }})</h4>
-        <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空历史</button>
+        <h4 class="font-medium">{{ $t('tools.big-number-calculator.page.historyTitle', { n: history.length }) }}</h4>
+        <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.big-number-calculator.page.clearHistory') }}</button>
       </div>
       <div class="p-4">
         <div class="space-y-2 max-h-64 overflow-y-auto">
@@ -149,8 +177,8 @@
             <div class="flex justify-between items-center mt-2">
               <span class="text-xs text-gray-500">{{ formatTime(item.timestamp) }}</span>
               <div class="flex gap-1">
-                <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-                <button @click="copyResult(item.result)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">复制</button>
+                <button @click="loadFromHistory(item)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.big-number-calculator.page.load') }}</button>
+                <button @click="copyResult(item.result)" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs">{{ $t('tools.big-number-calculator.page.copy') }}</button>
               </div>
             </div>
           </div>
@@ -159,26 +187,26 @@
     </div>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h3 class="font-medium mb-3">功能说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.big-number-calculator.page.featureTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800 dark:text-blue-200">
         <div>
-          <h4 class="font-medium mb-2">支持运算</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.big-number-calculator.page.supportedOps') }}</h4>
           <ul class="space-y-1">
-            <li>• 基本运算：加减乘除、取模</li>
-            <li>• 高级运算：幂运算、开方</li>
-            <li>• 数论运算：GCD、LCM</li>
-            <li>• 特殊函数：阶乘、斐波那契</li>
-            <li>• 质数检测和数字属性分析</li>
+            <li>{{ $t('tools.big-number-calculator.page.featureBasic') }}</li>
+            <li>{{ $t('tools.big-number-calculator.page.featureAdvanced') }}</li>
+            <li>{{ $t('tools.big-number-calculator.page.featureNumberTheory') }}</li>
+            <li>{{ $t('tools.big-number-calculator.page.featureSpecial') }}</li>
+            <li>{{ $t('tools.big-number-calculator.page.featurePrimeAndProps') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">特点</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.big-number-calculator.page.features') }}</h4>
           <ul class="space-y-1">
-            <li>• 支持任意精度大数运算</li>
-            <li>• 多种进制显示（二进制、十六进制）</li>
-            <li>• 科学计数法表示</li>
-            <li>• 计算历史记录</li>
-            <li>• 数字属性分析</li>
+            <li>{{ $t('tools.big-number-calculator.page.pointArbitraryPrecision') }}</li>
+            <li>{{ $t('tools.big-number-calculator.page.pointBases') }}</li>
+            <li>{{ $t('tools.big-number-calculator.page.pointScientific') }}</li>
+            <li>{{ $t('tools.big-number-calculator.page.pointHistory') }}</li>
+            <li>{{ $t('tools.big-number-calculator.page.pointProps') }}</li>
           </ul>
         </div>
       </div>
@@ -188,6 +216,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface CalculationResult {
   value: string;
@@ -212,6 +241,8 @@ interface HistoryItem {
   result: string;
   timestamp: number;
 }
+
+const { t } = useI18n();
 
 const numberA = ref('');
 const numberB = ref('');
@@ -277,16 +308,16 @@ const calculate = () => {
         resultValue = a * b;
         break;
       case '/':
-        if (b === 0n) throw new Error('除数不能为零');
+        if (b === 0n) throw new Error(t('tools.big-number-calculator.page.errDivByZero'));
         resultValue = a / b;
         break;
       case '%':
-        if (b === 0n) throw new Error('除数不能为零');
+        if (b === 0n) throw new Error(t('tools.big-number-calculator.page.errDivByZero'));
         resultValue = a % b;
         break;
       case '**':
-        if (b < 0n) throw new Error('不支持负数幂运算');
-        if (b > 1000n) throw new Error('指数过大');
+        if (b < 0n) throw new Error(t('tools.big-number-calculator.page.errNegativePower'));
+        if (b > 1000n) throw new Error(t('tools.big-number-calculator.page.errExponentTooLarge'));
         resultValue = a ** b;
         break;
       case 'gcd':
@@ -296,7 +327,7 @@ const calculate = () => {
         resultValue = lcm(a, b);
         break;
       default:
-        throw new Error('不支持的运算符');
+        throw new Error(t('tools.big-number-calculator.page.errUnsupportedOp'));
     }
 
     const endTime = performance.now();
@@ -314,7 +345,7 @@ const calculate = () => {
 
     addToHistory(expression, resultValue.toString());
   } catch (err: any) {
-    error.value = err.message || '计算错误';
+    error.value = err.message || t('tools.big-number-calculator.page.calcError');
   }
 };
 
@@ -322,8 +353,8 @@ const calculate = () => {
 const factorial = () => {
   try {
     const n = BigInt(cleanNumber(numberA.value));
-    if (n < 0n) throw new Error('阶乘不支持负数');
-    if (n > 1000n) throw new Error('数字过大，无法计算阶乘');
+    if (n < 0n) throw new Error(t('tools.big-number-calculator.page.errFactorialNegative'));
+    if (n > 1000n) throw new Error(t('tools.big-number-calculator.page.errFactorialTooLarge'));
 
     const startTime = performance.now();
     let result = 1n;
@@ -342,7 +373,7 @@ const isPrime = () => {
   try {
     const n = BigInt(cleanNumber(numberA.value));
     if (n < 2n) {
-      error.value = '质数检测需要大于等于2的数';
+      error.value = t('tools.big-number-calculator.page.errPrimeMin');
       return;
     }
 
@@ -351,7 +382,7 @@ const isPrime = () => {
     const endTime = performance.now();
 
     result.value = {
-      value: prime ? '是质数' : '不是质数',
+      value: prime ? t('tools.big-number-calculator.page.primeYes') : t('tools.big-number-calculator.page.primeNo'),
       executionTime: Math.round(endTime - startTime),
       properties: {
         ...analyzeNumber(n),
@@ -359,7 +390,7 @@ const isPrime = () => {
       }
     };
 
-    addToHistory(`isPrime(${numberA.value})`, prime ? '是质数' : '不是质数');
+    addToHistory(`isPrime(${numberA.value})`, prime ? t('tools.big-number-calculator.page.primeYes') : t('tools.big-number-calculator.page.primeNo'));
   } catch (err: any) {
     error.value = err.message;
   }
@@ -368,8 +399,8 @@ const isPrime = () => {
 const fibonacci = () => {
   try {
     const n = BigInt(cleanNumber(numberA.value));
-    if (n < 0n) throw new Error('斐波那契数列不支持负数');
-    if (n > 10000n) throw new Error('数字过大');
+    if (n < 0n) throw new Error(t('tools.big-number-calculator.page.errFibonacciNegative'));
+    if (n > 10000n) throw new Error(t('tools.big-number-calculator.page.errNumberTooLarge'));
 
     const startTime = performance.now();
     const fib = fibonacciNumber(n);

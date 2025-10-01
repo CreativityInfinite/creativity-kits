@@ -2,13 +2,13 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">Glob 模式测试器</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.glob-tester.page.title') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">Glob 模式</h4>
+            <h4 class="font-medium">{{ $t('tools.glob-tester.page.globTitle') }}</h4>
             <div class="flex gap-2">
-              <button @click="clearPattern" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
+              <button @click="clearPattern" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('action.clear') }}</button>
             </div>
           </div>
 
@@ -17,7 +17,7 @@
               <input
                 v-model="globPattern"
                 type="text"
-                placeholder="输入 Glob 模式，如 *.js 或 **/*.vue"
+                :placeholder="$t('tools.glob-tester.page.patternPlaceholder')"
                 class="w-full px-3 py-2 border rounded-lg text-sm font-mono dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="testGlob"
               />
@@ -25,56 +25,56 @@
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-sm font-medium mb-2">匹配选项</label>
+                <label class="block text-sm font-medium mb-2">{{ $t('tools.glob-tester.page.matchOptions') }}</label>
                 <div class="space-y-2">
                   <label class="flex items-center space-x-2">
                     <input v-model="options.caseSensitive" type="checkbox" @change="testGlob" />
-                    <span class="text-sm">区分大小写</span>
+                    <span class="text-sm">{{ $t('tools.glob-tester.page.caseSensitive') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="options.dot" type="checkbox" @change="testGlob" />
-                    <span class="text-sm">匹配隐藏文件</span>
+                    <span class="text-sm">{{ $t('tools.glob-tester.page.dotFiles') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="options.matchBase" type="checkbox" @change="testGlob" />
-                    <span class="text-sm">基础名匹配</span>
+                    <span class="text-sm">{{ $t('tools.glob-tester.page.matchBase') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="options.nocase" type="checkbox" @change="testGlob" />
-                    <span class="text-sm">忽略大小写</span>
+                    <span class="text-sm">{{ $t('tools.glob-tester.page.ignoreCase') }}</span>
                   </label>
                 </div>
               </div>
 
               <div>
-                <label class="block text-sm font-medium mb-2">高级选项</label>
+                <label class="block text-sm font-medium mb-2">{{ $t('tools.glob-tester.page.advancedOptions') }}</label>
                 <div class="space-y-2">
                   <label class="flex items-center space-x-2">
                     <input v-model="options.nobrace" type="checkbox" @change="testGlob" />
-                    <span class="text-sm">禁用花括号展开</span>
+                    <span class="text-sm">{{ $t('tools.glob-tester.page.noBrace') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="options.noglobstar" type="checkbox" @change="testGlob" />
-                    <span class="text-sm">禁用 ** 匹配</span>
+                    <span class="text-sm">{{ $t('tools.glob-tester.page.noGlobStar') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="options.noext" type="checkbox" @change="testGlob" />
-                    <span class="text-sm">禁用扩展匹配</span>
+                    <span class="text-sm">{{ $t('tools.glob-tester.page.noExt') }}</span>
                   </label>
                   <label class="flex items-center space-x-2">
                     <input v-model="options.nonegate" type="checkbox" @change="testGlob" />
-                    <span class="text-sm">禁用否定模式</span>
+                    <span class="text-sm">{{ $t('tools.glob-tester.page.noNegate') }}</span>
                   </label>
                 </div>
               </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-2">路径分隔符</label>
+              <label class="block text-sm font-medium mb-2">{{ $t('tools.glob-tester.page.separator') }}</label>
               <select v-model="options.separator" @change="testGlob" class="w-full px-3 py-2 border rounded-lg text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="/">/（Unix/Linux）</option>
-                <option value="\">\（Windows）</option>
-                <option value="auto">自动检测</option>
+                <option value="/">{{ $t('tools.glob-tester.page.separatorUnix') }}</option>
+                <option value="\">{{ $t('tools.glob-tester.page.separatorWindows') }}</option>
+                <option value="auto">{{ $t('tools.glob-tester.page.separatorAuto') }}</option>
               </select>
             </div>
           </div>
@@ -82,10 +82,10 @@
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">测试路径</h4>
+            <h4 class="font-medium">{{ $t('tools.glob-tester.page.testPaths') }}</h4>
             <div class="flex gap-2">
-              <button @click="clearPaths" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
-              <button @click="addPath" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">添加路径</button>
+              <button @click="clearPaths" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('action.clear') }}</button>
+              <button @click="addPath" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.glob-tester.page.addPath') }}</button>
             </div>
           </div>
 
@@ -94,7 +94,7 @@
               <textarea
                 v-model="pathsText"
                 rows="8"
-                placeholder="输入要测试的文件路径，每行一个&#10;例如：&#10;src/components/Button.vue&#10;src/utils/helper.js&#10;docs/README.md"
+                :placeholder="$t('tools.glob-tester.page.pathsPlaceholder')"
                 class="w-full px-3 py-2 border rounded-lg text-sm font-mono dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 @input="testGlob"
                 @drop="handleFileDrop"
@@ -104,28 +104,28 @@
             </div>
 
             <div class="flex justify-between items-center text-sm text-gray-500">
-              <span>路径数量: {{ pathsList.length }}</span>
-              <span>匹配数量: {{ matchedPaths.length }}</span>
-              <span>匹配率: {{ matchRate }}%</span>
+              <span>{{ $t('tools.glob-tester.page.pathCount') }} {{ pathsList.length }}</span>
+              <span>{{ $t('tools.glob-tester.page.matchedCount') }} {{ matchedPaths.length }}</span>
+              <span>{{ $t('tools.glob-tester.page.matchRate') }} {{ matchRate }}%</span>
             </div>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">快速操作</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.glob-tester.page.quickActions') }}</h4>
           <div class="grid grid-cols-2 gap-2">
-            <button @click="loadSampleGlob" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">加载示例</button>
-            <button @click="testManually" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">手动测试</button>
-            <button @click="explainGlob" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">解释模式</button>
-            <button @click="generateRegex" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">生成正则</button>
+            <button @click="loadSampleGlob" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.glob-tester.page.loadSample') }}</button>
+            <button @click="testManually" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.glob-tester.page.manualTest') }}</button>
+            <button @click="explainGlob" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">{{ $t('tools.glob-tester.page.explainPattern') }}</button>
+            <button @click="generateRegex" class="px-3 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">{{ $t('tools.glob-tester.page.generateRegex') }}</button>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">常用 Glob 模式</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.glob-tester.page.commonGlobs') }}</h4>
           <div class="grid grid-cols-1 gap-2">
-            <button v-for="(pattern, name) in commonGlobs" :key="name" @click="loadGlobPattern(pattern, name)" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm text-left">
-              <div class="font-medium">{{ name }}</div>
+            <button v-for="(pattern, key) in commonGlobs" :key="key" @click="loadGlobPattern(pattern, key)" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm text-left">
+              <div class="font-medium">{{ $t(`tools.glob-tester.page.commonGlobNames.${key}`) }}</div>
               <div class="text-xs opacity-75 font-mono">{{ pattern.glob }}</div>
               <div class="text-xs opacity-60">{{ pattern.description }}</div>
             </button>
@@ -133,27 +133,27 @@
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">文件操作</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.glob-tester.page.fileOperations') }}</h4>
           <div class="grid grid-cols-2 gap-2">
             <label class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm cursor-pointer text-center">
               <input type="file" accept=".txt,.log,.csv" @change="handleFileUpload" class="hidden" />
-              上传路径列表
+              {{ $t('tools.glob-tester.page.uploadPathList') }}
             </label>
-            <button @click="downloadResults" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载结果</button>
+            <button @click="downloadResults" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.glob-tester.page.downloadResults') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">测试结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.glob-tester.page.testResults') }}</h3>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">匹配结果</h4>
+            <h4 class="font-medium">{{ $t('tools.glob-tester.page.matchResults') }}</h4>
             <div class="flex gap-2">
-              <button @click="copyResults" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制结果</button>
+              <button @click="copyResults" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.glob-tester.page.copyResults') }}</button>
               <button @click="toggleView" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">
-                {{ viewMode === 'matched' ? '显示全部' : '仅匹配' }}
+                {{ viewMode === 'matched' ? $t('tools.glob-tester.page.showAll') : $t('tools.glob-tester.page.onlyMatched') }}
               </button>
             </div>
           </div>
@@ -161,15 +161,15 @@
             <div v-if="testResult" class="space-y-3">
               <div class="grid grid-cols-3 gap-4 text-sm">
                 <div class="text-center p-2 bg-green-50 dark:bg-green-900 rounded">
-                  <div class="font-medium text-green-600">匹配</div>
+                  <div class="font-medium text-green-600">{{ $t('tools.glob-tester.page.matched') }}</div>
                   <div class="text-lg font-bold">{{ testResult.matched }}</div>
                 </div>
                 <div class="text-center p-2 bg-red-50 dark:bg-red-900 rounded">
-                  <div class="font-medium text-red-600">不匹配</div>
+                  <div class="font-medium text-red-600">{{ $t('tools.glob-tester.page.unmatched') }}</div>
                   <div class="text-lg font-bold">{{ testResult.unmatched }}</div>
                 </div>
                 <div class="text-center p-2 bg-blue-50 dark:bg-blue-900 rounded">
-                  <div class="font-medium text-blue-600">总计</div>
+                  <div class="font-medium text-blue-600">{{ $t('tools.glob-tester.page.total') }}</div>
                   <div class="text-lg font-bold">{{ testResult.total }}</div>
                 </div>
               </div>
@@ -191,23 +191,23 @@
                         class="px-2 py-1 rounded text-xs"
                         :class="path.matched ? 'bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-200' : 'bg-red-200 text-red-800 dark:bg-red-800 dark:text-red-200'"
                       >
-                        {{ path.matched ? '匹配' : '不匹配' }}
+                        {{ path.matched ? $t('tools.glob-tester.page.matched') : $t('tools.glob-tester.page.unmatched') }}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div v-else class="text-center py-8 text-gray-500">
-                  {{ viewMode === 'matched' ? '没有匹配的路径' : '没有测试路径' }}
+                  {{ viewMode === 'matched' ? $t('tools.glob-tester.page.noMatchedPaths') : $t('tools.glob-tester.page.noTestPaths') }}
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500">输入 Glob 模式和测试路径后将显示结果</div>
+            <div v-else class="text-center py-8 text-gray-500">{{ $t('tools.glob-tester.page.resultHint') }}</div>
           </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg" v-if="globExplanation">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">模式解释</h4>
+            <h4 class="font-medium">{{ $t('tools.glob-tester.page.patternExplanation') }}</h4>
           </div>
           <div class="p-4">
             <div class="space-y-2 text-sm">
@@ -223,113 +223,113 @@
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg" v-if="generatedRegex">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">生成的正则表达式</h4>
-            <button @click="copyRegex" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制正则</button>
+            <h4 class="font-medium">{{ $t('tools.glob-tester.page.generatedRegex') }}</h4>
+            <button @click="copyRegex" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.glob-tester.page.copyRegex') }}</button>
           </div>
           <div class="p-4">
             <div class="bg-gray-50 dark:bg-gray-700 rounded p-3 text-sm font-mono break-all">
               {{ generatedRegex }}
             </div>
-            <div class="mt-2 text-xs text-gray-500">注意：生成的正则表达式可能不完全等价于 Glob 模式，仅供参考</div>
+            <div class="mt-2 text-xs text-gray-500">{{ $t('tools.glob-tester.page.regexNotice') }}</div>
           </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">匹配统计</h4>
+            <h4 class="font-medium">{{ $t('tools.glob-tester.page.matchStats') }}</h4>
           </div>
           <div class="p-4">
             <div v-if="testResult" class="grid grid-cols-2 gap-4 text-sm">
               <div class="space-y-2">
                 <div class="flex justify-between">
-                  <span>匹配率:</span>
+                  <span>{{ $t('tools.glob-tester.page.matchRateLabel') }}</span>
                   <span class="font-mono">{{ matchRate }}%</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>匹配路径:</span>
+                  <span>{{ $t('tools.glob-tester.page.matchedPathsLabel') }}</span>
                   <span class="font-mono">{{ testResult.matched }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>不匹配路径:</span>
+                  <span>{{ $t('tools.glob-tester.page.unmatchedPathsLabel') }}</span>
                   <span class="font-mono">{{ testResult.unmatched }}</span>
                 </div>
               </div>
               <div class="space-y-2">
                 <div class="flex justify-between">
-                  <span>总路径数:</span>
+                  <span>{{ $t('tools.glob-tester.page.totalPathsLabel') }}</span>
                   <span class="font-mono">{{ testResult.total }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>平均路径长度:</span>
+                  <span>{{ $t('tools.glob-tester.page.averagePathLengthLabel') }}</span>
                   <span class="font-mono">{{ averagePathLength }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>最长路径:</span>
+                  <span>{{ $t('tools.glob-tester.page.maxPathLengthLabel') }}</span>
                   <span class="font-mono">{{ maxPathLength }}</span>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-gray-500">测试后将显示统计信息</div>
+            <div v-else class="text-center py-4 text-gray-500">{{ $t('tools.glob-tester.page.statsHint') }}</div>
           </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">测试历史</h4>
-            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空历史</button>
+            <h4 class="font-medium">{{ $t('tools.glob-tester.page.testHistory') }}</h4>
+            <button @click="clearHistory" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.glob-tester.page.clearHistory') }}</button>
           </div>
           <div class="p-4">
             <div v-if="testHistory.length > 0" class="space-y-2 max-h-32 overflow-y-auto">
               <div v-for="(history, index) in testHistory.slice(0, 5)" :key="index" class="flex items-center justify-between text-sm p-2 bg-gray-50 dark:bg-gray-700 rounded">
                 <div class="flex-1 min-w-0">
                   <div class="font-mono text-xs truncate">{{ history.pattern }}</div>
-                  <div class="text-xs text-gray-500">{{ history.timestamp }} - {{ history.matched }}/{{ history.total }} 匹配</div>
+                  <div class="text-xs text-gray-500">{{ history.timestamp }} - {{ history.matched }}/{{ history.total }} {{ $t('tools.glob-tester.page.historyMatched') }}</div>
                 </div>
                 <div class="flex gap-1">
-                  <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
+                  <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.glob-tester.page.load') }}</button>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-gray-500 text-sm">暂无测试历史</div>
+            <div v-else class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.glob-tester.page.noHistory') }}</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.glob-tester.page.usage') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">基础通配符</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.glob-tester.page.basicWildcards') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>*</strong> 匹配任意字符（不包括路径分隔符）</li>
-            <li>• <strong>?</strong> 匹配单个字符</li>
-            <li>• <strong>**</strong> 匹配任意层级目录</li>
-            <li>• <strong>[abc]</strong> 匹配字符集中的任意字符</li>
-            <li>• <strong>[a-z]</strong> 匹配字符范围</li>
-            <li>• <strong>[!abc]</strong> 匹配不在字符集中的字符</li>
+            <li>• <strong>*</strong> {{ $t('tools.glob-tester.page.wildcardStar') }}</li>
+            <li>• <strong>?</strong> {{ $t('tools.glob-tester.page.wildcardQuestion') }}</li>
+            <li>• <strong>**</strong> {{ $t('tools.glob-tester.page.wildcardDoubleStar') }}</li>
+            <li>• <strong>[abc]</strong> {{ $t('tools.glob-tester.page.wildcardCharSet') }}</li>
+            <li>• <strong>[a-z]</strong> {{ $t('tools.glob-tester.page.wildcardCharRange') }}</li>
+            <li>• <strong>[!abc]</strong> {{ $t('tools.glob-tester.page.wildcardNegateCharSet') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">高级模式</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.glob-tester.page.advancedPatterns') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>{js,ts}</strong> 花括号展开，匹配多个选项</li>
-            <li>• <strong>!(pattern)</strong> 否定模式</li>
-            <li>• <strong>?(pattern)</strong> 可选模式</li>
-            <li>• <strong>+(pattern)</strong> 一次或多次</li>
-            <li>• <strong>*(pattern)</strong> 零次或多次</li>
-            <li>• <strong>@(pattern)</strong> 精确一次</li>
+            <li>• <strong>{js,ts}</strong> {{ $t('tools.glob-tester.page.advancedBrace') }}</li>
+            <li>• <strong>!(pattern)</strong> {{ $t('tools.glob-tester.page.advancedNegate') }}</li>
+            <li>• <strong>?(pattern)</strong> {{ $t('tools.glob-tester.page.advancedOptional') }}</li>
+            <li>• <strong>+(pattern)</strong> {{ $t('tools.glob-tester.page.advancedOneOrMore') }}</li>
+            <li>• <strong>*(pattern)</strong> {{ $t('tools.glob-tester.page.advancedZeroOrMore') }}</li>
+            <li>• <strong>@(pattern)</strong> {{ $t('tools.glob-tester.page.advancedExactlyOne') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">常见用例</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.glob-tester.page.commonUseCases') }}</h4>
           <ul class="space-y-1">
-            <li>• <strong>*.js</strong> 所有 JS 文件</li>
-            <li>• <strong>**/*.vue</strong> 所有 Vue 文件</li>
-            <li>• <strong>src/**</strong> src 目录下所有文件</li>
-            <li>• <strong>!node_modules</strong> 排除 node_modules</li>
-            <li>• <strong>*.{js,ts}</strong> JS 或 TS 文件</li>
-            <li>• <strong>test/**/*.spec.js</strong> 测试文件</li>
+            <li>• <strong>*.js</strong> {{ $t('tools.glob-tester.page.useCaseAllJs') }}</li>
+            <li>• <strong>**/*.vue</strong> {{ $t('tools.glob-tester.page.useCaseAllVue') }}</li>
+            <li>• <strong>src/**</strong> {{ $t('tools.glob-tester.page.useCaseSrcAll') }}</li>
+            <li>• <strong>!node_modules</strong> {{ $t('tools.glob-tester.page.useCaseExcludeNodeModules') }}</li>
+            <li>• <strong>*.{js,ts}</strong> {{ $t('tools.glob-tester.page.useCaseJsOrTs') }}</li>
+            <li>• <strong>test/**/*.spec.js</strong> {{ $t('tools.glob-tester.page.useCaseTestFiles') }}</li>
           </ul>
         </div>
       </div>
@@ -442,52 +442,52 @@ const displayPaths = computed(() => {
 });
 
 const commonGlobs: Record<string, CommonGlob> = {
-  'JavaScript 文件': {
+  jsFiles: {
     glob: '**/*.{js,jsx}',
     description: '匹配所有 JavaScript 文件',
     sample: ['src/app.js', 'components/Button.jsx', 'utils/helper.js']
   },
-  'TypeScript 文件': {
+  tsFiles: {
     glob: '**/*.{ts,tsx}',
     description: '匹配所有 TypeScript 文件',
     sample: ['src/main.ts', 'components/App.tsx', 'types/index.ts']
   },
-  'Vue 组件': {
+  vueComponents: {
     glob: '**/*.vue',
     description: '匹配所有 Vue 组件文件',
     sample: ['src/App.vue', 'components/Header.vue', 'pages/Home.vue']
   },
-  样式文件: {
+  styleFiles: {
     glob: '**/*.{css,scss,sass,less}',
     description: '匹配所有样式文件',
     sample: ['src/style.css', 'assets/main.scss', 'components/button.less']
   },
-  图片文件: {
+  imageFiles: {
     glob: '**/*.{jpg,jpeg,png,gif,svg,webp}',
     description: '匹配所有图片文件',
     sample: ['assets/logo.png', 'images/hero.jpg', 'icons/star.svg']
   },
-  测试文件: {
+  testFiles: {
     glob: '**/*.{test,spec}.{js,ts}',
     description: '匹配所有测试文件',
     sample: ['tests/app.test.js', 'src/utils.spec.ts', '__tests__/component.test.js']
   },
-  配置文件: {
+  configFiles: {
     glob: '*.{json,yml,yaml,toml,ini}',
     description: '匹配根目录配置文件',
     sample: ['package.json', 'config.yml', 'settings.toml']
   },
-  '排除 node_modules': {
+  excludeNodeModules: {
     glob: '!node_modules/**',
     description: '排除 node_modules 目录',
     sample: ['src/app.js', 'package.json', '!node_modules/lodash/index.js']
   },
-  源码目录: {
+  srcDirectory: {
     glob: 'src/**/*',
     description: '匹配 src 目录下所有文件',
     sample: ['src/main.js', 'src/components/App.vue', 'src/utils/helper.ts']
   },
-  隐藏文件: {
+  hiddenFiles: {
     glob: '.*',
     description: '匹配隐藏文件（需启用 dot 选项）',
     sample: ['.gitignore', '.env', '.eslintrc.js']

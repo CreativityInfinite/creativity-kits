@@ -2,21 +2,21 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">HTTP 请求配置</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.http-requester.page.configTitle') }}</h3>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">请求设置</h4>
+            <h4 class="font-medium">{{ $t('tools.http-requester.page.requestSettings') }}</h4>
             <div class="flex gap-2">
-              <button @click="loadExample" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">加载示例</button>
-              <button @click="clearRequest" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空</button>
+              <button @click="loadExample" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.loadExample') }}</button>
+              <button @click="clearRequest" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.clear') }}</button>
             </div>
           </div>
 
           <div class="space-y-3">
             <div class="grid grid-cols-4 gap-2">
               <div>
-                <label class="block text-sm font-medium mb-1">方法</label>
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.http-requester.page.method') }}</label>
                 <select v-model="request.method" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <option value="GET">GET</option>
                   <option value="POST">POST</option>
@@ -28,24 +28,29 @@
                 </select>
               </div>
               <div class="col-span-3">
-                <label class="block text-sm font-medium mb-1">URL</label>
-                <input v-model="request.url" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="https://api.example.com/users" />
+                <label class="block text-sm font-medium mb-1">{{ $t('tools.http-requester.page.url') }}</label>
+                <input
+                  v-model="request.url"
+                  type="text"
+                  class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.http-requester.page.urlPlaceholder')"
+                />
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <label class="flex items-center space-x-2">
                 <input v-model="request.followRedirects" type="checkbox" />
-                <span class="text-sm">跟随重定向</span>
+                <span class="text-sm">{{ $t('tools.http-requester.page.followRedirects') }}</span>
               </label>
               <label class="flex items-center space-x-2">
                 <input v-model="request.validateSSL" type="checkbox" />
-                <span class="text-sm">验证 SSL</span>
+                <span class="text-sm">{{ $t('tools.http-requester.page.validateSSL') }}</span>
               </label>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">超时时间 (秒)</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.http-requester.page.timeoutSec') }}</label>
               <input v-model.number="request.timeout" type="number" min="1" max="300" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
@@ -53,49 +58,67 @@
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">请求头</h4>
-            <button @click="addHeader" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">添加</button>
+            <h4 class="font-medium">{{ $t('tools.http-requester.page.headersTitle') }}</h4>
+            <button @click="addHeader" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.add') }}</button>
           </div>
 
           <div class="space-y-2">
             <div v-for="(header, index) in request.headers" :key="index" class="grid grid-cols-5 gap-2">
               <div class="col-span-2">
-                <input v-model="header.key" type="text" class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Header Name" />
+                <input
+                  v-model="header.key"
+                  type="text"
+                  class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.http-requester.page.headerName')"
+                />
               </div>
               <div class="col-span-2">
-                <input v-model="header.value" type="text" class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Header Value" />
+                <input
+                  v-model="header.value"
+                  type="text"
+                  class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  :placeholder="$t('tools.http-requester.page.headerValue')"
+                />
               </div>
               <div>
-                <button @click="removeHeader(index)" class="w-full px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm">删除</button>
+                <button @click="removeHeader(index)" class="w-full px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.delete') }}</button>
               </div>
             </div>
 
-            <div v-if="request.headers.length === 0" class="text-center py-4 text-gray-500 text-sm">暂无请求头</div>
+            <div v-if="request.headers.length === 0" class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.http-requester.page.noHeaders') }}</div>
           </div>
 
           <div class="mt-3 pt-3 border-t">
-            <div class="text-sm font-medium mb-2">常用请求头</div>
+            <div class="text-sm font-medium mb-2">{{ $t('tools.http-requester.page.commonHeaders') }}</div>
             <div class="grid grid-cols-2 gap-2">
-              <button @click="addCommonHeader('Content-Type', 'application/json')" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">JSON Content-Type</button>
-              <button @click="addCommonHeader('Authorization', 'Bearer ')" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">Bearer Token</button>
-              <button @click="addCommonHeader('User-Agent', 'FancyTools/1.0')" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">User-Agent</button>
-              <button @click="addCommonHeader('Accept', 'application/json')" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">Accept JSON</button>
+              <button @click="addCommonHeader('Content-Type', 'application/json')" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">
+                {{ $t('tools.http-requester.page.jsonContentType') }}
+              </button>
+              <button @click="addCommonHeader('Authorization', 'Bearer ')" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">
+                {{ $t('tools.http-requester.page.bearerToken') }}
+              </button>
+              <button @click="addCommonHeader('User-Agent', 'FancyTools/1.0')" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">
+                {{ $t('tools.http-requester.page.userAgent') }}
+              </button>
+              <button @click="addCommonHeader('Accept', 'application/json')" class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">
+                {{ $t('tools.http-requester.page.acceptJson') }}
+              </button>
             </div>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-medium">请求体</h4>
+            <h4 class="font-medium">{{ $t('tools.http-requester.page.bodyTitle') }}</h4>
             <div class="flex gap-2">
               <select v-model="request.bodyType" class="px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="none">无</option>
+                <option value="none">{{ $t('tools.http-requester.page.none') }}</option>
                 <option value="json">JSON</option>
-                <option value="form">表单数据</option>
-                <option value="text">纯文本</option>
-                <option value="xml">XML</option>
+                <option value="form">{{ $t('tools.http-requester.page.form') }}</option>
+                <option value="text">{{ $t('tools.http-requester.page.text') }}</option>
+                <option value="xml">{{ $t('tools.http-requester.page.xml') }}</option>
               </select>
-              <button @click="formatBody" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">格式化</button>
+              <button @click="formatBody" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.format') }}</button>
             </div>
           </div>
 
@@ -104,16 +127,26 @@
               <div class="space-y-2">
                 <div v-for="(param, index) in request.formData" :key="index" class="grid grid-cols-5 gap-2">
                   <div class="col-span-2">
-                    <input v-model="param.key" type="text" class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="参数名" />
+                    <input
+                      v-model="param.key"
+                      type="text"
+                      class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      :placeholder="$t('tools.http-requester.page.paramKey')"
+                    />
                   </div>
                   <div class="col-span-2">
-                    <input v-model="param.value" type="text" class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="参数值" />
+                    <input
+                      v-model="param.value"
+                      type="text"
+                      class="w-full px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      :placeholder="$t('tools.http-requester.page.paramValue')"
+                    />
                   </div>
                   <div>
-                    <button @click="removeFormParam(index)" class="w-full px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm">删除</button>
+                    <button @click="removeFormParam(index)" class="w-full px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.delete') }}</button>
                   </div>
                 </div>
-                <button @click="addFormParam" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">添加参数</button>
+                <button @click="addFormParam" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.addParam') }}</button>
               </div>
             </div>
 
@@ -127,26 +160,26 @@
             </div>
 
             <div class="flex items-center justify-between text-sm text-gray-500">
-              <span>字符数: {{ getBodyLength() }}</span>
-              <span>字节数: {{ getBodyByteLength() }}</span>
+              <span>{{ $t('tools.http-requester.page.chars') }}: {{ getBodyLength() }}</span>
+              <span>{{ $t('tools.http-requester.page.bytes') }}: {{ getBodyByteLength() }}</span>
             </div>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">快速操作</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.http-requester.page.quickActions') }}</h4>
           <div class="grid grid-cols-2 gap-2">
             <button @click="sendRequest" :disabled="isLoading" class="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded text-sm">
-              {{ isLoading ? '发送中...' : '发送请求' }}
+              {{ isLoading ? $t('tools.http-requester.page.sending') : $t('tools.http-requester.page.sendRequest') }}
             </button>
-            <button @click="saveRequest" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">保存请求</button>
-            <button @click="exportCurl" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">导出 cURL</button>
-            <button @click="importCurl" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">导入 cURL</button>
+            <button @click="saveRequest" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.saveRequest') }}</button>
+            <button @click="exportCurl" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.exportCurl') }}</button>
+            <button @click="importCurl" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.importCurl') }}</button>
           </div>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <h4 class="font-medium mb-3">保存的请求</h4>
+          <h4 class="font-medium mb-3">{{ $t('tools.http-requester.page.savedRequests') }}</h4>
           <div v-if="savedRequests.length > 0" class="space-y-2 max-h-40 overflow-y-auto">
             <div v-for="(saved, index) in savedRequests" :key="index" class="flex justify-between items-center text-sm p-2 bg-white dark:bg-gray-700 rounded">
               <div class="flex-1 truncate">
@@ -154,51 +187,51 @@
                 <div class="text-xs text-gray-500">{{ saved.method }} {{ saved.url }}</div>
               </div>
               <div class="flex gap-1">
-                <button @click="loadSavedRequest(saved)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-                <button @click="deleteSavedRequest(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+                <button @click="loadSavedRequest(saved)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.http-requester.page.load') }}</button>
+                <button @click="deleteSavedRequest(index)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.http-requester.page.delete') }}</button>
               </div>
             </div>
           </div>
-          <div v-else class="text-center py-4 text-gray-500 text-sm">暂无保存的请求</div>
+          <div v-else class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.http-requester.page.noSavedRequests') }}</div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">响应结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.http-requester.page.responseTitle') }}</h3>
 
         <div v-if="response" class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h4 class="font-medium">响应信息</h4>
+            <h4 class="font-medium">{{ $t('tools.http-requester.page.responseInfo') }}</h4>
             <div class="flex gap-2">
-              <button @click="copyResponse" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制响应</button>
-              <button @click="downloadResponse" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+              <button @click="copyResponse" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.copyResponse') }}</button>
+              <button @click="downloadResponse" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.download') }}</button>
             </div>
           </div>
           <div class="p-4">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div class="text-center">
-                <div class="text-sm text-gray-500">状态码</div>
+                <div class="text-sm text-gray-500">{{ $t('tools.http-requester.page.statusCode') }}</div>
                 <div class="text-lg font-mono" :class="getStatusClass(response.status)">
                   {{ response.status }}
                 </div>
               </div>
               <div class="text-center">
-                <div class="text-sm text-gray-500">响应时间</div>
+                <div class="text-sm text-gray-500">{{ $t('tools.http-requester.page.responseTime') }}</div>
                 <div class="text-lg font-mono">{{ response.duration }}ms</div>
               </div>
               <div class="text-center">
-                <div class="text-sm text-gray-500">响应大小</div>
+                <div class="text-sm text-gray-500">{{ $t('tools.http-requester.page.responseSize') }}</div>
                 <div class="text-lg font-mono">{{ formatBytes(response.size) }}</div>
               </div>
               <div class="text-center">
-                <div class="text-sm text-gray-500">内容类型</div>
+                <div class="text-sm text-gray-500">{{ $t('tools.http-requester.page.contentType') }}</div>
                 <div class="text-sm font-mono truncate">{{ response.contentType }}</div>
               </div>
             </div>
 
             <div class="space-y-3">
               <div>
-                <div class="text-sm font-medium mb-2">响应头</div>
+                <div class="text-sm font-medium mb-2">{{ $t('tools.http-requester.page.responseHeaders') }}</div>
                 <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded border max-h-32 overflow-y-auto">
                   <div v-for="(value, key) in response.headers" :key="key" class="text-sm font-mono">
                     <span class="text-blue-600 dark:text-blue-400">{{ key }}:</span>
@@ -209,12 +242,12 @@
 
               <div>
                 <div class="flex justify-between items-center mb-2">
-                  <div class="text-sm font-medium">响应体</div>
+                  <div class="text-sm font-medium">{{ $t('tools.http-requester.page.responseBody') }}</div>
                   <div class="flex gap-2">
                     <button
                       v-for="format in responseFormats"
                       :key="format"
-                      @click="responseFormat = format"
+                      @click="setResponseFormat(format as ResponseFormat)"
                       :class="responseFormat === format ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'"
                       class="px-2 py-1 rounded text-xs"
                     >
@@ -228,10 +261,10 @@
                   <pre v-else-if="responseFormat === 'xml'" class="text-sm font-mono whitespace-pre-wrap max-h-96 overflow-y-auto" v-html="highlightXml(response.data)"></pre>
                   <div v-else-if="responseFormat === 'preview'" class="max-h-96 overflow-y-auto">
                     <div v-if="isImageResponse()" class="text-center">
-                      <img :src="getImageDataUrl()" alt="Response Image" class="max-w-full h-auto" />
+                      <img :src="getImageDataUrl()" :alt="$t('tools.http-requester.page.responseImageAlt')" class="max-w-full h-auto" />
                     </div>
                     <div v-else-if="isHtmlResponse()" v-html="response.data"></div>
-                    <div v-else class="text-gray-500 text-center py-8">无法预览此类型的响应</div>
+                    <div v-else class="text-gray-500 text-center py-8">{{ $t('tools.http-requester.page.cannotPreview') }}</div>
                   </div>
                 </div>
               </div>
@@ -241,7 +274,7 @@
 
         <div v-else-if="error" class="bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800 rounded-lg">
           <div class="p-3 border-b bg-red-50 dark:bg-red-900/20">
-            <h4 class="font-medium text-red-600 dark:text-red-400">请求错误</h4>
+            <h4 class="font-medium text-red-600 dark:text-red-400">{{ $t('tools.http-requester.page.requestErrorTitle') }}</h4>
           </div>
           <div class="p-4">
             <div class="text-red-600 dark:text-red-400 text-sm">
@@ -252,14 +285,14 @@
 
         <div v-else class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-8 text-center text-gray-500">
-            <div class="text-lg mb-2">准备发送请求</div>
-            <div class="text-sm">配置请求参数后点击"发送请求"按钮</div>
+            <div class="text-lg mb-2">{{ $t('tools.http-requester.page.emptyReady') }}</div>
+            <div class="text-sm">{{ $t('tools.http-requester.page.emptyHint') }}</div>
           </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 border rounded-lg">
           <div class="p-3 border-b bg-gray-50 dark:bg-gray-700">
-            <h4 class="font-medium">请求历史</h4>
+            <h4 class="font-medium">{{ $t('tools.http-requester.page.historyTitle') }}</h4>
           </div>
           <div class="p-4">
             <div v-if="requestHistory.length > 0" class="space-y-2 max-h-40 overflow-y-auto">
@@ -269,16 +302,16 @@
                     <span :class="getMethodClass(history.method)">{{ history.method }}</span>
                     <span class="ml-2">{{ history.url }}</span>
                   </div>
-                  <div class="text-xs text-gray-500">{{ history.timestamp }} - {{ history.status ? history.status : '失败' }}</div>
+                  <div class="text-xs text-gray-500">{{ history.timestamp }} - {{ history.status ? history.status : $t('tools.http-requester.page.failed') }}</div>
                 </div>
                 <div class="flex gap-1">
-                  <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">重发</button>
+                  <button @click="loadFromHistory(history)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.http-requester.page.resend') }}</button>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-gray-500 text-sm">暂无请求历史</div>
+            <div v-else class="text-center py-4 text-gray-500 text-sm">{{ $t('tools.http-requester.page.noHistory') }}</div>
             <div v-if="requestHistory.length > 0" class="mt-3 pt-3 border-t">
-              <button @click="clearHistory" class="w-full px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">清空历史</button>
+              <button @click="clearHistory" class="w-full px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm">{{ $t('tools.http-requester.page.clearHistory') }}</button>
             </div>
           </div>
         </div>
@@ -286,36 +319,36 @@
     </div>
 
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-      <h3 class="font-medium mb-3">使用说明</h3>
+      <h3 class="font-medium mb-3">{{ $t('tools.http-requester.page.guideTitle') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          <h4 class="font-medium mb-2">基本功能</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.http-requester.page.basicFeatures') }}</h4>
           <ul class="space-y-1">
-            <li>• 支持所有 HTTP 方法</li>
-            <li>• 自定义请求头和参数</li>
-            <li>• 多种请求体格式</li>
-            <li>• 响应数据格式化显示</li>
-            <li>• 请求和响应时间统计</li>
+            <li>{{ $t('tools.http-requester.page.basicList.allMethods') }}</li>
+            <li>{{ $t('tools.http-requester.page.basicList.headersParams') }}</li>
+            <li>{{ $t('tools.http-requester.page.basicList.multiBody') }}</li>
+            <li>{{ $t('tools.http-requester.page.basicList.formatDisplay') }}</li>
+            <li>{{ $t('tools.http-requester.page.basicList.timing') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">高级功能</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.http-requester.page.advancedFeatures') }}</h4>
           <ul class="space-y-1">
-            <li>• cURL 命令导入导出</li>
-            <li>• 请求模板保存</li>
-            <li>• 响应数据下载</li>
-            <li>• 语法高亮显示</li>
-            <li>• 图片和 HTML 预览</li>
+            <li>{{ $t('tools.http-requester.page.advancedList.curl') }}</li>
+            <li>{{ $t('tools.http-requester.page.advancedList.templates') }}</li>
+            <li>{{ $t('tools.http-requester.page.advancedList.download') }}</li>
+            <li>{{ $t('tools.http-requester.page.advancedList.syntaxHighlight') }}</li>
+            <li>{{ $t('tools.http-requester.page.advancedList.preview') }}</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-medium mb-2">注意事项</h4>
+          <h4 class="font-medium mb-2">{{ $t('tools.http-requester.page.notices') }}</h4>
           <ul class="space-y-1">
-            <li>• 受浏览器 CORS 策略限制</li>
-            <li>• 某些请求头可能被浏览器过滤</li>
-            <li>• 大文件响应可能影响性能</li>
-            <li>• 敏感数据请谨慎处理</li>
-            <li>• 支持本地开发和测试</li>
+            <li>{{ $t('tools.http-requester.page.noticeList.cors') }}</li>
+            <li>{{ $t('tools.http-requester.page.noticeList.filteredHeaders') }}</li>
+            <li>{{ $t('tools.http-requester.page.noticeList.largeFiles') }}</li>
+            <li>{{ $t('tools.http-requester.page.noticeList.sensitive') }}</li>
+            <li>{{ $t('tools.http-requester.page.noticeList.localDev') }}</li>
           </ul>
         </div>
       </div>
@@ -325,6 +358,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface Header {
   key: string;
@@ -376,6 +410,8 @@ interface RequestHistory {
   request: Request;
 }
 
+const { t } = useI18n();
+
 const request = ref<Request>({
   method: 'GET',
   url: '',
@@ -395,7 +431,12 @@ const responseFormat = ref<'raw' | 'json' | 'xml' | 'preview'>('raw');
 const savedRequests = ref<SavedRequest[]>([]);
 const requestHistory = ref<RequestHistory[]>([]);
 
-const responseFormats = ['raw', 'json', 'xml', 'preview'];
+const responseFormats = ['raw', 'json', 'xml', 'preview'] as const;
+type ResponseFormat = (typeof responseFormats)[number];
+
+function setResponseFormat(format: ResponseFormat) {
+  responseFormat.value = format;
+}
 
 onMounted(() => {
   loadSavedRequests();
@@ -434,7 +475,7 @@ function getBodyPlaceholder(): string {
     case 'xml':
       return '<?xml version="1.0" encoding="UTF-8"?>\n<root>\n  <item>value</item>\n</root>';
     case 'text':
-      return '输入纯文本内容...';
+      return t('tools.http-requester.page.textPlaceholder');
     default:
       return '';
   }
@@ -451,10 +492,13 @@ function getBodyByteLength(): number {
   const text =
     request.value.bodyType === 'form'
       ? new URLSearchParams(
-          request.value.formData.reduce((acc, param) => {
-            acc[param.key] = param.value;
-            return acc;
-          }, {} as Record<string, string>)
+          request.value.formData.reduce(
+            (acc, param) => {
+              acc[param.key] = param.value;
+              return acc;
+            },
+            {} as Record<string, string>
+          )
         ).toString()
       : request.value.body;
 
@@ -474,7 +518,7 @@ function formatBody() {
 
 async function sendRequest() {
   if (!request.value.url) {
-    error.value = '请输入请求 URL';
+    error.value = t('tools.http-requester.page.errorEnterUrl');
     return;
   }
 
@@ -570,7 +614,7 @@ async function sendRequest() {
     addToHistory(fetchResponse.status);
   } catch (err: any) {
     const duration = Date.now() - startTime;
-    error.value = err.name === 'AbortError' ? '请求超时' : err.message || '请求失败';
+    error.value = err.name === 'AbortError' ? t('tools.http-requester.page.timeoutError') : err.message || t('tools.http-requester.page.requestFailed');
 
     // 添加到历史记录
     addToHistory();
@@ -580,7 +624,7 @@ async function sendRequest() {
 }
 
 function saveRequest() {
-  const name = prompt('请输入请求名称:');
+  const name = prompt(t('tools.http-requester.page.promptEnterRequestName'));
   if (!name) return;
 
   const savedRequest: SavedRequest = {
@@ -658,7 +702,7 @@ function exportCurl() {
 }
 
 function importCurl() {
-  const curlCommand = prompt('请输入 cURL 命令:');
+  const curlCommand = prompt(t('tools.http-requester.page.promptEnterCurl'));
   if (!curlCommand) return;
 
   try {
@@ -693,7 +737,7 @@ function importCurl() {
       }
     }
   } catch (error) {
-    alert('cURL 命令解析失败');
+    alert(t('tools.http-requester.page.curlParseFailed'));
   }
 }
 
@@ -758,7 +802,7 @@ async function copyText(text: string) {
     await navigator.clipboard.writeText(text);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(t('tools.http-requester.page.copyFailedLog'), error);
   }
 }
 
@@ -773,7 +817,7 @@ async function copyResponse() {
     await navigator.clipboard.writeText(text);
     // 这里可以添加成功提示
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error(t('tools.http-requester.page.copyFailedLog'), error);
   }
 }
 
@@ -863,7 +907,7 @@ function loadSavedRequests() {
       savedRequests.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载保存的请求失败:', error);
+    console.error(t('tools.http-requester.page.loadSavedFailedLog'), error);
   }
 }
 
@@ -871,7 +915,7 @@ function saveSavedRequests() {
   try {
     localStorage.setItem('http-requester-saved', JSON.stringify(savedRequests.value));
   } catch (error) {
-    console.error('保存请求失败:', error);
+    console.error(t('tools.http-requester.page.saveRequestFailedLog'), error);
   }
 }
 
@@ -882,7 +926,7 @@ function loadRequestHistory() {
       requestHistory.value = JSON.parse(saved);
     }
   } catch (error) {
-    console.error('加载请求历史失败:', error);
+    console.error(t('tools.http-requester.page.loadHistoryFailedLog'), error);
   }
 }
 
@@ -890,7 +934,7 @@ function saveRequestHistory() {
   try {
     localStorage.setItem('http-requester-history', JSON.stringify(requestHistory.value));
   } catch (error) {
-    console.error('保存请求历史失败:', error);
+    console.error(t('tools.http-requester.page.saveHistoryFailedLog'), error);
   }
 }
 </script>

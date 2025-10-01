@@ -2,56 +2,56 @@
   <div class="space-y-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">质数测试与生成</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.prime-tester-and-generator.page.title') }}</h3>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium mb-1">测试数字</label>
+            <label class="block text-sm font-medium mb-1">{{ $t('tools.prime-tester-and-generator.page.testNumber') }}</label>
             <input v-model.number="testN" type="number" min="0" placeholder="如 97" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-sm font-medium mb-1">生成上限/数量</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.prime-tester-and-generator.page.limitOrCount') }}</label>
               <input v-model.number="limit" type="number" min="1" placeholder="上限 or 数量" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">模式</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tools.prime-tester-and-generator.page.mode') }}</label>
               <select v-model="mode" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="upto">生成 <= 上限 的所有质数</option>
-                <option value="nextN">从测试数字开始的后续 N 个质数</option>
+                <option value="upto">{{ $t('tools.prime-tester-and-generator.page.modeUpTo') }}</option>
+                <option value="nextN">{{ $t('tools.prime-tester-and-generator.page.modeNextN') }}</option>
               </select>
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button @click="process" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">处理</button>
-            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">清空</button>
+            <button @click="process" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">{{ $t('tools.prime-tester-and-generator.page.process') }}</button>
+            <button @click="clearAll" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md">{{ $t('tools.prime-tester-and-generator.page.clear') }}</button>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="font-medium text-lg">结果</h3>
+        <h3 class="font-medium text-lg">{{ $t('tools.prime-tester-and-generator.page.resultTitle') }}</h3>
 
         <div v-if="result" class="space-y-4">
           <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             <div class="flex justify-between items-center mb-2">
-              <h4 class="font-medium">输出</h4>
+              <h4 class="font-medium">{{ $t('tools.prime-tester-and-generator.page.output') }}</h4>
               <div class="flex gap-2">
-                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">复制</button>
-                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">下载</button>
+                <button @click="copyResult" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">{{ $t('tools.prime-tester-and-generator.page.copy') }}</button>
+                <button @click="downloadResult" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">{{ $t('tools.prime-tester-and-generator.page.download') }}</button>
               </div>
             </div>
             <textarea :value="result" readonly rows="12" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-sm" />
-            <div class="text-xs text-gray-500 mt-2">处理时间: {{ processingTime }}ms</div>
+            <div class="text-xs text-gray-500 mt-2">{{ $t('tools.prime-tester-and-generator.page.processingTime') }}: {{ processingTime }}ms</div>
           </div>
 
-          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">保存到历史记录</button>
+          <button @click="saveToHistory" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md">{{ $t('tools.prime-tester-and-generator.page.saveToHistory') }}</button>
         </div>
 
         <div v-else class="text-center py-12 text-gray-500 dark:text-gray-400">
           <div class="text-4xl mb-3">🔢</div>
-          <div class="text-lg">质数判断与生成</div>
+          <div class="text-lg">{{ $t('tools.prime-tester-and-generator.page.emptyTitle') }}</div>
         </div>
 
         <div v-if="error" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
@@ -61,17 +61,17 @@
     </div>
 
     <div v-if="history.length" class="space-y-2">
-      <h3 class="font-medium">历史</h3>
+      <h3 class="font-medium">{{ $t('tools.prime-tester-and-generator.page.historyTitle') }}</h3>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         <div v-for="(h, i) in history" :key="i" class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-sm">
           <div class="flex justify-between">
-            <div class="font-medium">n={{ h.testN }} · 模式 {{ h.mode }}</div>
+            <div class="font-medium">n={{ h.testN }} · {{ $t('tools.prime-tester-and-generator.page.mode') }} {{ h.mode }}</div>
             <div class="text-xs text-gray-500">{{ formatDate(h.timestamp) }}</div>
           </div>
           <div class="text-xs truncate">摘要：{{ h.summary }}</div>
           <div class="flex gap-2 mt-2">
-            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">加载</button>
-            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">删除</button>
+            <button @click="loadFromHistory(h)" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">{{ $t('tools.prime-tester-and-generator.page.load') }}</button>
+            <button @click="removeFromHistory(i)" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">{{ $t('tools.prime-tester-and-generator.page.remove') }}</button>
           </div>
         </div>
       </div>
@@ -81,6 +81,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 type HistoryItem = { testN: number; mode: string; limit: number; result: string; summary: string; timestamp: number };
 
 const testN = ref(97);
@@ -90,6 +91,7 @@ const limit = ref(100);
 const result = ref('');
 const error = ref('');
 const processingTime = ref<number | null>(null);
+const { t } = useI18n();
 const history = ref<HistoryItem[]>([]);
 
 function clearAll() {
@@ -98,7 +100,7 @@ function clearAll() {
   processingTime.value = null;
 }
 function copyText(t: string) {
-  navigator.clipboard.writeText(t).then(() => alert('已复制到剪贴板'));
+  navigator.clipboard.writeText(t).then(() => alert(t('tools.prime-tester-and-generator.page.copied')));
 }
 function copyResult() {
   if (result.value) copyText(result.value);
@@ -190,7 +192,7 @@ function process() {
     result.value = JSON.stringify(out, null, 2);
     processingTime.value = Math.round(performance.now() - t0);
   } catch (e: any) {
-    error.value = e?.message || '处理失败';
+    error.value = e?.message || t('tools.prime-tester-and-generator.page.processFailed');
   }
 }
 
