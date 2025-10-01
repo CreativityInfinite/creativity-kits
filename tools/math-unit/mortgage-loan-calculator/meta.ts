@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'mortgage-loan-calculator',
-  name: '房贷计算器',
-  description: '房贷计算器工具',
+  name: 'tools.mortgage-loan-calculator.name',
+  description: 'tools.mortgage-loan-calculator.desc',
   category: 'math-unit',
-  tags: ['math-unit', '工具'],
+  tags: 'tools.mortgage-loan-calculator.tags',
   icon: 'mdi:home-currency-usd',
-  i18nKey: 'tools.mortgage-loan-calculator',
   entry: 'tools/math-unit/mortgage-loan-calculator/Component.vue',
   isNew: true,
   isPopular: false

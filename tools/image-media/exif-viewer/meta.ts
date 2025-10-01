@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'exif-viewer',
-  name: 'EXIF 信息查看器',
-  description: 'EXIF 信息查看器工具',
+  name: 'tools.exif-viewer.name',
+  description: 'tools.exif-viewer.desc',
   category: 'image-media',
-  tags: ['image-media', '工具'],
+  tags: 'tools.exif-viewer.tags',
   icon: 'mdi:information',
-  i18nKey: 'tools.exif-viewer',
   entry: 'tools/image-media/exif-viewer/Component.vue',
   isNew: true,
   isPopular: false

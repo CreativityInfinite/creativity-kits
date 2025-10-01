@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'mime-type-finder',
-  name: 'MIME 类型查询',
-  description: 'MIME 类型查询工具',
+  name: 'tools.mime-type-finder.name',
+  description: 'tools.mime-type-finder.desc',
   category: 'dev-network',
-  tags: ['dev-network', '工具'],
+  tags: 'tools.mime-type-finder.tags',
   icon: 'mdi:file-question',
-  i18nKey: 'tools.mime-type-finder',
   entry: 'tools/dev-network/mime-type-finder/Component.vue',
   isNew: true,
   isPopular: false

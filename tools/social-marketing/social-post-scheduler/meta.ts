@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'social-post-scheduler',
-  name: '社交媒体发布计划器',
-  description: '社交媒体发布计划器工具',
+  name: 'tools.social-post-scheduler.name',
+  description: 'tools.social-post-scheduler.desc',
   category: 'social-marketing',
-  tags: ['social-marketing', '工具'],
+  tags: 'tools.social-post-scheduler.tags',
   icon: 'mdi:calendar-clock',
-  i18nKey: 'tools.social-post-scheduler',
   entry: 'tools/social-marketing/social-post-scheduler/Component.vue',
   isNew: true,
   isPopular: false

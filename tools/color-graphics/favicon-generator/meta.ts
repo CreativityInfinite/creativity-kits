@@ -2,13 +2,12 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'favicon-generator',
-  name: 'Favicon 生成器',
-  description: 'Favicon 生成器工具',
+  name: 'tools.favicon-generator.name',
+  description: 'tools.favicon-generator.desc',
   category: 'color-graphics',
-  tags: ['color-graphics', '工具'],
+  tags: 'tools.favicon-generator.tags',
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:web',
-  i18nKey: 'tools.favicon-generator',
   entry: 'tools/color-graphics/favicon-generator/Component.vue'
 };
 export default meta;

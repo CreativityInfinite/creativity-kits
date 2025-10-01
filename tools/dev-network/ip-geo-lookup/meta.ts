@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'ip-geo-lookup',
-  name: 'IP 地理位置查询',
-  description: 'IP 地理位置查询工具',
+  name: 'tools.ip-geo-lookup.name',
+  description: 'tools.ip-geo-lookup.desc',
   category: 'dev-network',
-  tags: ['dev-network', '工具'],
+  tags: 'tools.ip-geo-lookup.tags',
   icon: 'mdi:map-marker',
-  i18nKey: 'tools.ip-geo-lookup',
   entry: 'tools/dev-network/ip-geo-lookup/Component.vue',
   isNew: true,
   isPopular: false

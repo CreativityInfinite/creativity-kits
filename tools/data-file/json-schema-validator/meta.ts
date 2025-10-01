@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'json-schema-validator',
-  name: 'JSON Schema 验证器',
-  description: 'JSON Schema 验证器工具',
+  name: 'tools.json-schema-validator.name',
+  description: 'tools.json-schema-validator.desc',
   category: 'data-file',
-  tags: ['data-file', '工具'],
+  tags: 'tools.json-schema-validator.tags',
   icon: 'mdi:check-circle',
-  i18nKey: 'tools.json-schema-validator',
   entry: 'tools/data-file/json-schema-validator/Component.vue',
   isNew: true,
   isPopular: false

@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'resume-builder',
-  name: '简历生成器',
-  description: '简历生成器工具',
+  name: 'tools.resume-builder.name',
+  description: 'tools.resume-builder.desc',
   category: 'productivity',
-  tags: ['productivity', '工具'],
+  tags: 'tools.resume-builder.tags',
   icon: 'mdi:account-box',
-  i18nKey: 'tools.resume-builder',
   entry: 'tools/productivity/resume-builder/Component.vue',
   isNew: true,
   isPopular: false

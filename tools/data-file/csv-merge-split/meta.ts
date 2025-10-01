@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'csv-merge-split',
-  name: 'CSV 合并分割',
-  description: 'CSV 合并分割工具',
+  name: 'tools.csv-merge-split.name',
+  description: 'tools.csv-merge-split.desc',
   category: 'data-file',
-  tags: ['data-file', '工具'],
+  tags: 'tools.csv-merge-split.tags',
   icon: 'mdi:table-split-cell',
-  i18nKey: 'tools.csv-merge-split',
   entry: 'tools/data-file/csv-merge-split/Component.vue',
   isNew: true,
   isPopular: false

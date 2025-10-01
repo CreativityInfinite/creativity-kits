@@ -18,10 +18,10 @@
         </div>
         <div class="flex-1 min-w-0">
           <h3 class="text-sm font-semibold leading-tight text-gray-900 dark:text-white mb-1 truncate">
-            {{ $t(tool.i18nKey + '.name', tool.name) }}
+            {{ $t(tool.name) }}
           </h3>
           <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed overflow-hidden" style="-webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical">
-            {{ $t(tool.i18nKey + '.desc', tool.description) }}
+            {{ $t(tool.description) }}
           </p>
         </div>
       </div>
@@ -29,17 +29,17 @@
 
     <div class="mt-2 flex flex-wrap gap-1">
       <span
-        v-for="tag in tool.tags || []"
+        v-for="tag in $tm(tool.tags) || []"
         :key="tag"
         class="rounded-md bg-gray-100 dark:bg-white/5 px-1.5 py-0.5 text-[10px] text-gray-600 dark:text-gray-300 ring-1 ring-gray-200 dark:ring-white/10 font-medium"
       >
-        #{{ tag }}
+        #{{ tag.body.static }}
       </span>
     </div>
 
     <div class="mt-3 flex items-center justify-between">
       <div class="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap ring-1 ring-blue-200 text-blue-700 bg-blue-50 dark:ring-blue-900/40 dark:text-blue-200 dark:bg-blue-900/20">
-        {{ $t(`categories.${tool.category}`, tool.category) }}
+        {{ $t(`categories.${tool.category}`) }}
       </div>
     </div>
   </NuxtLink>
@@ -48,10 +48,12 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { ToolMetaRuntime } from '~/types/tool';
 import { getDisplayBgUnified, getDisplayIconUnified } from '~/composables/useToolIcon';
 
 // 接收 props 以便在脚本中安全访问
+const { t, rt, tm } = useI18n();
 const { tool, active, disabled } = defineProps<{ tool: ToolMetaRuntime; active?: boolean; disabled?: boolean }>();
 
 const displayIcon = computed(() => getDisplayIconUnified(tool.icon as any, tool.category as any));

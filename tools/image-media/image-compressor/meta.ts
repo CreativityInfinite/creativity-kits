@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'image-compressor',
-  name: '图片压缩器',
-  description: '图片压缩器工具',
+  name: 'tools.image-compressor.name',
+  description: 'tools.image-compressor.desc',
   category: 'image-media',
-  tags: ['image-media', '工具'],
+  tags: 'tools.image-compressor.tags',
   icon: 'mdi:compress',
-  i18nKey: 'tools.image-compressor',
   entry: 'tools/image-media/image-compressor/Component.vue',
   isNew: true,
   isPopular: false

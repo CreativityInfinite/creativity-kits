@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'pinyin-converter',
-  name: '拼音转换器',
-  description: '拼音转换器工具',
+  name: 'tools.pinyin-converter.name',
+  description: 'tools.pinyin-converter.desc',
   category: 'education-language',
-  tags: ['education-language', '工具'],
+  tags: 'tools.pinyin-converter.tags',
   icon: 'mdi:translate',
-  i18nKey: 'tools.pinyin-converter',
   entry: 'tools/education-language/pinyin-converter/Component.vue',
   isNew: true,
   isPopular: false

@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'sitemap-generator',
-  name: '网站地图生成器',
-  description: '网站地图生成器工具',
+  name: 'tools.sitemap-generator.name',
+  description: 'tools.sitemap-generator.desc',
   category: 'social-marketing',
-  tags: ['social-marketing', '工具'],
+  tags: 'tools.sitemap-generator.tags',
   icon: 'mdi:sitemap',
-  i18nKey: 'tools.sitemap-generator',
   entry: 'tools/social-marketing/sitemap-generator/Component.vue',
   isNew: true,
   isPopular: false

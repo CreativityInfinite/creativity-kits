@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'service-worker-tester',
-  name: 'Service Worker 测试器',
-  description: 'Service Worker 测试器工具',
+  name: 'tools.service-worker-tester.name',
+  description: 'tools.service-worker-tester.desc',
   category: 'system-browser',
-  tags: ['system-browser', '工具'],
+  tags: 'tools.service-worker-tester.tags',
   icon: 'mdi:worker',
-  i18nKey: 'tools.service-worker-tester',
   entry: 'tools/system-browser/service-worker-tester/Component.vue',
   isNew: true,
   isPopular: false

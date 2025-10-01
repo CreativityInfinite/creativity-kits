@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'notifications-tester',
-  name: '通知测试器',
-  description: '通知测试器工具',
+  name: 'tools.notifications-tester.name',
+  description: 'tools.notifications-tester.desc',
   category: 'system-browser',
-  tags: ['system-browser', '工具'],
+  tags: 'tools.notifications-tester.tags',
   icon: 'mdi:bell',
-  i18nKey: 'tools.notifications-tester',
   entry: 'tools/system-browser/notifications-tester/Component.vue',
   isNew: true,
   isPopular: false

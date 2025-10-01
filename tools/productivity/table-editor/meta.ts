@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'table-editor',
-  name: '表格编辑器',
-  description: '表格编辑器工具',
+  name: 'tools.table-editor.name',
+  description: 'tools.table-editor.desc',
   category: 'productivity',
-  tags: ['productivity', '工具'],
+  tags: 'tools.table-editor.tags',
   icon: 'mdi:table-edit',
-  i18nKey: 'tools.table-editor',
   entry: 'tools/productivity/table-editor/Component.vue',
   isNew: true,
   isPopular: false

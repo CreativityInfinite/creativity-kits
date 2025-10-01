@@ -49,18 +49,18 @@
 
             <div class="min-w-0">
               <h1 class="truncate text-lg font-semibold leading-tight">
-                {{ $t(tool.i18nKey + '.name', tool.name) }}
+                {{ $t(tool.name) }}
               </h1>
               <p class="mt-0.5 line-clamp-2 text-xs text-gray-500 dark:text-gray-400">
-                {{ $t(tool.i18nKey + '.desc', tool.description) }}
+                {{ $t(tool.description) }}
               </p>
             </div>
           </div>
-          <div class="shrink-0 text-[10px] text-gray-500">{{ tool.category }}</div>
+          <div class="shrink-0 text-[10px] text-gray-500">{{ $t(`categories.${tool.category}`) }}</div>
         </div>
 
         <!-- 工具容器：防止内容超宽溢出 -->
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto p-4">
           <div class="min-w-0 max-w-full">
             <client-only>
               <Suspense>
@@ -94,7 +94,6 @@ type ToolMetaRuntime = {
   id: string;
   name: string;
   description?: string;
-  i18nKey: string;
   category: string;
   tags?: string[];
   color?: string;

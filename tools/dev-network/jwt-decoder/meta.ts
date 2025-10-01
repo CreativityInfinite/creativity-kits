@@ -2,13 +2,12 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'jwt-decoder',
-  name: 'JWT 解码',
-  description: '本地解析，不联网',
+  name: 'tools.jwt-decoder.name',
+  description: 'tools.jwt-decoder.desc',
   category: 'dev-network',
-  tags: ['jwt', 'dev', 'new'],
+  tags: 'tools.jwt-decoder.tags',
   color: 'linear-gradient(135deg,#22d3ee,#84cc16)',
   icon: 'tabler:shield-lock',
-  i18nKey: 'tools.jwt-decoder',
   entry: 'tools/dev-network/jwt-decoder/Component.vue'
 };
 export default meta;

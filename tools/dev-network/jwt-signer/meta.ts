@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'jwt-signer',
-  name: 'JWT 签名器',
-  description: 'JWT 签名器工具',
+  name: 'tools.jwt-signer.name',
+  description: 'tools.jwt-signer.desc',
   category: 'dev-network',
-  tags: ['dev-network', '工具'],
+  tags: 'tools.jwt-signer.tags',
   icon: 'mdi:key-plus',
-  i18nKey: 'tools.jwt-signer',
   entry: 'tools/dev-network/jwt-signer/Component.vue',
   isNew: true,
   isPopular: false

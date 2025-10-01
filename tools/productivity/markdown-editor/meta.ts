@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'markdown-editor',
-  name: 'Markdown 编辑器',
-  description: 'Markdown 编辑器工具',
+  name: 'tools.markdown-editor.name',
+  description: 'tools.markdown-editor.desc',
   category: 'productivity',
-  tags: ['productivity', '工具'],
+  tags: 'tools.markdown-editor.tags',
   icon: 'mdi:language-markdown-outline',
-  i18nKey: 'tools.markdown-editor',
   entry: 'tools/productivity/markdown-editor/Component.vue',
   isNew: true,
   isPopular: false

@@ -19,7 +19,7 @@ export async function useTools() {
 
   const valid = built.filter((t) => {
     const hasId = typeof t.id === 'string' && t.id.length > 0;
-    const hasNameOrI18n = typeof t.name === 'string' || typeof (t as any).i18nKey === 'string';
+    const hasNameOrI18n = typeof t.name === 'string';
     const hasCategory = typeof t.category === 'string' && t.category.length > 0;
     const hasComponent = !!t.component;
     return hasId && hasCategory && hasComponent && hasNameOrI18n;

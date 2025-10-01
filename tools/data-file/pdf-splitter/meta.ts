@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'pdf-splitter',
-  name: 'PDF 分割器',
-  description: 'PDF 分割器工具',
+  name: 'tools.pdf-splitter.name',
+  description: 'tools.pdf-splitter.desc',
   category: 'data-file',
-  tags: ['data-file', '工具'],
+  tags: 'tools.pdf-splitter.tags',
   icon: 'mdi:content-cut',
-  i18nKey: 'tools.pdf-splitter',
   entry: 'tools/data-file/pdf-splitter/Component.vue',
   isNew: true,
   isPopular: false

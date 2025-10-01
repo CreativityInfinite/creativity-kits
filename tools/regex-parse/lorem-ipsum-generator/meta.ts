@@ -2,13 +2,12 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'lorem-ipsum-generator',
-  name: 'Lorem Ipsum 生成器',
-  description: 'Lorem Ipsum 生成器工具',
+  name: 'tools.lorem-ipsum-generator.name',
+  description: 'tools.lorem-ipsum-generator.desc',
   category: 'regex-parse',
-  tags: ['regex-parse', '工具'],
+  tags: 'tools.lorem-ipsum-generator.tags',
   color: 'linear-gradient(135deg,#7c3aed,#22d3ee)',
   icon: 'mdi:text',
-  i18nKey: 'tools.lorem-ipsum-generator',
   entry: 'tools/regex-parse/lorem-ipsum-generator/Component.vue'
 };
 export default meta;

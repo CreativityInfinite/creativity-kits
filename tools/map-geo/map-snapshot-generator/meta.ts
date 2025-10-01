@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'map-snapshot-generator',
-  name: '地图快照生成器',
-  description: '地图快照生成器工具',
+  name: 'tools.map-snapshot-generator.name',
+  description: 'tools.map-snapshot-generator.desc',
   category: 'map-geo',
-  tags: ['map-geo', '工具'],
+  tags: 'tools.map-snapshot-generator.tags',
   icon: 'mdi:camera-image',
-  i18nKey: 'tools.map-snapshot-generator',
   entry: 'tools/map-geo/map-snapshot-generator/Component.vue',
   isNew: true,
   isPopular: false

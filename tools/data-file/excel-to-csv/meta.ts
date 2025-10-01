@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'excel-to-csv',
-  name: 'Excel 转 CSV',
-  description: 'Excel 转 CSV工具',
+  name: 'tools.excel-to-csv.name',
+  description: 'tools.excel-to-csv.desc',
   category: 'data-file',
-  tags: ['data-file', '工具'],
+  tags: 'tools.excel-to-csv.tags',
   icon: 'mdi:microsoft-excel',
-  i18nKey: 'tools.excel-to-csv',
   entry: 'tools/data-file/excel-to-csv/Component.vue',
   isNew: true,
   isPopular: false

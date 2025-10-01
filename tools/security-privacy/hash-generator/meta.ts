@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'hash-generator',
-  name: '哈希生成器',
-  description: '哈希生成器工具',
+  name: 'tools.hash-generator.name',
+  description: 'tools.hash-generator.desc',
   category: 'security-privacy',
-  tags: ['security-privacy', '工具'],
+  tags: 'tools.hash-generator.tags',
   icon: 'mdi:pound-box',
-  i18nKey: 'tools.hash-generator',
   entry: 'tools/security-privacy/hash-generator/Component.vue',
   isNew: true,
   isPopular: false

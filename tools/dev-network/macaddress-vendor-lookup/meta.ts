@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'macaddress-vendor-lookup',
-  name: 'MAC 地址厂商查询',
-  description: 'MAC 地址厂商查询工具',
+  name: 'tools.macaddress-vendor-lookup.name',
+  description: 'tools.macaddress-vendor-lookup.desc',
   category: 'dev-network',
-  tags: ['dev-network', '工具'],
+  tags: 'tools.macaddress-vendor-lookup.tags',
   icon: 'mdi:ethernet',
-  i18nKey: 'tools.macaddress-vendor-lookup',
   entry: 'tools/dev-network/macaddress-vendor-lookup/Component.vue',
   isNew: true,
   isPopular: false

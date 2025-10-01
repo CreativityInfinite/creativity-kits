@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'tsv-converter',
-  name: 'TSV 转换器',
-  description: 'TSV 转换器工具',
+  name: 'tools.tsv-converter.name',
+  description: 'tools.tsv-converter.desc',
   category: 'data-file',
-  tags: ['data-file', '工具'],
+  tags: 'tools.tsv-converter.tags',
   icon: 'mdi:table-arrow-right',
-  i18nKey: 'tools.tsv-converter',
   entry: 'tools/data-file/tsv-converter/Component.vue',
   isNew: true,
   isPopular: false

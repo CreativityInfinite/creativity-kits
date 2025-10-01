@@ -2,13 +2,12 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'user-agent-parser',
-  name: 'User Agent 解析器',
-  description: 'User Agent 解析器工具',
+  name: 'tools.user-agent-parser.name',
+  description: 'tools.user-agent-parser.desc',
   category: 'dev-network',
-  tags: ['dev-network', '工具'],
+  tags: 'tools.user-agent-parser.tags',
   color: 'linear-gradient(135deg,#64748b,#22d3ee)',
   icon: 'mdi:information-outline',
-  i18nKey: 'tools.user-agent-parser',
   entry: 'tools/dev-network/user-agent-parser/Component.vue',
   isNew: true,
   isPopular: false

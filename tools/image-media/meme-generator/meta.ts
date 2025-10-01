@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'meme-generator',
-  name: '表情包生成器',
-  description: '表情包生成器工具',
+  name: 'tools.meme-generator.name',
+  description: 'tools.meme-generator.desc',
   category: 'image-media',
-  tags: ['image-media', '工具'],
+  tags: 'tools.meme-generator.tags',
   icon: 'mdi:emoticon',
-  i18nKey: 'tools.meme-generator',
   entry: 'tools/image-media/meme-generator/Component.vue',
   isNew: true,
   isPopular: false

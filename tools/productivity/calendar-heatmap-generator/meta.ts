@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'calendar-heatmap-generator',
-  name: '日历热力图生成器',
-  description: '日历热力图生成器工具',
+  name: 'tools.calendar-heatmap-generator.name',
+  description: 'tools.calendar-heatmap-generator.desc',
   category: 'productivity',
-  tags: ['productivity', '工具'],
+  tags: 'tools.calendar-heatmap-generator.tags',
   icon: 'mdi:calendar-heart',
-  i18nKey: 'tools.calendar-heatmap-generator',
   entry: 'tools/productivity/calendar-heatmap-generator/Component.vue',
   isNew: true,
   isPopular: false

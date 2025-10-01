@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'twofa-totp-generator',
-  name: '2FA TOTP 生成器',
-  description: '2FA TOTP 生成器工具',
+  name: 'tools.twofa-totp-generator.name',
+  description: 'tools.twofa-totp-generator.desc',
   category: 'security-privacy',
-  tags: ['security-privacy', '工具'],
+  tags: 'tools.twofa-totp-generator.tags',
   icon: 'mdi:two-factor-authentication',
-  i18nKey: 'tools.twofa-totp-generator',
   entry: 'tools/security-privacy/twofa-totp-generator/Component.vue',
   isNew: true,
   isPopular: false

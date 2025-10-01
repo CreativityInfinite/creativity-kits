@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'text-readability-analyzer',
-  name: '文本可读性分析器',
-  description: '文本可读性分析器工具',
+  name: 'tools.text-readability-analyzer.name',
+  description: 'tools.text-readability-analyzer.desc',
   category: 'education-language',
-  tags: ['education-language', '工具'],
+  tags: 'tools.text-readability-analyzer.tags',
   icon: 'mdi:text-recognition',
-  i18nKey: 'tools.text-readability-analyzer',
   entry: 'tools/education-language/text-readability-analyzer/Component.vue',
   isNew: true,
   isPopular: false

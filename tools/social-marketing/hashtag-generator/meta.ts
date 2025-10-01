@@ -2,12 +2,11 @@ import type { ToolMeta } from '~/types/tool';
 
 const meta: ToolMeta = {
   id: 'hashtag-generator',
-  name: '标签生成器',
-  description: '标签生成器工具',
+  name: 'tools.hashtag-generator.name',
+  description: 'tools.hashtag-generator.desc',
   category: 'social-marketing',
-  tags: ['social-marketing', '工具'],
+  tags: 'tools.hashtag-generator.tags',
   icon: 'mdi:pound',
-  i18nKey: 'tools.hashtag-generator',
   entry: 'tools/social-marketing/hashtag-generator/Component.vue',
   isNew: true,
   isPopular: false

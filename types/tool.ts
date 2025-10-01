@@ -3,8 +3,7 @@ export type ToolMeta = {
   name: string;
   description: string;
   category: string;
-  tags?: string[];
-  i18nKey: string;
+  tags?: string;
   color?: string;
   icon?: string; // Iconify icon name, e.g. "tabler:binary"
   entry: string; // component path (for reference)
