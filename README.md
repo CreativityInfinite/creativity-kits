@@ -21,8 +21,9 @@ Screenshots / Hero Gallery (placeholders)
 - Replace these placeholders with your actual screenshots or a product hero image
 - Suggested: tools grid (light/dark), tab transition, search, individual tool modal or detail
 
-![Hero Placeholder](public/og-image.svg)
-![Screenshot Placeholder 1](https://placehold.co/1200x700/0a0a0a/ffffff?text=Creativity+Kits+Grid)
+![Home](public/home.jpg)
+![OG](public/og-image.svg)
+![Screenshot Placeholder 1](https://placehold.co/1200x700/0a0a0a/ffffff?text=Creativity+Kits)
 ![Screenshot Placeholder 2](https://placehold.co/1200x700/101012/ffffff?text=Bento+Cards+%2B+Transitions)
 
 GitHub Widgets
