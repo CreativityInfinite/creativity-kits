@@ -8,8 +8,11 @@
 import { computed } from 'vue';
 import UiSelect from '~/components/ui/Select.vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 
 const { locale, availableLocales, setLocale } = useI18n() as any;
+const route = useRoute();
+const router = useRouter();
 
 const opts = availableLocales.map((code: string) => ({
   value: code,
@@ -23,6 +26,14 @@ const current = computed({
       await setLocale(v);
     } else {
       locale.value = v;
+    }
+    // 同步更新地址栏的 ?lang 参数（无痕替换，不新增历史记录）
+    const nextQuery = { ...route.query, lang: v };
+    if (typeof window !== 'undefined' && (route.path === '/' || route.path === '')) {
+      const params = new URLSearchParams(nextQuery as Record<string, string>).toString();
+      window.history.replaceState(null, '', params ? `?${params}` : '?');
+    } else {
+      await router.replace({ query: nextQuery });
     }
   }
 });
