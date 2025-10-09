@@ -4,12 +4,13 @@
     @click="toggle"
     :title="`Theme: ${colorMode.value}`"
   >
-    {{ colorMode.value === 'dark' ? '🌙' : '☀️' }}
+    <Icon :icon="colorMode.value === 'dark' ? 'tabler:moon' : 'tabler:sun'" class="w-4 h-4" />
   </button>
 </template>
 
 <script setup lang="ts">
 // @ts-nocheck
+import { Icon } from '@iconify/vue';
 import { useFancyThemeTransition } from '~/composables/useFancyThemeTransition';
 
 const colorMode = useColorMode();

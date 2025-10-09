@@ -32,12 +32,18 @@
       <header class="mb-6 md:mb-8 lg:mb-10">
         <div class="flex items-center justify-between gap-3">
           <h1 class="text-3xl font-semibold tracking-tight md:text-4xl lg:text-5xl">
-            Creativity Kits
-            <span class="animation-hello ml-1 inline-block align-baseline" aria-hidden="true"> 👋 </span>
+            <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-pulse"> Creativity </span>
+            <span class="ml-2 bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 bg-clip-text text-transparent animate-pulse" style="animation-delay: 0.5s"> Kits </span>
+            <span class="animation-hello ml-3 inline-block align-baseline" aria-hidden="true"> 👋 </span>
           </h1>
         </div>
-        <p class="mt-3 text-base leading-relaxed text-gray-700 dark:text-gray-400 md:text-lg">
-          {{ t('home.subtitle') }}
+        <p class="mt-3 text-base leading-relaxed md:text-lg">
+          <span
+            class="inline-block bg-gradient-to-r from-slate-600 to-slate-800 dark:from-slate-300 dark:to-slate-100 bg-clip-text text-transparent"
+            style="-webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent"
+          >
+            {{ t('home.subtitle') }}
+          </span>
         </p>
         <div class="shimmer-line mt-3 h-[2px] w-28 rounded-full" aria-hidden="true"></div>
       </header>
@@ -105,15 +111,17 @@
       <div ref="sentinel" class="h-1 -mt-1" aria-hidden="true"></div>
 
       <!-- 标签栏区域 -->
-      <div class="-mx-4 mb-6 px-4 pt-4 pb-2 sticky top-0 z-30 transition-all duration-500 ease-out">
+      <div class="-mx-4 mb-3 px-4 pt-2 pb-1 sm:mb-6 sm:pt-4 sm:pb-2 sticky top-0 z-30 transition-all duration-500 ease-out">
         <div class="relative rounded-xl">
           <!-- 吸顶时的渐变遮罩 -->
           <transition name="tabmask">
             <div v-if="tabsSticky" class="pointer-events-none absolute inset-0 -mx-4 px-4" aria-hidden="true">
-              <div class="h-12 -mt-2 w-full bg-gradient-to-b from-white/95 via-white/85 to-white/20 dark:from-bg/95 dark:via-bg/85 dark:to-bg/20 backdrop-blur-sm"></div>
+              <div class="h-8 sm:h-12 -mt-1 sm:-mt-2 w-full bg-gradient-to-b from-white/95 via-white/85 to-white/20 dark:from-bg/95 dark:via-bg/85 dark:to-bg/20 backdrop-blur-sm"></div>
             </div>
           </transition>
-          <Tabs :tabs="tabs" :active="activeTab" :center="tabsSticky" class="" @change="onTabChange" />
+          <div class="overflow-x-auto no-scrollbar -mx-4 px-4">
+            <Tabs :tabs="tabs" :active="activeTab" :center="tabsSticky" class="" @change="onTabChange" />
+          </div>
         </div>
       </div>
 
@@ -321,11 +329,32 @@ const convT2S = OpenCC.Converter({ from: 'tw', to: 'cn' });
 const { tools, categories, popularTag } = await useTools();
 
 // ==================== 标签栏配置 ====================
+const categoryIcons: Record<string, string> = {
+  'color-graphics': 'tabler:palette',
+  'data-file': 'tabler:file-database',
+  'dev-network': 'tabler:network',
+  'education-language': 'tabler:book-2',
+  'image-media': 'tabler:photo',
+  'map-geo': 'tabler:map-2',
+  'math-unit': 'tabler:calculator',
+  productivity: 'tabler:briefcase',
+  'regex-parse': 'tabler:regex',
+  'security-privacy': 'tabler:shield-lock',
+  'social-marketing': 'tabler:share',
+  'system-browser': 'tabler:browser',
+  'text-format': 'tabler:text-size',
+  'time-date': 'tabler:clock'
+};
+
 const tabs = computed(() => [
-  { id: 'all', label: t('tabs.all') },
-  { id: 'hot', label: t('tabs.hot') },
-  { id: 'new', label: t('tabs.new') },
-  ...categories.value.map((c: string) => ({ id: c, label: t(`categories.${c}`, c) }))
+  { id: 'all', label: t('tabs.all'), icon: 'tabler:apps' },
+  { id: 'hot', label: t('tabs.hot'), icon: 'tabler:flame' },
+  { id: 'new', label: t('tabs.new'), icon: 'tabler:sparkles' },
+  ...categories.value.map((c: string) => ({
+    id: c,
+    label: t(`categories.${c}`, c),
+    icon: categoryIcons[c] || 'tabler:folder'
+  }))
 ]);
 
 const activeTab = ref('all');
@@ -364,8 +393,9 @@ onMounted(() => {
   if (!sentinel.value) return;
   io = new IntersectionObserver(
     (entries) => {
-      const e = entries[0];
-      headerSwitchesHidden.value = !e.isIntersecting;
+      const entry = entries[0];
+      if (!entry) return;
+      headerSwitchesHidden.value = !entry.isIntersecting;
     },
     { root: null, threshold: 0 }
   );
@@ -399,7 +429,9 @@ function collapse(s: string) {
 
 function toPinyin(s: string) {
   try {
-    return collapse(pinyin(s, { toneType: 'none', type: 'array' }).join(' '));
+    const res = pinyin(s, { toneType: 'none', type: 'array' } as any) as unknown;
+    const arr = Array.isArray(res) ? (res as string[]) : [String(res ?? '')];
+    return collapse(arr.join(' '));
   } catch {
     return '';
   }
@@ -994,5 +1026,12 @@ function showToastNotification(message: string) {
   .contact-header {
     margin-bottom: 2rem;
   }
+}
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 </style>

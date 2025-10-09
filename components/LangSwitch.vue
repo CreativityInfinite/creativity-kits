@@ -1,12 +1,49 @@
 <template>
-  <div class="flex items-center gap-2 text-xs">
-    <UiSelect v-model="current" :options="opts" />
+  <div class="relative">
+    <button
+      ref="buttonRef"
+      @click="toggleMenu"
+      class="rounded-lg px-3 py-2 text-xs ring-1 transition-colors bg-white text-gray-800 ring-black/10 hover:text-black dark:bg-bg-card dark:text-gray-300 dark:ring-white/10 dark:hover:text-white"
+      :title="currentLabel"
+    >
+      <Icon icon="tabler:world" class="w-4 h-4" />
+    </button>
+
+    <!-- 下拉菜单 -->
+    <Teleport to="body">
+      <Transition name="dropdown">
+        <div
+          v-if="menuOpen"
+          class="fixed bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/60 dark:border-gray-700/60 rounded-xl shadow-2xl z-[9999] min-w-[120px]"
+          :style="{
+            top: menuPosition.top + 'px',
+            left: menuPosition.left + 'px'
+          }"
+        >
+          <div class="p-2">
+            <button
+              v-for="opt in opts"
+              :key="opt.value"
+              @click="selectLanguage(opt.value)"
+              class="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium transition-all duration-200"
+              :class="[
+                current === opt.value
+                  ? 'bg-theme-primary/20 text-gray-900 dark:text-white'
+                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100/80 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700/50'
+              ]"
+            >
+              <span>{{ opt.label }}</span>
+            </button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import UiSelect from '~/components/ui/Select.vue';
+import { computed, ref, nextTick, onMounted, onUnmounted } from 'vue';
+import { Icon } from '@iconify/vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -14,27 +51,107 @@ const { locale, availableLocales, setLocale } = useI18n() as any;
 const route = useRoute();
 const router = useRouter();
 
+const menuOpen = ref(false);
+const buttonRef = ref<HTMLElement>();
+const menuPosition = ref({ top: 0, left: 0 });
+
 const opts = availableLocales.map((code: string) => ({
   value: code,
   label: code === 'zh-CN' ? '中文(简)' : code === 'zh-TW' ? '中文(繁)' : code === 'en' ? 'English' : code
 }));
 
-const current = computed({
-  get: () => locale.value,
-  set: async (v: string) => {
-    if (typeof setLocale === 'function') {
-      await setLocale(v);
-    } else {
-      locale.value = v;
-    }
-    // 同步更新地址栏的 ?lang 参数（无痕替换，不新增历史记录）
-    const nextQuery = { ...route.query, lang: v };
-    if (typeof window !== 'undefined' && (route.path === '/' || route.path === '')) {
-      const params = new URLSearchParams(nextQuery as Record<string, string>).toString();
-      window.history.replaceState(null, '', params ? `?${params}` : '?');
-    } else {
-      await router.replace({ query: nextQuery });
-    }
+const current = computed(() => locale.value);
+
+const currentLabel = computed(() => {
+  const currentOpt = opts.find((opt) => opt.value === current.value);
+  return currentOpt ? `Language: ${currentOpt.label}` : 'Language';
+});
+
+async function toggleMenu() {
+  if (!menuOpen.value && buttonRef.value) {
+    await nextTick();
+    updateMenuPosition();
   }
+  menuOpen.value = !menuOpen.value;
+}
+
+function updateMenuPosition() {
+  if (buttonRef.value) {
+    const rect = buttonRef.value.getBoundingClientRect();
+    menuPosition.value = {
+      top: rect.bottom + 8,
+      left: rect.right - 120 // 右对齐，120px 是菜单最小宽度
+    };
+  }
+}
+
+async function selectLanguage(value: string) {
+  if (typeof setLocale === 'function') {
+    await setLocale(value);
+  } else {
+    locale.value = value;
+  }
+
+  // 同步更新地址栏的 ?lang 参数
+  const nextQuery = { ...route.query, lang: value };
+  if (typeof window !== 'undefined' && (route.path === '/' || route.path === '')) {
+    const params = new URLSearchParams(nextQuery as Record<string, string>).toString();
+    window.history.replaceState(null, '', params ? `?${params}` : '?');
+  } else {
+    await router.replace({ query: nextQuery });
+  }
+
+  menuOpen.value = false;
+}
+
+// 监听滚动和窗口大小变化
+function handleScroll() {
+  if (menuOpen.value) {
+    updateMenuPosition();
+  }
+}
+
+function handleResize() {
+  if (menuOpen.value) {
+    updateMenuPosition();
+  }
+}
+
+// 点击外部关闭菜单
+function handleClickOutside(event: Event) {
+  if (menuOpen.value && buttonRef.value && !buttonRef.value.contains(event.target as Node)) {
+    menuOpen.value = false;
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('resize', handleResize);
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener('resize', handleResize);
+  document.removeEventListener('click', handleClickOutside);
 });
 </script>
+
+<style scoped>
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+}
+
+.dropdown-enter-to,
+.dropdown-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+</style>
